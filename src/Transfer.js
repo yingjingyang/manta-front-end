@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Grid, Label, Icon } from 'semantic-ui-react';
+import { Form, Input, Grid, Label, Icon, Header } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 
 export default function Main (props) {
@@ -14,7 +14,7 @@ export default function Main (props) {
 
   return (
     <Grid.Column width={8}>
-      <h1>Transfer</h1>
+      <Header textAlign='center'>Transfer</Header>
       <Form>
         <Form.Field>
           <Label basic color='teal'>
@@ -27,7 +27,7 @@ export default function Main (props) {
           </Label>
         </Form.Field>
 
-        <Form.Field>
+        <Form.Field style={{ width:"600px" }}>
           <Input
             fluid
             label='To'
@@ -37,7 +37,7 @@ export default function Main (props) {
             onChange={onChange}
           />
         </Form.Field>
-        <Form.Field>
+        <Form.Field style={{ width:"600px" }}>
           <Input
             fluid
             label='Amount'

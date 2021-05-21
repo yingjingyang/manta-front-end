@@ -22,6 +22,7 @@ function TxButton ({
   const [sudoKey, setSudoKey] = useState(null);
 
   const { palletRpc, callable, inputParams, paramFields } = attrs;
+  console.log(palletRpc, callable, "pallet and callable")
 
   const isQuery = () => type === 'QUERY';
   const isSudo = () => type === 'SUDO-TX';
@@ -82,27 +83,31 @@ function TxButton ({
   };
 
   const uncheckedSudoTx = async () => {
+    console.log("1")
     const fromAcct = await getFromAcct();
     const txExecute =
         api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
-
+    console.log("2")
     const unsub = txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
     setUnsub(() => unsub);
+    console.log(3);
   };
 
   const signedTx = async () => {
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
     // transformed can be empty parameters
-
-    const txExecute = transformed
-      ? api.tx[palletRpc][callable](...transformed)
-      : api.tx[palletRpc][callable]();
+    console.log("a")
+    console.log(api)
+    const txExecute = transformed ? api.tx[palletRpc][callable](...transformed) : api.tx[palletRpc][callable]();
+    console.log("b")
 
     const unsub = await txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
     setUnsub(() => unsub);
+    console.log("c")
+
   };
 
   const unsignedTx = async () => {
