@@ -1,12 +1,12 @@
 import React, { useState, createRef } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Container, Dimmer, Loader, Grid, Sticky, Message } from 'semantic-ui-react';
+import { Container, Dimmer, Loader, Grid, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 import { SubstrateContextProvider, useSubstrate } from './substrate-lib';
 import { DeveloperConsole } from './substrate-lib/components';
 
-import MainMenu from './MainMenu';
+import Navbar from './Navbar';
 import Routes from './Routes';
 
 function Main () {
@@ -44,7 +44,7 @@ function Main () {
   return (
     <div ref={contextRef}>
         <Router>
-            <MainMenu setAccountAddress={setAccountAddress} />
+            <Navbar setAccountAddress={setAccountAddress} />
             <Container textAlign='center' style={{ paddingTop: '3em' }}>
             <Grid centered>
             <Routes accountPair={accountPair} />

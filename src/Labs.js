@@ -1,142 +1,87 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Grid } from 'semantic-ui-react';
-
-import { useSubstrate } from './substrate-lib';
+import React, { useState } from 'react';
+import { Form, Input, Grid, Label, Icon, Header } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
-import { Base64Binary } from './utilities/Base64Binary';
 
+export default function Main (props) {
+  const [status, setStatus] = useState(null);
+  const [formState, setFormState] = useState({ addressTo: null, amount: 0 });
+  const { accountPair } = props;
 
-function Main(props) {
-    const { api } = useSubstrate();
-    const { accountPair } = props;
-    console.log("accountPair", accountPair)
+  const onChange = (_, data) =>
+    setFormState(prev => ({ ...prev, [data.state]: data.value }));
 
-    // The transaction submission status
-    const [status, setStatus] = useState(null);
+  const { sender1, sender2, receiver1, receiver2, proof } = formState;
 
-    const initFormState = {
-        palletRpc: 'mantaPay',
-        callable: 'init',
-        inputParams: []
-    }
-
-    const [formState, setFormState] = useState(initFormState);
-    const [inputParamMetas, setInputParamMetas] = useState([]);
-    const [paramFields, setParamFields] = useState([]);
-    const { palletRpc, callable, inputParams } = formState;
-
-    const updateInputParamMetas = () => {
-        let inputParamMetas = [{
-            name: "merkle root",
-            state: "merkle_root",
-            type: "base64 string",
-            jstype: "text",
-            value: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-        }, {
-            name: "old sn",
-            state: "sn_old",
-            type: "base64 string"
-        }, {
-            name: "old k",
-            state: "k_old",
-            jstype: "text",
-            type: "base64 string"
-        }, {
-            name: "new k",
-            state: "k_new",
-            jstype: "text",
-            type: "base64 string"
-        }, {
-            name: "new commitment",
-            state: "cm_new",
-            jstype: "text",
-            type: "base64 string"
-        }, {
-            name: "encrypted transfer amount",
-            state: "enc_amount",
-            jstype: "text",
-            type: "base64 string"
-        }, {
-            name: "proof",
-            state: "proof",
-            jstype: "text",
-            type: "base64 string"
-        }];
-
-        setInputParamMetas(inputParamMetas);
-        let paramFields = [];
-        paramFields = inputParamMetas.map((_, ind) => true);
-        setParamFields(paramFields);
-    };
-
-    useEffect(updateInputParamMetas, [api, callable]);
-
-    const onCallableParamChange = (_, data) => {
-        setFormState(formState => {
-            let { state, value } = data;
-            const { ind, paramMeta } = state;
-            value = paramMeta.type === "base64 string" ? Base64Binary.decodeArrayBuffer(value) : value;
-            const inputParams = [...formState.inputParams];
-            inputParams[ind] = value;
-            return {...formState, inputParams };
-        });
-    };
-
-    const onCallableChange = (_, data) => {
-        const formState = {...initFormState, callable: data.value };
-        setFormState(formState);
-    };
-
-    return ( <
-        Grid.Column width = { 8 } >
-        <
-        h1 > Private Payment < /h1> <
-        Form >
-{
-            inputParamMetas.map((paramMeta, ind) =>
-                <
-                Form.Field key = { `${paramMeta.name}-${paramMeta.type}` } >
-                <
-                Input placeholder = { paramMeta.type }
-                fluid type = { paramMeta.jstype }
-                label = { paramMeta.name }
-                state = {
-                    { ind, paramMeta }
-                }
-                onChange = { onCallableParamChange }
-                /> < /
-                Form.Field >
-            )
-        } <
-        Form.Field style = {
-            { textAlign: 'center' }
-        } >
-
-        <
-        TxButton accountPair = { accountPair }
-        setStatus = { setStatus }
-        label = 'Submit'
-        type = 'SIGNED-TX'
-        attrs = {
-            {
-                palletRpc: palletRpc,
-                callable: callable,
-                inputParams: inputParams,
-                paramFields: paramFields
-            }
-        }
-        /> < /
-        Form.Field > <
-        div style = {
-            { overflowWrap: 'break-word' }
-        } > { status } < /div> < /
-        Form > <
-        /Grid.Column>
-    );
-}
-
-export default function Manta(props) {
-    const { api } = useSubstrate();
-    return api.tx.mantaPay ? < Main {...props }
-    /> : null;
+  return (
+    <Grid.Column width={8}>
+      <Header textAlign='center'>Private Transfer</Header>
+      <Form>
+        <Form.Field style={{ width: '600px' }}>
+          <Input
+            fluid
+            label='sender1'
+            type='text'
+            placeholder='base64 string'
+            state='sender1'
+            onChange={onChange}
+            />
+        </Form.Field>
+        <Form.Field style={{ width: '600px' }}>
+          <Input
+            fluid
+            label='sender2'
+            type='text'
+            placeholder='base64 string'
+            state='sender2'
+            onChange={onChange}
+          />
+        </Form.Field>
+        <Form.Field style={{ width: '600px' }}>
+          <Input
+            fluid
+            label='receiver1'
+            type='text'
+            placeholder='base64 string'
+            state='receiver1'
+            onChange={onChange}
+          />
+          </Form.Field>
+          <Form.Field style={{ width: '600px' }}>
+          <Input
+            fluid
+            label='receiver2'
+            type='text'
+            placeholder='base64 string'
+            state='receiver2'
+            onChange={onChange}
+          />
+          </Form.Field>
+          <Form.Field style={{ width: '600px' }}>
+          <Input
+            fluid
+            label='proof'
+            type='text'
+            placeholder='base64 string'
+            state='proof'
+            onChange={onChange}
+          />
+        </Form.Field>
+        <Form.Field style={{ textAlign: 'center' }}>
+          <TxButton
+            accountPair={accountPair}
+            label='Submit'
+            type='SIGNED-TX'
+            setStatus={setStatus}
+            attrs={{
+              palletRpc: 'mantaPay',
+              callable: 'mantaTransfer',
+              inputParams: [sender1, sender2, receiver1, receiver2, proof],
+              paramFields: [true, true, true, true, true]
+            }}
+          />
+        </Form.Field>
+        <div style={{ overflowWrap: 'break-word' }}>{status}</div>
+      </Form>
+    </Grid.Column>
+  );
 }

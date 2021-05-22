@@ -26,9 +26,8 @@ function Main (props) {
     text: account.meta.name.toUpperCase(),
     icon: 'user'
   }));
-
   const initialAddress =
-    keyringOptions.length > 0 ? keyringOptions[0].value : '';
+  keyringOptions.length > 0 ? keyringOptions[0].value : '';
 
   // Set the initial address
   useEffect(() => {
@@ -82,7 +81,7 @@ function Main (props) {
                 <a
                   target='_blank'
                   rel='noopener noreferrer'
-                  href='https://github.com/polkadot-js/extension'
+                  href='https://polkadot.js.org/extension/'
                 >
                   Polkadot JS Extension
                 </a>
