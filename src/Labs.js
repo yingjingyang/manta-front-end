@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Grid, Label, Icon, Header } from 'semantic-ui-react';
+import { Form, Input, Grid, Header } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 
 export default function Main (props) {

@@ -60,13 +60,17 @@ function TxButton ({
     return fromAcct;
   };
 
-  const txResHandler = ({ status }) =>
-    status.isFinalized
-      ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
-      : setStatus(`Current transaction status: ${status.type}`);
-
-  const txErrHandler = err =>
-    setStatus(`😞 Transaction Failed: ${err.toString()}`);
+  const txResHandler = ({ status, events, dispatchError }) => {
+    if (dispatchError && status.isFinalized) {
+      setStatus(`Transaction failed. Block hash: ${status.asFinalized.toString()}`);
+    } else if (dispatchError && status.isInBlock) {
+      setStatus(`Transaction failed. Block hash: ${status.asInBlock.toString()}`);
+    } else {
+      status.isFinalized
+        ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+        : setStatus(`Current transaction status: ${status.type}`);
+    }
+  };
 
   const sudoTx = async () => {
     const fromAcct = await getFromAcct();
@@ -77,7 +81,6 @@ function TxButton ({
       : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
 
     const unsub = txExecute.signAndSend(fromAcct, txResHandler)
-      .catch(txErrHandler);
     setUnsub(() => unsub);
   };
 
@@ -87,7 +90,6 @@ function TxButton ({
         api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
 
     const unsub = txExecute.signAndSend(fromAcct, txResHandler)
-      .catch(txErrHandler);
     setUnsub(() => unsub);
   };
 
@@ -101,7 +103,6 @@ function TxButton ({
       : api.tx[palletRpc][callable]();
 
     const unsub = await txExecute.signAndSend(fromAcct, txResHandler)
-      .catch(txErrHandler);
     setUnsub(() => unsub);
   };
 
@@ -112,8 +113,7 @@ function TxButton ({
       ? api.tx[palletRpc][callable](...transformed)
       : api.tx[palletRpc][callable]();
 
-    const unsub = await txExecute.send(txResHandler)
-      .catch(txErrHandler);
+    const unsub = await txExecute.send(txResHandler);
     setUnsub(() => unsub);
   };
 
