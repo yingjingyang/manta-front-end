@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Form, Grid, Header, Message, Label, Icon } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
+import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
+
 
 export default function Main ({ accountPair }) {
   const EXPECTED_PAYLOAD_SIZE_IN_BYTES = 608;
@@ -17,27 +19,13 @@ export default function Main ({ accountPair }) {
   const fileUploadRef = useRef();
   const [uploadErrorText, setUploadErrorText] = useState('');
 
-  const formatBase64StringForDisplay = base64String => {
-    if (!base64String) {
-      return '';
-    }
-    const LINE_LENGTH = 75;
-    let formattedString = '\n';
-    for (let i = 0; i < base64String.length; i++) {
-      formattedString += base64String.slice(i, i + LINE_LENGTH);
-      formattedString += '\n';
-      i += LINE_LENGTH;
-    }
-    return formattedString;
-  };
-
   const displayTransferInfo = transferInfoBytes => {
     setTransferInfo(transferInfoBytes)
     setSender1(base64Encode(transferInfoBytes.slice(0, 96)));
-    setSender2(base64Encode(transferInfoBytes.slice(97, 192)));
-    setReceiver1(base64Encode(transferInfoBytes.slice(193, 304)));
-    setReceiver2(base64Encode(transferInfoBytes.slice(305, 416)));
-    setProof(base64Encode(transferInfoBytes.slice(317, 608)));
+    setSender2(base64Encode(transferInfoBytes.slice(96, 192)));
+    setReceiver1(base64Encode(transferInfoBytes.slice(192, 304)));
+    setReceiver2(base64Encode(transferInfoBytes.slice(304, 416)));
+    setProof(base64Encode(transferInfoBytes.slice(416, 608)));
   };
 
   const hideTransferInfo = transferInfoBytes => {
@@ -84,61 +72,58 @@ export default function Main ({ accountPair }) {
   };
 
   return (
-    <Grid>
-    <Grid.Column width={2}/>
-    <Grid.Column width={12} textAlign='center'>
-      <Header textAlign='center'>Private Transfer</Header>
-      <Form>
-        <Label basic color='teal'>
-          Upload a private transfer file (608 bytes)
-        </Label>
-        <Form.Field inline='true' style={{ textAlign: 'center' }}>
-
-          <input
-            accept='.txt'
-            id='file'
-            type='file'
-            onChange={handleFileUpload}
-            ref={fileUploadRef}
-            style={{paddingLeft: '4em', marginTop: '.5em', border: '0px'}}
-          />
-          <Message
-            error
-            onDismiss={() => setUploadErrorText('')}
-            header='Upload failed'
-            content={uploadErrorText}
-            visible={uploadErrorText.length}
-          />
-        </Form.Field>
-        {transferInfo &&
-          <Form.Field style={{maxWidth: '40%', textAlign: 'left', paddingLeft:'10em'}}>
-            <p><b>Sender1:</b>
-            {formatBase64StringForDisplay(sender1)}
-            </p>
-            <p><b>Sender2:</b>{formatBase64StringForDisplay(sender2)}</p>
-            <p><b>Receiver1:</b>{formatBase64StringForDisplay(receiver1)}</p>
-            <p><b>Receiver2:</b>{formatBase64StringForDisplay(receiver2)}</p>
-            <p><b>Proof:</b>{formatBase64StringForDisplay(proof)}</p>
+    <>
+      <Grid.Column width={2}/>
+      <Grid.Column width={12} textAlign='center'>
+        <Header textAlign='center'>Private Transfer</Header>
+        <Form>
+          <Label basic color='teal'>
+            Upload a private transfer file (608 bytes)
+          </Label>
+          <Form.Field inline='true' style={{ textAlign: 'center' }}>
+            <input
+              accept='.txt'
+              id='file'
+              type='file'
+              onChange={handleFileUpload}
+              ref={fileUploadRef}
+              style={{paddingLeft: '9em', paddingTop: '1em', border: '0px'}}
+            />
+            <Message
+              error
+              onDismiss={() => setUploadErrorText('')}
+              header='Upload failed'
+              content={uploadErrorText}
+              visible={uploadErrorText.length}
+            />
           </Form.Field>
-        }
-        <Form.Field style={{ textAlign: 'center' }}>
-          <TxButton
-            accountPair={accountPair}
-            label='Submit'
-            type='SIGNED-TX'
-            setStatus={setStatus}
-            attrs={{
-              palletRpc: 'mantaPay',
-              callable: 'privateTransfer',
-              inputParams: [transferInfo],
-              paramFields: [true]
-            }}
-          />
-        </Form.Field>
-        <div style={{ overflowWrap: 'break-word' }}>{status}</div>
-      </Form>
-    </Grid.Column>
-    <Grid.Column width={2}/>
-    </Grid>
+          {transferInfo &&
+            <Form.Field style={{maxWidth: '40%', textAlign: 'left', paddingLeft:'19em'}}>
+              <p><b>Sender1:</b>{formatBase64StringForDisplay(sender1)}</p>
+              <p><b>Sender2:</b>{formatBase64StringForDisplay(sender2)}</p>
+              <p><b>Receiver1:</b>{formatBase64StringForDisplay(receiver1)}</p>
+              <p><b>Receiver2:</b>{formatBase64StringForDisplay(receiver2)}</p>
+              <p><b>Proof:</b>{formatBase64StringForDisplay(proof)}</p>
+            </Form.Field>
+          }
+          <Form.Field style={{ textAlign: 'center' }}>
+            <TxButton
+              accountPair={accountPair}
+              label='Submit'
+              type='SIGNED-TX'
+              setStatus={setStatus}
+              attrs={{
+                palletRpc: 'mantaPay',
+                callable: 'privateTransfer',
+                inputParams: [transferInfo],
+                paramFields: [true]
+              }}
+            />
+          </Form.Field>
+          <div style={{ overflowWrap: 'break-word' }}>{status}</div>
+        </Form>
+      </Grid.Column>
+      <Grid.Column width={2}/>
+    </>
   );
 }
