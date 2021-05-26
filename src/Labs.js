@@ -6,6 +6,7 @@ import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypt
 export default function Main ({ accountPair }) {
   const EXPECTED_PAYLOAD_SIZE_IN_BYTES = 608;
 
+  const [transferInfo, setTransferInfo] = useState(null);
   const [sender1, setSender1] = useState('');
   const [sender2, setSender2] = useState('');
   const [receiver1, setReceiver1] = useState('');
@@ -31,6 +32,7 @@ export default function Main ({ accountPair }) {
   };
 
   const displayTransferInfo = transferInfoBytes => {
+    seetTransferInfo(transferInfoBytes)
     setSender1(base64Encode(transferInfoBytes.slice(0, 96)));
     setSender2(base64Encode(transferInfoBytes.slice(97, 192)));
     setReceiver1(base64Encode(transferInfoBytes.slice(193, 304)));
@@ -112,8 +114,8 @@ export default function Main ({ accountPair }) {
             attrs={{
               palletRpc: 'mantaPay',
               callable: 'privateTransfer',
-              inputParams: [sender1, sender2, receiver1, receiver2, proof],
-              paramFields: [true, true, true, true, true]
+              inputParams: [transferInfo],
+              paramFields: [true]
             }}
           />
         </Form.Field>
