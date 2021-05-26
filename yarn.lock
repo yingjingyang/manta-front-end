@@ -7750,9 +7750,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"gh-pages@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "gh-pages@npm:3.1.0"
+"gh-pages@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "gh-pages@npm:3.2.0"
   dependencies:
     async: ^2.6.1
     commander: ^2.18.0
@@ -7764,7 +7764,7 @@ fsevents@^1.2.7:
   bin:
     gh-pages: bin/gh-pages.js
     gh-pages-clean: bin/gh-pages-clean.js
-  checksum: cd329b21f2881ea608ec7934c2aabd954d093c72385f8cc235c18737fa52d6c6a29697b138aaafbad28c2657493d0d41e72c3fd04dad3b3ad2513c3202fa191a
+  checksum: 77dc00ea74f677e26e0ade2211cfdf37b56d687d18b1a97134cdc72569aa43c56f44f6d19ac83397cd6e2428ba77fcd785b2220aa02f5f9cc19761ffd24b64f2
   languageName: node
   linkType: hard
 
@@ -10217,7 +10217,7 @@ fsevents@^1.2.7:
     eslint-plugin-only-warn: ^1.0.2
     eslint-plugin-promise: ^4.3.1
     eslint-plugin-standard: ^5.0.0
-    gh-pages: ^3.1.0
+    gh-pages: ^3.2.0
     prop-types: ^15.7.2
     query-string: ^6.13.5
     react: ^16.14.0
