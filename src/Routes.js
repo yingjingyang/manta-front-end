@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Transfer from './Transfer';
 import Labs from './Labs';
-import Labs2 from './Labs2';
 
 import Governance from './Governance';
 

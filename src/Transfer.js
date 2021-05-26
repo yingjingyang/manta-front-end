@@ -15,7 +15,7 @@ export default function Main (props) {
     <Grid.Column width={8}>
       <Header textAlign='center'>Transfer</Header>
       <Form>
-        <Form.Field style={{ width: "600px" }}>
+        <Form.Field style={{ width: '500px', textAlign: 'center' }}>
           <Input
             fluid
             label='To'
@@ -25,7 +25,7 @@ export default function Main (props) {
             onChange={onChange}
           />
         </Form.Field>
-        <Form.Field style={{ width: "600px" }}>
+        <Form.Field style={{ width: '500px' }}>
           <Input
             fluid
             label='Amount'
