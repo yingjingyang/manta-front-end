@@ -10,11 +10,6 @@
         "sender_pk": "[u8; 32]",
         "cipher": "[u8; 16]"
     },
-    "PrivateTransferData": {
-        "sender_1": "SenderData",
-        "sender_2": "SenderData",
-        "receiver_1": "ReceiverData",
-        "receiver_2": "ReceiverData",
-        "proof": "[u8; 192]"
-    }
+    "PrivateTransferPayload": "[u8; 608]",
+    "ReclaimPayload": "[u8; 512]"
 }
