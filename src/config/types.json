@@ -1,1 +1,20 @@
-{}
+{
+    "SenderData": {
+        "k": "[u8; 32]",
+        "void_number": "[u8; 32]",
+        "root": "[u8; 32]"
+    },
+    "ReceiverData": {
+        "k": "[u8; 32]",
+        "cm": "[u8; 32]",
+        "sender_pk": "[u8; 32]",
+        "cipher": "[u8; 16]"
+    },
+    "PrivateTransferData": {
+        "sender_1": "SenderData",
+        "sender_2": "SenderData",
+        "receiver_1": "ReceiverData",
+        "receiver_2": "ReceiverData",
+        "proof": "[u8; 192]"
+    }
+}

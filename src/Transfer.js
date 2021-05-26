@@ -1,33 +1,21 @@
 import React, { useState } from 'react';
-import { Form, Input, Grid, Label, Icon } from 'semantic-ui-react';
+import { Form, Input, Grid, Header } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
+import MAToAtomicUnits from './utils/MAToAtomicUnit';
 
 export default function Main (props) {
   const [status, setStatus] = useState(null);
   const [formState, setFormState] = useState({ addressTo: null, amount: 0 });
   const { accountPair } = props;
-
   const onChange = (_, data) =>
     setFormState(prev => ({ ...prev, [data.state]: data.value }));
-
   const { addressTo, amount } = formState;
 
   return (
     <Grid.Column width={8}>
-      <h1>Transfer</h1>
+      <Header textAlign='center'>Transfer</Header>
       <Form>
-        <Form.Field>
-          <Label basic color='teal'>
-            <Icon name='hand point right' />
-            1 Unit = 1000000000000&nbsp;
-          </Label>
-          <Label basic color='teal' style={{ marginLeft: 0, marginTop: '.5em' }}>
-            <Icon name='hand point right' />
-            Transfer more than the existential amount for account with 0 balance
-          </Label>
-        </Form.Field>
-
-        <Form.Field>
+        <Form.Field style={{ width: '500px', textAlign: 'center' }}>
           <Input
             fluid
             label='To'
@@ -37,11 +25,12 @@ export default function Main (props) {
             onChange={onChange}
           />
         </Form.Field>
-        <Form.Field>
+        <Form.Field style={{ width: '500px' }}>
           <Input
             fluid
             label='Amount'
             type='number'
+            placeholder='MA'
             state='amount'
             onChange={onChange}
           />
@@ -55,7 +44,7 @@ export default function Main (props) {
             attrs={{
               palletRpc: 'balances',
               callable: 'transfer',
-              inputParams: [addressTo, amount],
+              inputParams: [addressTo, MAToAtomicUnits(amount)],
               paramFields: [true, true]
             }}
           />

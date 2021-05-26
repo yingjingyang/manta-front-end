@@ -11,7 +11,6 @@ import config from '../config';
 
 const parsedQuery = queryString.parse(window.location.search);
 const connectedSocket = parsedQuery.rpc || config.PROVIDER_SOCKET;
-console.log(`Connected socket: ${connectedSocket}`);
 
 ///
 // Initial state for `useReducer`
