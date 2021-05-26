@@ -57,9 +57,9 @@ function Main (props) {
       >
         <Container>
           <Menu.Menu position='left' style={{ alignItems: 'center' }}>
-              <Menu.Item name='Transfer'>
-                <Link to='/transfer'>
-                  Transfer
+              <Menu.Item name='MA Token'>
+                <Link to='/ma_token'>
+                  MA Token
                 </Link>
               </Menu.Item>
               <Menu.Item name='Labs' >
