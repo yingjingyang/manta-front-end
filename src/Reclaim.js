@@ -21,8 +21,8 @@ export default function Main ({ accountPair }) {
   const fileUploadRef = useRef();
 
   const displayReclaimInfo = reclaimInfoBytes => {
-    setAssetID(new BN(reclaimInfoBytes.slice(0, 8)));
-    setReclaimAmount(new BN(reclaimInfoBytes.slice(8, 16)));
+    setAssetID(new BN(reclaimInfoBytes.slice(0, 8), 10, 'le'));
+    setReclaimAmount(new BN(reclaimInfoBytes.slice(8, 16), 10, 'le'));
     setSender1(base64Encode(reclaimInfoBytes.slice(16, 112)));
     setSender2(base64Encode(reclaimInfoBytes.slice(112, 208)));
     setReceiver(base64Encode(reclaimInfoBytes.slice(208, 320)));

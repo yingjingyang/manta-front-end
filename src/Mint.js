@@ -20,8 +20,8 @@ export default function Main ({ accountPair }) {
   const fileUploadRef = useRef();
 
   const displayMintInfo = transferInfoBytes => {
-    setAssetID(new BN(transferInfoBytes.slice(0, 8)));
-    setMintAmount(new BN(transferInfoBytes.slice(8, 16)));
+    setAssetID(new BN(transferInfoBytes.slice(0, 8), 10, 'le'));
+    setMintAmount(new BN(transferInfoBytes.slice(8, 16), 10, 'le'));
     setCm(base64Encode(transferInfoBytes.slice(16, 48)));
     setK(base64Encode(transferInfoBytes.slice(48, 80)));
     setS(base64Encode(transferInfoBytes.slice(80, 112)));
