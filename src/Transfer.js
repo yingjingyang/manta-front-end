@@ -13,7 +13,7 @@ export default function Main (props) {
 
   return (
     <Grid.Column width={8}>
-      <Header textAlign='center'>Transfer</Header>
+      <Header textAlign='center'>Transfer MA Token</Header>
       <Form>
         <Form.Field style={{ width: '500px', textAlign: 'center' }}>
           <Input

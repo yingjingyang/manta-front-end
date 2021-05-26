@@ -78,7 +78,6 @@ export default function Main ({ accountPair }) {
       <Form>
         <Form.Field inline='true' style={{ textAlign: 'center' }}>
           <Label basic color='teal'>
-            <Icon name='hand point down' />
               Upload a private payment file (608 bytes)
             </Label>
           <input
