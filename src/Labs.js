@@ -32,7 +32,7 @@ export default function Main ({ accountPair }) {
   };
 
   const displayTransferInfo = transferInfoBytes => {
-    seetTransferInfo(transferInfoBytes)
+    setTransferInfo(transferInfoBytes)
     setSender1(base64Encode(transferInfoBytes.slice(0, 96)));
     setSender2(base64Encode(transferInfoBytes.slice(97, 192)));
     setReceiver1(base64Encode(transferInfoBytes.slice(193, 304)));
