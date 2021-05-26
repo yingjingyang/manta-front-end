@@ -9,22 +9,22 @@ import Reclaim from './Reclaim'
 export default function Main ({ accountPair }) {
     const dropdownItems = [
     {
-      key: "Private transfer",
-      text: "Private transfer",
-      value: "Private transfer",
+      key: 'Mint',
+      text: 'Mint',
+      value: 'Mint',
     },
     {
-      key: "Mint",
-      text: "Mint",
-      value: "Mint",
+      key: 'Private transfer',
+      text: 'Private transfer',
+      value: 'Private transfer',
     },
     {
-      key: "Reclaim",
-      text: "Reclaim",
-      value: "Reclaim",
+      key: 'Reclaim',
+      text: 'Reclaim',
+      value: 'Reclaim',
     }
   ];
-  const [dropdownState, changeDropdownState] = useState(dropdownItems[0])
+  const [dropdownState, changeDropdownState] = useState(dropdownItems[0]['value'])
 
   console.log(dropdownState)
   let page = <div/>
@@ -43,7 +43,7 @@ export default function Main ({ accountPair }) {
           changeDropdownState(value)
           console.log('value', value)
         }}
-        placeholder=''
+        defaultValue={'Mint'}
         selection
         options={dropdownItems}
         style={{marginBottom: '2em' }}
