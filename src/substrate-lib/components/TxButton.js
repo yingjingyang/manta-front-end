@@ -76,9 +76,14 @@ function TxButton ({
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
     // transformed can be empty parameters
+    try {
     const txExecute = transformed
       ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
       : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
+    } catch (error) {
+      setStatus(`Transaction failed. ${error.toString()}`);
+      return;
+    }
 
     const unsub = txExecute.signAndSend(fromAcct, txResHandler)
     setUnsub(() => unsub);

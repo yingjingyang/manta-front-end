@@ -111,7 +111,7 @@ export default function Main ({ accountPair }) {
             setStatus={setStatus}
             attrs={{
               palletRpc: 'mantaPay',
-              callable: 'mantaTransfer',
+              callable: 'privateTransfer',
               inputParams: [sender1, sender2, receiver1, receiver2, proof],
               paramFields: [true, true, true, true, true]
             }}
