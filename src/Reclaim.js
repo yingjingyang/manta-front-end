@@ -69,17 +69,17 @@ export default function Main ({ accountPair }) {
     <Grid.Column width={10}>
       <Header textAlign='center'>Reclaim Private Asset</Header>
       <Form>
+        <Label basic color='teal'>
+          Upload a reclaim file (512 bytes)
+        </Label>
         <Form.Field inline='true' style={{ textAlign: 'center' }}>
-          <Label basic color='teal'>
-              Upload a reclaim file (512 bytes)
-            </Label>
           <input
             accept='.txt'
             id='file'
             type='file'
             onChange={handleFileUpload}
             ref={fileUploadRef}
-            style={{ marginLeft: 0, marginTop: '.5em', border: '0px'}}
+            style={{ marginLeft: '7em', marginTop: '.5em', border: '0px'}}
           />
           <Message
             error

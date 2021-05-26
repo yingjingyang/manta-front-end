@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Form, Grid, Header, Message, Label, Icon, Dropdown } from 'semantic-ui-react';
+import { Form, Header, Message, Label, Icon, Dropdown, Grid } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
 import PrivateTransfer from './PrivateTransfer'
@@ -46,7 +46,7 @@ export default function Main ({ accountPair }) {
         defaultValue={'Mint'}
         selection
         options={dropdownItems}
-        style={{marginBottom: '2em' }}
+        style={{marginBottom: '4em' }}
       />
       {page}
     </div>

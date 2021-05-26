@@ -22,7 +22,7 @@ export default function Main ({ accountPair }) {
       return '';
     }
     const LINE_LENGTH = 75;
-    let formattedString = '';
+    let formattedString = '\n';
     for (let i = 0; i < base64String.length; i++) {
       formattedString += base64String.slice(i, i + LINE_LENGTH);
       formattedString += '\n';
@@ -38,6 +38,15 @@ export default function Main ({ accountPair }) {
     setReceiver1(base64Encode(transferInfoBytes.slice(193, 304)));
     setReceiver2(base64Encode(transferInfoBytes.slice(305, 416)));
     setProof(base64Encode(transferInfoBytes.slice(317, 608)));
+  };
+
+  const hideTransferInfo = transferInfoBytes => {
+    setTransferInfo(null)
+    setSender1(null)
+    setSender2(null);
+    setReceiver1(null);
+    setReceiver2(null);
+    setProof(null);
   };
 
   const validateFileUpload = fileText => {
@@ -59,7 +68,7 @@ export default function Main ({ accountPair }) {
 
   const handleFileUpload = () => {
     setUploadErrorText('');
-    displayTransferInfo([]);
+    hideTransferInfo();
     const file = fileUploadRef.current.files[0];
     if (!file) {
       return;
@@ -75,20 +84,23 @@ export default function Main ({ accountPair }) {
   };
 
   return (
-    <Grid.Column width={10}>
+    <Grid>
+    <Grid.Column width={2}/>
+    <Grid.Column width={12} textAlign='center'>
       <Header textAlign='center'>Private Transfer</Header>
       <Form>
+        <Label basic color='teal'>
+          Upload a private transfer file (608 bytes)
+        </Label>
         <Form.Field inline='true' style={{ textAlign: 'center' }}>
-          <Label basic color='teal'>
-              Upload a private payment file (608 bytes)
-            </Label>
+
           <input
             accept='.txt'
             id='file'
             type='file'
             onChange={handleFileUpload}
             ref={fileUploadRef}
-            style={{ marginLeft: 0, marginTop: '.5em', border: '0px'}}
+            style={{paddingLeft: '4em', marginTop: '.5em', border: '0px'}}
           />
           <Message
             error
@@ -98,13 +110,17 @@ export default function Main ({ accountPair }) {
             visible={uploadErrorText.length}
           />
         </Form.Field>
-        <Form.Field>
-          <p><b>Sender1:</b> {formatBase64StringForDisplay(sender1)}</p>
-          <p><b>Sender2:</b> {formatBase64StringForDisplay(sender2)}</p>
-          <p><b>Receiver1:</b> {formatBase64StringForDisplay(receiver1)}</p>
-          <p><b>Receiver2:</b> {formatBase64StringForDisplay(receiver2)}</p>
-          <p><b>Proof:</b> {formatBase64StringForDisplay(proof)}</p>
-        </Form.Field>
+        {transferInfo &&
+          <Form.Field style={{maxWidth: '40%', textAlign: 'left', paddingLeft:'10em'}}>
+            <p><b>Sender1:</b>
+            {formatBase64StringForDisplay(sender1)}
+            </p>
+            <p><b>Sender2:</b>{formatBase64StringForDisplay(sender2)}</p>
+            <p><b>Receiver1:</b>{formatBase64StringForDisplay(receiver1)}</p>
+            <p><b>Receiver2:</b>{formatBase64StringForDisplay(receiver2)}</p>
+            <p><b>Proof:</b>{formatBase64StringForDisplay(proof)}</p>
+          </Form.Field>
+        }
         <Form.Field style={{ textAlign: 'center' }}>
           <TxButton
             accountPair={accountPair}
@@ -122,5 +138,7 @@ export default function Main ({ accountPair }) {
         <div style={{ overflowWrap: 'break-word' }}>{status}</div>
       </Form>
     </Grid.Column>
+    <Grid.Column width={2}/>
+    </Grid>
   );
 }
