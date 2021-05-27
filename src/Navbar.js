@@ -7,7 +7,7 @@ import {
   Button,
   Dropdown,
   Container,
-  Icon,
+  Image,
   Sticky,
   Label
 } from 'semantic-ui-react';
@@ -139,7 +139,11 @@ function BalanceAnnotation (props) {
 
   return accountSelected
     ? <Label pointing='left'>
-        <Icon name='money' color='green' />
+        <Image
+        src={process.env.PUBLIC_URL + '/assets/favicon.ico'}
+        wrapped
+        style={{ width: '1.3rem', height: 'auto', marginRight: '0.5rem', marginBottom: '0.18rem' }}
+        />
         {accountBalance}
       </Label>
     : null;
