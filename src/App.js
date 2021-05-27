@@ -45,7 +45,7 @@ function Main () {
     <div ref={contextRef}>
         <Router>
             <Navbar setAccountAddress={setAccountAddress} />
-            <Container textAlign='center' style={{ paddingTop: '3em' }}>
+            <Container style={{ paddingTop: '3em' }}>
             <Grid centered>
             <Routes accountPair={accountPair} />
             </Grid>
