@@ -75,52 +75,55 @@ function TxButton ({
   const sudoTx = async () => {
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
-    // transformed can be empty parameters
-    let txExecute;
     try {
-      txExecute = transformed
+      const txExecute = transformed
         ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
         : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
+      const unsub = txExecute.signAndSend(fromAcct, txResHandler);
+      setUnsub(() => unsub);
     } catch (error) {
       setStatus(`Transaction failed. ${error.toString()}`);
-      return;
     }
-
-    const unsub = txExecute.signAndSend(fromAcct, txResHandler);
-    setUnsub(() => unsub);
   };
 
   const uncheckedSudoTx = async () => {
     const fromAcct = await getFromAcct();
-    const txExecute =
-        api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
-
-    const unsub = txExecute.signAndSend(fromAcct, txResHandler);
-    setUnsub(() => unsub);
+    try {
+      const txExecute =
+      api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
+      const unsub = txExecute.signAndSend(fromAcct, txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      setStatus(`Transaction failed. ${error.toString()}`);
+    }
   };
 
   const signedTx = async () => {
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
-    // transformed can be empty parameters
-
-    const txExecute = transformed
-      ? api.tx[palletRpc][callable](...transformed)
-      : api.tx[palletRpc][callable]();
-
-    const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
-    setUnsub(() => unsub);
+    try {
+      const txExecute = transformed
+        ? api.tx[palletRpc][callable](...transformed)
+        : api.tx[palletRpc][callable]();
+      const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      setStatus(`Transaction failed. ${error.toString()}`);
+    }
   };
 
   const unsignedTx = async () => {
     const transformed = transformParams(paramFields, inputParams);
     // transformed can be empty parameters
-    const txExecute = transformed
-      ? api.tx[palletRpc][callable](...transformed)
-      : api.tx[palletRpc][callable]();
-
-    const unsub = await txExecute.send(txResHandler);
-    setUnsub(() => unsub);
+    try {
+      const txExecute = transformed
+        ? api.tx[palletRpc][callable](...transformed)
+        : api.tx[palletRpc][callable]();
+      const unsub = await txExecute.send(txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      setStatus(`Transaction failed. ${error.toString()}`);
+    }
   };
 
   const queryResHandler = result =>
@@ -128,14 +131,22 @@ function TxButton ({
 
   const query = async () => {
     const transformed = transformParams(paramFields, inputParams);
-    const unsub = await api.query[palletRpc][callable](...transformed, queryResHandler);
-    setUnsub(() => unsub);
+    try {
+      const unsub = await api.query[palletRpc][callable](...transformed, queryResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      setStatus(`Query failed. ${error.toString()}`);
+    }
   };
 
   const rpc = async () => {
     const transformed = transformParams(paramFields, inputParams, { emptyAsNull: false });
-    const unsub = await api.rpc[palletRpc][callable](...transformed, queryResHandler);
-    setUnsub(() => unsub);
+    try {
+      const unsub = await api.rpc[palletRpc][callable](...transformed, queryResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      setStatus(`RPC failed. ${error.toString()}`);
+    }
   };
 
   const constant = () => {
