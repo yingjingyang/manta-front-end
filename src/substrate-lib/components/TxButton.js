@@ -76,16 +76,17 @@ function TxButton ({
     const fromAcct = await getFromAcct();
     const transformed = transformParams(paramFields, inputParams);
     // transformed can be empty parameters
+    let txExecute;
     try {
-    const txExecute = transformed
-      ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
-      : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
+      txExecute = transformed
+        ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
+        : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
     } catch (error) {
       setStatus(`Transaction failed. ${error.toString()}`);
       return;
     }
 
-    const unsub = txExecute.signAndSend(fromAcct, txResHandler)
+    const unsub = txExecute.signAndSend(fromAcct, txResHandler);
     setUnsub(() => unsub);
   };
 
@@ -94,7 +95,7 @@ function TxButton ({
     const txExecute =
         api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
 
-    const unsub = txExecute.signAndSend(fromAcct, txResHandler)
+    const unsub = txExecute.signAndSend(fromAcct, txResHandler);
     setUnsub(() => unsub);
   };
 
@@ -107,7 +108,7 @@ function TxButton ({
       ? api.tx[palletRpc][callable](...transformed)
       : api.tx[palletRpc][callable]();
 
-    const unsub = await txExecute.signAndSend(fromAcct, txResHandler)
+    const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
     setUnsub(() => unsub);
   };
 

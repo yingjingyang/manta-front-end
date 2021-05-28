@@ -1,9 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Form, Grid, Header, Message, Label, Icon } from 'semantic-ui-react';
+import { Form, Grid, Header, Message, Label } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
 import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
-
 
 export default function Main ({ accountPair }) {
   const EXPECTED_PAYLOAD_SIZE_IN_BYTES = 608;
@@ -20,7 +19,7 @@ export default function Main ({ accountPair }) {
   const [uploadErrorText, setUploadErrorText] = useState('');
 
   const displayTransferInfo = transferInfoBytes => {
-    setTransferInfo(transferInfoBytes)
+    setTransferInfo(transferInfoBytes);
     setSender1(base64Encode(transferInfoBytes.slice(0, 96)));
     setSender2(base64Encode(transferInfoBytes.slice(96, 192)));
     setReceiver1(base64Encode(transferInfoBytes.slice(192, 304)));
@@ -29,8 +28,8 @@ export default function Main ({ accountPair }) {
   };
 
   const hideTransferInfo = transferInfoBytes => {
-    setTransferInfo(null)
-    setSender1(null)
+    setTransferInfo(null);
+    setSender1(null);
     setSender2(null);
     setReceiver1(null);
     setReceiver2(null);
@@ -87,7 +86,7 @@ export default function Main ({ accountPair }) {
               type='file'
               onChange={handleFileUpload}
               ref={fileUploadRef}
-              style={{paddingLeft: '9em', paddingTop: '1em', border: '0px'}}
+              style={{ paddingLeft: '9em', paddingTop: '1em', border: '0px' }}
             />
             <Message
               error
@@ -98,7 +97,7 @@ export default function Main ({ accountPair }) {
             />
           </Form.Field>
           {transferInfo &&
-            <Form.Field style={{maxWidth: '40%', textAlign: 'left', paddingLeft:'19em'}}>
+            <Form.Field style={{ maxWidth: '40%', textAlign: 'left', paddingLeft: '19em' }}>
               <p><b>Sender1:</b>{formatBase64StringForDisplay(sender1)}</p>
               <p><b>Sender2:</b>{formatBase64StringForDisplay(sender2)}</p>
               <p><b>Receiver1:</b>{formatBase64StringForDisplay(receiver1)}</p>

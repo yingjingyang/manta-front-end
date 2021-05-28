@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Form, Grid, Header, Message, Label, Icon } from 'semantic-ui-react';
+import { Form, Grid, Header, Message, Label } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
 import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
@@ -27,7 +27,7 @@ export default function Main ({ accountPair }) {
     setSender2(base64Encode(reclaimInfoBytes.slice(112, 208)));
     setReceiver(base64Encode(reclaimInfoBytes.slice(208, 320)));
     setProof(base64Encode(reclaimInfoBytes.slice(320, 512)));
-    setReclaimInfo(reclaimInfoBytes)
+    setReclaimInfo(reclaimInfoBytes);
   };
 
   const hideReclaimInfo = () => {
@@ -73,7 +73,7 @@ export default function Main ({ accountPair }) {
       }
     };
   };
-  console.log('assetID', assetID)
+  console.log('assetID', assetID);
 
   return (
     <>
@@ -91,7 +91,7 @@ export default function Main ({ accountPair }) {
               type='file'
               onChange={handleFileUpload}
               ref={fileUploadRef}
-              style={{ paddingLeft: '9em', paddingTop: '1em', border: '0px'}}
+              style={{ paddingLeft: '9em', paddingTop: '1em', border: '0px' }}
             />
             <Message
               error
@@ -102,8 +102,8 @@ export default function Main ({ accountPair }) {
             />
           </Form.Field>
           {
-            reclaimInfo ?
-              <Form.Field style={{maxWidth: '40%', textAlign: 'left', paddingLeft:'19em'}}>
+            reclaimInfo
+              ? <Form.Field style={{ maxWidth: '40%', textAlign: 'left', paddingLeft: '19em' }}>
                 <p><b>Asset ID:</b>{'\n'}{assetID.toString(10)}</p>
                 <p><b>Reclaim amount:</b>{'\n'}{reclaimAmount.toString(10)}</p>
                 <p><b>Sender1:</b>{formatBase64StringForDisplay(sender1)}</p>
@@ -111,8 +111,7 @@ export default function Main ({ accountPair }) {
                 <p><b>Receiver:</b>{formatBase64StringForDisplay(receiver)}</p>
                 <p><b>Proof:</b>{formatBase64StringForDisplay(proof)}</p>
               </Form.Field>
-              :
-              <div/>
+              : <div/>
           }
           <Form.Field style={{ textAlign: 'center' }}>
             <TxButton

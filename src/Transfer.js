@@ -25,7 +25,7 @@ export default function Main (props) {
             onChange={onChange}
           />
         </Form.Field>
-        <Form.Field style={{ width: '500px',  marginLeft: '2em'}}>
+        <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
           <Input
             fluid
             label='Amount'

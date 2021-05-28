@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Form, Grid, Header, Message, Label, Icon } from 'semantic-ui-react';
+import { Form, Grid, Header, Message, Label } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
-import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
 import BN from 'bn.js';
 
 export default function Main ({ accountPair }) {
@@ -87,7 +86,7 @@ export default function Main ({ accountPair }) {
               type='file'
               onChange={handleFileUpload}
               ref={fileUploadRef}
-              style={{ marginLeft: '8em', paddingTop: '1em', border: '0px'}}
+              style={{ marginLeft: '8em', paddingTop: '1em', border: '0px' }}
             />
             <Message
               error
@@ -98,16 +97,15 @@ export default function Main ({ accountPair }) {
             />
           </Form.Field>
           {
-            mintInfo ?
-              <Form.Field style={{maxWidth:'40%', textAlign: 'left', paddingLeft:'4em'}}>
+            mintInfo
+              ? <Form.Field style={{ maxWidth: '40%', textAlign: 'left', paddingLeft: '4em' }}>
                 <p><b>Asset ID:</b>{'\n'}{assetID.toString(10)}</p>
                 <p><b>Mint amount:</b>{'\n'}{mintAmount.toString(10)}</p>
                 <p><b>cm:</b>{'\n'}{cm}</p>
                 <p><b>k:</b>{'\n'}{k}</p>
                 <p><b>s:</b>{'\n'}{s}</p>
               </Form.Field>
-              :
-              <div/>
+              : <div/>
           }
           <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
