@@ -3,9 +3,16 @@ import { Dropdown } from 'semantic-ui-react';
 import PrivateTransfer from './PrivateTransfer';
 import Mint from './Mint';
 import Reclaim from './Reclaim';
+import InitAsset from './InitAsset';
+import PrivateBalances from './PrivateBalances';
 
 export default function Main ({ accountPair }) {
   const dropdownItems = [
+    {
+      key: 'Init Asset',
+      text: 'Init Asset',
+      value: 'Init Asset'
+    },
     {
       key: 'Mint',
       text: 'Mint',
@@ -20,18 +27,27 @@ export default function Main ({ accountPair }) {
       key: 'Reclaim',
       text: 'Reclaim',
       value: 'Reclaim'
+    },
+    {
+      key: 'Private Balances',
+      text: 'Private Balances',
+      value: 'Private Balances'
     }
   ];
   const [dropdownState, changeDropdownState] = useState(dropdownItems[0].value);
 
   console.log(dropdownState);
   let page = <div/>;
-  if (dropdownState === 'Mint') {
+  if (dropdownState === 'Init Asset') {
+    page = <InitAsset accountPair={accountPair} />;
+  } else if (dropdownState === 'Mint') {
     page = <Mint accountPair={accountPair} />;
   } else if (dropdownState === 'Private transfer') {
     page = <PrivateTransfer accountPair={accountPair} />;
   } else if (dropdownState === 'Reclaim') {
     page = <Reclaim accountPair={accountPair} />;
+  } else if (dropdownState === 'Private Balances') {
+    page = <PrivateBalances accountPair={accountPair} />;
   }
 
   return (
@@ -41,7 +57,7 @@ export default function Main ({ accountPair }) {
           changeDropdownState(value);
           console.log('value', value);
         }}
-        defaultValue={'Mint'}
+        defaultValue={'Init Asset'}
         selection
         options={dropdownItems}
         style={{ marginBottom: '4em' }}

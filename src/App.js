@@ -40,6 +40,7 @@ function Main () {
   }
 
   const contextRef = createRef();
+  // console.log("account pair", accountPair.secretKey);
 
   return (
     <div ref={contextRef}>

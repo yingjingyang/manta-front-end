@@ -11,5 +11,16 @@
         "cipher": "[u8; 16]"
     },
     "PrivateTransferPayload": "[u8; 608]",
-    "ReclaimPayload": "[u8; 512]"
+    "ReclaimPayload": "[u8; 512]",
+    "Shard": {
+        "list": "Vec<[u8; 32]>",
+        "root": "[u8; 32]"
+    },
+    "Shards": {
+        "shard": "[Shard; 256]"
+    },
+    "MantaPrivateAssetLedger": {
+        "shard": "[Shard; 256]"
+    }
+
 }

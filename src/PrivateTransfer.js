@@ -1,74 +1,71 @@
-import React, { useState, useRef } from 'react';
-import { Form, Grid, Header, Message, Label } from 'semantic-ui-react';
+import React, { useState, useEffect } from 'react';
+import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
-import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
-import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
+import { useSubstrate } from './substrate-lib';
 
 export default function Main ({ accountPair }) {
-  const EXPECTED_PAYLOAD_SIZE_IN_BYTES = 608;
-
-  const [transferInfo, setTransferInfo] = useState(null);
-  const [sender1, setSender1] = useState('');
-  const [sender2, setSender2] = useState('');
-  const [receiver1, setReceiver1] = useState('');
-  const [receiver2, setReceiver2] = useState('');
-  const [proof, setProof] = useState('');
+  const { api } = useSubstrate();
+  const [wasm, setWasm] = useState(null);
   const [status, setStatus] = useState(null);
+  const [transferPayload, setTransferPayload] = useState(null);
+  const [transferPK, setTransferPK] = useState(null);
+  const [formState, setFormState] = useState(
+    { address: null, amount: 0, assetID: null });
+  const onChange = (_, data) =>
+    setFormState(prev => ({ ...prev, [data.state]: data.value }));
+  const { address, amount, assetID } = formState;
 
-  const fileUploadRef = useRef();
-  const [uploadErrorText, setUploadErrorText] = useState('');
-
-  const displayTransferInfo = transferInfoBytes => {
-    setTransferInfo(transferInfoBytes);
-    setSender1(base64Encode(transferInfoBytes.slice(0, 96)));
-    setSender2(base64Encode(transferInfoBytes.slice(96, 192)));
-    setReceiver1(base64Encode(transferInfoBytes.slice(192, 304)));
-    setReceiver2(base64Encode(transferInfoBytes.slice(304, 416)));
-    setProof(base64Encode(transferInfoBytes.slice(416, 608)));
-  };
-
-  const hideTransferInfo = transferInfoBytes => {
-    setTransferInfo(null);
-    setSender1(null);
-    setSender2(null);
-    setReceiver1(null);
-    setReceiver2(null);
-    setProof(null);
-  };
-
-  const validateFileUpload = fileText => {
-    try {
-      base64Validate(fileText.trim());
-    } catch (error) {
-      fileUploadRef.current.value = null;
-      setUploadErrorText('File is not valid base64');
-      return false;
-    }
-    const bytes = base64Decode(fileText.trim());
-    if (bytes.length !== EXPECTED_PAYLOAD_SIZE_IN_BYTES) {
-      fileUploadRef.current.value = null;
-      setUploadErrorText(`File is ${bytes.length} bytes, expected 608`);
-      return false;
-    }
-    return true;
-  };
-
-  const handleFileUpload = () => {
-    setUploadErrorText('');
-    hideTransferInfo();
-    const file = fileUploadRef.current.files[0];
-    if (!file) {
-      return;
-    }
-    const reader = new FileReader();
-    reader.readAsText(file);
-    reader.onload = async (readerEvent) => {
-      const text = (readerEvent.target.result);
-      if (validateFileUpload(text)) {
-        displayTransferInfo(base64Decode(text));
+  useEffect(() => {
+    const request = new XMLHttpRequest();
+    request.open('GET', 'transfer_pk.bin', true);
+    request.responseType = 'blob';
+    request.onreadystatechange = async () => {
+      if (request.readyState === 4) {
+        const fileContent = request.response;
+        const fileContentBuffer = await fileContent.arrayBuffer();
+        const transferPK = new Uint8Array(fileContentBuffer);
+        setTransferPK(transferPK);
       }
     };
-  };
+    request.send(null);
+  }, []);
+
+  useEffect(() => {
+    async function loadWasm () {
+      const wasm = await import('manta-api');
+      wasm.init_panic_hook();
+      setWasm(wasm);
+    }
+    loadWasm();
+  }, []);
+
+  useEffect(() => {
+    async function generateTransferPayload() {
+      if (amount && address && assetID && transferPK && wasm) {
+        try {
+          let ledgerState = await api.query.mantaPay.coinShards();
+          //.shard.flatmap(x => Uint8Array(x));
+          ledgerState = ledgerState['shard'];
+          console.log(ledgerState);
+          // .flatmap(shard => Uint8Array(shard['root']))
+          const transferPayload = wasm.generate_private_transfer_payload_for_browser(
+            assetID,
+            amount,
+            new Uint8Array(32).fill(0),
+            transferPK,
+            address,
+            address,
+            ledgerState
+          );
+          console.log('transferPayload', transferPayload);
+          setTransferPayload(transferPayload);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    generateTransferPayload();
+  }, [amount, address, wasm, assetID, transferPK, api]);
 
   return (
     <>
@@ -76,35 +73,33 @@ export default function Main ({ accountPair }) {
       <Grid.Column width={12} textAlign='center'>
         <Header textAlign='center'>Private Transfer</Header>
         <Form>
-          <Label basic color='teal'>
-            Upload a private transfer file (608 bytes)
-          </Label>
-          <Form.Field inline='true' style={{ textAlign: 'center' }}>
-            <input
-              accept='.txt'
-              id='file'
-              type='file'
-              onChange={handleFileUpload}
-              ref={fileUploadRef}
-              style={{ paddingLeft: '9em', paddingTop: '1em', border: '0px' }}
-            />
-            <Message
-              error
-              onDismiss={() => setUploadErrorText('')}
-              header='Upload failed'
-              content={uploadErrorText}
-              visible={uploadErrorText.length}
+          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
+            <Input
+              fluid
+              label='Asset ID'
+              type='number'
+              state='assetID'
+              onChange={onChange}
             />
           </Form.Field>
-          {transferInfo &&
-            <Form.Field style={{ maxWidth: '40%', textAlign: 'left', paddingLeft: '19em' }}>
-              <p><b>Sender1:</b>{formatBase64StringForDisplay(sender1)}</p>
-              <p><b>Sender2:</b>{formatBase64StringForDisplay(sender2)}</p>
-              <p><b>Receiver1:</b>{formatBase64StringForDisplay(receiver1)}</p>
-              <p><b>Receiver2:</b>{formatBase64StringForDisplay(receiver2)}</p>
-              <p><b>Proof:</b>{formatBase64StringForDisplay(proof)}</p>
-            </Form.Field>
-          }
+          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
+            <Input
+              fluid
+              label='Address'
+              type='string'
+              state='address'
+              onChange={onChange}
+            />
+          </Form.Field>
+          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
+            <Input
+              fluid
+              label='Amount'
+              type='number'
+              state='amount'
+              onChange={onChange}
+            />
+          </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
               accountPair={accountPair}
@@ -114,7 +109,7 @@ export default function Main ({ accountPair }) {
               attrs={{
                 palletRpc: 'mantaPay',
                 callable: 'privateTransfer',
-                inputParams: [transferInfo],
+                inputParams: [transferPayload],
                 paramFields: [true]
               }}
             />
