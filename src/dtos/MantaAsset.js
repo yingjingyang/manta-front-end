@@ -8,6 +8,11 @@ export default class MantaAsset {
     this.utxo = bytes.slice(8, 40);
     this.voidNumber = bytes.slice(40, 72);
     this.pubInfo = new MantaAssetPubInfo(bytes.slice(72, 232));
-    this.privIndo = new MantaAssetPrivInfo(bytes.slice(232, 272));
+    this.privInfo = new MantaAssetPrivInfo(bytes.slice(232, 272));
+  }
+
+  static fromStorage (storageObj) {
+    const bytes = Uint8Array(Object.entries(storageObj));
+    return new MantaAsset(bytes);
   }
 }

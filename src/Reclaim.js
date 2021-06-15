@@ -1,12 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
-import { base64Decode, base64Validate, base64Encode } from '@polkadot/util-crypto';
-import { formatBase64StringForDisplay } from './utils/FormatBase64StringForDisplay';
-import BN from 'bn.js';
 
-export default function Main ({ accountPair }) {
-
+export default function Main ({ accountPair, wasm }) {
   const [formState, setFormState] = useState({ address: null, amount: 0 });
   const onChange = (_, data) =>
     setFormState(prev => ({ ...prev, [data.state]: data.value }));

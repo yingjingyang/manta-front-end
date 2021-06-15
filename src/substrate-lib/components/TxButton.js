@@ -74,7 +74,7 @@ function TxButton ({
 
   const sudoTx = async () => {
     const fromAcct = await getFromAcct();
-    const transformed = transformParams(paramFields, inputParams);
+    const transformed = await transformParams(paramFields, inputParams);
     try {
       const txExecute = transformed
         ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
@@ -100,7 +100,7 @@ function TxButton ({
 
   const signedTx = async () => {
     const fromAcct = await getFromAcct();
-    const transformed = transformParams(paramFields, inputParams);
+    const transformed = await transformParams(paramFields, inputParams);
     try {
       const txExecute = transformed
         ? api.tx[palletRpc][callable](...transformed)
@@ -113,7 +113,7 @@ function TxButton ({
   };
 
   const unsignedTx = async () => {
-    const transformed = transformParams(paramFields, inputParams);
+    const transformed = await transformParams(paramFields, inputParams);
     // transformed can be empty parameters
     try {
       const txExecute = transformed
@@ -130,7 +130,7 @@ function TxButton ({
     result.isNone ? setStatus('None') : setStatus(result.toString());
 
   const query = async () => {
-    const transformed = transformParams(paramFields, inputParams);
+    const transformed = await transformParams(paramFields, inputParams);
     try {
       const unsub = await api.query[palletRpc][callable](...transformed, queryResHandler);
       setUnsub(() => unsub);
@@ -140,7 +140,7 @@ function TxButton ({
   };
 
   const rpc = async () => {
-    const transformed = transformParams(paramFields, inputParams, { emptyAsNull: false });
+    const transformed = await transformParams(paramFields, inputParams, { emptyAsNull: false });
     try {
       const unsub = await api.rpc[palletRpc][callable](...transformed, queryResHandler);
       setUnsub(() => unsub);
@@ -171,7 +171,14 @@ function TxButton ({
     (isConstant() && constant());
   };
 
-  const transformParams = (paramFields, inputParams, opts = { emptyAsNull: true }) => {
+  const transformParams = async (paramFields, inputParams, opts = { emptyAsNull: true }) => {
+    if (typeof inputParams === 'function') {
+      setStatus('Generating payload...');
+      inputParams = [await inputParams()];
+      console.log('Generated payload');
+      console.log(inputParams);
+    }
+
     // if `opts.emptyAsNull` is true, empty param value will be added to res as `null`.
     //   Otherwise, it will not be added
     const paramVal = inputParams.map(inputParam => {
@@ -212,6 +219,7 @@ function TxButton ({
     utils.paramConversion.num.some(el => type.indexOf(el) >= 0);
 
   const allParamsFilled = () => {
+    if (typeof inputParams === 'function') { return true; }
     if (paramFields.length === 0) { return true; }
 
     return paramFields.every((paramField, ind) => {

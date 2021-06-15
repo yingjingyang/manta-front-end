@@ -1,4 +1,4 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, createRef, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Container, Dimmer, Loader, Grid, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
@@ -11,11 +11,21 @@ import Routes from './Routes';
 
 function Main () {
   const [accountAddress, setAccountAddress] = useState(null);
+  const [wasm, setWasm] = useState(null);
   const { apiState, keyring, keyringState, apiError } = useSubstrate();
   const accountPair =
     accountAddress &&
     keyringState === 'READY' &&
     keyring.getPair(accountAddress);
+
+  useEffect(() => {
+    async function loadWasm () {
+      const wasm = await import('manta-api');
+      wasm.init_panic_hook();
+      setWasm(wasm);
+    }
+    loadWasm();
+  }, []);
 
   const loader = text =>
     <Dimmer active>
@@ -48,7 +58,7 @@ function Main () {
             <Navbar setAccountAddress={setAccountAddress} />
             <Container style={{ paddingTop: '3em' }}>
             <Grid centered>
-            <Routes accountPair={accountPair} />
+            <Routes accountPair={accountPair} wasm={wasm} />
             </Grid>
             </Container>
             <DeveloperConsole />

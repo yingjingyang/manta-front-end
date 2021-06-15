@@ -10570,8 +10570,8 @@ fsevents@^1.2.7:
 
 "manta-api@file:./src/pkg::locator=manta-front-end%40workspace%3A.":
   version: 0.1.0
-  resolution: "manta-api@file:./src/pkg#./src/pkg::hash=720e26&locator=manta-front-end%40workspace%3A."
-  checksum: fb02377dcb244435cf0a90da3807c6fb00d2ad236a5bee020008379525310c0aeb924aa344de72541d2d14ae00978726ac88a8454e116f8a7568dd625e20c8d3
+  resolution: "manta-api@file:./src/pkg#./src/pkg::hash=d5a489&locator=manta-front-end%40workspace%3A."
+  checksum: 9549200b9bd4f9ccde7cdd3822ddf8a5b23081a8787f3603955c3a904fc55b2742b0b8a9a94c3174e862d867477f66262ecb3bb8f6f26bbfbaf77e2311e99ef6
   languageName: node
   linkType: hard
 
@@ -10609,6 +10609,7 @@ fsevents@^1.2.7:
     semantic-ui-css: ^2.4.1
     semantic-ui-react: ^2.0.3
     semistandard: ^16.0.0
+    store: ^2.0.12
     wasm-loader: ^1.3.0
     worker-loader: ^3.0.8
   languageName: unknown
