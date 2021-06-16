@@ -41,13 +41,13 @@ export default function Main ({ accountPair }) {
                 setStatus={setStatus}
                 attrs={{
                   palletRpc: 'mantaPay',
-                  callable: 'mintPrivateAsset',
+                  callable: 'initAsset',
                   inputParams: [assetID, mintAmount],
                   paramFields: [true, true]
                 }}
               />
           </Form.Field>
-          <div style={{ overflowWrap: 'break-word' }}>{status}</div>
+          <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
         </Form>
       </Grid.Column>
       <Grid.Column width={2}/>

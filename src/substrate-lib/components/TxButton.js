@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { web3FromSource } from '@polkadot/extension-dapp';
+import TxStatus from '../../TxStatus'
 
 import { useSubstrate } from '../';
 import utils from '../utils';
@@ -21,7 +22,7 @@ function TxButton ({
   const [unsub, setUnsub] = useState(null);
   const [sudoKey, setSudoKey] = useState(null);
 
-  const { palletRpc, callable, inputParams, paramFields } = attrs;
+  const { palletRpc, callable, inputParams, paramFields, onSuccess, onFailure } = attrs;
 
   const isQuery = () => type === 'QUERY';
   const isSudo = () => type === 'SUDO-TX';
@@ -62,13 +63,16 @@ function TxButton ({
 
   const txResHandler = ({ status, events, dispatchError }) => {
     if (dispatchError && status.isFinalized) {
-      setStatus(`Transaction failed. Block hash: ${status.asFinalized.toString()}`);
+      setStatus(TxStatus.failed(status.asFinalized.toString()));
+      onFailure && onFailure();
     } else if (dispatchError && status.isInBlock) {
-      setStatus(`Transaction failed. Block hash: ${status.asInBlock.toString()}`);
+      setStatus(TxStatus.failed(status.asInBlock.toString()));
+      onFailure && onFailure();
+    } else if (status.isFinalized) {
+      setStatus(TxStatus.finalized(status.asFinalized.toString()))
+      onSuccess && onSuccess();
     } else {
-      status.isFinalized
-        ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
-        : setStatus(`Current transaction status: ${status.type}`);
+      setStatus(TxStatus.processing(null, status.type));
     }
   };
 
@@ -82,7 +86,8 @@ function TxButton ({
       const unsub = txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`Transaction failed. ${error.toString()}`);
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
   };
 
@@ -94,13 +99,15 @@ function TxButton ({
       const unsub = txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`Transaction failed. ${error.toString()}`);
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
   };
 
   const signedTx = async () => {
     const fromAcct = await getFromAcct();
     const transformed = await transformParams(paramFields, inputParams);
+    
     try {
       const txExecute = transformed
         ? api.tx[palletRpc][callable](...transformed)
@@ -108,7 +115,9 @@ function TxButton ({
       const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`Transaction failed. ${error.toString()}`);
+      console.log('why fail', error.toString()) 
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
   };
 
@@ -122,7 +131,8 @@ function TxButton ({
       const unsub = await txExecute.send(txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`Transaction failed. ${error.toString()}`);
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
   };
 
@@ -135,7 +145,8 @@ function TxButton ({
       const unsub = await api.query[palletRpc][callable](...transformed, queryResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`Query failed. ${error.toString()}`);
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
   };
 
@@ -145,13 +156,9 @@ function TxButton ({
       const unsub = await api.rpc[palletRpc][callable](...transformed, queryResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      setStatus(`RPC failed. ${error.toString()}`);
+      setStatus(TxStatus.failed(null, error.toString()));
+      onFailure && onFailure()
     }
-  };
-
-  const constant = () => {
-    const result = api.consts[palletRpc][callable];
-    result.isNone ? setStatus('None') : setStatus(result.toString());
   };
 
   const transaction = async () => {
@@ -160,7 +167,7 @@ function TxButton ({
       setUnsub(null);
     }
 
-    setStatus('Sending...');
+    setStatus(TxStatus.processing(null, 'Sending...'));
 
     (isSudo() && sudoTx()) ||
     (isUncheckedSudo() && uncheckedSudoTx()) ||
@@ -173,10 +180,8 @@ function TxButton ({
 
   const transformParams = async (paramFields, inputParams, opts = { emptyAsNull: true }) => {
     if (typeof inputParams === 'function') {
-      setStatus('Generating payload...');
+      setStatus(TxStatus.processing(null, 'Sending...'));
       inputParams = [await inputParams()];
-      console.log('Generated payload');
-      console.log(inputParams);
     }
 
     // if `opts.emptyAsNull` is true, empty param value will be added to res as `null`.
@@ -252,7 +257,6 @@ function TxButton ({
   );
 }
 
-// prop type checking
 TxButton.propTypes = {
   accountPair: PropTypes.object,
   setStatus: PropTypes.func.isRequired,
@@ -262,8 +266,10 @@ TxButton.propTypes = {
   attrs: PropTypes.shape({
     palletRpc: PropTypes.string,
     callable: PropTypes.string,
-    inputParams: PropTypes.array,
-    paramFields: PropTypes.array
+    inputParams: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
+    paramFields: PropTypes.array,
+    onSuccess: PropTypes.func,
+    onFailure: PropTypes.func
   }).isRequired
 };
 

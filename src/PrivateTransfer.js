@@ -7,19 +7,23 @@ import { base64Decode } from '@polkadot/util-crypto';
 import MantaAsset from './dtos/MantaAsset';
 
 export default function Main ({ accountPair, wasm }) {
+  // todo: can't mint twice in a row / standardize form 'freezing'
+  // todo:  // todo: constant for storage
+  // todo: debug strange void number behavior
   // todo: generate new private keys and save in local storage / remove hardcoded keys
   // todo: remove secret keys from Manta asset type / use manta asset type everywhere
-  // todo: make amount configurable / coin selection / change
   // todo: get rid of spent utxos
-  // todo: consistnet naming of assets / utxos
-  // todo: handle statuses as constants
+  // todo: make amount configurable / coin selection / change (HARD)
 
   const { api } = useSubstrate();
   const [status, setStatus] = useState(null);
-  const [utxoPool, setUtxoPool] = useState([]);
+  const [assetPool, setAssetPool] = useState([]);
   const [transferPK, setTransferPK] = useState(null);
   const [formState, setFormState] = useState(
-    { address1: null, address2: null, amount: 0, assetId: null });
+    { address1: '', 
+      address2: '', 
+      amount: 0, 
+      assetId: null });
   const onChange = (_, data) =>
     setFormState(prev => ({ ...prev, [data.state]: data.value }));
   const { address1, address2, amount, assetId } = formState;
@@ -41,10 +45,11 @@ export default function Main ({ accountPair, wasm }) {
 
   useEffect(() => {
     const assetsStorage = store.get('manta_utxos') || []; // todo: constant for storage
-    const assets = assetsStorage.map(utxo => {
-      return new Uint8Array(Object.values(utxo));
+    console.log(assetsStorage)
+    const assets = assetsStorage.map(asset => {
+      return new Uint8Array(Object.values(asset));
     });
-    setUtxoPool(assets);
+    setassetPool(assets);
   }, []);
 
   const generateTransferPayload = async () => {
@@ -55,16 +60,16 @@ export default function Main ({ accountPair, wasm }) {
       return shards.shard[shardIndex].list;
     };
     try {
-      const selectedUtxo1 = utxoPool[0];
-      const selectedUtxo2 = utxoPool[1];
-      let ledgerState1 = await getLedgerState(selectedUtxo1);
-      let ledgerState2 = await getLedgerState(selectedUtxo2);
+      const selectedAsset1 = assetPool[0];
+      const selectedAsset2 = assetPool[1];
+      let ledgerState1 = await getLedgerState(selectedAsset1);
+      let ledgerState2 = await getLedgerState(selectedAsset2);
       // flatten (wasm only accepts flat arrays)
       ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
       ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
       return wasm.generate_private_transfer_payload_for_browser(
-        selectedUtxo1,
-        selectedUtxo2,
+        selectedAsset1,
+        selectedAsset2,
         ledgerState1,
         ledgerState2,
         transferPK,
@@ -99,6 +104,7 @@ export default function Main ({ accountPair, wasm }) {
               type='string'
               state='address1'
               onChange={onChange}
+              value={'AQAAAAAAAAAJy/f40VkqJB3oAkaWQuTHY6+ZUYU3obSc8Ukgjh/UazXERJtLA/s70crzd6HNBZmIZdd63d7LFkJQcb4FgXQI0XgBihbzlG9aau2s1nO216m7N8vRMh6S7QdWhv+sTARp5QTDsmJ3w/iUeoKurPoz0Y9Gf+94tAGzswzefvB8Sw=='}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -108,6 +114,7 @@ export default function Main ({ accountPair, wasm }) {
               type='string'
               state='address2'
               onChange={onChange}
+              value={'AQAAAAAAAACuWdBEJUh3RKmXOjdmRMpFrWK0Krw5q4SIdpj8/r3JjIhtGSmH5mv2pkHbLm3MJdJghZPcYR2jf3wUkuwVVKIDHYb5/3k51FUKzQrIcW9bxcmnYxm2x/3sFH64Ivp/SgEwPkeLk7C3vBAwi9267NPv9W1AIxrgTgQacQgaij6VWg=='}
             />
           </Form.Field>
           {/* <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -133,7 +140,7 @@ export default function Main ({ accountPair, wasm }) {
               }}
             />
           </Form.Field>
-          <div style={{ overflowWrap: 'break-word' }}>{status}</div>
+          <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
         </Form>
       </Grid.Column>
       <Grid.Column width={2}/>

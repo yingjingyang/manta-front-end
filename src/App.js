@@ -8,8 +8,10 @@ import { DeveloperConsole } from './substrate-lib/components';
 
 import Navbar from './Navbar';
 import Routes from './Routes';
+import store from 'store';
 
 function Main () {
+  // store.set('manta_utxos', [])
   const [accountAddress, setAccountAddress] = useState(null);
   const [wasm, setWasm] = useState(null);
   const { apiState, keyring, keyringState, apiError } = useSubstrate();
@@ -21,7 +23,6 @@ function Main () {
   useEffect(() => {
     async function loadWasm () {
       const wasm = await import('manta-api');
-      wasm.init_panic_hook();
       setWasm(wasm);
     }
     loadWasm();
@@ -46,6 +47,7 @@ function Main () {
   else if (apiState !== 'READY') return loader('Connecting to Substrate');
 
   if (keyringState !== 'READY') {
+    console.log(keyringState)
     return loader('Loading accounts (please review any extension\'s authorization)');
   }
 
