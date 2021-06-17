@@ -4,6 +4,7 @@ import MantaAssetPrivInfo from './MantaAssetPrivInfo';
 
 export default class MantaAsset {
   constructor (bytes) {
+    console.log(bytes)
     this.assetId = new BN(bytes.slice(0, 8), 10, 'le');
     this.utxo = bytes.slice(8, 40);
     this.voidNumber = bytes.slice(40, 72);

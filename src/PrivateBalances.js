@@ -4,15 +4,16 @@ import MantaAsset from './dtos/MantaAsset';
 import BN from 'bn.js';
 import { loadSpendableAssets } from './utils/Persistence';
 
+
 export default function Main () {
-  const balanceByAssetId = {};
+  const balanceByAssetId = {}
   loadSpendableAssets()
     .map(asset => new MantaAsset(new Uint8Array(Object.values(asset))))
     .forEach(asset => {
-      const currentValue = balanceByAssetId[asset.assetId]
+      const currentValue = balanceByAssetId[asset.assetId] 
         ? balanceByAssetId[asset.assetId]
         : new BN(0);
-      balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value);
+      balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value)
     });
 
   return (
