@@ -1,43 +1,37 @@
 import React, { useState, useRef } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
-import { base64Encode } from '@polkadot/util-crypto';
 import BN from 'bn.js';
-import store from 'store';
-import { useCompare } from './utils/UseCompare';
-import MantaAsset from './dtos/MantaAsset';
+import { loadSpendableAssets, persistSpendableAssets } from './utils/Persistence';
 
 export default function Main ({ accountPair, wasm }) {
   const [status, setStatus] = useState(null);
-  const [formState, setFormState] = useState({ assetId: null, mintAmount: 0 });
+  const [formState, setFormState] = useState({ assetId: null, mintAmount: new BN(1) });
   const onChange = (_, data) => {
     setFormState(prev => ({ ...prev, [data.state]: data.value }));
   };
   const { assetId, mintAmount } = formState;
   let mintAsset = useRef(null);
 
-
   const generateMintPayload = () => {
     mintAsset = wasm.generate_asset_for_browser(new Uint8Array(32).fill(0), assetId, mintAmount);
     const mintInfo = wasm.generate_mint_payload_for_browser(mintAsset);
-    return mintInfo
-  }
+    return mintInfo;
+  };
 
   const onMintSuccess = () => {
-    const assets = store.get('manta_utxos') || [];
-    assets.push(mintAsset);
-    store.set('manta_utxos', assets);
-    console.log(store.get('manta_utxos'));
-    
+    const spendableAssets = loadSpendableAssets();
+    spendableAssets.push(mintAsset);
+    persistSpendableAssets(spendableAssets);
     mintAsset = null;
-  }
+  };
 
   const onMintFailure = () => {
     mintAsset = null;
-  }
+  };
 
-  const buttonDisabled = status && status.isProcessing() || !assetId || !mintAmount
-  const formDisabled = status && status.isProcessing()
+  const buttonDisabled = (status && status.isProcessing()) || !assetId || !mintAmount;
+  const formDisabled = status && status.isProcessing();
 
   return (
     <>
@@ -61,8 +55,8 @@ export default function Main ({ accountPair, wasm }) {
               label='Amount'
               type='number'
               state='mintAmount'
-              onChange={onChange}
-              disabled={formDisabled}
+              value={1}
+              disabled={true}
             />
           </Form.Field>
             <Form.Field style={{ textAlign: 'center' }}>

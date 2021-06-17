@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { useSubstrate } from './substrate-lib';
-import store from 'store';
 import MantaAsset from './dtos/MantaAsset';
 import { base64Decode } from '@polkadot/util-crypto';
-
-
+import { loadSpendableAssets, loadSpendableAssetsById, persistSpendableAssets } from './utils/Persistence';
+import _ from 'lodash';
 
 export default function Main ({ accountPair, wasm }) {
   const { api } = useSubstrate();
   const [status, setStatus] = useState(null);
-  const [assetPool, setAssetPool] = useState([]);
   const [reclaimPK, setReclaimPK] = useState(null);
-  const [formState, setFormState] = useState({ assetId: 0, address: '', amount: 0 });
+  const [formState, setFormState] = useState({ assetId: 0, address: '', amount: 1 });
   const onChange = (_, data) =>
     setFormState(prev => ({ ...prev, [data.state]: data.value }));
   const { assetId, address, amount } = formState;
-  
+
+  let selectedAsset1 = useRef(null);
+  let selectedAsset2 = useRef(null);
+
   useEffect(() => {
     const request = new XMLHttpRequest();
     request.open('GET', 'reclaim_pk.bin', true);
@@ -33,48 +34,50 @@ export default function Main ({ accountPair, wasm }) {
     request.send(null);
   }, []);
 
-  useEffect(() => {
-    const assetsStorage = store.get('manta_utxos') || []; // todo: constant for storage
-    console.log(assetsStorage)
-    const assets = assetsStorage.map(asset => {
-      return new Uint8Array(Object.values(asset));
-    });
-    setAssetPool(assets);
-  }, []);
+  const getLedgerState = async asset => {
+    const shardIndex = new MantaAsset(asset).utxo[0];
+    const shards = await api.query.mantaPay.coinShards();
+    return shards.shard[shardIndex].list;
+  };
 
   const generateReclaimPayload = async () => {
-    const getLedgerState = async asset => {
-      console.log(asset);
-      const shardIndex = new MantaAsset(asset).utxo[0];
-      const shards = await api.query.mantaPay.coinShards();
-      return shards.shard[shardIndex].list;
-    };
-    try {
-      const selectedAsset1 = assetPool[0];
-      const selectedAsset2 = assetPool[1];
-      let ledgerState1 = await getLedgerState(selectedAsset1);
-      let ledgerState2 = await getLedgerState(selectedAsset2);
-      // flatten (wasm only accepts flat arrays)
-      ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
-      ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
-      // console.log("##########")
-      // console.log(selectedAsset1)
-      // console.log(ledgerState1)
-      // console.log(ledgerState2)
-      return wasm.generate_reclaim_payload_for_browser(
-        selectedAsset1,
-        selectedAsset2,
-        ledgerState1,
-        ledgerState2,
-        amount,
-        reclaimPK,
-        base64Decode(address.split(' ').join().split('\n').join())
-      );
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    const spendableAssets = loadSpendableAssetsById(assetId);
+    const selectedAsset1 = spendableAssets[0];
+    const selectedAsset2 = spendableAssets[1];
+    let ledgerState1 = await getLedgerState(selectedAsset1);
+    let ledgerState2 = await getLedgerState(selectedAsset2);
+    // flatten (wasm only accepts flat arrays)
+    ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
+    ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
+    return wasm.generate_reclaim_payload_for_browser(
+      selectedAsset1,
+      selectedAsset2,
+      ledgerState1,
+      ledgerState2,
+      amount,
+      reclaimPK,
+      base64Decode(address.trim())
+    );
   };
+
+  const onReclaimSuccess = () => {
+    const spendableAssets = loadSpendableAssets()
+      .filter(asset => !_.isEqual(asset, selectedAsset1) && !_.isEqual(asset, selectedAsset2));
+    persistSpendableAssets(spendableAssets);
+    selectedAsset1 = null;
+    selectedAsset2 = null;
+  };
+
+  const onReclaimFailure = () => {
+    selectedAsset1 = null;
+    selectedAsset2 = null;
+  };
+
+  const formDisabled = status && status.isProcessing();
+
+  const buttonDisabled = (
+    (status && status.isProcessing()) || !assetId || !address || !amount
+  );
 
   return (
     <>
@@ -85,6 +88,7 @@ export default function Main ({ accountPair, wasm }) {
         <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
           <Input
               fluid
+              disabled={formDisabled}
               label='Asset Id'
               type='number'
               state='assetId'
@@ -94,19 +98,21 @@ export default function Main ({ accountPair, wasm }) {
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              label='Amount'
-              type='number'
-              state='amount'
+              disabled={formDisabled}
+              label='Address'
+              type='string'
+              state='address'
               onChange={onChange}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              label='Address'
-              type='string'
-              state='address'
-              onChange={onChange}
+              disabled={true}
+              label='Amount'
+              type='number'
+              state='amount'
+              value={1}
             />
           </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
@@ -115,11 +121,14 @@ export default function Main ({ accountPair, wasm }) {
               label='Submit'
               type='SIGNED-TX'
               setStatus={setStatus}
+              disabled={buttonDisabled}
               attrs={{
                 palletRpc: 'mantaPay',
                 callable: 'reclaim',
                 inputParams: generateReclaimPayload,
-                paramFields: [true]
+                paramFields: [true],
+                onSuccess: onReclaimSuccess,
+                onFailure: onReclaimFailure
               }}
             />
           </Form.Field>

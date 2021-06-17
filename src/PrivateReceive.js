@@ -11,7 +11,6 @@ export default function Main ({ accountPair, wasm }) {
   const [address, setAddress] = useState('');
 
   const showAddress = () => {
-    console.log(assetId);
     const addressRaw = wasm.generate_shielded_address_for_browser(new Uint8Array(32).fill(0), assetId);
     const addressEncoded = base64Encode(addressRaw);
     setAddress(addressEncoded);

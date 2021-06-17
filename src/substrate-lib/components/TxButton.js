@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import TxStatus from '../../TxStatus'
+import TxStatus from '../../utils/TxStatus';
 
 import { useSubstrate } from '../';
 import utils from '../utils';
@@ -30,7 +30,6 @@ function TxButton ({
   const isUnsigned = () => type === 'UNSIGNED-TX';
   const isSigned = () => type === 'SIGNED-TX';
   const isRpc = () => type === 'RPC';
-  const isConstant = () => type === 'CONSTANT';
 
   const loadSudoKey = () => {
     (async function () {
@@ -69,7 +68,7 @@ function TxButton ({
       setStatus(TxStatus.failed(status.asInBlock.toString()));
       onFailure && onFailure();
     } else if (status.isFinalized) {
-      setStatus(TxStatus.finalized(status.asFinalized.toString()))
+      setStatus(TxStatus.finalized(status.asFinalized.toString()));
       onSuccess && onSuccess();
     } else {
       setStatus(TxStatus.processing(null, status.type));
@@ -87,7 +86,7 @@ function TxButton ({
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
@@ -100,14 +99,14 @@ function TxButton ({
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
   const signedTx = async () => {
     const fromAcct = await getFromAcct();
     const transformed = await transformParams(paramFields, inputParams);
-    
+
     try {
       const txExecute = transformed
         ? api.tx[palletRpc][callable](...transformed)
@@ -115,9 +114,8 @@ function TxButton ({
       const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
-      console.log('why fail', error.toString()) 
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
@@ -132,7 +130,7 @@ function TxButton ({
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
@@ -146,7 +144,7 @@ function TxButton ({
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
@@ -157,7 +155,7 @@ function TxButton ({
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
-      onFailure && onFailure()
+      onFailure && onFailure();
     }
   };
 
@@ -174,13 +172,12 @@ function TxButton ({
     (isSigned() && signedTx()) ||
     (isUnsigned() && unsignedTx()) ||
     (isQuery() && query()) ||
-    (isRpc() && rpc()) ||
-    (isConstant() && constant());
+    (isRpc() && rpc());
   };
 
   const transformParams = async (paramFields, inputParams, opts = { emptyAsNull: true }) => {
     if (typeof inputParams === 'function') {
-      setStatus(TxStatus.processing(null, 'Sending...'));
+      setStatus(TxStatus.processing(null, 'Generating payload...'));
       inputParams = [await inputParams()];
     }
 

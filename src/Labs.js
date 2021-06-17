@@ -5,7 +5,7 @@ import Mint from './Mint';
 import Reclaim from './Reclaim';
 import InitAsset from './InitAsset';
 import PrivateBalances from './PrivateBalances';
-import Receive from './Receive';
+import Receive from './PrivateReceive';
 
 export default function Main ({ accountPair, wasm }) {
   const dropdownItems = [
@@ -33,16 +33,15 @@ export default function Main ({ accountPair, wasm }) {
       key: 'Receive',
       text: 'Receive',
       value: 'Receive'
+    },
+    {
+      key: 'Private Balances',
+      text: 'Private Balances',
+      value: 'Private Balances'
     }
-    // {
-    //   key: 'Private Balances',
-    //   text: 'Private Balances',
-    //   value: 'Private Balances'
-    // }
   ];
   const [dropdownState, changeDropdownState] = useState(dropdownItems[0].value);
 
-  console.log(dropdownState);
   let page = <div/>;
   if (dropdownState === 'Init Asset') {
     page = <InitAsset accountPair={accountPair} />;
@@ -63,7 +62,6 @@ export default function Main ({ accountPair, wasm }) {
       <Dropdown
         onChange={(e, { value }) => {
           changeDropdownState(value);
-          console.log('value', value);
         }}
         defaultValue={'Init Asset'}
         selection

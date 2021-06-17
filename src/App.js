@@ -11,10 +11,28 @@ import Routes from './Routes';
 import store from 'store';
 
 function Main () {
-  // store.set('manta_utxos', [])
+
   const [accountAddress, setAccountAddress] = useState(null);
   const [wasm, setWasm] = useState(null);
-  const { apiState, keyring, keyringState, apiError } = useSubstrate();
+  const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
+  
+  // Reset utxo cache if using fresh dev node
+  useEffect(() => {
+    const clearUtxoCache = async () => {
+      if (!api) {
+        return;
+      }
+      const oldBlockNumber = store.get('block num') || 0;
+      const currentBlock = await api.rpc.chain.getBlock();
+      const currentBlockNumber = currentBlock.block.header.number.toNumber()
+      store.set("block num", currentBlockNumber)
+      if (currentBlockNumber < oldBlockNumber) {
+        store.set('manta_spendable_assets', [])
+      }
+      clearUtxoCache()
+    }
+  }, [api])
+
   const accountPair =
     accountAddress &&
     keyringState === 'READY' &&
@@ -47,12 +65,10 @@ function Main () {
   else if (apiState !== 'READY') return loader('Connecting to Substrate');
 
   if (keyringState !== 'READY') {
-    console.log(keyringState)
     return loader('Loading accounts (please review any extension\'s authorization)');
   }
 
   const contextRef = createRef();
-  // console.log("account pair", accountPair.secretKey);
 
   return (
     <div ref={contextRef}>

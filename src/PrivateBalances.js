@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Grid, Header } from 'semantic-ui-react';
-import { useSubstrate } from './substrate-lib';
+import MantaAsset from './dtos/MantaAsset';
+import BN from 'bn.js';
+import { loadSpendableAssets } from './utils/Persistence';
 
-export default function Main ({ accountPair }) {
-  const { api } = useSubstrate();
-  const [balanceByAssetId, setBalanceByAssetId] = useState({});
-
-  useEffect(() => {
-    function getPrivateBalances () {
-      return 'todo';
-    }
-    getPrivateBalances();
-  }, []);
+export default function Main () {
+  const balanceByAssetId = {};
+  loadSpendableAssets()
+    .map(asset => new MantaAsset(new Uint8Array(Object.values(asset))))
+    .forEach(asset => {
+      const currentValue = balanceByAssetId[asset.assetId]
+        ? balanceByAssetId[asset.assetId]
+        : new BN(0);
+      balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value);
+    });
 
   return (
     <>
