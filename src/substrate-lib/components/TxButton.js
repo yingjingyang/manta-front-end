@@ -22,7 +22,7 @@ function TxButton ({
   const [unsub, setUnsub] = useState(null);
   const [sudoKey, setSudoKey] = useState(null);
 
-  const { palletRpc, callable, inputParams, paramFields, onSuccess, onFailure } = attrs;
+  const { palletRpc, callable, payloads, onSuccess, onFailure } = attrs;
 
   const isQuery = () => type === 'QUERY';
   const isSudo = () => type === 'SUDO-TX';
@@ -75,12 +75,11 @@ function TxButton ({
     }
   };
 
-  const sudoTx = async () => {
+  const sudoTx = async payload => {
     const fromAcct = await getFromAcct();
-    const transformed = await transformParams(paramFields, inputParams);
     try {
-      const txExecute = transformed
-        ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...transformed))
+      const txExecute = payload
+        ? api.tx.sudo.sudo(api.tx[palletRpc][callable](...payload))
         : api.tx.sudo.sudo(api.tx[palletRpc][callable]());
       const unsub = txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
@@ -90,11 +89,11 @@ function TxButton ({
     }
   };
 
-  const uncheckedSudoTx = async () => {
+  const uncheckedSudoTx = async payload => {
     const fromAcct = await getFromAcct();
     try {
       const txExecute =
-      api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
+      api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...payload), 0);
       const unsub = txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
     } catch (error) {
@@ -103,13 +102,11 @@ function TxButton ({
     }
   };
 
-  const signedTx = async () => {
+  const signedTx = async payload => {
     const fromAcct = await getFromAcct();
-    const transformed = await transformParams(paramFields, inputParams);
-
     try {
-      const txExecute = transformed
-        ? api.tx[palletRpc][callable](...transformed)
+      const txExecute = payload
+        ? api.tx[palletRpc][callable](...payload)
         : api.tx[palletRpc][callable]();
       const unsub = await txExecute.signAndSend(fromAcct, txResHandler);
       setUnsub(() => unsub);
@@ -119,12 +116,10 @@ function TxButton ({
     }
   };
 
-  const unsignedTx = async () => {
-    const transformed = await transformParams(paramFields, inputParams);
-    // transformed can be empty parameters
+  const unsignedTx = async payload => {
     try {
-      const txExecute = transformed
-        ? api.tx[palletRpc][callable](...transformed)
+      const txExecute = payload
+        ? api.tx[palletRpc][callable](...payload)
         : api.tx[palletRpc][callable]();
       const unsub = await txExecute.send(txResHandler);
       setUnsub(() => unsub);
@@ -137,10 +132,9 @@ function TxButton ({
   const queryResHandler = result =>
     result.isNone ? setStatus('None') : setStatus(result.toString());
 
-  const query = async () => {
-    const transformed = await transformParams(paramFields, inputParams);
+  const query = async payload => {
     try {
-      const unsub = await api.query[palletRpc][callable](...transformed, queryResHandler);
+      const unsub = await api.query[palletRpc][callable](...payload, queryResHandler);
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
@@ -148,10 +142,9 @@ function TxButton ({
     }
   };
 
-  const rpc = async () => {
-    const transformed = await transformParams(paramFields, inputParams, { emptyAsNull: false });
+  const rpc = async payload => {
     try {
-      const unsub = await api.rpc[palletRpc][callable](...transformed, queryResHandler);
+      const unsub = await api.rpc[palletRpc][callable](...payload, queryResHandler);
       setUnsub(() => unsub);
     } catch (error) {
       setStatus(TxStatus.failed(null, error.toString()));
@@ -160,30 +153,38 @@ function TxButton ({
   };
 
   const transaction = async () => {
+    console.log('ello world')
     if (unsub) {
       unsub();
       setUnsub(null);
     }
-
-    setStatus(TxStatus.processing(null, 'Sending...'));
-
-    (isSudo() && sudoTx()) ||
-    (isUncheckedSudo() && uncheckedSudoTx()) ||
-    (isSigned() && signedTx()) ||
-    (isUnsigned() && unsignedTx()) ||
-    (isQuery() && query()) ||
-    (isRpc() && rpc());
+    console.log('ello world 1')
+    const payloadsPromises = payloads.map(payload => generatePayload(payload))
+    console.log(payloadsPromises, 'payloadsPromises')
+    for await (let payload of payloadsPromises) {
+        console.log('ello world 2')
+        console.log(payload)
+        setStatus(TxStatus.processing(null, 'Sending...'));
+        (isSudo() && sudoTx(payload)) ||
+        (isUncheckedSudo() && uncheckedSudoTx(payload)) ||
+        (isSigned() && signedTx(payload)) ||
+        (isUnsigned() && unsignedTx(payload)) ||
+        (isQuery() && query(payload)) ||
+        (isRpc() && rpc(payload));
+    }
   };
 
-  const transformParams = async (paramFields, inputParams, opts = { emptyAsNull: true }) => {
-    if (typeof inputParams === 'function') {
-      setStatus(TxStatus.processing(null, 'Generating payload...'));
-      inputParams = [await inputParams()];
-    }
+  const generatePayload = async (payload, opts = { emptyAsNull: true }) => {
+    setStatus(TxStatus.processing(null, 'Generating payload...'));
+    console.log(payload, 'uwot')
+    payload = await payload();
+    console.log(payload, 'm8?')
+
+    const paramFields = payloads.map(_ => true)
 
     // if `opts.emptyAsNull` is true, empty param value will be added to res as `null`.
     //   Otherwise, it will not be added
-    const paramVal = inputParams.map(inputParam => {
+    const paramVal = payloads.map(inputParam => {
       // To cater the js quirk that `null` is a type of `object`.
       if (typeof inputParam === 'object' && inputParam !== null && typeof inputParam.value === 'string') {
         return inputParam.value.trim();
@@ -220,20 +221,6 @@ function TxButton ({
   const isNumType = type =>
     utils.paramConversion.num.some(el => type.indexOf(el) >= 0);
 
-  const allParamsFilled = () => {
-    if (typeof inputParams === 'function') { return true; }
-    if (paramFields.length === 0) { return true; }
-
-    return paramFields.every((paramField, ind) => {
-      const param = inputParams[ind];
-      if (paramField.optional) { return true; }
-      if (param == null) { return false; }
-
-      const value = typeof param === 'object' ? param.value : param;
-      return value !== null && value !== '';
-    });
-  };
-
   const isSudoer = acctPair => {
     if (!sudoKey || !acctPair) { return false; }
     return acctPair.address === sudoKey;
@@ -246,7 +233,7 @@ function TxButton ({
       style={style}
       type='submit'
       onClick={transaction}
-      disabled={ disabled || !palletRpc || !callable || !allParamsFilled() ||
+      disabled={ disabled || !palletRpc || !callable ||
         ((isSudo() || isUncheckedSudo()) && !isSudoer(accountPair)) }
     >
       {label}
@@ -263,7 +250,7 @@ TxButton.propTypes = {
   attrs: PropTypes.shape({
     palletRpc: PropTypes.string,
     callable: PropTypes.string,
-    inputParams: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
+    payloads: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
     paramFields: PropTypes.array,
     onSuccess: PropTypes.func,
     onFailure: PropTypes.func

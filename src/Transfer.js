@@ -44,7 +44,7 @@ export default function Main (props) {
             attrs={{
               palletRpc: 'balances',
               callable: 'transfer',
-              inputParams: [addressTo, MAToAtomicUnits(amount)],
+              payloads: [[addressTo, MAToAtomicUnits(amount)]],
               paramFields: [true, true]
             }}
           />

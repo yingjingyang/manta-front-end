@@ -6,4 +6,14 @@ export default class MantaAssetPubInfo {
     this.r = bytes.slice(96, 128);
     this.k = bytes.slice(128, 160);
   }
+
+  serialize() {
+    return Uint8Array.from([
+      ...this.pk,
+      ...this.rho,
+      ...this.s,
+      ...this.r,
+      ...this.k
+    ])
+  }
 }

@@ -19,18 +19,19 @@ function Main () {
   // Reset utxo cache if using fresh dev node
   useEffect(() => {
     const clearUtxoCache = async () => {
-      if (!api) {
-        return;
-      }
+      if (!api) return;
       const oldBlockNumber = store.get('block num') || 0;
       const currentBlock = await api.rpc.chain.getBlock();
       const currentBlockNumber = currentBlock.block.header.number.toNumber()
       store.set("block num", currentBlockNumber)
+      console.log("AHHHHHHHH      !!!")
+
       if (currentBlockNumber < oldBlockNumber) {
+        console.log("AHHHHHHHH!!!")
         store.set('manta_spendable_assets', [])
       }
-      clearUtxoCache()
     }
+    clearUtxoCache()
   }, [api])
 
   const accountPair =

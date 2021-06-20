@@ -6,13 +6,18 @@ import { base64Decode } from '@polkadot/util-crypto';
 import MantaAsset from './dtos/MantaAsset';
 import _ from 'lodash';
 import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets } from './utils/Persistence';
+import BN from 'bn.js';
+import { assertReturn } from '@polkadot/util';
 
 export default function Main ({ accountPair, wasm }) {
   // now
-  // todo: automatically generate proving keys on startup
+  // todo: factor out the awful substrate button lol!
   // todo: fix memory leak / pages shouldn't reset on switching labs page
-  // todo: use manta asset type everywhere
+  // todo: batch transactions
+  // tod: insufficient funds
   // todo: ledger state dto
+  // todo: automatically generate proving keys on startup
+  // todo: sort imports
   
   // later
   // todo: generate new private keys and save in local storage / remove hardcoded keys
@@ -26,9 +31,11 @@ export default function Main ({ accountPair, wasm }) {
   const { api } = useSubstrate();
   const [status, setStatus] = useState(null);
   const [transferPK, setTransferPK] = useState(null);
-  const [formState, setFormState] = useState({ address1: '', address2: '', amount: 0, assetId: null });
-  const onChange = (_, data) => setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  const { address1, address2, assetId } = formState;
+  const [address1, setAddress1] = useState(null)
+  const [address2, setAddress2] = useState(null)
+  const [amount1, setAmount1] = useState(null)
+  const [amount2, setAmount2] = useState(null)
+  const [assetId, setAssetId] = useState(null)
 
   let selectedAsset1 = useRef(null);
   let selectedAsset2 = useRef(null);
@@ -49,7 +56,7 @@ export default function Main ({ accountPair, wasm }) {
   }, []);
 
   const getLedgerState = async asset => {
-    const shardIndex = new MantaAsset(asset).utxo[0];
+    const shardIndex = asset.utxo[0];
     const shards = await api.query.mantaPay.coinShards();
     return shards.shard[shardIndex].list;
   };
@@ -63,9 +70,10 @@ export default function Main ({ accountPair, wasm }) {
     // flatten (wasm only accepts flat arrays)
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
+
     return wasm.generate_private_transfer_payload_for_browser(
-      selectedAsset1,
-      selectedAsset2,
+      selectedAsset1.serialize(),
+      selectedAsset2.serialize(),
       ledgerState1,
       ledgerState2,
       transferPK,
@@ -107,7 +115,7 @@ export default function Main ({ accountPair, wasm }) {
               label='Asset ID'
               type='number'
               state='assetId'
-              onChange={onChange}
+              onChange={e => setAssetId(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -117,7 +125,7 @@ export default function Main ({ accountPair, wasm }) {
               label='Address 1'
               type='string'
               state='address1'
-              onChange={onChange}
+              onChange={e => setAddress1(e.target.value)}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -127,27 +135,27 @@ export default function Main ({ accountPair, wasm }) {
               label='Address 2'
               type='string'
               state='address2'
-              onChange={onChange}
+              onChange={e => setAddress2(e.target.value)}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              disabled={true}
+              disabled={formDisabled}
               label='Amount 1'
               type='number'
               state='amount1'
-              value={1}
+              onChange={e => setAmount1(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              disabled={true}
+              disabled={formDisabled}
               label='Amount 2'
               type='number'
               state='amount2'
-              value={1}
+              onChange={e => setAmount2(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
@@ -160,7 +168,7 @@ export default function Main ({ accountPair, wasm }) {
               attrs={{
                 palletRpc: 'mantaPay',
                 callable: 'privateTransfer',
-                inputParams: generatePrivateTransferPayload,
+                payloads: [generatePrivateTransferPayload],
                 paramFields: [true],
                 onSuccess: onPrivateTransferSuccess,
                 onFailure: onPrivateTransferFailure

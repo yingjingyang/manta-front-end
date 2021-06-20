@@ -3,19 +3,22 @@ import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import BN from 'bn.js';
 import { loadSpendableAssets, persistSpendableAssets } from './utils/Persistence';
+import MantaAsset from './dtos/MantaAsset';
 
 export default function Main ({ accountPair, wasm }) {
   const [status, setStatus] = useState(null);
-  const [formState, setFormState] = useState({ assetId: null, mintAmount: new BN(1) });
-  const onChange = (_, data) => {
-    setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  };
-  const { assetId, mintAmount } = formState;
+  const [assetId, setAssetId] = useState(null);
+  const [mintAmount, setMintAmount] = useState(null);
+
   let mintAsset = useRef(null);
 
   const generateMintPayload = () => {
-    mintAsset = wasm.generate_asset_for_browser(new Uint8Array(32).fill(0), assetId, mintAmount);
-    const mintInfo = wasm.generate_mint_payload_for_browser(mintAsset);
+    mintAsset = new MantaAsset (
+      wasm.generate_asset_for_browser(
+        new Uint8Array(32).fill(0), new BN(assetId), new BN(mintAmount)
+      )
+    );
+    const mintInfo = wasm.generate_mint_payload_for_browser(mintAsset.serialize());
     return mintInfo;
   };
 
@@ -45,7 +48,7 @@ export default function Main ({ accountPair, wasm }) {
               label='Asset ID'
               type='number'
               state='assetId'
-              onChange={onChange}
+              onChange={e => setAssetId(new BN(e.target.value))}
               disabled={formDisabled}
             />
           </Form.Field>
@@ -55,8 +58,8 @@ export default function Main ({ accountPair, wasm }) {
               label='Amount'
               type='number'
               state='mintAmount'
-              value={1}
-              disabled={true}
+              onChange={e => setMintAmount(new BN(e.target.value))}
+              disabled={formDisabled}
             />
           </Form.Field>
             <Form.Field style={{ textAlign: 'center' }}>
@@ -69,8 +72,7 @@ export default function Main ({ accountPair, wasm }) {
                 attrs={{
                   palletRpc: 'mantaPay',
                   callable: 'mintPrivateAsset',
-                  inputParams: generateMintPayload,
-                  paramFields: [true],
+                  payloads: [generateMintPayload],
                   onSuccess: onMintSuccess,
                   onFailure: onMintFailure
                 }}

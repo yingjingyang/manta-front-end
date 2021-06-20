@@ -2,19 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import { TxButton } from './substrate-lib/components';
 import { useSubstrate } from './substrate-lib';
-import MantaAsset from './dtos/MantaAsset';
 import { base64Decode } from '@polkadot/util-crypto';
 import { loadSpendableAssets, loadSpendableAssetsById, persistSpendableAssets } from './utils/Persistence';
 import _ from 'lodash';
+import BN from 'bn.js';
+
 
 export default function Main ({ accountPair, wasm }) {
   const { api } = useSubstrate();
   const [status, setStatus] = useState(null);
   const [reclaimPK, setReclaimPK] = useState(null);
-  const [formState, setFormState] = useState({ assetId: 0, address: '', amount: 1 });
-  const onChange = (_, data) =>
-    setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  const { assetId, address, amount } = formState;
+  const [assetId, setAssetId] = useState(null)
+  const [address, setAddress] = useState('')
+  const [amount, setAmount] = useState(null)
 
   let selectedAsset1 = useRef(null);
   let selectedAsset2 = useRef(null);
@@ -35,13 +35,14 @@ export default function Main ({ accountPair, wasm }) {
   }, []);
 
   const getLedgerState = async asset => {
-    const shardIndex = new MantaAsset(asset).utxo[0];
+    const shardIndex = asset.utxo[0];
     const shards = await api.query.mantaPay.coinShards();
     return shards.shard[shardIndex].list;
   };
 
   const generateReclaimPayload = async () => {
     const spendableAssets = loadSpendableAssetsById(assetId);
+    console.log('spendableAssets', spendableAssets)
     const selectedAsset1 = spendableAssets[0];
     const selectedAsset2 = spendableAssets[1];
     let ledgerState1 = await getLedgerState(selectedAsset1);
@@ -49,9 +50,20 @@ export default function Main ({ accountPair, wasm }) {
     // flatten (wasm only accepts flat arrays)
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
+
+    console.log(
+      selectedAsset1.serialize(),
+      selectedAsset2.serialize(),
+      ledgerState1,
+      ledgerState2,
+      amount,
+      reclaimPK,
+      base64Decode(address.trim())
+    )
+
     return wasm.generate_reclaim_payload_for_browser(
-      selectedAsset1,
-      selectedAsset2,
+      selectedAsset1.serialize(),
+      selectedAsset2.serialize(),
       ledgerState1,
       ledgerState2,
       amount,
@@ -92,7 +104,7 @@ export default function Main ({ accountPair, wasm }) {
               label='Asset Id'
               type='number'
               state='assetId'
-              onChange={onChange}
+              onChange={e => setAssetId(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -102,17 +114,17 @@ export default function Main ({ accountPair, wasm }) {
               label='Address'
               type='string'
               state='address'
-              onChange={onChange}
+              onChange={e => setAddress(e.target.value)}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              disabled={true}
+              disabled={formDisabled}
               label='Amount'
               type='number'
               state='amount'
-              value={1}
+              onChange={e => setAmount(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
@@ -125,8 +137,7 @@ export default function Main ({ accountPair, wasm }) {
               attrs={{
                 palletRpc: 'mantaPay',
                 callable: 'reclaim',
-                inputParams: generateReclaimPayload,
-                paramFields: [true],
+                payloads: [generateReclaimPayload],
                 onSuccess: onReclaimSuccess,
                 onFailure: onReclaimFailure
               }}

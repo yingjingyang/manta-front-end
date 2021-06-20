@@ -4,7 +4,6 @@ import MantaAssetPrivInfo from './MantaAssetPrivInfo';
 
 export default class MantaAsset {
   constructor (bytes) {
-    console.log(bytes)
     this.assetId = new BN(bytes.slice(0, 8), 10, 'le');
     this.utxo = bytes.slice(8, 40);
     this.voidNumber = bytes.slice(40, 72);
@@ -13,7 +12,17 @@ export default class MantaAsset {
   }
 
   static fromStorage (storageObj) {
-    const bytes = Uint8Array(Object.entries(storageObj));
+    const bytes = new Uint8Array(Object.values(storageObj));
     return new MantaAsset(bytes);
+  }
+
+  serialize() {
+    return Uint8Array.from([
+      ...this.assetId.toArray('le', 8),
+      ...this.utxo,
+      ...this.voidNumber,
+      ...this.pubInfo.serialize(),
+      ...this.privInfo.serialize()
+    ])
   }
 }

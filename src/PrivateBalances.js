@@ -8,7 +8,6 @@ import { loadSpendableAssets } from './utils/Persistence';
 export default function Main () {
   const balanceByAssetId = {}
   loadSpendableAssets()
-    .map(asset => new MantaAsset(new Uint8Array(Object.values(asset))))
     .forEach(asset => {
       const currentValue = balanceByAssetId[asset.assetId] 
         ? balanceByAssetId[asset.assetId]
