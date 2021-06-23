@@ -1,13 +1,39 @@
 import React, { useState } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
-import { TxButton } from './substrate-lib/components';
+import TxButton from './TxButton';
+import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
+import { useSubstrate } from './substrate-lib';
+import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
+import BN from 'bn.js';
 
-export default function Main ({ accountPair }) {
+export default function Main ({ fromAccount }) {
+  const PALLET_RPC = 'mantaPay';
+  const CALLABLE = 'initAsset';
+
+  const { api } = useSubstrate();
+  const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
-  const [formState, setFormState] = useState({ assetID: null, mintAmount: 0 });
-  const onChange = (_, data) =>
-    setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  const { assetID, mintAmount } = formState;
+  const [assetId, setAssetId] = useState(null);
+  const [amount, setAmount] = useState(null);
+
+  const generatePayload = () => {
+    return formatPayloadForSubstrate([assetId, amount]);
+  };
+
+  const submitTransaction = payload => {
+    const txResHandler = makeDefaultTxResHandler(api, setStatus);
+    const tx = api.tx[PALLET_RPC][CALLABLE](...payload);
+    const unsub = tx.signAndSend(fromAccount, txResHandler);
+    setUnsub(() => unsub);
+  };
+
+  const onClickSubmit = () => {
+    const payload = generatePayload();
+    submitTransaction(payload);
+  };
+
+  const formIsDisabled = status && status.isProcessing();
+  const buttonIsDisabled = !assetId || !amount;
 
   return (
     <>
@@ -18,10 +44,11 @@ export default function Main ({ accountPair }) {
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              label='Asset ID'
+              label='Asset Id'
               type='number'
-              state='assetID'
-              onChange={onChange}
+              state='assetId'
+              onChange={e => setAssetId(new BN(e.target.value))}
+              disabled={formIsDisabled}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -29,23 +56,17 @@ export default function Main ({ accountPair }) {
               fluid
               label='Total Supply'
               type='number'
-              state='mintAmount'
-              onChange={onChange}
+              state='amount'
+              onChange={e => setAmount(new BN(e.target.value))}
+              disabled={formIsDisabled}
             />
           </Form.Field>
-            <Form.Field style={{ textAlign: 'center' }}>
-              <TxButton
-                accountPair={accountPair}
-                label='Submit'
-                type='SIGNED-TX'
-                setStatus={setStatus}
-                attrs={{
-                  palletRpc: 'mantaPay',
-                  callable: 'initAsset',
-                  inputParams: [assetID, mintAmount],
-                  paramFields: [true, true]
-                }}
-              />
+          <Form.Field style={{ textAlign: 'center' }}>
+            <TxButton
+            label='Submit'
+            onClick={onClickSubmit}
+            disabled={buttonIsDisabled}
+          />
           </Form.Field>
           <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
         </Form>

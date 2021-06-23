@@ -1,4 +1,4 @@
-const FINALIZED = 'Transaction finalized 😊 \n';
+const FINALIZED = 'Transaction finalized 😊';
 const FAILED = 'Transaction failed ❌';
 const PROCESSING = 'Transaction processing';
 
@@ -36,10 +36,10 @@ export default class TxStatus {
   toString () {
     let message = this.status;
     if (this.block) {
-      message += `; block hash: ${this.block}`;
+      message += `;\n block hash: ${this.block}`;
     }
     if (this.message) {
-      message += `; ${this.message}`;
+      message += `;\n ${this.message}`;
     }
     return message;
   }

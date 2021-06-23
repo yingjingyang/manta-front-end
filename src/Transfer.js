@@ -1,15 +1,40 @@
 import React, { useState } from 'react';
 import { Form, Input, Grid, Header } from 'semantic-ui-react';
-import { TxButton } from './substrate-lib/components';
-import MAToAtomicUnits from './utils/MAToAtomicUnit';
+import MAToAtomicUnits from './utils/ui/MAToAtomicUnit';
+import TxButton from './TxButton';
+import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
+import { useSubstrate } from './substrate-lib';
+import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
+import BN from 'bn.js';
 
-export default function Main (props) {
+export default function Main ({ fromAccount }) {
+  const PALLET_RPC = 'balances';
+  const CALLABLE = 'transfer';
+
+  const { api } = useSubstrate();
+  const [unsub, setUnsub] = useState(null);
+  const [addressTo, setAddressTo] = useState(null);
+  const [amount, setAmount] = useState(null);
   const [status, setStatus] = useState(null);
-  const [formState, setFormState] = useState({ addressTo: null, amount: 0 });
-  const { accountPair } = props;
-  const onChange = (_, data) =>
-    setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  const { addressTo, amount } = formState;
+
+  const generatePayload = () => {
+    return formatPayloadForSubstrate([addressTo, MAToAtomicUnits(amount, api)]);
+  };
+
+  const submitTransaction = payload => {
+    const txResHandler = makeDefaultTxResHandler(api, setStatus);
+    const tx = api.tx[PALLET_RPC][CALLABLE](...payload);
+    const unsub = tx.signAndSend(fromAccount, txResHandler);
+    setUnsub(() => unsub);
+  };
+
+  const onClickSubmit = () => {
+    const payload = generatePayload();
+    submitTransaction(payload);
+  };
+
+  const formIsDisabled = status && status.isProcessing();
+  const buttonIsDisabled = formIsDisabled || !addressTo || !amount;
 
   return (
     <Grid.Column width={8}>
@@ -22,7 +47,8 @@ export default function Main (props) {
             type='text'
             placeholder='address'
             state='addressTo'
-            onChange={onChange}
+            onChange={e => setAddressTo(e.target.value)}
+            disabled={formIsDisabled}
           />
         </Form.Field>
         <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -32,21 +58,15 @@ export default function Main (props) {
             type='number'
             placeholder='MA'
             state='amount'
-            onChange={onChange}
+            onChange={e => setAmount(new BN(e.target.value))}
+            disabled={formIsDisabled}
           />
         </Form.Field>
         <Form.Field style={{ textAlign: 'center' }}>
           <TxButton
-            accountPair={accountPair}
             label='Submit'
-            type='SIGNED-TX'
-            setStatus={setStatus}
-            attrs={{
-              palletRpc: 'balances',
-              callable: 'transfer',
-              payloads: [[addressTo, MAToAtomicUnits(amount)]],
-              paramFields: [true, true]
-            }}
+            onClick={onClickSubmit}
+            disabled={buttonIsDisabled}
           />
         </Form.Field>
         <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>

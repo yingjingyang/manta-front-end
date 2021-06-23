@@ -9,30 +9,29 @@ import { DeveloperConsole } from './substrate-lib/components';
 import Navbar from './Navbar';
 import Routes from './Routes';
 import store from 'store';
+import getFromAccount from './utils/api/GetFromAccount';
 
 function Main () {
-
   const [accountAddress, setAccountAddress] = useState(null);
   const [wasm, setWasm] = useState(null);
+  const [fromAccount, setFromAccount] = useState(null);
   const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
-  
+
   // Reset utxo cache if using fresh dev node
   useEffect(() => {
     const clearUtxoCache = async () => {
       if (!api) return;
       const oldBlockNumber = store.get('block num') || 0;
       const currentBlock = await api.rpc.chain.getBlock();
-      const currentBlockNumber = currentBlock.block.header.number.toNumber()
-      store.set("block num", currentBlockNumber)
-      console.log("AHHHHHHHH      !!!")
-
+      const currentBlockNumber = currentBlock.block.header.number.toNumber();
+      store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
-        console.log("AHHHHHHHH!!!")
-        store.set('manta_spendable_assets', [])
+        store.set('manta_spendable_assets', []);
+        console.log('Reset UTXO cache ');
       }
-    }
-    clearUtxoCache()
-  }, [api])
+    };
+    clearUtxoCache();
+  }, [api]);
 
   const accountPair =
     accountAddress &&
@@ -46,6 +45,17 @@ function Main () {
     }
     loadWasm();
   }, []);
+
+  useEffect(() => {
+    async function loadFromAccount (accountPair) {
+      if (!api) {
+        return;
+      }
+      const fromAccount = await getFromAccount(accountPair);
+      setFromAccount(fromAccount);
+    }
+    api && accountPair && loadFromAccount(accountPair, api);
+  }, [api, accountPair]);
 
   const loader = text =>
     <Dimmer active>
@@ -77,7 +87,7 @@ function Main () {
             <Navbar setAccountAddress={setAccountAddress} />
             <Container style={{ paddingTop: '3em' }}>
             <Grid centered>
-            <Routes accountPair={accountPair} wasm={wasm} />
+            <Routes fromAccount={fromAccount} wasm={wasm} />
             </Grid>
             </Container>
             <DeveloperConsole />

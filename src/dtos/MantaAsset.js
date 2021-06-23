@@ -16,13 +16,13 @@ export default class MantaAsset {
     return new MantaAsset(bytes);
   }
 
-  serialize() {
+  serialize () {
     return Uint8Array.from([
       ...this.assetId.toArray('le', 8),
       ...this.utxo,
       ...this.voidNumber,
       ...this.pubInfo.serialize(),
       ...this.privInfo.serialize()
-    ])
+    ]);
   }
 }

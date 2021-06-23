@@ -7,7 +7,7 @@ import InitAsset from './InitAsset';
 import PrivateBalances from './PrivateBalances';
 import Receive from './PrivateReceive';
 
-export default function Main ({ accountPair, wasm }) {
+export default function Main ({ fromAccount, wasm }) {
   const dropdownItems = [
     {
       key: 'Init Asset',
@@ -44,17 +44,17 @@ export default function Main ({ accountPair, wasm }) {
 
   let page = <div/>;
   if (dropdownState === 'Init Asset') {
-    page = <InitAsset accountPair={accountPair} />;
+    page = <InitAsset fromAccount={fromAccount} />;
   } else if (dropdownState === 'Mint') {
-    page = <Mint accountPair={accountPair} wasm={wasm}/>;
+    page = <Mint fromAccount={fromAccount} wasm={wasm}/>;
   } else if (dropdownState === 'Private transfer') {
-    page = <PrivateTransfer accountPair={accountPair} wasm={wasm}/>;
+    page = <PrivateTransfer fromAccount={fromAccount} wasm={wasm}/>;
   } else if (dropdownState === 'Reclaim') {
-    page = <Reclaim accountPair={accountPair} wasm={wasm}/>;
+    page = <Reclaim fromAccount={fromAccount} wasm={wasm}/>;
   } else if (dropdownState === 'Receive') {
-    page = <Receive accountPair={accountPair} wasm={wasm}/>;
+    page = <Receive fromAccount={fromAccount} wasm={wasm}/>;
   } else if (dropdownState === 'Private Balances') {
-    page = <PrivateBalances accountPair={accountPair} wasm={wasm}/>;
+    page = <PrivateBalances fromAccount={fromAccount} wasm={wasm}/>;
   }
 
   return (

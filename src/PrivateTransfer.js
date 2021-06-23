@@ -1,44 +1,72 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
-import { TxButton } from './substrate-lib/components';
 import { useSubstrate } from './substrate-lib';
 import { base64Decode } from '@polkadot/util-crypto';
-import MantaAsset from './dtos/MantaAsset';
 import _ from 'lodash';
-import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets } from './utils/Persistence';
+import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalances } from './utils/Persistence';
 import BN from 'bn.js';
-import { assertReturn } from '@polkadot/util';
+import TxStatus from './utils/ui/TxStatus';
 
-export default function Main ({ accountPair, wasm }) {
+export default function Main ({ fromAccount, wasm }) {
   // now
-  // todo: factor out the awful substrate button lol!
-  // todo: fix memory leak / pages shouldn't reset on switching labs page
   // todo: batch transactions
-  // tod: insufficient funds
-  // todo: ledger state dto
-  // todo: automatically generate proving keys on startup
   // todo: sort imports
-  
+
   // later
+  // todo: fix memory leak / pages shouldn't reset on switching labs page
+  // todo: automatically generate proving keys on startup
+  // todo: check that coins actually exist on startup (maybe they were spent on different computer)
+  // todo: error types
+  // todo: ledger state dto
+  // todo: store pending spends
   // todo: generate new private keys and save in local storage / remove hardcoded keys
   // todo: poll assets we have received
-  // todo: check that coins actually exist on startup (maybe they were spent on different computer)
-  // todo: store pending spends
   // todo: cleanup folder structure
   // todo: address derivation / change
-  // todo: make amount configurable / coin selection
+  // todo: coin selection
 
   const { api } = useSubstrate();
   const [status, setStatus] = useState(null);
   const [transferPK, setTransferPK] = useState(null);
-  const [address1, setAddress1] = useState(null)
-  const [address2, setAddress2] = useState(null)
-  const [amount1, setAmount1] = useState(null)
-  const [amount2, setAmount2] = useState(null)
-  const [assetId, setAssetId] = useState(null)
+  const [address, setAddress] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [changeAmount, setChangeAmount] = useState(null);
+  const [assetId, setAssetId] = useState(null);
+  const [coinSelection, setCoinSelection] = useState([]);
 
   let selectedAsset1 = useRef(null);
   let selectedAsset2 = useRef(null);
+
+  const changeAddress = 'AgAAAAAAAAA/kASJmPbjqlGVjxa6LDKsioBeHGu4aO6xb7uoWvigKLt85iX6jWXVUrXz9luKycQNg0MAAUWOAigr2PzLHasMYnebxo2JlY0XS7+Is8bjA5UCAGNdsEuywxlRObPk4QG2AcxbEpaWwiE3tHiMQAzT093tB8TWk4GfFx6I+j6lPg==';
+
+  // select coins
+  // generate payload for each two coins, with "0" change (make "0" coin)
+  // for last two coins, one may contain change
+
+  // for each selected coin pair, remove from browser storage
+
+  useEffect(() => {
+    if (!amount || !assetId) {
+      return;
+    }
+    const spendableBalance = loadSpendableBalances()[assetId.toNumber()] || new BN(0);
+    if (amount.gt(spendableBalance)) {
+      setStatus(new TxStatus('Insufficient funds'));
+    } else {
+      setStatus(null);
+      let totalAmount = new BN(0);
+      const coinSelection = [];
+      const spendableAssets = loadSpendableAssetsById(assetId);
+      spendableAssets.forEach(asset => {
+        if (totalAmount.lte(amount) || coinSelection.length % 2 === 1) {
+          totalAmount = totalAmount.add(asset.privInfo.value);
+          coinSelection.push(asset);
+        }
+      });
+      setChangeAmount(totalAmount.sub(amount));
+      setCoinSelection(coinSelection);
+    }
+  }, [amount, assetId]);
 
   useEffect(() => {
     const request = new XMLHttpRequest();
@@ -71,15 +99,15 @@ export default function Main ({ accountPair, wasm }) {
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
 
-    return wasm.generate_private_transfer_payload_for_browser(
+    return [wasm.generate_private_transfer_payload_for_browser(
       selectedAsset1.serialize(),
       selectedAsset2.serialize(),
       ledgerState1,
       ledgerState2,
       transferPK,
-      base64Decode(address1.trim()),
-      base64Decode(address2.trim())
-    );
+      base64Decode(address.trim()),
+      base64Decode(changeAddress)
+    )];
   };
 
   const onPrivateTransferSuccess = () => {
@@ -99,7 +127,7 @@ export default function Main ({ accountPair, wasm }) {
   const formDisabled = status && status.isProcessing();
 
   const buttonDisabled = (
-    (status && status.isProcessing()) || !address1 || !address2 || !assetId
+    (status && status.isProcessing()) || !address || !assetId
   );
 
   return (
@@ -122,45 +150,25 @@ export default function Main ({ accountPair, wasm }) {
             <Input
               fluid
               disabled={formDisabled}
-              label='Address 1'
+              label='Address'
               type='string'
-              state='address1'
-              onChange={e => setAddress1(e.target.value)}
+              state='address'
+              onChange={e => setAddress(e.target.value)}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
               disabled={formDisabled}
-              label='Address 2'
-              type='string'
-              state='address2'
-              onChange={e => setAddress2(e.target.value)}
-            />
-          </Form.Field>
-          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
-            <Input
-              fluid
-              disabled={formDisabled}
-              label='Amount 1'
+              label='Amount'
               type='number'
-              state='amount1'
-              onChange={e => setAmount1(new BN(e.target.value))}
+              state='amount'
+              onChange={e => setAmount(new BN(e.target.value))}
             />
           </Form.Field>
-          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
-            <Input
-              fluid
-              disabled={formDisabled}
-              label='Amount 2'
-              type='number'
-              state='amount2'
-              onChange={e => setAmount2(new BN(e.target.value))}
-            />
-          </Form.Field>
-          <Form.Field style={{ textAlign: 'center' }}>
+          {/* <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
-              accountPair={accountPair}
+              fromAccount={fromAccount}
               label='Submit'
               type='SIGNED-TX'
               setStatus={setStatus}
@@ -168,13 +176,12 @@ export default function Main ({ accountPair, wasm }) {
               attrs={{
                 palletRpc: 'mantaPay',
                 callable: 'privateTransfer',
-                payloads: [generatePrivateTransferPayload],
-                paramFields: [true],
+                payloadGenerators: [generatePrivateTransferPayload, generatePrivateTransferPayload],
                 onSuccess: onPrivateTransferSuccess,
                 onFailure: onPrivateTransferFailure
               }}
             />
-          </Form.Field>
+          </Form.Field> */}
           <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
         </Form>
       </Grid.Column>

@@ -1,20 +1,9 @@
 import React from 'react';
 import { Grid, Header } from 'semantic-ui-react';
-import MantaAsset from './dtos/MantaAsset';
-import BN from 'bn.js';
-import { loadSpendableAssets } from './utils/Persistence';
-
+import { loadSpendableBalances } from './utils/Persistence';
 
 export default function Main () {
-  const balanceByAssetId = {}
-  loadSpendableAssets()
-    .forEach(asset => {
-      const currentValue = balanceByAssetId[asset.assetId] 
-        ? balanceByAssetId[asset.assetId]
-        : new BN(0);
-      balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value)
-    });
-
+  const balanceByAssetId = loadSpendableBalances();
   return (
     <>
       <Grid.Column width={2}/>
