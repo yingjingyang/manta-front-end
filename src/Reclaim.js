@@ -5,7 +5,7 @@ import { base64Decode } from '@polkadot/util-crypto';
 import { loadSpendableAssets, loadSpendableAssetsById, persistSpendableAssets } from './utils/Persistence';
 import _ from 'lodash';
 import BN from 'bn.js';
-
+import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 
 export default function Main ({ fromAccount, wasm }) {
   const { api } = useSubstrate();

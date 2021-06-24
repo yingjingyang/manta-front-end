@@ -5,6 +5,7 @@ import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js'
 import { useSubstrate } from './substrate-lib';
 import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
 import BN from 'bn.js';
+import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 
 export default function Main ({ fromAccount }) {
   const PALLET_RPC = 'mantaPay';
@@ -68,7 +69,9 @@ export default function Main ({ fromAccount }) {
             disabled={buttonIsDisabled}
           />
           </Form.Field>
-          <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
+          <TxStatusDisplay
+            txStatus={status}
+          />
         </Form>
       </Grid.Column>
       <Grid.Column width={2}/>

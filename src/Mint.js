@@ -5,8 +5,9 @@ import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js'
 import BN from 'bn.js';
 import { useSubstrate } from './substrate-lib';
 import { loadSpendableAssets, persistSpendableAssets } from './utils/Persistence';
-import TxStatus from './utils/ui/TxStatus';
+import TxStatus from './utils/api/TxStatus';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
+import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 
 import MantaAsset from './dtos/MantaAsset';
 
@@ -19,6 +20,9 @@ export default function Main ({ fromAccount, wasm }) {
   const [status, setStatus] = useState(null);
   const [assetId, setAssetId] = useState(null);
   const [mintAmount, setMintAmount] = useState(null);
+  const [currentBatchIdx, setCurrentBatchIdx] = useState(null);
+  const [totalBatches, setTotalBatches] = useState(null);
+
   let assetQueue = useRef(null);
   let payloadQueue = useRef(null);
 
@@ -38,6 +42,7 @@ export default function Main ({ fromAccount, wasm }) {
     persistSpendableAssets(spendableAssets);
 
     if (payloadQueue.length) {
+      setCurrentBatchIdx(2);
       submitTransaction(payloadQueue.pop());
     } else {
       payloadQueue = null;
@@ -53,7 +58,7 @@ export default function Main ({ fromAccount, wasm }) {
   };
 
   const onTxUpdate = message => {
-    setStatus(TxStatus.processing(null, message));
+    setStatus(TxStatus.processing(message));
   };
 
   const submitTransaction = payload => {
@@ -66,6 +71,7 @@ export default function Main ({ fromAccount, wasm }) {
   const onClickSubmit = () => {
     // mint two assets so that we always have at least two private tokens to spend
     // todo: this is not a long term solution; when we receiver assets, might only have 1 token
+    setCurrentBatchIdx(1);
     const smallerHalf = mintAmount.div(new BN(2));
     const largerHalf = mintAmount.sub(smallerHalf);
     payloadQueue = [];
@@ -77,6 +83,7 @@ export default function Main ({ fromAccount, wasm }) {
         assetQueue.push(asset);
       }
     }
+    setTotalBatches(payloadQueue.length);
     submitTransaction(payloadQueue.pop());
   };
 
@@ -116,7 +123,11 @@ export default function Main ({ fromAccount, wasm }) {
             disabled={buttonIsDisabled}
           />
           </Form.Field>
-          <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
+          <TxStatusDisplay
+            txStatus={status}
+            totalBatches={totalBatches}
+            batchNumber={currentBatchIdx}
+          />
         </Form>
       </Grid.Column>
       <Grid.Column width={2}/>
