@@ -14,6 +14,6 @@ export default class MantaAssetPubInfo {
       ...this.s,
       ...this.r,
       ...this.k
-    ])
+    ]);
   }
 }

@@ -57,21 +57,21 @@ function Main (props) {
       >
         <Container>
           <Menu.Menu position='left' style={{ alignItems: 'center' }}>
-              <Menu.Item name='MA Token'>
-                <Link to='/ma_token'>
+            <Menu.Item name='MA Token'>
+              <Link to='/ma_token'>
                   MA Token
-                </Link>
-              </Menu.Item>
-              <Menu.Item name='Labs' >
-                <Link to='/labs'>
+              </Link>
+            </Menu.Item>
+            <Menu.Item name='Labs' >
+              <Link to='/labs'>
                 Labs
-                </Link>
-              </Menu.Item>
-              <Menu.Item name='Governance'>
-                <Link to='/governance'>
+              </Link>
+            </Menu.Item>
+            <Menu.Item name='Governance'>
+              <Link to='/governance'>
                 Governance
-                </Link>
-              </Menu.Item>
+              </Link>
+            </Menu.Item>
           </Menu.Menu>
 
           <Menu.Menu position='right' style={{ alignItems: 'center' }}>
@@ -139,13 +139,13 @@ function BalanceAnnotation (props) {
 
   return accountSelected
     ? <Label pointing='left'>
-        <Image
+      <Image
         src={process.env.PUBLIC_URL + '/assets/favicon.ico'}
         wrapped
         style={{ width: '1.3rem', height: 'auto', marginRight: '0.5rem', marginBottom: '0.18rem' }}
-        />
-        {accountBalance}
-      </Label>
+      />
+      {accountBalance}
+    </Label>
     : null;
 }
 

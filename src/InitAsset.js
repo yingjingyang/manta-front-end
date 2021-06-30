@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
+import BN from 'bn.js';
 import TxButton from './TxButton';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { useSubstrate } from './substrate-lib';
 import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
-import BN from 'bn.js';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
+import { PALLET, CALLABLE } from './constants/ApiConstants';
 
 export default function Main ({ fromAccount }) {
-  const PALLET_RPC = 'mantaPay';
-  const CALLABLE = 'initAsset';
-
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
@@ -23,7 +21,7 @@ export default function Main ({ fromAccount }) {
 
   const submitTransaction = payload => {
     const txResHandler = makeDefaultTxResHandler(api, setStatus);
-    const tx = api.tx[PALLET_RPC][CALLABLE](...payload);
+    const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.INIT_ASSET](...payload);
     const unsub = tx.signAndSend(fromAccount, txResHandler);
     setUnsub(() => unsub);
   };
@@ -34,7 +32,7 @@ export default function Main ({ fromAccount }) {
   };
 
   const formIsDisabled = status && status.isProcessing();
-  const buttonIsDisabled = !assetId || !amount;
+  const buttonIsDisabled = formIsDisabled || !assetId || !amount;
 
   return (
     <>
@@ -64,10 +62,10 @@ export default function Main ({ fromAccount }) {
           </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
-            label='Submit'
-            onClick={onClickSubmit}
-            disabled={buttonIsDisabled}
-          />
+              label='Submit'
+              onClick={onClickSubmit}
+              disabled={buttonIsDisabled}
+            />
           </Form.Field>
           <TxStatusDisplay
             txStatus={status}

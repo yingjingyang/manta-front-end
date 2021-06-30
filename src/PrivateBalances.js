@@ -1,9 +1,11 @@
 import React from 'react';
 import { Grid, Header } from 'semantic-ui-react';
-import { loadSpendableBalances } from './utils/Persistence';
+import BN from 'bn.js';
+import { loadSpendableBalances } from './utils/persistence/Persistence';
 
-export default function Main () {
+export default function Main ({ mantaKeyring }) {
   const balanceByAssetId = loadSpendableBalances();
+  // console.log('mantaKeyring', mantaKeyring.generateNextInternalAddress(new BN(1)));
   return (
     <>
       <Grid.Column width={2}/>

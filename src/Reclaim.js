@@ -1,22 +1,199 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
-import { useSubstrate } from './substrate-lib';
 import { base64Decode } from '@polkadot/util-crypto';
-import { loadSpendableAssets, loadSpendableAssetsById, persistSpendableAssets } from './utils/Persistence';
-import _ from 'lodash';
 import BN from 'bn.js';
+import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/Persistence';
+import { useSubstrate } from './substrate-lib';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
+import TxButton from './TxButton';
+import { PALLET, CALLABLE } from './constants/ApiConstants';
+import TxStatus from './utils/api/TxStatus';
+import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
+import MantaAsset from './dtos/MantaAsset';
+import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 
-export default function Main ({ fromAccount, wasm }) {
+
+
+export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   const { api } = useSubstrate();
+  const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [reclaimPK, setReclaimPK] = useState(null);
-  const [assetId, setAssetId] = useState(null);
-  const [address, setAddress] = useState('');
-  const [amount, setAmount] = useState(null);
+  const [assetId, setAssetId] = useState(new BN(-1));
+  const [amount, setAmount] = useState(new BN(-1));
+  const [insufficientFunds, setInsufficientFunds] = useState(false);
+  const [totalBatches, setTotalBatches] = useState(0);
 
-  let selectedAsset1 = useRef(null);
-  let selectedAsset2 = useRef(null);
+
+  const currentBatchIdx = useRef(0);
+  const coinSelection = useRef(null);
+  const changeAmount = useRef(null);
+  let asset1 = useRef(null);
+  let asset2 = useRef(null);
+  const mintZeroCoinAsset = useRef(null);
+
+  /**
+   *
+   * Orchestration logic
+   *
+   */
+
+  const doNextReclaim = async () => {
+    console.log(coinSelection);
+    currentBatchIdx.current += 1;
+    setStatus(TxStatus.processing('Generating payload'));
+    asset1.current = coinSelection.current.pop();
+    asset2.current = coinSelection.current.pop();
+    const payload = await generateReclaimPayload();
+    submitReclaim(payload);
+  };
+
+  const mintZeroCoin = () => {
+    currentBatchIdx.current += 1;
+    setStatus(TxStatus.processing('Generating payload'));
+    const payload = generateMintZeroCoinPayload();
+    submitMintZeroCoinTx(payload);
+  };
+
+  const forgetAllTransactions = () => {
+    asset1.current = null;
+    asset2.current = null;
+    coinSelection.current = null;
+    mintZeroCoinAsset.current = null;
+    changeAmount.current = null;
+  };
+
+  const selectCoins = useCallback(() => {
+    let totalAmount = new BN(0);
+    coinSelection.current = [];
+    const spendableAssets = loadSpendableAssetsById(assetId);
+    spendableAssets.forEach(asset => {
+      if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
+        totalAmount = totalAmount.add(asset.privInfo.value);
+        coinSelection.current.push(asset);
+      }
+    });
+    // If odd number of coins selected, we will have to mint a zero value coin
+    const mintBatchesRequired = coinSelection.current.length % 2;
+    const transferBatchesRequired = Math.ceil(coinSelection.current.length / 2);
+    setTotalBatches(mintBatchesRequired + transferBatchesRequired);
+    changeAmount.current = totalAmount.sub(amount);
+  }, [assetId, amount]);
+
+  /**
+   *
+   * Payload gen
+   *
+   */
+
+  const generateReclaimPayload = async () => {
+    let ledgerState1 = await getLedgerState(asset1.current);
+    let ledgerState2 = await getLedgerState(asset2.current);
+    // flatten (wasm only accepts flat arrays)
+    ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
+    ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
+
+    const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
+
+    const payload = await wasm.generate_reclaim_payload_for_browser(
+      asset1.current.serialize(),
+      asset2.current.serialize(),
+      ledgerState1,
+      ledgerState2,
+      asset1.current.privInfo.value.add(asset2.current.privInfo.value.sub(changeAmount.current)),
+      reclaimPK,
+      changeAddress
+    );
+    return formatPayloadForSubstrate([payload]);
+  };
+
+  const generateMintZeroCoinPayload = () => {
+    mintZeroCoinAsset.current = new MantaAsset(
+      wasm.generate_asset_for_browser(new Uint8Array(32).fill(0), new BN(assetId), new BN(1)));
+    const payload = wasm.generate_mint_payload_for_browser(mintZeroCoinAsset.current.serialize());
+    return formatPayloadForSubstrate([payload]);
+  };
+
+  /**
+   *
+   * polkadot.js API queries / extrinsics
+   *
+   */
+
+  const submitReclaim = payload => {
+    const handleTxResponse = makeTxResHandler(
+      api, onReclaimSuccess, onReclaimFailure, onReclaimUpdate);
+    const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.RECLAIM](...payload);
+    const unsub = tx.signAndSend(fromAccount, handleTxResponse);
+    setUnsub(() => unsub);
+  };
+
+  const submitMintZeroCoinTx = payload => {
+    const handleTxResponse = makeTxResHandler(api, onMintSuccess, onMintFailure, onMintUpdate);
+    const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.MINT_PRIVATE_ASSET](...payload);
+    const unsub = tx.signAndSend(fromAccount, handleTxResponse);
+    setUnsub(() => unsub);
+  };
+
+  const getLedgerState = async asset => {
+    const shardIndex = asset.utxo[0];
+    const shards = await api.query.mantaPay.coinShards();
+    return shards.shard[shardIndex].list;
+  };
+
+  /**
+   *
+   * polkadot.js API API response Handlers
+   *
+   */
+
+  const onReclaimSuccess = async block => {
+    removeSpendableAsset(asset1.current);
+    removeSpendableAsset(asset2.current);
+    // We always make change on the first transaction
+    changeAmount.current = new BN(0);
+
+    if (coinSelection.current.length) {
+      doNextReclaim();
+    } else {
+      forgetAllTransactions();
+      setStatus(TxStatus.finalized(block));
+    }
+  };
+
+  const onReclaimFailure = (block, error) => {
+    setStatus(TxStatus.failed(block, error));
+    forgetAllTransactions();
+  };
+
+  const onReclaimUpdate = message => {
+    setStatus(TxStatus.processing(message));
+  };
+
+  const onMintSuccess = block => {
+    coinSelection.current.push(mintZeroCoinAsset.current);
+    const spendableAssets = loadSpendableAssets();
+    spendableAssets.push(mintZeroCoinAsset.current);
+    mintZeroCoinAsset.current = null;
+    persistSpendableAssets(spendableAssets);
+    doNextReclaim();
+  };
+
+  const onMintFailure = (block, error) => {
+    setStatus(TxStatus.failed(block, error));
+    forgetAllTransactions();
+  };
+
+  const onMintUpdate = message => {
+    setStatus(TxStatus.processing(message));
+  };
+
+
+  /**
+   *
+   * On pageload
+   *
+   */
 
   useEffect(() => {
     const request = new XMLHttpRequest();
@@ -33,61 +210,41 @@ export default function Main ({ fromAccount, wasm }) {
     request.send(null);
   }, []);
 
-  const getLedgerState = async asset => {
-    const shardIndex = asset.utxo[0];
-    const shards = await api.query.mantaPay.coinShards();
-    return shards.shard[shardIndex].list;
+
+  /**
+   *
+   * UI logic
+   *
+   */
+
+  useEffect(() => {
+    if (!amount || !assetId) {
+      return;
+    }
+    if (amount.gt(loadSpendableBalance(assetId))) {
+      setInsufficientFunds(true);
+    } else {
+      selectCoins();
+      setInsufficientFunds(false);
+    }
+  }, [amount, assetId, selectCoins]);
+
+  const handleChangeAssetId = e => {
+    const assetId = new BN(e.target.value);
+    setAssetId(assetId);
   };
 
-  const generateReclaimPayload = async () => {
-    const spendableAssets = loadSpendableAssetsById(assetId);
-    const selectedAsset1 = spendableAssets[0];
-    const selectedAsset2 = spendableAssets[1];
-    let ledgerState1 = await getLedgerState(selectedAsset1);
-    let ledgerState2 = await getLedgerState(selectedAsset2);
-    // flatten (wasm only accepts flat arrays)
-    ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
-    ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
-
-    // console.log(
-    //   selectedAsset1.serialize(),
-    //   selectedAsset2.serialize(),
-    //   ledgerState1,
-    //   ledgerState2,
-    //   amount,
-    //   reclaimPK,
-    //   base64Decode(address.trim())
-    // );
-
-    return wasm.generate_reclaim_payload_for_browser(
-      selectedAsset1.serialize(),
-      selectedAsset2.serialize(),
-      ledgerState1,
-      ledgerState2,
-      amount,
-      reclaimPK,
-      base64Decode(address.trim())
-    );
+  const onClick = async () => {
+    if (coinSelection.current.length % 2 === 1) {
+      mintZeroCoin();
+    } else {
+      doNextReclaim();
+    }
   };
 
-  const onReclaimSuccess = () => {
-    const spendableAssets = loadSpendableAssets()
-      .filter(asset => !_.isEqual(asset, selectedAsset1) && !_.isEqual(asset, selectedAsset2));
-    persistSpendableAssets(spendableAssets);
-    selectedAsset1 = null;
-    selectedAsset2 = null;
-  };
-
-  const onReclaimFailure = () => {
-    selectedAsset1 = null;
-    selectedAsset2 = null;
-  };
-
-  const formDisabled = status && status.isProcessing();
-
-  const buttonDisabled = (
-    (status && status.isProcessing()) || !assetId || !address || !amount
-  );
+  const formIsDisabled = status && status.isProcessing();
+  const buttonIsDisabled = (
+    formIsDisabled || insufficientFunds || !assetId.gt(new BN(0)) || !amount.gt(new BN(0)));
 
   return (
     <>
@@ -95,53 +252,41 @@ export default function Main ({ fromAccount, wasm }) {
       <Grid.Column width={12}>
         <Header textAlign='center'>Reclaim Private Asset</Header>
         <Form>
-        <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
-          <Input
+          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
+            <Input
               fluid
-              disabled={formDisabled}
+              disabled={formIsDisabled}
               label='Asset Id'
               type='number'
               state='assetId'
-              onChange={e => setAssetId(new BN(e.target.value))}
+              onChange={handleChangeAssetId}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
-              disabled={formDisabled}
-              label='Address'
-              type='string'
-              state='address'
-              onChange={e => setAddress(e.target.value)}
-            />
-          </Form.Field>
-          <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
-            <Input
-              fluid
-              disabled={formDisabled}
+              disabled={formIsDisabled}
               label='Amount'
               type='number'
               state='amount'
               onChange={e => setAmount(new BN(e.target.value))}
             />
           </Form.Field>
-          {/* <Form.Field style={{ textAlign: 'center' }}>
+          <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
-              accountPair={accountPair}
               label='Submit'
-              type='SIGNED-TX'
-              setStatus={setStatus}
-              disabled={buttonDisabled}
-              attrs={{
-                palletRpc: 'mantaPay',
-                callable: 'reclaim',
-                payloads: [generateReclaimPayload],
-                onSuccess: onReclaimSuccess,
-                onFailure: onReclaimFailure
-              }}
+              onClick={onClick}
+              disabled={buttonIsDisabled}
             />
-          </Form.Field> */}
-          <div style={{ overflowWrap: 'break-word' }}>{status && status.toString()}</div>
+          </Form.Field>
+          <TxStatusDisplay
+            txStatus={status}
+            totalBatches={totalBatches}
+            batchNumber={currentBatchIdx.current}
+          />
+          {
+            insufficientFunds && <div style={{ textAlign: 'center', overflowWrap: 'break-word' }}>Insufficient Funds</div>
+          }
         </Form>
       </Grid.Column>
       <Grid.Column width={2}/>

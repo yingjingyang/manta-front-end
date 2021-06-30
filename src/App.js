@@ -3,17 +3,19 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Container, Dimmer, Loader, Grid, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
+import store from 'store';
 import { SubstrateContextProvider, useSubstrate } from './substrate-lib';
 import { DeveloperConsole } from './substrate-lib/components';
 
 import Navbar from './Navbar';
 import Routes from './Routes';
-import store from 'store';
 import getFromAccount from './utils/api/GetFromAccount';
+import MantaKeyring from './utils/persistence/MantaKeyring';
 
 function Main () {
   const [accountAddress, setAccountAddress] = useState(null);
   const [wasm, setWasm] = useState(null);
+  const [mantaKeyring, setMantaKeyring] = useState(null);
   const [fromAccount, setFromAccount] = useState(null);
   const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
 
@@ -27,6 +29,8 @@ function Main () {
       store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
+        store.set('mantaSecretKey', null);
+        store.set('mantaAddresses', {});
         console.log('Reset UTXO cache ');
       }
     };
@@ -47,14 +51,23 @@ function Main () {
   }, []);
 
   useEffect(() => {
+    async function loadMantaKeying () {
+      const keyring = new MantaKeyring();
+      await keyring.init();
+      setMantaKeyring(keyring);
+    }
+    loadMantaKeying();
+  }, []);
+
+  useEffect(() => {
     async function loadFromAccount (accountPair) {
-      if (!api) {
+      if (!api || !api.isConnected || !accountPair) {
         return;
       }
-      const fromAccount = await getFromAccount(accountPair);
+      const fromAccount = await getFromAccount(accountPair, api);
       setFromAccount(fromAccount);
     }
-    api && accountPair && loadFromAccount(accountPair, api);
+    loadFromAccount(accountPair, api);
   }, [api, accountPair]);
 
   const loader = text =>
@@ -83,15 +96,15 @@ function Main () {
 
   return (
     <div ref={contextRef}>
-        <Router>
-            <Navbar setAccountAddress={setAccountAddress} />
-            <Container style={{ paddingTop: '3em' }}>
-            <Grid centered>
-            <Routes fromAccount={fromAccount} wasm={wasm} />
-            </Grid>
-            </Container>
-            <DeveloperConsole />
-        </Router>
+      <Router>
+        <Navbar setAccountAddress={setAccountAddress} />
+        <Container style={{ paddingTop: '3em' }}>
+          <Grid centered>
+            <Routes fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring} />
+          </Grid>
+        </Container>
+        <DeveloperConsole />
+      </Router>
     </div>
   );
 }

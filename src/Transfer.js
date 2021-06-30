@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { Form, Input, Grid, Header } from 'semantic-ui-react';
+import BN from 'bn.js';
 import MAToAtomicUnits from './utils/ui/MAToAtomicUnit';
 import TxButton from './TxButton';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { useSubstrate } from './substrate-lib';
 import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
-import BN from 'bn.js';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
+import { PALLET, CALLABLE } from './constants/ApiConstants';
 
 export default function Main ({ fromAccount }) {
-  const PALLET_RPC = 'balances';
-  const CALLABLE = 'transfer';
-
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [addressTo, setAddressTo] = useState(null);
@@ -24,7 +22,7 @@ export default function Main ({ fromAccount }) {
 
   const submitTransaction = payload => {
     const txResHandler = makeDefaultTxResHandler(api, setStatus);
-    const tx = api.tx[PALLET_RPC][CALLABLE](...payload);
+    const tx = api.tx[PALLET.BALANCES][CALLABLE.BALANCES.TRANSFER](...payload);
     const unsub = tx.signAndSend(fromAccount, txResHandler);
     setUnsub(() => unsub);
   };

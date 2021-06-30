@@ -6,7 +6,7 @@ export default function Main ({ txStatus, batchNumber = 1, totalBatches = 1 }) {
   }
 
   let batchMessage = '';
-  if (totalBatches !== 1) {
+  if (totalBatches > 1) {
     batchMessage = `${batchNumber}/${totalBatches} `;
   }
 
