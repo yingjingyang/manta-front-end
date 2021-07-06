@@ -5,6 +5,7 @@ export default class MantaAssetPubInfo {
     this.s = bytes.slice(64, 96);
     this.r = bytes.slice(96, 128);
     this.k = bytes.slice(128, 160);
+    this.ecpk = bytes.slice(160, 192);
   }
 
   serialize() {
@@ -13,7 +14,8 @@ export default class MantaAssetPubInfo {
       ...this.rho,
       ...this.s,
       ...this.r,
-      ...this.k
+      ...this.k,
+      ...this.ecpk
     ]);
   }
 }

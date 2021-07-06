@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
-import { base64Decode } from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import { useSubstrate } from './substrate-lib';
 
@@ -9,11 +8,10 @@ import TxStatus from './utils/api/TxStatus';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
-import { PALLET, CALLABLE } from './constants/ApiConstants';
 import TxButton from './TxButton';
-import MantaAsset from './dtos/MantaAsset';
+import MantaAssetShieldedAddress from './dtos/MantaAssetShieldedAddress';
 
-export default function Main ({ fromAccount, wasm, mantaKeyring }) {
+export default function Main ({ fromAccount, mantaKeyring }) {
   // now
   // todo: implement wallet protocol
   // todo: receive transfers from on chain
@@ -44,7 +42,6 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState(new BN(-1));
   const [assetId, setAssetId] = useState(new BN(-1));
-  const [changeAddress, setChangeAddress] = useState(null);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
 
@@ -115,16 +112,14 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
     const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
-    console.log('changeAddress', changeAddress);
-
-    const payload = await wasm.generate_private_transfer_payload_for_browser(
+    const payload = await mantaKeyring.generatePrivateTransferPayload(
       asset1.current.serialize(),
       asset2.current.serialize(),
       ledgerState1,
       ledgerState2,
       transferPK,
-      base64Decode(address.trim()),
-      changeAddress,
+      address.serialize(),
+      changeAddress.serialize(),
       asset1.current.privInfo.value.add(asset2.current.privInfo.value.sub(changeAmount.current)),
       changeAmount.current
     );
@@ -132,9 +127,8 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   };
 
   const generateMintZeroCoinPayload = () => {
-    mintZeroCoinAsset.current = new MantaAsset(
-      wasm.generate_asset_for_browser(new Uint8Array(32).fill(0), new BN(assetId), new BN(1)));
-    const payload = wasm.generate_mint_payload_for_browser(mintZeroCoinAsset.current.serialize());
+    mintZeroCoinAsset.current = mantaKeyring.generateMintAsset(assetId, new BN(0));
+    const payload = mantaKeyring.generateMintPayload(mintZeroCoinAsset.current.serialize());
     return formatPayloadForSubstrate([payload]);
   };
 
@@ -147,14 +141,14 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   const submitPrivateTransfer = payload => {
     const handleTxResponse = makeTxResHandler(
       api, onPrivateTransferSuccess, onPrivateTransferFailure, onPrivateTransferUpdate);
-    const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.PRIVATE_TRANSFER](...payload);
+    const tx = api.tx.mantaPay.privateTransfer(...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
     setUnsub(() => unsub);
   };
 
   const submitMintZeroCoinTx = payload => {
     const handleTxResponse = makeTxResHandler(api, onMintSuccess, onMintFailure, onMintUpdate);
-    const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.MINT_PRIVATE_ASSET](...payload);
+    const tx = api.tx.mantaPay.mintPrivateAsset(...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
     setUnsub(() => unsub);
   };
@@ -255,12 +249,18 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   }, [amount, assetId, selectCoins]);
 
 
-  const handleChangeAssetId = e => {
+  const onChangeAssetId = e => {
     const assetId = new BN(e.target.value);
     setAssetId(assetId);
-    const changeAddress = wasm.generate_shielded_address_for_browser(
-      new Uint8Array(32).fill(0), assetId);
-    setChangeAddress(changeAddress);
+  };
+
+
+  const onChangeAddress = e => {
+    try {
+      setAddress(new MantaAssetShieldedAddress(e.target.value));
+    } catch (e) {
+      setAddress(null);
+    }
   };
 
   const onClick = async () => {
@@ -290,7 +290,7 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
               label='Asset ID'
               type='number'
               state='assetId'
-              onChange={handleChangeAssetId}
+              onChange={onChangeAssetId}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
@@ -300,7 +300,7 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
               label='Address'
               type='string'
               state='address'
-              onChange={e => setAddress(e.target.value)}
+              onChange={onChangeAddress}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>

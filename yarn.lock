@@ -10283,8 +10283,8 @@ fsevents@^1.2.7:
 
 "manta-api@file:./src/pkg::locator=manta-front-end%40workspace%3A.":
   version: 0.1.0
-  resolution: "manta-api@file:./src/pkg#./src/pkg::hash=785772&locator=manta-front-end%40workspace%3A."
-  checksum: ac70f1111b276772f051b91138bab1b3c9dd28efc7851f09e7f164b2328e0028a97c01a11a96b251c6c22d7f9fb8af3638f8a29f53f5f16e6940b4e2c47d2d54
+  resolution: "manta-api@file:./src/pkg#./src/pkg::hash=0793fe&locator=manta-front-end%40workspace%3A."
+  checksum: c4ebd9bf0fa2ea70393eebc1a1795b5871f32bb008e19418f872bda3472d5a3ebdab392b258d7af9b970317bb1b583079633f1fe49215cc49fe39c9703856fbd
   languageName: node
   linkType: hard
 

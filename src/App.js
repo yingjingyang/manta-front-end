@@ -14,7 +14,6 @@ import MantaKeyring from './utils/persistence/MantaKeyring';
 
 function Main () {
   const [accountAddress, setAccountAddress] = useState(null);
-  const [wasm, setWasm] = useState(null);
   const [mantaKeyring, setMantaKeyring] = useState(null);
   const [fromAccount, setFromAccount] = useState(null);
   const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
@@ -43,21 +42,14 @@ function Main () {
     keyring.getPair(accountAddress);
 
   useEffect(() => {
-    async function loadWasm () {
-      const wasm = await import('manta-api');
-      setWasm(wasm);
-    }
-    loadWasm();
-  }, []);
-
-  useEffect(() => {
     async function loadMantaKeying () {
-      const keyring = new MantaKeyring();
+      const keyring = new MantaKeyring(api);
       await keyring.init();
       setMantaKeyring(keyring);
     }
+    if (!api) return;
     loadMantaKeying();
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     async function loadFromAccount (accountPair) {
@@ -100,7 +92,7 @@ function Main () {
         <Navbar setAccountAddress={setAccountAddress} />
         <Container style={{ paddingTop: '3em' }}>
           <Grid centered>
-            <Routes fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring} />
+            <Routes fromAccount={fromAccount} mantaKeyring={mantaKeyring} />
           </Grid>
         </Container>
         <DeveloperConsole />

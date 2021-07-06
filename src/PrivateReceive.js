@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { Grid, Header, Form, Button, Input } from 'semantic-ui-react';
-import { base64Encode } from '@polkadot/util-crypto';
 
-
-export default function Main ({ accountPair, wasm, mantaKeyring }) {
+export default function Main ({ mantaKeyring }) {
   const [formState, setFormState] = useState({ assetId: null });
   const onChange = (_, data) => {
     setFormState(prev => ({ ...prev, [data.state]: data.value }));
   };
   const { assetId } = formState;
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState(null);
 
   const showAddress = () => {
-    const addressRaw = mantaKeyring.generateNextExternalAddress(assetId);
-    const addressEncoded = base64Encode(addressRaw);
-    setAddress(addressEncoded);
+    setAddress(mantaKeyring.generateNextExternalAddress(assetId));
   };
 
   return (
@@ -33,7 +29,7 @@ export default function Main ({ accountPair, wasm, mantaKeyring }) {
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
-            {address}
+            {address && address.toString()}
           </Form.Field>
           <Button onClick={showAddress}>
               Get new address

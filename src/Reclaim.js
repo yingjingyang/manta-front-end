@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
-import { base64Decode } from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/Persistence';
 import { useSubstrate } from './substrate-lib';
@@ -14,7 +13,7 @@ import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 
 
 
-export default function Main ({ fromAccount, wasm, mantaKeyring }) {
+export default function Main ({ fromAccount, mantaKeyring }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
@@ -95,22 +94,21 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
 
     const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
 
-    const payload = await wasm.generate_reclaim_payload_for_browser(
+    const payload = await mantaKeyring.generateReclaimPayload(
       asset1.current.serialize(),
       asset2.current.serialize(),
       ledgerState1,
       ledgerState2,
       asset1.current.privInfo.value.add(asset2.current.privInfo.value.sub(changeAmount.current)),
       reclaimPK,
-      changeAddress
+      changeAddress.serialize()
     );
     return formatPayloadForSubstrate([payload]);
   };
 
   const generateMintZeroCoinPayload = () => {
-    mintZeroCoinAsset.current = new MantaAsset(
-      wasm.generate_asset_for_browser(new Uint8Array(32).fill(0), new BN(assetId), new BN(1)));
-    const payload = wasm.generate_mint_payload_for_browser(mintZeroCoinAsset.current.serialize());
+    mintZeroCoinAsset.current = mantaKeyring.generateMintAsset(assetId, new BN(0));
+    const payload = mantaKeyring.generateMintPayload(mintZeroCoinAsset.current.serialize());
     return formatPayloadForSubstrate([payload]);
   };
 

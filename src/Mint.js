@@ -9,9 +9,8 @@ import TxStatus from './utils/api/TxStatus';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import { PALLET, CALLABLE } from './constants/ApiConstants';
-import MantaAsset from './dtos/MantaAsset';
 
-export default function Main ({ fromAccount, wasm }) {
+export default function Main ({ fromAccount, mantaKeyring }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
@@ -21,12 +20,10 @@ export default function Main ({ fromAccount, wasm }) {
   let mintAsset = useRef(null);
 
   const generateMintPayload = mintAmount => {
-    const mintAsset = new MantaAsset(
-      wasm.generate_asset_for_browser(
-        new Uint8Array(32).fill(0), new BN(assetId), new BN(mintAmount)
-      )
-    );
-    const mintInfo = wasm.generate_mint_payload_for_browser(mintAsset.serialize());
+    const mintAsset = mantaKeyring.generateMintAsset(assetId, mintAmount);
+    console.log('mint asset', mintAsset);
+    const mintInfo = mantaKeyring.generateMintPayload(mintAsset.serialize());
+    console.log('mint info', mintInfo);
     return [formatPayloadForSubstrate([mintInfo]), mintAsset];
   };
 

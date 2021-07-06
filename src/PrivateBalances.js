@@ -4,7 +4,16 @@ import BN from 'bn.js';
 import { loadSpendableBalances } from './utils/persistence/Persistence';
 
 export default function Main ({ mantaKeyring }) {
+  // const { api } = useSubstrate();
+
+
   const balanceByAssetId = loadSpendableBalances();
+
+  const getSpendableBalancesFromOnChain = async () => {
+    return;
+    // api.query.mantaPay.???
+  }
+
   // console.log('mantaKeyring', mantaKeyring.generateNextInternalAddress(new BN(1)));
   return (
     <>

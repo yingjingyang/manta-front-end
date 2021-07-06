@@ -7,7 +7,7 @@ import InitAsset from './InitAsset';
 import PrivateBalances from './PrivateBalances';
 import Receive from './PrivateReceive';
 
-export default function Main ({ fromAccount, wasm, mantaKeyring }) {
+export default function Main ({ fromAccount, mantaKeyring }) {
   const dropdownItems = [
     {
       key: 'Init Asset',
@@ -46,15 +46,15 @@ export default function Main ({ fromAccount, wasm, mantaKeyring }) {
   if (dropdownState === 'Init Asset') {
     page = <InitAsset fromAccount={fromAccount}/>;
   } else if (dropdownState === 'Mint') {
-    page = <Mint fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring}/>;
+    page = <Mint fromAccount={fromAccount} mantaKeyring={mantaKeyring}/>;
   } else if (dropdownState === 'Private transfer') {
-    page = <PrivateTransfer fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring}/>;
+    page = <PrivateTransfer fromAccount={fromAccount} mantaKeyring={mantaKeyring}/>;
   } else if (dropdownState === 'Reclaim') {
-    page = <Reclaim fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring}/>;
+    page = <Reclaim fromAccount={fromAccount} mantaKeyring={mantaKeyring}/>;
   } else if (dropdownState === 'Receive') {
-    page = <Receive fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring}/>;
+    page = <Receive fromAccount={fromAccount} mantaKeyring={mantaKeyring}/>;
   } else if (dropdownState === 'Private Balances') {
-    page = <PrivateBalances fromAccount={fromAccount} wasm={wasm} mantaKeyring={mantaKeyring}/>;
+    page = <PrivateBalances fromAccount={fromAccount} mantaKeyring={mantaKeyring}/>;
   }
 
   return (
