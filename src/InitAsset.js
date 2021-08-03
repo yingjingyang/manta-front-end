@@ -12,8 +12,8 @@ export default function Main ({ fromAccount }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
-  const [assetId, setAssetId] = useState(null);
-  const [amount, setAmount] = useState(null);
+  const [assetId, setAssetId] = useState(new BN(-1));
+  const [amount, setAmount] = useState(new BN(-1));
 
   const generatePayload = () => {
     return formatPayloadForSubstrate([assetId, amount]);
@@ -32,7 +32,7 @@ export default function Main ({ fromAccount }) {
   };
 
   const formIsDisabled = status && status.isProcessing();
-  const buttonIsDisabled = formIsDisabled || !assetId || !amount;
+  const buttonIsDisabled = formIsDisabled || !assetId.gt(new BN(0)) || !amount.gt(new BN(0));
 
   return (
     <>

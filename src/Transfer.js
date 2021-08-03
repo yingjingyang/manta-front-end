@@ -8,12 +8,14 @@ import { useSubstrate } from './substrate-lib';
 import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import { PALLET, CALLABLE } from './constants/ApiConstants';
+import { decodeAddress, encodeAddress } from "@polkadot/keyring";
+import { hexToU8a, isHex } from "@polkadot/util";
 
 export default function Main ({ fromAccount }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [addressTo, setAddressTo] = useState(null);
-  const [amount, setAmount] = useState(null);
+  const [amount, setAmount] = useState(new BN(-1));
   const [status, setStatus] = useState(null);
 
   const generatePayload = () => {
@@ -32,8 +34,19 @@ export default function Main ({ fromAccount }) {
     submitTransaction(payload);
   };
 
+  const isValidSubstrateAddress = address => {
+    try {
+      encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address));
+  
+      return true;
+    } catch (error) {
+      console.log(error)
+      return false;
+    }
+  };
+
   const formIsDisabled = status && status.isProcessing();
-  const buttonIsDisabled = formIsDisabled || !addressTo || !amount;
+  const buttonIsDisabled = formIsDisabled || !isValidSubstrateAddress(addressTo) || !amount.gt(new BN(0));
 
   return (
     <Grid.Column width={8}>

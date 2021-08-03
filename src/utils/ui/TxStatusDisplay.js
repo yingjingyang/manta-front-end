@@ -1,34 +1,36 @@
 import React from 'react';
 
-export default function Main ({ txStatus, batchNumber = 1, totalBatches = 1 }) {
+export default function Main ({ txStatus, prevStatuses = [], totalBatches = 1 }) {
   if (!txStatus) {
     return <div/>;
   }
+  
+  const BLOCK_EXPLORER_URL = 'https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/explorer/query/';
 
-  let batchMessage = '';
-  if (totalBatches > 1) {
-    batchMessage = `${batchNumber}/${totalBatches} `;
+  const formatStatus = (status, batchNumber) => {
+    let batchMessage = totalBatches > 1 ? `${batchNumber}/${totalBatches}` : '';
+    if (status.isProcessing()) {
+      return (
+        <p>{`🕒 Transaction ${batchMessage} processing: ${status.message}`}</p>
+      )
+    } else if (status.isFinalized()) {
+      return (
+        <p>
+          <a href={BLOCK_EXPLORER_URL + status.block}>
+            {`✅ Transaction ${batchMessage} finalized`}
+          </a>
+        </p>
+      );
+    } else if (status.isFailed()) {
+      return (
+        <p>
+          <a href={BLOCK_EXPLORER_URL + status.block}>
+            {`❌ Transaction ${batchMessage} failed: ${status.message}`}
+          </a>
+        </p>
+      )
+    }
   }
 
-  let txStatusMesage;
-  if (txStatus.isProcessing()) {
-    txStatusMesage = `Transaction ${batchMessage}processing`;
-  } else if (txStatus.isFinalized()) {
-    txStatusMesage = `😊 Transaction ${batchMessage}finalized`;
-  } else if (txStatus.isFailed()) {
-    txStatusMesage = `❌ Transaction ${batchMessage}failed`;
-  }
-
-  const txSecondaryMessage = txStatus.message ? `: ${txStatus.message}` : '';
-
-  return (
-    <div style={{ textAlign: 'center', overflowWrap: 'break-word' }}>
-      <p>
-        {txStatusMesage}{txSecondaryMessage}
-      </p>
-      {
-        txStatus.block && <p>Block hash: {txStatus.block}</p>
-      }
-    </div>
-  );
+  return <div>{prevStatuses.concat(txStatus).map((status, txIdx) => formatStatus(status, txIdx + 1))}</div>
 }

@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import BN from 'bn.js';
-import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/Persistence';
+import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/AssetStorage';
 import { useSubstrate } from './substrate-lib';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import TxButton from './TxButton';
 import { PALLET, CALLABLE } from './constants/ApiConstants';
 import TxStatus from './utils/api/TxStatus';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
-import MantaAsset from './dtos/MantaAsset';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 
 
 
 export default function Main ({ fromAccount, mantaKeyring }) {
   const { api } = useSubstrate();
-  const [unsub, setUnsub] = useState(null);
+  const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [reclaimPK, setReclaimPK] = useState(null);
   const [assetId, setAssetId] = useState(new BN(-1));
@@ -23,7 +22,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
 
-
+  const prevStatuses = useRef([])
   const currentBatchIdx = useRef(0);
   const coinSelection = useRef(null);
   const changeAmount = useRef(null);
@@ -38,7 +37,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
    */
 
   const doNextReclaim = async () => {
-    console.log(coinSelection);
     currentBatchIdx.current += 1;
     setStatus(TxStatus.processing('Generating payload'));
     asset1.current = coinSelection.current.pop();
@@ -107,7 +105,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   };
 
   const generateMintZeroCoinPayload = () => {
-    mintZeroCoinAsset.current = mantaKeyring.generateMintAsset(assetId, new BN(0));
+    mintZeroCoinAsset.current = mantaKeyring.generateAsset(assetId, new BN(0));
     const payload = mantaKeyring.generateMintPayload(mintZeroCoinAsset.current.serialize());
     return formatPayloadForSubstrate([payload]);
   };
@@ -152,6 +150,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     changeAmount.current = new BN(0);
 
     if (coinSelection.current.length) {
+      prevStatuses.current.push(TxStatus.finalized(block))
       doNextReclaim();
     } else {
       forgetAllTransactions();
@@ -174,6 +173,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     spendableAssets.push(mintZeroCoinAsset.current);
     mintZeroCoinAsset.current = null;
     persistSpendableAssets(spendableAssets);
+    prevStatuses.current.push(TxStatus.finalized(block))
     doNextReclaim();
   };
 

@@ -2,10 +2,11 @@ import BN from 'bn.js';
 
 export default class MintData {
   constructor (bytes) {
-    this.assetId = new BN(bytes.slice(0, 8), 10, 'le');
-    this.mintAmount = new BN(bytes.slice(8, 16), 10, 'le');
-    this.cm = bytes.slice(16, 48);
-    this.k = bytes.slice(48, 80);
-    this.s = bytes.slice(80, 112);
+    this.assetId = new BN(bytes.slice(0, 4), 10, 'le');
+    this.mintAmount = bytes.slice(4, 20);
+    this.cm = bytes.slice(20, 52);
+    this.k = bytes.slice(52, 84);
+    this.s = bytes.slice(84, 116);
+    this.encryptedNote = bytes.slice(116, 184)
   }
 }

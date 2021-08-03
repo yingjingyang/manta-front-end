@@ -6,8 +6,15 @@ import Reclaim from './Reclaim';
 import InitAsset from './InitAsset';
 import PrivateBalances from './PrivateBalances';
 import Receive from './PrivateReceive';
+import Account from './Account';
 
 export default function Main ({ fromAccount, mantaKeyring }) {
+  if (!mantaKeyring) {
+    return <div/>
+  }
+  else if (!mantaKeyring.hasSecretKey()) {
+    return <Account fromAccount={fromAccount} mantaKeyring={mantaKeyring} />
+  }
   const dropdownItems = [
     {
       key: 'Init Asset',

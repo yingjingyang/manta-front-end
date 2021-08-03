@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Header } from 'semantic-ui-react';
 import BN from 'bn.js';
-import { loadSpendableBalances } from './utils/persistence/Persistence';
+import { loadSpendableBalances } from './utils/persistence/AssetStorage';
 
 export default function Main ({ mantaKeyring }) {
   // const { api } = useSubstrate();
@@ -9,12 +9,10 @@ export default function Main ({ mantaKeyring }) {
 
   const balanceByAssetId = loadSpendableBalances();
 
-  const getSpendableBalancesFromOnChain = async () => {
-    return;
-    // api.query.mantaPay.???
-  }
+  // const getSpendableBalancesFromOnChain = async () => {
+  //   return;
+  // }
 
-  // console.log('mantaKeyring', mantaKeyring.generateNextInternalAddress(new BN(1)));
   return (
     <>
       <Grid.Column width={2}/>

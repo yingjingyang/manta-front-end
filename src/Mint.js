@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import TxButton from './TxButton';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { useSubstrate } from './substrate-lib';
-import { loadSpendableAssets, persistSpendableAssets } from './utils/persistence/Persistence';
+import { loadSpendableAssets, persistSpendableAsset } from './utils/persistence/AssetStorage';
 import TxStatus from './utils/api/TxStatus';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
@@ -14,23 +14,20 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
-  const [assetId, setAssetId] = useState(null);
-  const [mintAmount, setMintAmount] = useState(null);
+  const [assetId, setAssetId] = useState(new BN(-1));
+  const [mintAmount, setMintAmount] = useState(new BN(-1));
 
   let mintAsset = useRef(null);
 
   const generateMintPayload = mintAmount => {
+    console.log(mintAmount, mintAmount.toString(), 'mint amount in UI')
     const mintAsset = mantaKeyring.generateMintAsset(assetId, mintAmount);
-    console.log('mint asset', mintAsset);
     const mintInfo = mantaKeyring.generateMintPayload(mintAsset.serialize());
-    console.log('mint info', mintInfo);
     return [formatPayloadForSubstrate([mintInfo]), mintAsset];
   };
 
   const onTxSuccess = block => {
-    const spendableAssets = loadSpendableAssets();
-    spendableAssets.push(mintAsset.current);
-    persistSpendableAssets(spendableAssets);
+    persistSpendableAsset(mintAsset.current);
     mintAsset.current = null;
     setStatus(TxStatus.finalized(block));
   };
@@ -58,7 +55,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   };
 
   const formIsDisabled = status && status.isProcessing();
-  const buttonIsDisabled = formIsDisabled || !assetId || !mintAmount;
+  const buttonIsDisabled = formIsDisabled || !assetId.gt(new BN(0)) || !mintAmount.gt(new BN(0));
 
   return (
     <>

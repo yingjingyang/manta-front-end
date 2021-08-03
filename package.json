@@ -5,7 +5,7 @@
     "author": "Parity Technologies <admin@parity.io>",
     "license": "Unlicense",
     "scripts": {
-        "start": "react-app-rewired start",
+        "start": "./setup.sh && react-app-rewired start",
         "build": "react-app-rewired build",
         "test": "CI=true react-app-rewired test --env=jsdom",
         "eject": "react-app-rewired eject",
@@ -25,6 +25,10 @@
         "@polkadot/ui-settings": "^0.69.1",
         "@polkadot/util": "^5.6.3",
         "@polkadot/util-crypto": "^5.6.3",
+        "@types/jest": "^26.0.24",
+        "@types/node": "^16.3.1",
+        "@types/react": "^17.0.14",
+        "@types/react-dom": "^17.0.9",
         "lodash": "^4.17.21",
         "manta-api": "./src/pkg",
         "prop-types": "^15.7.2",
@@ -37,6 +41,7 @@
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^2.0.3",
         "store": "^2.0.12",
+        "typescript": "^4.3.5",
         "wasm-loader": "^1.3.0",
         "worker-loader": "^3.0.8"
     },

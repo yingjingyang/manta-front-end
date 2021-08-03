@@ -1,15 +1,17 @@
 import BN from 'bn.js';
 import MantaAssetPubInfo from './MantaAssetPubInfo';
 import MantaAssetPrivInfo from './MantaAssetPrivInfo';
+import MantaEciesCiphertext from './MantaEciesCiphertext';
 
 export default class MantaAsset {
   constructor (bytes) {
-    this.assetId = new BN(bytes.slice(0, 8), 10, 'le');
-    this.utxo = bytes.slice(8, 40);
-    this.voidNumber = bytes.slice(40, 72);
-    this.ciphertext = bytes.slice(72, 88);
-    this.pubInfo = new MantaAssetPubInfo(bytes.slice(88, 280));
-    this.privInfo = new MantaAssetPrivInfo(bytes.slice(280, 352));
+    console.log('asset bytes', bytes)
+    this.assetId = new BN(bytes.slice(0, 4), 10, 'le').toNumber();
+    this.utxo = bytes.slice(4, 36);
+    this.voidNumber = bytes.slice(36, 68);
+    this.encryptedNote = new MantaEciesCiphertext(bytes.slice(68, 136));
+    this.pubInfo = new MantaAssetPubInfo(bytes.slice(136, 328));
+    this.privInfo = new MantaAssetPrivInfo(bytes.slice(328, 408));
   }
 
   static fromStorage (storageObj) {
@@ -18,11 +20,12 @@ export default class MantaAsset {
   }
 
   serialize () {
+    const assetId = new BN(this.assetId)
     return Uint8Array.from([
-      ...this.assetId.toArray('le', 8),
+      ...assetId.toArray('le', 4),
       ...this.utxo,
       ...this.voidNumber,
-      ...this.ciphertext,
+      ...this.encryptedNote.serialize(),
       ...this.pubInfo.serialize(),
       ...this.privInfo.serialize()
     ]);

@@ -14,7 +14,7 @@ import {
 
 import { useSubstrate } from './substrate-lib';
 
-function Main (props) {
+function Main(props) {
   const { keyring } = useSubstrate();
   const { setAccountAddress } = props;
   const [accountSelected, setAccountSelected] = useState('');
@@ -27,7 +27,7 @@ function Main (props) {
     icon: 'user'
   }));
   const initialAddress =
-  keyringOptions.length > 0 ? keyringOptions[0].value : '';
+    keyringOptions.length > 0 ? keyringOptions[0].value : '';
 
   // Set the initial address
   useEffect(() => {
@@ -59,7 +59,7 @@ function Main (props) {
           <Menu.Menu position='left' style={{ alignItems: 'center' }}>
             <Menu.Item name='MA Token'>
               <Link to='/ma_token'>
-                  MA Token
+                MA Token
               </Link>
             </Menu.Item>
             <Menu.Item name='Labs' >
@@ -75,7 +75,7 @@ function Main (props) {
           </Menu.Menu>
 
           <Menu.Menu position='right' style={{ alignItems: 'center' }}>
-            { !accountSelected
+            {!accountSelected
               ? <span>
                 Add your account with the{' '}
                 <a
@@ -86,7 +86,7 @@ function Main (props) {
                   Polkadot JS Extension
                 </a>
               </span>
-              : null }
+              : null}
             <CopyToClipboard text={accountSelected}>
               <Button
                 basic
@@ -115,7 +115,7 @@ function Main (props) {
   );
 }
 
-function BalanceAnnotation (props) {
+function BalanceAnnotation(props) {
   const { accountSelected } = props;
   const { api } = useSubstrate();
   const [accountBalance, setAccountBalance] = useState(0);
@@ -149,7 +149,7 @@ function BalanceAnnotation (props) {
     : null;
 }
 
-export default function AccountSelector (props) {
+export default function AccountSelector(props) {
   const { api, keyring } = useSubstrate();
   return keyring.getPairs && api.query ? <Main {...props} /> : null;
 }

@@ -12,7 +12,11 @@ import Routes from './Routes';
 import getFromAccount from './utils/api/GetFromAccount';
 import MantaKeyring from './utils/persistence/MantaKeyring';
 
+import {loadSpendableAssets} from './utils/persistence/AssetStorage'
+
 function Main () {
+  console.log('spendable assets', loadSpendableAssets())
+
   const [accountAddress, setAccountAddress] = useState(null);
   const [mantaKeyring, setMantaKeyring] = useState(null);
   const [fromAccount, setFromAccount] = useState(null);
@@ -36,6 +40,7 @@ function Main () {
     clearUtxoCache();
   }, [api]);
 
+
   const accountPair =
     accountAddress &&
     keyringState === 'READY' &&
@@ -43,8 +48,8 @@ function Main () {
 
   useEffect(() => {
     async function loadMantaKeying () {
-      const keyring = new MantaKeyring(api);
-      await keyring.init();
+      const wasm = await import('manta-api');
+      const keyring = new MantaKeyring(api, wasm);
       setMantaKeyring(keyring);
     }
     if (!api) return;

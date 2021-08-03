@@ -13,7 +13,7 @@ export const loadSpendableAssets = () => {
 
 export const loadSpendableAssetsById = assetId => {
   return loadSpendableAssets()
-    .filter(asset => asset.assetId.eq(assetId));
+    .filter(asset => asset.assetId === assetId);
 };
 
 export const removeSpendableAsset = assetToRemove => {
@@ -23,9 +23,14 @@ export const removeSpendableAsset = assetToRemove => {
 };
 
 export const persistSpendableAssets = spendableAssets => {
-  console.log(spendableAssets);
   const serializedAssets = spendableAssets.map(asset => asset.serialize());
   store.set(SPENDABLE_ASSETS_STORAGE_KEY, serializedAssets);
+};
+
+export const persistSpendableAsset = spendableAsset => {
+  const spendableAssets = loadSpendableAssets();
+  spendableAssets.push(spendableAsset);
+  persistSpendableAssets(spendableAssets);
 };
 
 export const loadSpendableBalances = () => {
@@ -34,11 +39,13 @@ export const loadSpendableBalances = () => {
     const currentValue = balanceByAssetId[asset.assetId]
       ? balanceByAssetId[asset.assetId]
       : new BN(0);
+    console.log(asset.privInfo.value, 'asset value')
     balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value);
   });
+  console.log('balances by asset id', balanceByAssetId)
   return balanceByAssetId;
 };
 
 export const loadSpendableBalance = assetId => {
-  return loadSpendableBalances()[assetId.toNumber()] || new BN(0);
+  return loadSpendableBalances()[assetId] || new BN(0);
 };

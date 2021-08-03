@@ -3,11 +3,12 @@ import BN from 'bn.js';
 
 export default class MantaAssetShieldedAddress {
   constructor(bytes) {
-    this.assetId = new BN(bytes.slice(0, 8), 10, 'le');
-    this.k = bytes.slice(8, 40);
-    this.s = bytes.slice(40, 72);
-    this.r = bytes.slice(72, 104);
-    this.ecpk = bytes.slice(104, 136);
+    this.assetId = new BN(bytes.slice(0, 4), 10, 'le');
+    this.k = bytes.slice(4, 36);
+    this.s = bytes.slice(36, 68);
+    this.r = bytes.slice(68, 100);
+    this.ecpk = bytes.slice(100, 132);
+    this.checksum = bytes.slice(132, 136);
   }
 
   static fromStorage(storageObj) {
@@ -17,11 +18,12 @@ export default class MantaAssetShieldedAddress {
 
   serialize() {
     return Uint8Array.from([
-      ...this.assetId.toArray('le', 8),
+      ...this.assetId.toArray('le', 4),
       ...this.k,
       ...this.s,
       ...this.r,
-      ...this.ecpk
+      ...this.ecpk,
+      ...this.checksum
     ]);
   }
 

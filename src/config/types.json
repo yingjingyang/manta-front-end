@@ -1,18 +1,24 @@
 {
+    "AssetId": "u32",
+    "AssetBalance": "u128",
+    "MantaRandomValue": "[u8; 32]",
+    "MantaEciesCiphertext": {
+        "encrypted_msg": "[u8; 36]",
+        "ephemeral_pk": "[u8; 32]"
+    },
     "SenderData": {
-        "k": "[u8; 32]",
-        "void_number": "[u8; 32]",
-        "root": "[u8; 32]"
+        "k": "MantaRandomValue",
+        "void_number": "MantaRandomValue",
+        "root": "MantaRandomValue"
     },
     "ReceiverData": {
-        "k": "[u8; 32]",
-        "cm": "[u8; 32]",
-        "sender_pk": "[u8; 32]",
-        "cipher": "[u8; 16]"
+        "k": "MantaRandomValue",
+        "cm": "MantaRandomValue",
+        "encrypted_note": "MantaEciesCiphertext"
     },
-    "MintPayload": "[u8; 128]",
-    "PrivateTransferPayload": "[u8; 608]",
-    "ReclaimPayload": "[u8; 512]",
+    "MintPayload": "[u8; 184]",
+    "PrivateTransferPayload": "[u8; 648]",
+    "ReclaimPayload": "[u8; 536]",
     "Shard": {
         "list": "Vec<[u8; 32]>",
         "root": "[u8; 32]"
@@ -22,6 +28,20 @@
     },
     "MantaPrivateAssetLedger": {
         "shard": "[Shard; 256]"
+    },
+    "MintData": {
+        "asset_id": "AssetId",
+        "amount": "AssetBalance",
+        "cm": "MantaRandomValue",
+        "k": "MantaRandomValue",
+        "s": "MantaRandomValue",
+        "encrypted_note": "MantaEciesCiphertext"
+    },
+    "PrivateTransferData": {
+        "sender_1": "SenderData",
+        "sender_2": "SenderData",
+        "receiver_1": "ReceiverData",
+        "receiver_2": "ReceiverData",
+        "proof": "[u8; 192]"
     }
-
 }

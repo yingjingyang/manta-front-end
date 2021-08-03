@@ -3,54 +3,58 @@ import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import BN from 'bn.js';
 import { useSubstrate } from './substrate-lib';
 
-import { loadSpendableAssetsById, loadSpendableAssets, persistSpendableAssets, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/Persistence';
+import { loadSpendableAssetsById, persistSpendableAsset, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/AssetStorage';
 import TxStatus from './utils/api/TxStatus';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import TxButton from './TxButton';
 import MantaAssetShieldedAddress from './dtos/MantaAssetShieldedAddress';
+import { base64Decode } from '@polkadot/util-crypto';
 
 export default function Main ({ fromAccount, mantaKeyring }) {
   // now
-  // todo: implement wallet protocol
   // todo: receive transfers from on chain
-  // todo: validate addresses
   // todo: make change actually spendable
+  
+  // todo: money types
+  // todo: retry failures
+  // todo: forbid insecure random
+  // todo: fix memory leak / pages shouldn't reset on switching labs page
+  // todo: standardize components
+  // todo: add keygen to setup script
+  // todo: make receiving address copy-pastable
+  // todo: handle gap limit
+  // todo: combine functions to make address and asset
+  // todo: UI freezes on change tabs
 
   // later
-  // todo: auto-patch 256 bug
-  // todo: show all finalized block hashes; retry
-  // todo: more informative tx status info (e.g. what kind of tx)
-  // todo: automatically generate proving keys on startup
   // todo: reduce duplication in reclaim and private transfer
-  // todo: form validaion component
-  // todo: standardize components
-  // todo: make persistence a class, add 'push' function
-  // todo: fix memory leak / pages shouldn't reset on switching labs page
+  // todo: make asset storage a class, add 'push' function
   // todo: check that coins actually exist on startup (maybe they were spent on different computer)
   // todo: error types
   // todo: ledger state dto
   // todo: store pending spends
-  // todo: cleanup folder structure
   // todo: intelligent coin selection
 
   const { api } = useSubstrate();
-  const [unsub, setUnsub] = useState(null);
+  const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [transferPK, setTransferPK] = useState(null);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState(new BN(-1));
-  const [assetId, setAssetId] = useState(new BN(-1));
+  const [assetId, setAssetId] = useState(-1);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
 
+  const prevStatuses = useRef([])
   const currentBatchIdx = useRef(0);
   const coinSelection = useRef(null);
   const asset1 = useRef(null);
   const asset2 = useRef(null);
-  const changeAmount = useRef(null);
   const mintZeroCoinAsset = useRef(null);
+  const changeAsset = useRef(null);
+  const changeAmount = useRef(null);
 
   /**
    *
@@ -77,21 +81,25 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const forgetAllTransactions = () => {
     asset1.current = null;
     asset2.current = null;
-    coinSelection.current = null;
     mintZeroCoinAsset.current = null;
+    changeAsset.current = null
     changeAmount.current = null;
+    coinSelection.current = null;
   };
 
   const selectCoins = useCallback(() => {
     let totalAmount = new BN(0);
     coinSelection.current = [];
+    console.log('!assetId', assetId)
     const spendableAssets = loadSpendableAssetsById(assetId);
+    console.log('!spendable assets', spendableAssets)
     spendableAssets.forEach(asset => {
       if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
         totalAmount = totalAmount.add(asset.privInfo.value);
         coinSelection.current.push(asset);
       }
     });
+    console.log('!coinSelection', coinSelection)
     // If odd number of coins selected, we will have to mint a zero value coin
     const mintBatchesRequired = coinSelection.current.length % 2;
     const transferBatchesRequired = Math.ceil(coinSelection.current.length / 2);
@@ -112,6 +120,12 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
     const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
+    changeAsset.current = mantaKeyring.generateChangeAsset(assetId, changeAmount.current)
+
+    console.log('ledgerState1', ledgerState1, asset1.current)
+    console.log('ledgerState2', ledgerState2, asset2.current)
+
+
     const payload = await mantaKeyring.generatePrivateTransferPayload(
       asset1.current.serialize(),
       asset2.current.serialize(),
@@ -168,10 +182,13 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const onPrivateTransferSuccess = async block => {
     removeSpendableAsset(asset1.current);
     removeSpendableAsset(asset2.current);
+    persistSpendableAsset(changeAsset.current);
+    changeAsset.current = null;
     // We always make change on the first transaction
     changeAmount.current = new BN(0);
 
     if (coinSelection.current.length) {
+      prevStatuses.current.push(TxStatus.finalized(block))
       doNextPrivateTransfer();
     } else {
       forgetAllTransactions();
@@ -190,10 +207,9 @@ export default function Main ({ fromAccount, mantaKeyring }) {
 
   const onMintSuccess = block => {
     coinSelection.current.push(mintZeroCoinAsset.current);
-    const spendableAssets = loadSpendableAssets();
-    spendableAssets.push(mintZeroCoinAsset.current);
+    persistSpendableAsset(mintZeroCoinAsset.current);
     mintZeroCoinAsset.current = null;
-    persistSpendableAssets(spendableAssets);
+    prevStatuses.current.push(TxStatus.finalized(block))
     doNextPrivateTransfer();
   };
 
@@ -240,6 +256,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     if (!amount || !assetId) {
       return;
     }
+    console.log(loadSpendableBalance(assetId), 'spendable')
     if (amount.gt(loadSpendableBalance(assetId))) {
       setInsufficientFunds(true);
     } else {
@@ -250,14 +267,13 @@ export default function Main ({ fromAccount, mantaKeyring }) {
 
 
   const onChangeAssetId = e => {
-    const assetId = new BN(e.target.value);
-    setAssetId(assetId);
+    setAssetId(parseInt(e.target.value));
   };
 
 
   const onChangeAddress = e => {
     try {
-      setAddress(new MantaAssetShieldedAddress(e.target.value));
+      setAddress(new MantaAssetShieldedAddress(base64Decode(e.target.value)));
     } catch (e) {
       setAddress(null);
     }
@@ -274,7 +290,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const formIsDisabled = status && status.isProcessing();
   const buttonIsDisabled = (
     formIsDisabled || insufficientFunds || !address ||
-    !assetId.gt(new BN(0)) || !amount.gt(new BN(0))
+    !(assetId > 0) || !amount.gt(new BN(0))
   );
 
   return (
@@ -321,6 +337,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
             />
           </Form.Field>
           <TxStatusDisplay
+            prevStatuses={prevStatuses.current}
             txStatus={status}
             totalBatches={totalBatches}
             batchNumber={currentBatchIdx.current}

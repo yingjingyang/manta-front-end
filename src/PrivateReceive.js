@@ -1,12 +1,10 @@
+import { BN_BILLION } from '@polkadot/util';
 import React, { useState } from 'react';
 import { Grid, Header, Form, Button, Input } from 'semantic-ui-react';
+import BN from 'bn.js'
 
 export default function Main ({ mantaKeyring }) {
-  const [formState, setFormState] = useState({ assetId: null });
-  const onChange = (_, data) => {
-    setFormState(prev => ({ ...prev, [data.state]: data.value }));
-  };
-  const { assetId } = formState;
+  const [assetId, setAssetId] = useState(new BN(-1));
   const [address, setAddress] = useState(null);
 
   const showAddress = () => {
@@ -25,13 +23,13 @@ export default function Main ({ mantaKeyring }) {
               label='Asset ID'
               type='number'
               state='assetId'
-              onChange={onChange}
+              onChange={e => setAssetId(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             {address && address.toString()}
           </Form.Field>
-          <Button onClick={showAddress}>
+          <Button disabled={!assetId.gt(new BN(-1))} onClick={showAddress}>
               Get new address
           </Button>
         </Form>
