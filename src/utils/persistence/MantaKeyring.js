@@ -18,13 +18,9 @@ export const EXTERNAL_CHAIN_ID = 1; // todo check
 export const INTERNAL_CHAIN_ID = 0; // todo check
 export const MANTA_WALLET_BASE_PATH = `//${MIP_1_PURPOSE_INDEX}`;
 
-
-// todo: class for keypath
-// todo: can hide internal functions by making consts
 export default class MantaKeyring {
 
   constructor(api, wasm) {
-    console.log('init keyring!')
     this.api = api;
     this.wasm = wasm
     if (!store.get('mantaAddresses')) {
@@ -48,32 +44,46 @@ export default class MantaKeyring {
     return store.get('mantaSecretKey', null);
   }
 
-  recoverWallet(encryptedValues) {
-    const internalChainAssets = this._recoverInternalChain(encryptedValues)
-    console.log(internalChainAssets)
-    console.log('@@@Test', _.isEqual(internalChainAssets, loadSpendableAssets()))
-    // const externalChainAssets = _recoverExternalChain(encryptedValues)
-    // return [...internalChainAssets, ...externalChainAssets]
-  }
+  // recoverWallet(encryptedValues) {
+  //   const internalChainAssets = this._recoverInternalChain(encryptedValues)
+  //   console.log(internalChainAssets)
+  //   console.log('@@@Test', _.isEqual(internalChainAssets, loadSpendableAssets()))
+  //   // const externalChainAssets = _recoverExternalChain(encryptedValues)
+  //   // return [...internalChainAssets, ...externalChainAssets]
+  // }
 
-  _recoverInternalChain(encryptedValues) {
+  recoverWallet(encryptedValues, voidNumbers) {
+    const internalPath = `${MANTA_WALLET_BASE_PATH}//${INTERNAL_CHAIN_ID}`
+    const externalPath = `${MANTA_WALLET_BASE_PATH}//${EXTERNAL_CHAIN_ID}`
+    let internalAddressEndIndex = GAP_LIMIT
+    let externalAddressEndIndex = GAP_LIMIT
     let assets = [];
-    let addressEndIndex = GAP_LIMIT
+
     encryptedValues.forEach(({encrypted_msg, ephemeral_pk}) => {
-      const asset = this._tryRecoverAssetFromSingleEncryptedMessage(
-        addressEndIndex, encrypted_msg, ephemeral_pk
+      const internalAsset = this._tryRecoverAssetFromSingleEncryptedMessage(
+        internalAddressEndIndex, encrypted_msg, ephemeral_pk, internalPath
       )
-      if (asset) {
-        assets.push(asset)
-        addressEndIndex++;
+      if (internalAsset) {
+        assets.push(internalAsset)
+        internalAddressEndIndex++;
+      } else {
+        const externalAsset = this._tryRecoverAssetFromSingleEncryptedMessage(
+          externalAddressEndIndex, encrypted_msg, ephemeral_pk, externalPath
+        )
+        if (externalAsset) {
+          assets.push(externalAsset)
+          externalAddressEndIndex++;
+        }
       }
     })
-    return assets
+    const res = assets.filter(asset => !voidNumbers.includes(asset.voidNumber))
+    console.log(res, 'assets')
+    return res
   }
 
-  _tryRecoverAssetFromSingleEncryptedMessage(addressEndIndex, encryptedMsg, ephemeralPk) {
+  _tryRecoverAssetFromSingleEncryptedMessage(addressEndIndex, encryptedMsg, ephemeralPk, basePath) {
     for (let i = 0; i < addressEndIndex; i++) {
-      const path = `${MANTA_WALLET_BASE_PATH}//${INTERNAL_CHAIN_ID}//${i}`
+      const path = `${basePath}//${i}`
       const childSecret = this.wasm.generate_child_secret_key_for_browser(path, this.getSecretKey())
       const ecsk = this.wasm.generate_ecsk_for_browser(childSecret)
       try {
@@ -225,7 +235,7 @@ export default class MantaKeyring {
       asset2,
       ledgerState1,
       ledgerState2,
-      reclaimAmount,
+      reclaimAmount.toArray('le', 16),
       reclaimPK,
       changeAddress,
       prngSeed

@@ -43,5 +43,13 @@
         "receiver_1": "ReceiverData",
         "receiver_2": "ReceiverData",
         "proof": "[u8; 192]"
+    },
+    "ReclaimData": {
+        "asset_id": "AssetId",
+        "reclaim_amount": "AssetBalance",
+        "sender_1": "SenderData",
+        "sender_2": "SenderData",
+        "receiver": "ReceiverData",
+        "proof": "[u8; NUM_BYTE_ZKP]"
     }
 }

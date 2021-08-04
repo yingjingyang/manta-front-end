@@ -17,7 +17,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [reclaimPK, setReclaimPK] = useState(null);
-  const [assetId, setAssetId] = useState(new BN(-1));
+  const [assetId, setAssetId] = useState(-1);
   const [amount, setAmount] = useState(new BN(-1));
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
@@ -228,7 +228,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   }, [amount, assetId, selectCoins]);
 
   const handleChangeAssetId = e => {
-    const assetId = new BN(e.target.value);
+    const assetId = parseInt(e.target.value);
     setAssetId(assetId);
   };
 
@@ -242,7 +242,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
 
   const formIsDisabled = status && status.isProcessing();
   const buttonIsDisabled = (
-    formIsDisabled || insufficientFunds || !assetId.gt(new BN(0)) || !amount.gt(new BN(0)));
+    formIsDisabled || insufficientFunds || !(assetId > 0) || !amount.gt(new BN(0)));
 
   return (
     <>

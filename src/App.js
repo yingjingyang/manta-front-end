@@ -12,7 +12,7 @@ import Routes from './Routes';
 import getFromAccount from './utils/api/GetFromAccount';
 import MantaKeyring from './utils/persistence/MantaKeyring';
 
-import { loadSpendableAssets } from './utils/persistence/AssetStorage'
+import { loadSpendableAssets, persistSpendableAssets } from './utils/persistence/AssetStorage'
 
 function Main() {
   console.log('spendable assets', loadSpendableAssets())
@@ -78,9 +78,11 @@ function Main() {
       await api.isReady;
       console.log(api, 'api')
       const encryptedValues = await api.query.mantaPay.encValueList()
+      const voidNumbers = await api.query.mantaPay.vNList()
       console.log(encryptedValues, 'encryptedVales')
       console.log(encryptedValues)
-      mantaKeyring.recoverWallet(encryptedValues)
+      const recoveredAssets = mantaKeyring.recoverWallet(encryptedValues, voidNumbers)
+      persistSpendableAssets(recoveredAssets)
 
     }
     recoverWallet()
