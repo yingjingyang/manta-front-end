@@ -5,7 +5,6 @@ import MantaEciesCiphertext from './MantaEciesCiphertext';
 
 export default class MantaAsset {
   constructor (bytes) {
-    console.log('asset bytes', bytes)
     this.assetId = new BN(bytes.slice(0, 4), 10, 'le').toNumber();
     this.utxo = bytes.slice(4, 36);
     this.voidNumber = bytes.slice(36, 68);

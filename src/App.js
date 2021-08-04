@@ -12,9 +12,9 @@ import Routes from './Routes';
 import getFromAccount from './utils/api/GetFromAccount';
 import MantaKeyring from './utils/persistence/MantaKeyring';
 
-import {loadSpendableAssets} from './utils/persistence/AssetStorage'
+import { loadSpendableAssets } from './utils/persistence/AssetStorage'
 
-function Main () {
+function Main() {
   console.log('spendable assets', loadSpendableAssets())
 
   const [accountAddress, setAccountAddress] = useState(null);
@@ -33,7 +33,7 @@ function Main () {
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
         store.set('mantaSecretKey', null);
-        store.set('mantaAddresses', {});
+        store.set('mantaAddresses', null);
         console.log('Reset UTXO cache ');
       }
     };
@@ -47,7 +47,7 @@ function Main () {
     keyring.getPair(accountAddress);
 
   useEffect(() => {
-    async function loadMantaKeying () {
+    async function loadMantaKeying() {
       const wasm = await import('manta-api');
       const keyring = new MantaKeyring(api, wasm);
       setMantaKeyring(keyring);
@@ -57,7 +57,7 @@ function Main () {
   }, [api]);
 
   useEffect(() => {
-    async function loadFromAccount (accountPair) {
+    async function loadFromAccount(accountPair) {
       if (!api || !api.isConnected || !accountPair) {
         return;
       }
@@ -66,6 +66,25 @@ function Main () {
     }
     loadFromAccount(accountPair, api);
   }, [api, accountPair]);
+
+
+
+
+  useEffect(() => {
+    if (!api || !api.isConnected || !mantaKeyring) {
+      return;
+    }
+    const recoverWallet = async () => {
+      await api.isReady;
+      console.log(api, 'api')
+      const encryptedValues = await api.query.mantaPay.encValueList()
+      console.log(encryptedValues, 'encryptedVales')
+      console.log(encryptedValues)
+      mantaKeyring.recoverWallet(encryptedValues)
+
+    }
+    recoverWallet()
+  }, [api, mantaKeyring])
 
   const loader = text =>
     <Dimmer active>
@@ -106,7 +125,7 @@ function Main () {
   );
 }
 
-export default function App () {
+export default function App() {
   return (
     <SubstrateContextProvider>
       <Main />

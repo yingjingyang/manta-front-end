@@ -21,9 +21,14 @@ export default function Main ({ mantaKeyring }) {
     setNewMnemonic(newMnemonic)
   }
 
-  const handleClickRecoverAccount = () => {
+
+  const handleClickRecoverAccount = async () => {
     const mnemonic = mnemonicInput.trim().split(' ').filter(x => x).join(' ')
     mantaKeyring.importMnemonic(mnemonic)
+    const encryptedVales = await api.query.mantaPay.encValueList()
+    console.log(encryptedVales, 'encryptedVales')
+
+
     setAccountWasRecovered(true)
   }
 

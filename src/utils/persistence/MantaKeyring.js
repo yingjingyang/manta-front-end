@@ -1,6 +1,3 @@
-// todo: move to own library
-// todo: encrypt storage
-// todo: rigorously hide private key with closure like polkadot.js
 import store from 'store';
 import {
   mnemonicToMiniSecret,
@@ -10,11 +7,16 @@ import BN from 'bn.js';
 import MantaAsset from '../../dtos/MantaAsset';
 import MantaAssetShieldedAddress from '../../dtos/MantaAssetShieldedAddress';
 import MantaAssetReceiverSpendingInfo from '../../dtos/MantaAssetReceiverSpendingInfo';
+import MantaEciesMessage from '../../dtos/MantaEciesMessage';
+import _ from 'lodash';
+import { loadSpendableAssets } from './AssetStorage';
+
 
 const MIP_1_PURPOSE_INDEX = 3681947;
+const GAP_LIMIT = 20;
 export const EXTERNAL_CHAIN_ID = 1; // todo check
 export const INTERNAL_CHAIN_ID = 0; // todo check
-export const MANTA_WALLET_BASE_PATH = `//${MIP_1_PURPOSE_INDEX}`; // /cointype/change/address
+export const MANTA_WALLET_BASE_PATH = `//${MIP_1_PURPOSE_INDEX}`;
 
 
 // todo: class for keypath
@@ -22,41 +24,19 @@ export const MANTA_WALLET_BASE_PATH = `//${MIP_1_PURPOSE_INDEX}`; // /cointype/c
 export default class MantaKeyring {
 
   constructor(api, wasm) {
+    console.log('init keyring!')
     this.api = api;
     this.wasm = wasm
     if (!store.get('mantaAddresses')) {
-      store.set('mantaAddresses', {})
+      store.set('mantaAddresses', {[INTERNAL_CHAIN_ID]: [], [EXTERNAL_CHAIN_ID]: []});
     }
-  }
-
-  async init () {
-    return
-    // const paths = this.getAllPaths();
-    // // const ecsks = paths.map(path => {
-    // //   const secret = this.wasm.generate_child_secret_key_for_browser(path, new Uint8Array(32).fill(0));
-    // //   return new MantaAssetReceiverSpendingInfo(
-    // //     this.wasm.generate_spending_info_for_browser(secret, path.split("//").filter(x => x)[1])).ecsk
-    // // });
-    // const ecpks = paths.map(path => this._deriveAddress(path).ecpk)
-
-    // const encodedValues = await this.api.query.mantaPay.encValueList();
-    // encodedValues.forEach(value => {
-    //   for (let i = 0; i < paths.length; i++) {
-    //     // // console.log('i', i)
-    //     // const res = this.wasm.decrypt_ecies_for_browser(ecsks[i], ecpks[i], value);
-    //     // // console.log(secrets[i])
-    //     // console.log(ecpks[i])
-    //     // // console.log('encoded', value)
-    //     // console.log('res', res)
-    //   }
-    // });
   }
 
   importMnemonic(mnemonic) {
     const seed = mnemonicToMiniSecret(mnemonic);
     const { secretKey } = naclKeypairFromSeed(seed);
     store.set('mantaSecretKey', secretKey);
-    store.set('mantaAddresses', {});
+    store.set('mantaAddresses', {[INTERNAL_CHAIN_ID]: [], [EXTERNAL_CHAIN_ID]: []});
   }
 
   hasSecretKey() {
@@ -67,127 +47,128 @@ export default class MantaKeyring {
   getSecretKey() {
     return store.get('mantaSecretKey', null);
   }
- 
 
-  getAllPaths () {
-    const addressesStorage = store.get('mantaAddresses');
-    const assetIds = Object.keys(addressesStorage);
-    const paths = []
-    for (let i = 0; i < assetIds.length; i++) {
-      let assetId = assetIds[i];
-      const externalChain = addressesStorage[assetId][EXTERNAL_CHAIN_ID]
-      const internalChain = addressesStorage[assetId][INTERNAL_CHAIN_ID]
-      for (let j = 0; j < externalChain.length; j++) {
-        paths.push(`${MANTA_WALLET_BASE_PATH}//${assetId}//${EXTERNAL_CHAIN_ID}//${j}`)
-      }
-      for (let j = 0; j < internalChain.length; j++) {
-        paths.push(`${MANTA_WALLET_BASE_PATH}//${assetId}//${INTERNAL_CHAIN_ID}//${j}`)
-      }
-    }
-    return paths
+  recoverWallet(encryptedValues) {
+    const internalChainAssets = this._recoverInternalChain(encryptedValues)
+    console.log(internalChainAssets)
+    console.log('@@@Test', _.isEqual(internalChainAssets, loadSpendableAssets()))
+    // const externalChainAssets = _recoverExternalChain(encryptedValues)
+    // return [...internalChainAssets, ...externalChainAssets]
   }
 
-  // getAllAddresses () {
-  //   const addressesStorage = store.get('mantaAddresses');
-  //   const addressesByAsset = Object.entries(addressesStorage).map(([_,v]) => v);
-  //   const addressList = Object.entries(addressesByAsset).flatMap(([_,v]) => Object.entries(v).flatMap((([_2, v2]) => v2)));
-  //   return addressList.map(address => MantaAssetShieldedAddress.fromStorage(address));
+  _recoverInternalChain(encryptedValues) {
+    let assets = [];
+    let addressEndIndex = GAP_LIMIT
+    encryptedValues.forEach(({encrypted_msg, ephemeral_pk}) => {
+      const asset = this._tryRecoverAssetFromSingleEncryptedMessage(
+        addressEndIndex, encrypted_msg, ephemeral_pk
+      )
+      if (asset) {
+        assets.push(asset)
+        addressEndIndex++;
+      }
+    })
+    return assets
+  }
+
+  _tryRecoverAssetFromSingleEncryptedMessage(addressEndIndex, encryptedMsg, ephemeralPk) {
+    for (let i = 0; i < addressEndIndex; i++) {
+      const path = `${MANTA_WALLET_BASE_PATH}//${INTERNAL_CHAIN_ID}//${i}`
+      const childSecret = this.wasm.generate_child_secret_key_for_browser(path, this.getSecretKey())
+      const ecsk = this.wasm.generate_ecsk_for_browser(childSecret)
+      try {
+        const decrypted = this.wasm.decrypt_ecies_for_browser(ecsk, ephemeralPk, encryptedMsg)
+        const message = new MantaEciesMessage(decrypted)
+        console.log('message', message)
+        const asset = new MantaAsset(
+          this.wasm.generate_mint_asset_for_browser(
+          childSecret, message.assetId, message.amount.toArray('le', 16)
+          )
+        )
+        console.log('DECRYPT SUCCESS!', decrypted)
+        return asset
+      } catch(error) {
+        console.log('DECRYPT FAILED!', error)
+      }
+    }
+  }
+
+  // _recoverExternalChain(encryptedValues) {
+  //   let addressIndex = 0
+  //   const path = `${MANTA_WALLET_BASE_PATH}//${EXTERNAL_CHAIN_ID}//${addressIndex}`
+  //   const ecsk = null;
+  //   encryptedValues.forEach(({encrypted_msg, ephemeral_pk}) => {
+  //     try {
+  //       const decrypted = this._decryptEcies(ecsk, ephemeral_pk, encrypted_msg)
+  //       console.log('DECRYPT SUCCESS!', decrypted)
+  //     } catch(error) {
+  //       console.log(error)
+  //     }
+  //   })
   // }
 
-  initAssetStorage(assetId) {
-    let addresses = store.get('mantaAddresses');
-    if (!addresses[assetId]) {
-      addresses[assetId] = {};
-      addresses[assetId][INTERNAL_CHAIN_ID] = [];
-      addresses[assetId][EXTERNAL_CHAIN_ID] = [];
-      store.set('mantaAddresses', addresses);
-    }
+  _decryptEcies(ecsk, ecpk, ciphertext) {
+    return this.wasm.decrypt_ecies_for_browser(
+      ecsk, ecpk, ciphertext
+    )
   }
 
-  // todo: rename
-  // Derive HD nodes
-  _deriveAddress(path) {
+  _deriveAddress(path, assetId) {
     console.log('deriving address with path:', path)
-    const assetId = path.split("//").filter(x => x)[1];
     const secretKey = this.getSecretKey(); // todo: get from storage
     const childSecret = this.wasm.generate_child_secret_key_for_browser(path, secretKey);
     const address = this.wasm.generate_shielded_address_for_browser(childSecret, assetId)
-    const res = new MantaAssetShieldedAddress(address);
-    return res
+    return new MantaAssetShieldedAddress(address);
   }
 
-  _generateNextAddress(assetId, isInternal) {
+  _generateNextAddress(isInternal, assetId) {
     const chainId = isInternal ? INTERNAL_CHAIN_ID : EXTERNAL_CHAIN_ID;
-    this.initAssetStorage(assetId);
     let addresses = store.get('mantaAddresses');
-    const assetAddresses = addresses[assetId];
-    const internalAddresses = assetAddresses[chainId];
+    const internalAddresses = addresses[chainId];
     const addressIdx = internalAddresses.length;
-
-    const path =
-    `${MANTA_WALLET_BASE_PATH}//${assetId}//${chainId}//${addressIdx}`;
-    
+    const path = `${MANTA_WALLET_BASE_PATH}//${chainId}//${addressIdx}`;
     // Save that we have generated address
     internalAddresses.push(true);
     store.set('mantaAddresses', addresses);
-
-    const address = this._deriveAddress(path);
+    const address = this._deriveAddress(path, assetId);
     return address;
   }
 
   generateNextInternalAddress(assetId) {
-    return this._generateNextAddress(assetId, true);
+    return this._generateNextAddress(true, assetId);
   }
 
   generateNextExternalAddress(assetId) {
-    return this._generateNextAddress(assetId, false);
+    return this._generateNextAddress(false, assetId);
   }
 
   generateMintAsset(assetId, amount) {
-    // console.log(assetId, 'assetid')
-    // todo: save mint asset on success only?
-    const secretKey = this.getSecretKey(); // todo: get from storage
+    const secretKey = this.getSecretKey();
     this.generateNextInternalAddress(assetId);
-
-    let addressIdx = store.get('mantaAddresses')[assetId][INTERNAL_CHAIN_ID].length - 1;
-    const path =
-    `${MANTA_WALLET_BASE_PATH}//${assetId}//${INTERNAL_CHAIN_ID}//${addressIdx}`;
-
+    let addressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
+    const path = `${MANTA_WALLET_BASE_PATH}//${INTERNAL_CHAIN_ID}//${addressIdx}`;
     const childSecret = this.wasm.generate_child_secret_key_for_browser(path, secretKey);
-    const res = new MantaAsset(
+    return new MantaAsset(
       this.wasm.generate_mint_asset_for_browser(
         childSecret, assetId, amount.toArray('le', 16)
       )
     );
-    // console.log('res', res)
-    // console.log(res.privInfo.value, new MantaAsset(res.serialize()))
-    return res;
   }
 
   generateChangeAsset(assetId, amount) {
-    console.log('assetId', assetId)
     this.generateNextInternalAddress(assetId);
-    
-    let addressIdx = store.get('mantaAddresses')[assetId][INTERNAL_CHAIN_ID].length - 1;
+    let addressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
     const path =
-    `${MANTA_WALLET_BASE_PATH}//${assetId}//${INTERNAL_CHAIN_ID}//${addressIdx}`;
-    const secretKey = this.getSecretKey(); // todo: get from storage
+    `${MANTA_WALLET_BASE_PATH}//${INTERNAL_CHAIN_ID}//${addressIdx}`;
+    const secretKey = this.getSecretKey()
     const childSecret = this.wasm.generate_child_secret_key_for_browser(path, secretKey);
-
     const prngSeed = new Uint8Array(32);
     window.crypto.getRandomValues(prngSeed); 
-
-    let res;
-    
-    [0, 0].forEach(_ => {
-      res =  new MantaAsset(
-        this.wasm.generate_change_asset_for_browser(
-          childSecret, assetId, amount.toArray('le', 16), prngSeed
-        )
-      );
-      console.log('duplicate', res.assetId)
-    }) 
-    return res; 
+    return new MantaAsset(
+      this.wasm.generate_change_asset_for_browser(
+        childSecret, assetId, amount.toArray('le', 16), prngSeed
+      )
+    );
   }
 
   generateMintPayload(mintAsset) {
@@ -250,8 +231,4 @@ export default class MantaKeyring {
       prngSeed
     );
   }
-
-
-
-
 }
