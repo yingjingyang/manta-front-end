@@ -7,6 +7,6 @@ export default class MintData {
     this.cm = bytes.slice(20, 52);
     this.k = bytes.slice(52, 84);
     this.s = bytes.slice(84, 116);
-    this.encryptedNote = bytes.slice(116, 184)
+    this.encryptedNote = bytes.slice(116, 184);
   }
 }

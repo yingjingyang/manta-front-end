@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Grid, Header, Input } from 'semantic-ui-react';
 import BN from 'bn.js';
+import { base64Decode } from '@polkadot/util-crypto';
 import { useSubstrate } from './substrate-lib';
 
 import { loadSpendableAssetsById, persistSpendableAsset, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/AssetStorage';
@@ -10,13 +11,12 @@ import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import TxButton from './TxButton';
 import MantaAssetShieldedAddress from './dtos/MantaAssetShieldedAddress';
-import { base64Decode } from '@polkadot/util-crypto';
 
 export default function Main ({ fromAccount, mantaKeyring }) {
   // now
   // todo: receive transfers from on chain
   // todo: make change actually spendable
-  
+
   // todo: money types
   // todo: retry failures
   // todo: forbid insecure random
@@ -47,7 +47,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
 
-  const prevStatuses = useRef([])
+  const prevStatuses = useRef([]);
   const currentBatchIdx = useRef(0);
   const coinSelection = useRef(null);
   const asset1 = useRef(null);
@@ -82,7 +82,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     asset1.current = null;
     asset2.current = null;
     mintZeroCoinAsset.current = null;
-    changeAsset.current = null
+    changeAsset.current = null;
     changeAmount.current = null;
     coinSelection.current = null;
   };
@@ -90,16 +90,16 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const selectCoins = useCallback(() => {
     let totalAmount = new BN(0);
     coinSelection.current = [];
-    console.log('!assetId', assetId)
+    console.log('!assetId', assetId);
     const spendableAssets = loadSpendableAssetsById(assetId);
-    console.log('!spendable assets', spendableAssets)
+    console.log('!spendable assets', spendableAssets);
     spendableAssets.forEach(asset => {
       if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
         totalAmount = totalAmount.add(asset.privInfo.value);
         coinSelection.current.push(asset);
       }
     });
-    console.log('!coinSelection', coinSelection)
+    console.log('!coinSelection', coinSelection);
     // If odd number of coins selected, we will have to mint a zero value coin
     const mintBatchesRequired = coinSelection.current.length % 2;
     const transferBatchesRequired = Math.ceil(coinSelection.current.length / 2);
@@ -120,10 +120,10 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
     ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
     const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
-    changeAsset.current = mantaKeyring.generateChangeAsset(assetId, changeAmount.current)
+    changeAsset.current = mantaKeyring.generateChangeAsset(assetId, changeAmount.current);
 
-    console.log('ledgerState1', ledgerState1, asset1.current)
-    console.log('ledgerState2', ledgerState2, asset2.current)
+    console.log('ledgerState1', ledgerState1, asset1.current);
+    console.log('ledgerState2', ledgerState2, asset2.current);
 
 
     const payload = await mantaKeyring.generatePrivateTransferPayload(
@@ -188,7 +188,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     changeAmount.current = new BN(0);
 
     if (coinSelection.current.length) {
-      prevStatuses.current.push(TxStatus.finalized(block))
+      prevStatuses.current.push(TxStatus.finalized(block));
       doNextPrivateTransfer();
     } else {
       forgetAllTransactions();
@@ -209,7 +209,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     coinSelection.current.push(mintZeroCoinAsset.current);
     persistSpendableAsset(mintZeroCoinAsset.current);
     mintZeroCoinAsset.current = null;
-    prevStatuses.current.push(TxStatus.finalized(block))
+    prevStatuses.current.push(TxStatus.finalized(block));
     doNextPrivateTransfer();
   };
 
@@ -256,7 +256,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     if (!amount || !assetId) {
       return;
     }
-    console.log(loadSpendableBalance(assetId), 'spendable')
+    console.log(loadSpendableBalance(assetId), 'spendable');
     if (amount.gt(loadSpendableBalance(assetId))) {
       setInsufficientFunds(true);
     } else {

@@ -19,8 +19,8 @@ export default function Main ({ fromAccount, mantaKeyring }) {
 
   let mintAsset = useRef(null);
 
-  const generateMintPayload = mintAmount => {
-    const mintAsset = mantaKeyring.generateMintAsset(assetId, mintAmount);
+  const generateMintPayload = async mintAmount => {
+    const mintAsset = await mantaKeyring.generateMintAsset(assetId, mintAmount);
     const mintInfo = mantaKeyring.generateMintPayload(mintAsset.serialize());
     return [formatPayloadForSubstrate([mintInfo]), mintAsset];
   };
@@ -41,14 +41,17 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   };
 
   const submitTransaction = payload => {
+    console.log('payload?', payload);
+    console.log('from account?', fromAccount.toString());
     const handleTxResponse = makeTxResHandler(api, onTxSuccess, onTxFailure, onTxUpdate);
     const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.MINT_PRIVATE_ASSET](...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
     setUnsub(() => unsub);
   };
 
-  const onClickSubmit = () => {
-    const [payload, asset] = generateMintPayload(mintAmount);
+  const onClickSubmit = async () => {
+    const [payload, asset] = await generateMintPayload(mintAmount);
+    console.log('payload, asset', payload, asset);
     mintAsset.current = asset;
     submitTransaction(payload);
   };

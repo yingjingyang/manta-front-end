@@ -39,10 +39,10 @@ export const loadSpendableBalances = () => {
     const currentValue = balanceByAssetId[asset.assetId]
       ? balanceByAssetId[asset.assetId]
       : new BN(0);
-    console.log(asset.privInfo.value, 'asset value')
+    console.log(asset.privInfo.value, 'asset value');
     balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value);
   });
-  console.log('balances by asset id', balanceByAssetId)
+  console.log('balances by asset id', balanceByAssetId);
   return balanceByAssetId;
 };
 

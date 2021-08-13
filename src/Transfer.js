@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Input, Grid, Header } from 'semantic-ui-react';
 import BN from 'bn.js';
+import { decodeAddress, encodeAddress } from '@polkadot/keyring';
+import { hexToU8a, isHex } from '@polkadot/util';
 import MAToAtomicUnits from './utils/ui/MAToAtomicUnit';
 import TxButton from './TxButton';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
@@ -8,8 +10,6 @@ import { useSubstrate } from './substrate-lib';
 import { makeDefaultTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import { PALLET, CALLABLE } from './constants/ApiConstants';
-import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-import { hexToU8a, isHex } from "@polkadot/util";
 
 export default function Main ({ fromAccount }) {
   const { api } = useSubstrate();
@@ -40,7 +40,7 @@ export default function Main ({ fromAccount }) {
   
       return true;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return false;
     }
   };

@@ -22,7 +22,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [totalBatches, setTotalBatches] = useState(0);
 
-  const prevStatuses = useRef([])
+  const prevStatuses = useRef([]);
   const currentBatchIdx = useRef(0);
   const coinSelection = useRef(null);
   const changeAmount = useRef(null);
@@ -150,7 +150,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     changeAmount.current = new BN(0);
 
     if (coinSelection.current.length) {
-      prevStatuses.current.push(TxStatus.finalized(block))
+      prevStatuses.current.push(TxStatus.finalized(block));
       doNextReclaim();
     } else {
       forgetAllTransactions();
@@ -173,7 +173,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     spendableAssets.push(mintZeroCoinAsset.current);
     mintZeroCoinAsset.current = null;
     persistSpendableAssets(spendableAssets);
-    prevStatuses.current.push(TxStatus.finalized(block))
+    prevStatuses.current.push(TxStatus.finalized(block));
     doNextReclaim();
   };
 

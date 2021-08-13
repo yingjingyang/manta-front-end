@@ -19,7 +19,7 @@ export default class MantaAsset {
   }
 
   serialize () {
-    const assetId = new BN(this.assetId)
+    const assetId = new BN(this.assetId);
     return Uint8Array.from([
       ...assetId.toArray('le', 4),
       ...this.utxo,

@@ -12,7 +12,7 @@ export default function Main ({ txStatus, prevStatuses = [], totalBatches = 1 })
     if (status.isProcessing()) {
       return (
         <p>{`🕒 Transaction ${batchMessage} processing: ${status.message}`}</p>
-      )
+      );
     } else if (status.isFinalized()) {
       return (
         <p>
@@ -28,9 +28,9 @@ export default function Main ({ txStatus, prevStatuses = [], totalBatches = 1 })
             {`❌ Transaction ${batchMessage} failed: ${status.message}`}
           </a>
         </p>
-      )
+      );
     }
-  }
+  };
 
-  return <div>{prevStatuses.concat(txStatus).map((status, txIdx) => formatStatus(status, txIdx + 1))}</div>
+  return <div>{prevStatuses.concat(txStatus).map((status, txIdx) => formatStatus(status, txIdx + 1))}</div>;
 }

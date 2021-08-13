@@ -1,6 +1,6 @@
 // This component will simply add utility functions to your developer console.
-import { useSubstrate } from '../';
 import { Keyring } from '@polkadot/api';
+import { useSubstrate } from '../';
 
 export default function DeveloperConsole (props) {
   //

@@ -1,14 +1,15 @@
 import { BN_BILLION } from '@polkadot/util';
 import React, { useState } from 'react';
 import { Grid, Header, Form, Button, Input } from 'semantic-ui-react';
-import BN from 'bn.js'
+import BN from 'bn.js';
 
 export default function Main ({ mantaKeyring }) {
   const [assetId, setAssetId] = useState(new BN(-1));
   const [address, setAddress] = useState(null);
 
-  const showAddress = () => {
-    setAddress(mantaKeyring.generateNextExternalAddress(assetId));
+  const showAddress = async () => {
+    const address = await mantaKeyring.generateNextExternalAddress(assetId);
+    setAddress(address);
   };
 
   return (
