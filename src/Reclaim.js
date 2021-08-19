@@ -12,11 +12,10 @@ import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 
 
 
-export default function Main ({ fromAccount, mantaKeyring }) {
+export default function Main ({ fromAccount, signerClient }) {
   const { api } = useSubstrate();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
-  const [reclaimPK, setReclaimPK] = useState(null);
   const [assetId, setAssetId] = useState(-1);
   const [amount, setAmount] = useState(new BN(-1));
   const [insufficientFunds, setInsufficientFunds] = useState(false);
@@ -66,7 +65,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     const spendableAssets = loadSpendableAssetsById(assetId);
     spendableAssets.forEach(asset => {
       if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
-        totalAmount = totalAmount.add(asset.privInfo.value);
+        totalAmount = totalAmount.add(asset.value);
         coinSelection.current.push(asset);
       }
     });
@@ -86,27 +85,21 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const generateReclaimPayload = async () => {
     let ledgerState1 = await getLedgerState(asset1.current);
     let ledgerState2 = await getLedgerState(asset2.current);
-    // flatten (wasm only accepts flat arrays)
-    ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
-    ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
-
-    const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
-
-    const payload = await mantaKeyring.generateReclaimPayload(
-      asset1.current.serialize(),
-      asset2.current.serialize(),
+    const changeAddress = await signerClient.generateNextInternalAddress(assetId);
+    const payload = await signerClient.generateReclaimPayload(
+      asset1.current,
+      asset2.current,
       ledgerState1,
       ledgerState2,
-      asset1.current.privInfo.value.add(asset2.current.privInfo.value.sub(changeAmount.current)),
-      reclaimPK,
-      changeAddress.serialize()
+      asset1.current.value.add(asset2.current.value.sub(changeAmount.current)),
+      changeAddress
     );
     return formatPayloadForSubstrate([payload]);
   };
 
-  const generateMintZeroCoinPayload = () => {
-    mintZeroCoinAsset.current = mantaKeyring.generateAsset(assetId, new BN(0));
-    const payload = mantaKeyring.generateMintPayload(mintZeroCoinAsset.current.serialize());
+  const generateMintZeroCoinPayload = async () => {
+    mintZeroCoinAsset.current = await signerClient.generateAsset(assetId, new BN(0));
+    const payload = signerClient.generateMintPayload(mintZeroCoinAsset.current);
     return formatPayloadForSubstrate([payload]);
   };
 
@@ -185,29 +178,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const onMintUpdate = message => {
     setStatus(TxStatus.processing(message));
   };
-
-
-  /**
-   *
-   * On pageload
-   *
-   */
-
-  useEffect(() => {
-    const request = new XMLHttpRequest();
-    request.open('GET', 'reclaim_pk.bin', true);
-    request.responseType = 'blob';
-    request.onreadystatechange = async () => {
-      if (request.readyState === 4) {
-        const fileContent = request.response;
-        const fileContentBuffer = await fileContent.arrayBuffer();
-        const reclaimPK = new Uint8Array(fileContentBuffer);
-        setReclaimPK(reclaimPK);
-      }
-    };
-    request.send(null);
-  }, []);
-
 
   /**
    *

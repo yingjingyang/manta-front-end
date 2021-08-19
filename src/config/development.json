@@ -1,3 +1,4 @@
 {
-    "PROVIDER_SOCKET": "ws://localhost:9944"
+    "PROVIDER_SOCKET": "ws://localhost:9944",
+    "COIN_TYPE_ID": 611
 }

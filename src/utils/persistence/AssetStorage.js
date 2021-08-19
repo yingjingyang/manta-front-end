@@ -1,14 +1,14 @@
 import store from 'store';
 import BN from 'bn.js';
 import _ from 'lodash';
-import MantaAsset from '../../dtos/MantaAsset';
+import MantaUIAsset from '../../types/MantaUIAsset';
 
 const SPENDABLE_ASSETS_STORAGE_KEY = 'manta_spendable_assets';
 
 export const loadSpendableAssets = () => {
   const assetsStorage = store.get(SPENDABLE_ASSETS_STORAGE_KEY) || [];
   return assetsStorage
-    .map(asset => MantaAsset.fromStorage(asset));
+    .map(asset => MantaUIAsset.fromStorage(asset));
 };
 
 export const loadSpendableAssetsById = assetId => {
@@ -39,10 +39,8 @@ export const loadSpendableBalances = () => {
     const currentValue = balanceByAssetId[asset.assetId]
       ? balanceByAssetId[asset.assetId]
       : new BN(0);
-    console.log(asset.privInfo.value, 'asset value');
-    balanceByAssetId[asset.assetId] = currentValue.add(asset.privInfo.value);
+    balanceByAssetId[asset.assetId] = currentValue.add(asset.value);
   });
-  console.log('balances by asset id', balanceByAssetId);
   return balanceByAssetId;
 };
 

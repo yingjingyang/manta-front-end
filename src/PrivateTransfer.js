@@ -10,28 +10,25 @@ import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js'
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import TxButton from './TxButton';
-import MantaAssetShieldedAddress from './dtos/MantaAssetShieldedAddress';
+import MantaAssetShieldedAddress from './types/MantaAssetShieldedAddress';
 
-export default function Main ({ fromAccount, mantaKeyring }) {
+export default function Main ({ fromAccount, signerClient }) {
   // now
-  // todo: receive transfers from on chain
-  // todo: make change actually spendable
 
+  // todo: recovering spent assets?
+  // todo: error handling on signer client
   // todo: money types
   // todo: retry failures
   // todo: forbid insecure random
   // todo: fix memory leak / pages shouldn't reset on switching labs page
   // todo: standardize components
-  // todo: add keygen to setup script
   // todo: make receiving address copy-pastable
   // todo: handle gap limit
-  // todo: combine functions to make address and asset
-  // todo: UI freezes on change tabs
+  // todo: UI freezes on change tabs(?)
+  // todo: shielded address should be base58
 
   // later
   // todo: reduce duplication in reclaim and private transfer
-  // todo: make asset storage a class, add 'push' function
-  // todo: check that coins actually exist on startup (maybe they were spent on different computer)
   // todo: error types
   // todo: ledger state dto
   // todo: store pending spends
@@ -40,7 +37,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const { api } = useSubstrate();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
-  const [transferPK, setTransferPK] = useState(null);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState(new BN(-1));
   const [assetId, setAssetId] = useState(-1);
@@ -71,10 +67,10 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     submitPrivateTransfer(payload);
   };
 
-  const mintZeroCoin = () => {
+  const mintZeroCoin = async () => {
     currentBatchIdx.current += 1;
     setStatus(TxStatus.processing('Generating payload'));
-    const payload = generateMintZeroCoinPayload();
+    const payload = await generateMintZeroCoinPayload();
     submitMintZeroCoinTx(payload);
   };
 
@@ -90,16 +86,13 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const selectCoins = useCallback(() => {
     let totalAmount = new BN(0);
     coinSelection.current = [];
-    console.log('!assetId', assetId);
     const spendableAssets = loadSpendableAssetsById(assetId);
-    console.log('!spendable assets', spendableAssets);
     spendableAssets.forEach(asset => {
       if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
-        totalAmount = totalAmount.add(asset.privInfo.value);
+        totalAmount = totalAmount.add(asset.value);
         coinSelection.current.push(asset);
       }
     });
-    console.log('!coinSelection', coinSelection);
     // If odd number of coins selected, we will have to mint a zero value coin
     const mintBatchesRequired = coinSelection.current.length % 2;
     const transferBatchesRequired = Math.ceil(coinSelection.current.length / 2);
@@ -116,33 +109,22 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   const generatePrivateTransferPayload = async () => {
     let ledgerState1 = await getLedgerState(asset1.current);
     let ledgerState2 = await getLedgerState(asset2.current);
-    // flatten (wasm only accepts flat arrays)
-    ledgerState1 = Uint8Array.from(ledgerState1.reduce((a, b) => [...a, ...b], []));
-    ledgerState2 = Uint8Array.from(ledgerState2.reduce((a, b) => [...a, ...b], []));
-    const changeAddress = mantaKeyring.generateNextInternalAddress(assetId);
-    changeAsset.current = mantaKeyring.generateChangeAsset(assetId, changeAmount.current);
-
-    console.log('ledgerState1', ledgerState1, asset1.current);
-    console.log('ledgerState2', ledgerState2, asset2.current);
-
-
-    const payload = await mantaKeyring.generatePrivateTransferPayload(
-      asset1.current.serialize(),
-      asset2.current.serialize(),
+    changeAsset.current = await signerClient.generateAsset(assetId, changeAmount.current);
+    const payload = await signerClient.generatePrivateTransferPayload(
+      asset1.current,
+      asset2.current,
       ledgerState1,
       ledgerState2,
-      transferPK,
       address.serialize(),
-      changeAddress.serialize(),
-      asset1.current.privInfo.value.add(asset2.current.privInfo.value.sub(changeAmount.current)),
+      asset1.current.value.add(asset2.current.value.sub(changeAmount.current)),
       changeAmount.current
     );
     return formatPayloadForSubstrate([payload]);
   };
 
-  const generateMintZeroCoinPayload = () => {
-    mintZeroCoinAsset.current = mantaKeyring.generateMintAsset(assetId, new BN(0));
-    const payload = mantaKeyring.generateMintPayload(mintZeroCoinAsset.current.serialize());
+  const generateMintZeroCoinPayload = async () => {
+    mintZeroCoinAsset.current = await signerClient.generateAsset(assetId, new BN(0));
+    const payload = await signerClient.generateMintPayload(mintZeroCoinAsset.current.serialize());
     return formatPayloadForSubstrate([payload]);
   };
 
@@ -224,30 +206,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
 
   /**
    *
-   * On pageload
-   *
-   */
-
-  useEffect(() => {
-    const loadProvindKey = () => {
-      const request = new XMLHttpRequest();
-      request.open('GET', 'transfer_pk.bin', true);
-      request.responseType = 'blob';
-      request.onreadystatechange = async () => {
-        if (request.readyState === 4) {
-          const fileContent = request.response;
-          const fileContentBuffer = await fileContent.arrayBuffer();
-          const transferPK = new Uint8Array(fileContentBuffer);
-          setTransferPK(transferPK);
-        }
-      };
-      request.send(null);
-    };
-    loadProvindKey();
-  }, []);
-
-  /**
-   *
    * UI logic
    *
    */
@@ -256,7 +214,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
     if (!amount || !assetId) {
       return;
     }
-    console.log(loadSpendableBalance(assetId), 'spendable');
     if (amount.gt(loadSpendableBalance(assetId))) {
       setInsufficientFunds(true);
     } else {

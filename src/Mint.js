@@ -10,18 +10,17 @@ import { makeTxResHandler } from './utils/api/MakeTxResHandler';
 import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import { PALLET, CALLABLE } from './constants/ApiConstants';
 
-export default function Main ({ fromAccount, mantaKeyring }) {
+export default function Main ({ fromAccount, signerClient }) {
   const { api } = useSubstrate();
   const [unsub, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [assetId, setAssetId] = useState(-1);
   const [mintAmount, setMintAmount] = useState(new BN(-1));
-
   let mintAsset = useRef(null);
 
-  const generateMintPayload = async mintAmount => {
-    const mintAsset = await mantaKeyring.generateMintAsset(assetId, mintAmount);
-    const mintInfo = mantaKeyring.generateMintPayload(mintAsset.serialize());
+  const generateMintPayload = async () => {
+    const mintAsset = await signerClient.generateAsset(assetId, mintAmount);
+    const mintInfo = await signerClient.generateMintPayload(mintAsset);
     return [formatPayloadForSubstrate([mintInfo]), mintAsset];
   };
 
@@ -41,8 +40,6 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   };
 
   const submitTransaction = payload => {
-    console.log('payload?', payload);
-    console.log('from account?', fromAccount.toString());
     const handleTxResponse = makeTxResHandler(api, onTxSuccess, onTxFailure, onTxUpdate);
     const tx = api.tx[PALLET.MANTA_PAY][CALLABLE.MANTA_PAY.MINT_PRIVATE_ASSET](...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
@@ -50,8 +47,7 @@ export default function Main ({ fromAccount, mantaKeyring }) {
   };
 
   const onClickSubmit = async () => {
-    const [payload, asset] = await generateMintPayload(mintAmount);
-    console.log('payload, asset', payload, asset);
+    const [payload, asset] = await generateMintPayload();
     mintAsset.current = asset;
     submitTransaction(payload);
   };

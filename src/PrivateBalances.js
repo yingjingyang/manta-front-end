@@ -1,17 +1,9 @@
 import React from 'react';
 import { Grid, Header } from 'semantic-ui-react';
-import BN from 'bn.js';
 import { loadSpendableBalances } from './utils/persistence/AssetStorage';
 
-export default function Main ({ mantaKeyring }) {
-  // const { api } = useSubstrate();
-
-
+export default function Main () {
   const balanceByAssetId = loadSpendableBalances();
-
-  // const getSpendableBalancesFromOnChain = async () => {
-  //   return;
-  // }
 
   return (
     <>

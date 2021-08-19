@@ -10,55 +10,13 @@ import { DeveloperConsole } from './substrate-lib/components';
 import Navbar from './Navbar';
 import Routes from './Routes';
 import getFromAccount from './utils/api/GetFromAccount';
-import MantaKeyring from './utils/persistence/MantaKeyring';
-import axios from 'axios';
-import BN from 'bn.js';
-
-
-import { loadSpendableAssets, persistSpendableAssets } from './utils/persistence/AssetStorage';
+import SignerClient from './utils/api/SignerClient';
 
 function Main() {
-  axios.defaults.baseURL = 'http://localhost:29986/';
-
-  console.log('spendable assets', loadSpendableAssets());
-
-
   const [accountAddress, setAccountAddress] = useState(null);
-  const [mantaKeyring, setMantaKeyring] = useState(null);
+  const [signerClient, setSignerClient] = useState(null);
   const [fromAccount, setFromAccount] = useState(null);
   const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
-
-  useEffect(() => {
-    if (!api || !api.isConnected || !mantaKeyring) {
-      return;
-    }
-    const test_serialize = async () => {
-      // axios.defaults.headers.post['Content-Type'] = 'application/json';
-      // axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:29986';
-      // axios.defaults.headers.post['Access-Control-Allow-Credentials'] = 'true';
-
-      await api.isReady;
-      const params = api.createType('DeriveShieldedAddressParams', {
-        'asset_id': 1,
-        'path': 'm/0/0/0/0',
-        'value': new BN(1000)
-      });
-      console.log('params', params);
-      const res = await axios.post('debugPrint', params.toU8a());
-
-      // const res = await axios.post('generateAsset', params.toU8a());
-      console.log('res', res);
-
-      // const res = mantaKeyring.wasm.serialize_recover_account_params(
-      //   encryptedValesBytes,
-      //   voidNumbersBytes,
-      //   utxosBytes
-      // );
-    };
-    // test_serialize();
-
-  });
-
 
   // Reset utxo cache if using fresh dev node
   useEffect(() => {
@@ -71,28 +29,37 @@ function Main() {
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
         store.set('mantaSecretKey', null);
-        store.set('mantaAddresses', null);
+        store.set('mantaAddresses', {0: [], 1: []});
         console.log('Reset UTXO cache ');
       }
     };
     clearUtxoCache();
   }, [api]);
 
-
-  const accountPair =
-    accountAddress &&
-    keyringState === 'READY' &&
-    keyring.getPair(accountAddress);
-
   useEffect(() => {
-    async function loadMantaKeying() {
-      const wasm = await import('manta-api');
-      const keyring = new MantaKeyring(api, wasm);
-      setMantaKeyring(keyring);
+    async function loadSignerClient() {
+      const signerClient = new SignerClient(api);
+      setSignerClient(signerClient);
     }
     if (!api) return;
-    loadMantaKeying();
+    loadSignerClient();
   }, [api]);
+
+  useEffect(() => {
+    if (!api || !api.isConnected || !signerClient) {
+      return;
+    }
+    const recoverWallet = async () => {
+      await api.isReady;
+      signerClient.recoverWallet();
+    };
+    recoverWallet();
+  });
+
+  const accountPair =
+  accountAddress &&
+  keyringState === 'READY' &&
+  keyring.getPair(accountAddress);
 
   useEffect(() => {
     async function loadFromAccount(accountPair) {
@@ -104,27 +71,6 @@ function Main() {
     }
     loadFromAccount(accountPair, api);
   }, [api, accountPair]);
-
-
-
-
-  // useEffect(() => {
-  //   if (!api || !api.isConnected || !mantaKeyring) {
-  //     return;
-  //   }
-  //   const recoverWallet = async () => {
-  //     await api.isReady;
-  //     console.log(api, 'api');
-  //     const encryptedValues = await api.query.mantaPay.encValueList();
-  //     const voidNumbers = await api.query.mantaPay.vNList();
-  //     console.log(encryptedValues, 'encryptedVales');
-  //     console.log(encryptedValues);
-  //     const recoveredAssets = mantaKeyring.recoverWallet(encryptedValues, voidNumbers);
-  //     persistSpendableAssets(recoveredAssets);
-
-  //   };
-  //   recoverWallet();
-  // }, [api, mantaKeyring]);
 
   const loader = text =>
     <Dimmer active>
@@ -156,7 +102,7 @@ function Main() {
         <Navbar setAccountAddress={setAccountAddress} />
         <Container style={{ paddingTop: '3em' }}>
           <Grid centered>
-            <Routes fromAccount={fromAccount} mantaKeyring={mantaKeyring} />
+            <Routes fromAccount={fromAccount} signerClient={signerClient} />
           </Grid>
         </Container>
         <DeveloperConsole />
