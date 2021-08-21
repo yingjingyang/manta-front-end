@@ -124,7 +124,7 @@ export default function Main ({ fromAccount, signerClient }) {
 
   const generateMintZeroCoinPayload = async () => {
     mintZeroCoinAsset.current = await signerClient.generateAsset(assetId, new BN(0));
-    const payload = await signerClient.generateMintPayload(mintZeroCoinAsset.current.serialize());
+    const payload = await signerClient.generateMintPayload(mintZeroCoinAsset.current);
     return formatPayloadForSubstrate([payload]);
   };
 

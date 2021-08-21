@@ -38,7 +38,6 @@ export default class SignerClient {
     let bytes = base64Decode(res.data.recovered_account);
     const recoveredAssetsRaw = this.api.createType('RecoveredAccount', bytes);
     const recoveredAssets = recoveredAssetsRaw.assets.map(asset => MantaUIAsset.fromBytes(asset.toU8a(), this.api));
-    console.log(recoveredAssets, 'recoveredAssets');
     persistSpendableAssets(recoveredAssets);
   }
 
@@ -58,6 +57,7 @@ export default class SignerClient {
     const chainAddresses = addresses[chainId];
     const addressIdx = chainAddresses.length;
     const path = `${MANTA_WALLET_BASE_PATH}/${chainId}/${addressIdx}`;
+
     const address = this._deriveAddress(path, assetId);
     chainAddresses.push(address);
     store.set('mantaAddresses', addresses);
@@ -133,7 +133,6 @@ export default class SignerClient {
     ledgerState2,
     reclaimValue
   ) {
-    console.log(asset1, asset2, reclaimValue);
     this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
     const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
@@ -148,6 +147,7 @@ export default class SignerClient {
       'change_path': changePath,
       'reclaim_value': reclaimValue
     });
+
     const res = await axios.post('generateReclaimData', params.toU8a());
     return base64Decode(res.data.reclaim_data);
   }

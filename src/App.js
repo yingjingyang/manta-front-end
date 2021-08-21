@@ -30,6 +30,7 @@ function Main() {
         store.set('manta_spendable_assets', []);
         store.set('mantaSecretKey', null);
         store.set('mantaAddresses', {0: [], 1: []});
+
         console.log('Reset UTXO cache ');
       }
     };

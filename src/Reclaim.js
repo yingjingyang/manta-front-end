@@ -44,10 +44,10 @@ export default function Main ({ fromAccount, signerClient }) {
     submitReclaim(payload);
   };
 
-  const mintZeroCoin = () => {
+  const mintZeroCoin = async () => {
     currentBatchIdx.current += 1;
     setStatus(TxStatus.processing('Generating payload'));
-    const payload = generateMintZeroCoinPayload();
+    const payload = await generateMintZeroCoinPayload();
     submitMintZeroCoinTx(payload);
   };
 
@@ -99,7 +99,7 @@ export default function Main ({ fromAccount, signerClient }) {
 
   const generateMintZeroCoinPayload = async () => {
     mintZeroCoinAsset.current = await signerClient.generateAsset(assetId, new BN(0));
-    const payload = signerClient.generateMintPayload(mintZeroCoinAsset.current);
+    const payload = await signerClient.generateMintPayload(mintZeroCoinAsset.current);
     return formatPayloadForSubstrate([payload]);
   };
 

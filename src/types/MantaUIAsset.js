@@ -18,7 +18,6 @@ export default class MantaUIAsset {
   }
 
   static fromStorage (obj) {
-    console.log('storageobj', obj)
     return new MantaUIAsset(
       new BN(obj.assetId, 10, 'le').toNumber(),
       new BN(obj.value, 10, 'le'),

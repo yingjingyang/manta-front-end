@@ -10348,13 +10348,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"manta-api@file:./src/pkg::locator=manta-front-end%40workspace%3A.":
-  version: 0.1.1
-  resolution: "manta-api@file:./src/pkg#./src/pkg::hash=9d80e7&locator=manta-front-end%40workspace%3A."
-  checksum: 7986d73df3ffd8ba058210c55a1b4ab7b7d003c9ae07f50bca911f609618c21477e696bb22f913a438cc87ec2a6484a7b6f2d1506f91f577eeb417b5773cb2d9
-  languageName: node
-  linkType: hard
-
 "manta-front-end@workspace:.":
   version: 0.0.0-use.local
   resolution: "manta-front-end@workspace:."
@@ -10384,7 +10377,6 @@ fsevents@^1.2.7:
     eslint-plugin-standard: ^5.0.0
     gh-pages: ^3.2.0
     lodash: ^4.17.21
-    manta-api: ./src/pkg
     prop-types: ^15.7.2
     query-string: ^6.13.5
     react: ^16.14.0
