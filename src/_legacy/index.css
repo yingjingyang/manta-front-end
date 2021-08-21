@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+    @apply light;
+    @apply custom-colors;
+    @apply custom-width;
+}
+
+.dark {
+    --color-bg-primary: #080d2a;
+    --color-bg-secondary: #202442;
+    --color-bg-thirdry: #23284e;
+    --color-bg-fourth: #33385f;
+    --color-bg-overlay: #101b30;
+    --color-bg-table-row: #1b1f3e;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #68677d;
+    --color-text-thirdry: #ffffff;
+    --color-text-accent: #ffffff;
+    --color-fill-secondary: #ffffff;
+}
+
+.light {
+    --color-bg-primary: #f2f2f4;
+    --color-bg-secondary: #ffffff;
+    --color-bg-thirdry: #f2f2f4;
+    --color-bg-fourth: #61abb9;
+    --color-bg-overlay: #e3e4e8;
+    --color-bg-table-row: #f9fbfd;
+    --color-text-primary: #104ea1;
+    --color-text-secondary: #aabcca;
+    --color-text-thirdry: #070707;
+    --color-text-accent: #33385f;
+    --color-fill-secondary: #889ebc;
+}
+
+.custom-colors {
+    --color-fill-primary: #4caaac;
+    --color-fill-gray: #889ebc;
+    --color-text-gray: #e6edf4;
+}
+
+.custom-width {
+    --min-width-layout: 450px;
+    --min-width-table: 1024px;
+    --min-width-md: 700px;
+    --min-width-lg: 1200px;
+}
+
+
+/* .btn-animation {
+    @apply transition duration-100 ease-in-out transform hover: -translate-y-1;
+} */
