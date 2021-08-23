@@ -3,18 +3,15 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Select } from 'element-react';
 import Images from 'common/Images';
+import CurrencyType from 'types/CurrencyType';
 
-const fakeDataOptions = [
-  { value: 'polkadot', label: 'Polkadot (DOT)', icon: Images.TokenIcon },
-  { value: 'kusama', label: 'Kusama (DOT)', icon: Images.CoinIcon },
-  { value: 'chainx', label: 'ChainX (DOT)', icon: Images.TokenIcon },
-];
+const fakeDataOptions = CurrencyType.AllCurrencies();
 
 const FormSelect = ({ className, label, options = fakeDataOptions, value }) => {
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
   const onChange = (value) => {
-    const selectedCoin = options.find((val) => val.value === value);
+    const selectedCoin = options.find((currencyType) => currencyType.name === value);
     setSelectedOption(selectedCoin);
   };
 
@@ -30,10 +27,10 @@ const FormSelect = ({ className, label, options = fakeDataOptions, value }) => {
           <span className="text-sm absolute form-select-label top-0 z-10 block text-gray-light">
             {label}
           </span>
-          <Select onChange={onChange} value={selectedOption.value} placeholder="select">
+          <Select onChange={onChange} value={selectedOption.name} placeholder="select">
             {options.map((el) => {
               return (
-                <Select.Option key={el.value} label={el.label} value={el.value}>
+                <Select.Option key={el.name} label={el.name} value={el.name}>
                   <div className="flex items-center">
                     <img
                       className="w-10 h-10 p-2 px-3 manta-bg-secondary rounded-full"
@@ -41,8 +38,8 @@ const FormSelect = ({ className, label, options = fakeDataOptions, value }) => {
                       alt="icon"
                     />
                     <div className="px-3">
-                      <span className="text-sm block">{label}</span>
-                      <span className="text-lg">{el.label}</span>
+                      <span className="text-sm block">{el.ticker}</span>
+                      <span className="text-lg">{el.name}</span>
                     </div>
                   </div>
                 </Select.Option>

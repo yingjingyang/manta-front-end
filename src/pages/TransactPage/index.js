@@ -4,7 +4,7 @@ import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import SendContent from 'components/resources/Transact/SendContent';
-import ReceiveContent from 'components/resources/Transact/ReceiveContent';
+import ReceivePage from './ReceivePage';
 
 const TABS = {
   Receive: 'receive',
@@ -38,7 +38,7 @@ const TransactPage = () => {
             <SendContent />
           </TabContentItemWrapper>
           <TabContentItemWrapper tabIndex={TABS.Receive} currentTabIndex={selectedTabIdx}>
-            <ReceiveContent />
+            <ReceivePage />
           </TabContentItemWrapper>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import Images from 'common/Images';
 import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import MainMenu from 'components/resources/Sidebar/MainMenu';
-import { ThemeContext } from 'contexts/theme.context';
+import { ThemeContext } from 'contexts/ThemeContext';
 import { LogoNameSvg } from 'common/Svgs';
 import { themeType } from 'constants/theme.constant';
 

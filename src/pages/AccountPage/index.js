@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';

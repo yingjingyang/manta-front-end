@@ -1,10 +1,10 @@
 import store from 'store';
 import { base64Decode } from '@polkadot/util-crypto';
-import config from '../../config';
+import config from 'config';
 import axios from 'axios';
-import MantaUIAsset from '../../types/MantaUIAsset';
-import MantaAssetShieldedAddress from '../../types/MantaAssetShieldedAddress';
-import {persistSpendableAssets} from '../persistence/AssetStorage';
+import MantaUIAsset from 'types/MantaUIAsset';
+import MantaAssetShieldedAddress from 'types/MantaAssetShieldedAddress';
+import { persistSpendableAssets } from 'utils/persistence/AssetStorage';
 
 const BIP_44_PURPOSE_INDEX = 44;
 
@@ -20,7 +20,7 @@ export default class SignerClient {
     axios.defaults.baseURL = 'http://localhost:29986/';
     this.api = api;
     if (!store.get('mantaAddresses')) {
-      store.set('mantaAddresses', {[INTERNAL_CHAIN_ID]: [], [EXTERNAL_CHAIN_ID]: []});
+      store.set('mantaAddresses', { [INTERNAL_CHAIN_ID]: [], [EXTERNAL_CHAIN_ID]: [] });
     }
   }
 
@@ -83,7 +83,7 @@ export default class SignerClient {
     });
     const res = await axios.post('generateAsset', params.toU8a());
     let assetBytes = base64Decode(res.data.asset);
-    return  MantaUIAsset.fromBytes(assetBytes, this.api);
+    return MantaUIAsset.fromBytes(assetBytes, this.api);
   }
 
   async generateMintPayload(asset) {
