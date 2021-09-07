@@ -181,15 +181,16 @@ const SendTab = () => {
       coinSelection.current.push(mintZeroCoinAsset.current);
     }
     for (let i = 0; i < coinSelection.current.length; i += 2) {
-      const reclaimAsset1 = coinSelection.current[i];
-      const reclaimAsset2 = coinSelection.current[i + 1];
-      const reclaimPayload = await generatePrivateTransferPayload(
-        reclaimAsset1,
-        reclaimAsset2
+      const inputAsset1 = coinSelection.current[i];
+      const inputAsset2 = coinSelection.current[i + 1];
+      const privateTransferPayload = await generatePrivateTransferPayload(
+        inputAsset1,
+        inputAsset2
       );
-      const reclaimTransaction =
-        api.tx.mantaPay.privateTransfer(reclaimPayload);
-      transactions.push(reclaimTransaction);
+      const privateTransferTransaction = api.tx.mantaPay.privateTransfer(
+        privateTransferPayload
+      );
+      transactions.push(privateTransferTransaction);
     }
     const unsub = api.tx.utility
       .batch(transactions)
