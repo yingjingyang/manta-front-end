@@ -1,5 +1,5 @@
 import React from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import { useHistory } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 
@@ -39,10 +39,12 @@ const ExtrinsicChart = () => {
         <img
           onClick={() => history.push('/explore/extrinsic')}
           className="w-5 h-5 cursor-pointer"
-          src={Images.ArrowLeftIcon}
+          src={Svgs.ArrowLeftIcon}
           alt="arrow-left"
         />
-        <span className="text-2xl px-6 font-semibold text-thirdry">Extrinsic #5449190-1</span>
+        <span className="text-2xl px-6 font-semibold text-thirdry">
+          Extrinsic #5449190-1
+        </span>
       </div>
       <div className="rounded-lg mb-4 events bg-secondary">
         <div className="px-6 py-4 flex justify-between">
@@ -53,8 +55,12 @@ const ExtrinsicChart = () => {
             <div className="cursor-pointer item px-4 py-2 rounded-lg active manta-gray mx-2">
               1H
             </div>
-            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">6H</div>
-            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">1D</div>
+            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
+              6H
+            </div>
+            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
+              1D
+            </div>
           </div>
         </div>
         {/* TODO: add chart UI */}

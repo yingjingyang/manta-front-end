@@ -1,11 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import SignerClient from 'services/SignerClient';
-import { useSubstrate } from 'utils/substrate-lib';
-
+import { useSubstrate } from 'contexts/SubstrateContext';
 
 const SignerContext = createContext();
 
-export const SignerContextProvider = props => {
+export const SignerContextProvider = (props) => {
   const { api } = useSubstrate();
 
   const [signerClient, setSignerClient] = useState(null);
@@ -22,9 +21,12 @@ export const SignerContextProvider = props => {
     initSignerClient();
   }, [api]);
 
-  console.log(signerClient);
-
-  return <SignerContext.Provider value={signerClient} > {props.children} </ SignerContext.Provider >;
+  return (
+    <SignerContext.Provider value={signerClient}>
+      {' '}
+      {props.children}{' '}
+    </SignerContext.Provider>
+  );
 };
 
 export const useSigner = () => {

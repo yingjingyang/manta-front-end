@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import FormSelect from 'components/elements/Form/FormSelect';
@@ -25,7 +25,11 @@ const PoolPage = () => {
             <h1 className="text-3xl font-semibold text-accent">Pool</h1>
             <div className="text-sm manta-gray">
               <span className="flex pb-1">
-                <img className="pr-2 pl-4" src={Images.SettingIcon} alt="setting-icon" />
+                <img
+                  className="pr-2 pl-4"
+                  src={Svgs.SettingIcon}
+                  alt="setting-icon"
+                />
                 Slippage: 18%
               </span>
               <span>Gas price: 134 GWEI</span>
@@ -46,21 +50,29 @@ const PoolPage = () => {
             />
           </TabMenuWrapper>
           <div className="py-2">
-            <FormSelect label="From" coinIcon={Images.TokenIcon} />
+            <FormSelect label="From" coinIcon={Svgs.TokenIcon} />
             <FormInput step="0.01">Available: 100 DOT</FormInput>
           </div>
-          <img className="mx-auto" src={Images.SwitchIcon} alt="switch-icon" />
+          <img className="mx-auto" src={Svgs.SwitchIcon} alt="switch-icon" />
           <div className="py-2 pb-4">
-            <FormSelect label="To" coinIcon={Images.CoinIcon} />
+            <FormSelect label="To" coinIcon={Svgs.CoinIcon} />
             <FormInput step="0.01" isMax={false}>
               1 DOT = 0.00332 Matic
             </FormInput>
           </div>
-          <TabContentItemWrapper tabIndex={TABS.Deposit} currentTabIndex={selectedTabIdx}>
+          <TabContentItemWrapper
+            tabIndex={TABS.Deposit}
+            currentTabIndex={selectedTabIdx}
+          >
             <Button className="btn-primary w-full text-lg py-3">Pool</Button>
           </TabContentItemWrapper>
-          <TabContentItemWrapper tabIndex={TABS.Withdraw} currentTabIndex={selectedTabIdx}>
-            <Button className="btn-primary w-full text-lg py-3">Withdraw</Button>
+          <TabContentItemWrapper
+            tabIndex={TABS.Withdraw}
+            currentTabIndex={selectedTabIdx}
+          >
+            <Button className="btn-primary w-full text-lg py-3">
+              Withdraw
+            </Button>
           </TabContentItemWrapper>
         </div>
       </div>

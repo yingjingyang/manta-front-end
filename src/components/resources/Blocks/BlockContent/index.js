@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 
@@ -22,7 +22,11 @@ const BlockContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5" src={Images.SuccessIcon} alt="arrow-left" />
+              <img
+                className="w-5 h-5"
+                src={Svgs.SuccessIcon}
+                alt="arrow-left"
+              />
               <span className="text-blue-thirdry px-4">Finalized</span>
             </div>
           </TableRowItem>
@@ -36,7 +40,11 @@ const BlockContent = () => {
               <span className="text-accent">
                 0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
               </span>
-              <img className="w-4 h-4 ml-3 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+              <img
+                className="w-4 h-4 ml-3 cursor-pointer"
+                src={Svgs.CopyIcon}
+                alt="arrow-left"
+              />
             </div>
           </TableRowItem>
         </TableRow>
@@ -78,11 +86,19 @@ const BlockContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5 cursor-pointer" src={Images.FlowerIcon} alt="flower" />
+              <img
+                className="w-5 h-5 cursor-pointer"
+                src={Svgs.FlowerIcon}
+                alt="flower"
+              />
               <span className="text-blue-thirdry px-2">
                 0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
               </span>
-              <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+              <img
+                className="w-4 h-4 cursor-pointer"
+                src={Svgs.CopyIcon}
+                alt="arrow-left"
+              />
             </div>
           </TableRowItem>
         </TableRow>

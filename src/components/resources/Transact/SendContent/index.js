@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from 'components/elements/Button';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import FormSelect from 'components/elements/Form/FormSelect';
 import FormInput from 'components/elements/Form/FormInput';
 
@@ -8,14 +8,14 @@ const SendContent = () => {
   return (
     <div className="send-content">
       <div className="py-2">
-        <FormSelect label="Token" coinIcon={Images.TokenIcon} />
+        <FormSelect label="Token" coinIcon={Svgs.TokenIcon} />
         <FormInput>Available: 100 DOT</FormInput>
       </div>
-      <img className="mx-auto" src={Images.ArrowDownIcon} alt="switch-icon" />
+      <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />
       <div className="py-2">
         <FormInput
           value="0xa016f295a5957...00AdX24"
-          prefixIcon={Images.WalletIcon}
+          prefixIcon={Svgs.WalletIcon}
           isMax={false}
           type="text"
         >
@@ -34,7 +34,9 @@ const SendContent = () => {
         <span className="manta-gray">Redemption Value per MA</span>
         <span className="manta-prime-blue font-semibold">0.749293 MA</span>
       </div>
-      <Button className="btn-primary btn-hover w-full text-lg py-3">Send</Button>
+      <Button className="btn-primary btn-hover w-full text-lg py-3">
+        Send
+      </Button>
     </div>
   );
 };

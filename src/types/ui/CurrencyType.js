@@ -1,4 +1,4 @@
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 
 export default class CurrencyType {
   constructor(assetId, name, ticker, icon) {
@@ -9,10 +9,10 @@ export default class CurrencyType {
   }
 
   static Polkadot() {
-    return new CurrencyType(1, 'Polkadot', 'DOT', Images.TokenIcon);
+    return new CurrencyType(1, 'Polkadot', 'DOT', Svgs.TokenIcon);
   }
   static Kusama() {
-    return new CurrencyType(1, 'Kusama', 'KSM', Images.CoinIcon);
+    return new CurrencyType(2, 'Kusama', 'KSM', Svgs.CoinIcon);
   }
   static AllCurrencies() {
     return [CurrencyType.Polkadot(), CurrencyType.Kusama()];

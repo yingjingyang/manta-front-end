@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect } from 'react';
 import { themeType } from 'constants/theme.constant';
 import { themeColorType } from 'constants/localstorage.constant';
+import React, { createContext, useState, useEffect } from 'react';
 
 const getInitialTheme = () => {
   if (typeof window !== 'undefined' && window.localStorage) {

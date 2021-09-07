@@ -5,7 +5,11 @@ import classNames from 'classnames';
 const MainMenu = ({ className }) => {
   return (
     <div className={classNames('menu-content lg:py-16', className)}>
-      <NavLink className="text-secondary" activeClassName="text-primary active" to="/account">
+      <NavLink
+        className="text-secondary"
+        activeClassName="text-primary active"
+        to="/account"
+      >
         <div className="py-2 w-full menu-content__item group flex items-center">
           <div className="p-3">
             <svg
@@ -18,10 +22,16 @@ const MainMenu = ({ className }) => {
               <path d="M3 28C1.34315 28 -0.0362073 26.6378 0.350094 25.0266C1.73687 19.2427 7.08125 14.9333 13.4626 14.9333C19.844 14.9333 25.1884 19.2427 26.5752 25.0266C26.9615 26.6378 25.5821 28 23.9253 28H3Z" />
             </svg>
           </div>
-          <span className="lg:group-hover:text-primary font-semibold">Account</span>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Account
+          </span>
         </div>
       </NavLink>
-      <NavLink className="text-secondary" activeClassName="text-primary active" to="/transact">
+      <NavLink
+        className="text-secondary"
+        activeClassName="text-primary active"
+        to="/transact"
+      >
         <div className="py-2 w-full menu-content__item group flex items-center">
           <div className="p-3">
             <svg
@@ -35,10 +45,12 @@ const MainMenu = ({ className }) => {
               <path d="M14.32 26.2C14.32 28.19 15.9 29.8 17.84 29.8L26.64 29.8C28.58 29.8 30.16 28.19 30.16 26.2L30.16 11.8C30.16 9.81 28.58 8.2 26.64 8.2L26.64 26.2L14.32 26.2Z" />
             </svg>
           </div>
-          <span className="lg:group-hover:text-primary font-semibold">Transact</span>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Transact
+          </span>
         </div>
       </NavLink>
-      <NavLink className="text-secondary" activeClassName="text-primary active" to="/swap">
+      {/* <NavLink className="text-secondary" activeClassName="text-primary active" to="/swap">
         <div className="py-2 w-full group menu-content__item flex items-center">
           <div className="p-3 ">
             <svg
@@ -132,7 +144,7 @@ const MainMenu = ({ className }) => {
           </div>
           <span className="lg:group-hover:text-primary font-semibold">Explore</span>
         </div>
-      </NavLink>
+      </NavLink> */}
     </div>
   );
 };

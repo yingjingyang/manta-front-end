@@ -1,10 +1,10 @@
+import { themeType } from 'constants/theme.constant';
 import React, { useContext } from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import MainMenu from 'components/resources/Sidebar/MainMenu';
 import { ThemeContext } from 'contexts/ThemeContext';
-import { LogoNameSvg } from 'common/Svgs';
-import { themeType } from 'constants/theme.constant';
+import { LogoNameSvg } from 'resources/svgs';
 
 const SidebarMenu = () => {
   const { theme } = useContext(ThemeContext);
@@ -15,9 +15,12 @@ const SidebarMenu = () => {
         <div>
           <div className="logo-content hidden w-full items-center lg:flex">
             <div className="border-4 rounded-full logo border-white">
-              <img src={Images.Logo} alt="logo" />
+              <img src={Svgs.Logo} alt="logo" />
             </div>
-            <LogoNameSvg className="ml-4" fill={theme === themeType.Light ? '#104EA1' : 'white'} />
+            <LogoNameSvg
+              className="ml-4"
+              fill={theme === themeType.Light ? '#104EA1' : 'white'}
+            />
           </div>
           <MainMenu />
         </div>

@@ -88,15 +88,6 @@ const loadAccounts = (state, dispatch) => {
     dispatch({ type: 'LOAD_KEYRING' });
     try {
       await web3Enable(config.APP_NAME);
-      // keyring.loadAll({ isDevelopment: config.DEVELOPMENT_KEYRING }, []);
-      // let account = keyring.getPairs()[0];
-      // account.unlock('password');
-
-      // const PHRASE = 'entire material egg meadow latin bargain dutch coral blood melt acoustic thought';
-      // const { pair, json } = keyring.addUri(PHRASE, 'password', { name: 'Test' });
-      // console.log(pair.decodePkcs8('password'));
-      // const decoded = decodePair('password', pair);
-
       let allAccounts = await web3Accounts();
       allAccounts = allAccounts.map(({ address, meta }) =>
         ({ address, meta: { ...meta, name: `${meta.name} (${meta.source})` } }));
@@ -141,7 +132,8 @@ const SubstrateContextProvider = (props) => {
 // prop typechecking
 SubstrateContextProvider.propTypes = {
   socket: PropTypes.string,
-  types: PropTypes.object
+  types: PropTypes.object,
+  children: PropTypes.any
 };
 
 const useSubstrate = () => ({ ...useContext(SubstrateContext) });

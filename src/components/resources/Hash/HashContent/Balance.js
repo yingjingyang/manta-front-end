@@ -1,5 +1,5 @@
 import React from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 
@@ -13,7 +13,11 @@ const Balance = () => {
         </TableRowItem>
         <TableRowItem width="70%" className="flex items-center">
           <span className="text-accent px-2">0 DOT</span>
-          <img className="w-5 h-5 cursor-pointer" src={Images.WarningIcon} alt="warning" />
+          <img
+            className="w-5 h-5 cursor-pointer"
+            src={Svgs.WarningIcon}
+            alt="warning"
+          />
         </TableRowItem>
       </TableRow>
       <TableRow highlight className="px-6">
@@ -30,7 +34,11 @@ const Balance = () => {
         </TableRowItem>
         <TableRowItem width="70%" className="flex items-center">
           <span className="text-accent px-2">0 DOT</span>
-          <img className="w-5 h-5 cursor-pointer" src={Images.WarningIcon} alt="warning" />
+          <img
+            className="w-5 h-5 cursor-pointer"
+            src={Svgs.WarningIcon}
+            alt="warning"
+          />
         </TableRowItem>
       </TableRow>
     </div>

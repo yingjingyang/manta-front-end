@@ -4,7 +4,10 @@ import { Container, Dimmer, Loader, Grid, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 import store from 'store';
-import { SubstrateContextProvider, useSubstrate } from './substrate-lib';
+import {
+  SubstrateContextProvider,
+  useSubstrate,
+} from 'contexts/SubstrateContext';
 import { DeveloperConsole } from './substrate-lib/components';
 
 import Navbar from './Navbar';
@@ -29,7 +32,7 @@ function Main() {
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
         store.set('mantaSecretKey', null);
-        store.set('mantaAddresses', {0: [], 1: []});
+        store.set('mantaAddresses', { 0: [], 1: [] });
 
         console.log('Reset UTXO cache ');
       }
@@ -58,9 +61,9 @@ function Main() {
   });
 
   const accountPair =
-  accountAddress &&
-  keyringState === 'READY' &&
-  keyring.getPair(accountAddress);
+    accountAddress &&
+    keyringState === 'READY' &&
+    keyring.getPair(accountAddress);
 
   useEffect(() => {
     async function loadFromAccount(accountPair) {
@@ -73,26 +76,33 @@ function Main() {
     loadFromAccount(accountPair, api);
   }, [api, accountPair]);
 
-  const loader = text =>
+  const loader = (text) => (
     <Dimmer active>
-      <Loader size='small'>{text}</Loader>
-    </Dimmer>;
+      <Loader size="small">{text}</Loader>
+    </Dimmer>
+  );
 
-  const message = err =>
+  const message = (err) => (
     <Grid centered columns={2} padded>
       <Grid.Column>
-        <Message negative compact floating
-          header='Error Connecting to Substrate'
+        <Message
+          negative
+          compact
+          floating
+          header="Error Connecting to Substrate"
           content={`${JSON.stringify(err, null, 4)}`}
         />
       </Grid.Column>
-    </Grid>;
+    </Grid>
+  );
 
   if (apiState === 'ERROR') return message(apiError);
   else if (apiState !== 'READY') return loader('Connecting to Substrate');
 
   if (keyringState !== 'READY') {
-    return loader('Loading accounts (please review any extension\'s authorization)');
+    return loader(
+      "Loading accounts (please review any extension's authorization)"
+    );
   }
 
   const contextRef = createRef();

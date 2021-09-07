@@ -1,5 +1,5 @@
 import React from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import { useHistory } from 'react-router-dom';
 import { HashContent, HashExtrinsic } from 'components/resources/Hash';
 import { Navbar } from 'components/elements/Layouts';
@@ -15,17 +15,33 @@ const HashDetailPage = () => {
           <img
             className="w-5 h-5 cursor-pointer"
             onClick={() => history.push('/explore')}
-            src={Images.ArrowLeftIcon}
+            src={Svgs.ArrowLeftIcon}
             alt="arrow-left"
           />
           <div className="flex px-3 items-center">
-            <img className="w-5 h-5 cursor-pointer" src={Images.FlowerIcon} alt="flower" />
+            <img
+              className="w-5 h-5 cursor-pointer"
+              src={Svgs.FlowerIcon}
+              alt="flower"
+            />
             <span className="text-blue-thirdry mx-3">
               0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
             </span>
-            <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="copy" />
-            <img className="w-3 h-3 mx-3 cursor-pointer" src={Images.UserIcon} alt="user" />
-            <img className="w-3 h-3 cursor-pointer" src={Images.KeyIcon} alt="key" />
+            <img
+              className="w-4 h-4 cursor-pointer"
+              src={Svgs.CopyIcon}
+              alt="copy"
+            />
+            <img
+              className="w-3 h-3 mx-3 cursor-pointer"
+              src={Svgs.UserIcon}
+              alt="user"
+            />
+            <img
+              className="w-3 h-3 cursor-pointer"
+              src={Svgs.KeyIcon}
+              alt="key"
+            />
           </div>
         </div>
       </div>

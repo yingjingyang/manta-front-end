@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 import TableColumnHeader from 'components/elements/Table/TableColumnHeader';
@@ -15,7 +15,9 @@ const ExtrinsicEvent = () => {
             <div className="cursor-pointer item px-4 py-2 rounded-lg active manta-gray mx-2">
               Events (4)
             </div>
-            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">Comments</div>
+            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
+              Comments
+            </div>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -34,13 +36,15 @@ const ExtrinsicEvent = () => {
                   <span className="text-blue-thirdry">16DmDSH...BhULcQM3</span>
                 </TableRowItem>
                 <TableRowItem width="55%">
-                  <span className="text-blue-thirdry">system (KilledAccount)</span>
+                  <span className="text-blue-thirdry">
+                    system (KilledAccount)
+                  </span>
                 </TableRowItem>
                 <TableRowItem width="5%">
                   <img
                     onClick={() => setShowDrop(!showDrop)}
                     className="w-3 h-3 cursor-pointer"
-                    src={!showDrop ? Images.DropDownIcon : Images.DropUpIcon}
+                    src={!showDrop ? Svgs.DropDownIcon : Svgs.DropUpIcon}
                     alt="drop-up"
                   />
                 </TableRowItem>
@@ -53,23 +57,29 @@ const ExtrinsicEvent = () => {
                       <p>Accountltd</p>
                     </div>
                     <div className="w-5/6 px-2">
-                      <p className="pb-2 text-accent">An\[account\] was reaped.</p>
+                      <p className="pb-2 text-accent">
+                        An\[account\] was reaped.
+                      </p>
                       <div className="flex">
                         <img
                           className="w-5 h-5 cursor-pointer"
-                          src={Images.FlowerIcon}
+                          src={Svgs.FlowerIcon}
                           alt="arrow-left"
                         />
                         <span className="text-blue-thirdry mx-3">
                           0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
                         </span>
-                        <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="copy" />
+                        <img
+                          className="w-4 h-4 cursor-pointer"
+                          src={Svgs.CopyIcon}
+                          alt="copy"
+                        />
                       </div>
                     </div>
                     <div className="pl-4">
                       <img
                         className="w-4 h-4 cursor-pointer"
-                        src={Images.DetailIcon}
+                        src={Svgs.DetailIcon}
                         alt="detail"
                       />
                     </div>
@@ -85,10 +95,16 @@ const ExtrinsicEvent = () => {
                 <span className="text-blue-thirdry">16DmDSH...BhULcQM3</span>
               </TableRowItem>
               <TableRowItem width="55%">
-                <span className="text-blue-thirdry">system (KilledAccount)</span>
+                <span className="text-blue-thirdry">
+                  system (KilledAccount)
+                </span>
               </TableRowItem>
               <TableRowItem width="5%">
-                <img className="w-3 h-3 cursor-pointer" src={Images.DropUpIcon} alt="drop-up" />
+                <img
+                  className="w-3 h-3 cursor-pointer"
+                  src={Svgs.DropUpIcon}
+                  alt="drop-up"
+                />
               </TableRowItem>
             </TableRow>
           </div>

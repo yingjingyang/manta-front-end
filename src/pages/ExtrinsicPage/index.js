@@ -1,7 +1,10 @@
 import React from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import Search from 'components/elements/Search';
-import { ExtrinsicContent, ExtrinsicEvent } from 'components/resources/Extrinsic';
+import {
+  ExtrinsicContent,
+  ExtrinsicEvent,
+} from 'components/resources/Extrinsic';
 import { useHistory } from 'react-router-dom';
 import Sticky from 'components/elements/ScrollFollow/Sticky';
 import { Navbar } from 'components/elements/Layouts';
@@ -18,10 +21,12 @@ const ExtrinsicPage = () => {
             <img
               className="w-5 h-5 cursor-pointer"
               onClick={() => history.push('/explore')}
-              src={Images.ArrowLeftIcon}
+              src={Svgs.ArrowLeftIcon}
               alt="arrow-left"
             />
-            <span className="text-2xl px-6 font-semibold text-thirdry">Extrinsic #5449190-1</span>
+            <span className="text-2xl px-6 font-semibold text-thirdry">
+              Extrinsic #5449190-1
+            </span>
           </div>
           <div className="w-2/5 hidden lg:block pl-5">
             <Search />

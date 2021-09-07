@@ -1,11 +1,11 @@
 import getFailedExtrinsicError from './GetFailedExtrinsicError';
-import TxStatus from './TxStatus';
+import TxStatus from '../../types/ui/TxStatus';
 
-export function makeTxResHandler (
+export function makeTxResHandler(
   api,
-  onSuccess = block => null,
+  onSuccess = (block) => null,
   onFailure = (block, error) => null,
-  onUpdate = message => null
+  onUpdate = (message) => null
 ) {
   return ({ status, events }) => {
     let error;
@@ -24,17 +24,14 @@ export function makeTxResHandler (
   };
 }
 
-export function makeDefaultTxResHandler (
-  api,
-  setStatus
-) {
-  const onSuccess = block => {
+export function makeDefaultTxResHandler(api, setStatus) {
+  const onSuccess = (block) => {
     setStatus(TxStatus.finalized(block));
   };
   const onFailure = (block, error) => {
     setStatus(TxStatus.failed(block, error));
   };
-  const onUpdate = message => {
+  const onUpdate = (message) => {
     setStatus(TxStatus.processing(message));
   };
   return makeTxResHandler(api, onSuccess, onFailure, onUpdate);

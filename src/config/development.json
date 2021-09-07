@@ -1,4 +1,5 @@
 {
     "PROVIDER_SOCKET": "ws://localhost:9944",
-    "COIN_TYPE_ID": 611
+    "COIN_TYPE_ID": 611,
+    "DEV_CONSOLE": true
 }

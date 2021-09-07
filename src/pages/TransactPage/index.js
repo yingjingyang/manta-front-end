@@ -3,8 +3,8 @@ import { PageContent, Navbar } from 'components/elements/Layouts';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
-import SendContent from 'components/resources/Transact/SendContent';
-import ReceivePage from './ReceivePage';
+import ReceiveTab from './ReceiveTab';
+import SendTab from './SendTab';
 
 const TABS = {
   Receive: 'receive',
@@ -35,10 +35,10 @@ const TransactPage = () => {
             />
           </TabMenuWrapper>
           <TabContentItemWrapper tabIndex={TABS.Send} currentTabIndex={selectedTabIdx}>
-            <SendContent />
+            <SendTab />
           </TabContentItemWrapper>
           <TabContentItemWrapper tabIndex={TABS.Receive} currentTabIndex={selectedTabIdx}>
-            <ReceivePage />
+            <ReceiveTab />
           </TabContentItemWrapper>
         </div>
       </div>

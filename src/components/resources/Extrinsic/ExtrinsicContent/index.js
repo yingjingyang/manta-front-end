@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 import Button from 'components/elements/Button';
@@ -23,7 +23,11 @@ const ExtrinsicContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5 cursor-pointer" src={Images.SuccessIcon} alt="arrow-left" />
+              <img
+                className="w-5 h-5 cursor-pointer"
+                src={Svgs.SuccessIcon}
+                alt="arrow-left"
+              />
               <NavLink to="/explore/extrinsic-history">
                 <span className="text-blue-thirdry px-4">5449190</span>
               </NavLink>
@@ -47,7 +51,11 @@ const ExtrinsicContent = () => {
               <span className="text-accent">
                 0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
               </span>
-              <img className="w-4 h-4 ml-3 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+              <img
+                className="w-4 h-4 ml-3 cursor-pointer"
+                src={Svgs.CopyIcon}
+                alt="arrow-left"
+              />
             </div>
           </TableRowItem>
         </TableRow>
@@ -73,11 +81,19 @@ const ExtrinsicContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5 cursor-pointer" src={Images.FlowerIcon} alt="arrow-left" />
+              <img
+                className="w-5 h-5 cursor-pointer"
+                src={Svgs.FlowerIcon}
+                alt="arrow-left"
+              />
               <span className="text-accent mx-3">
                 0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
               </span>
-              <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+              <img
+                className="w-4 h-4 cursor-pointer"
+                src={Svgs.CopyIcon}
+                alt="arrow-left"
+              />
             </div>
           </TableRowItem>
         </TableRow>
@@ -87,11 +103,19 @@ const ExtrinsicContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5 cursor-pointer" src={Images.FlowerIcon} alt="arrow-left" />
+              <img
+                className="w-5 h-5 cursor-pointer"
+                src={Svgs.FlowerIcon}
+                alt="arrow-left"
+              />
               <span className="text-accent mx-3">
                 0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
               </span>
-              <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+              <img
+                className="w-4 h-4 cursor-pointer"
+                src={Svgs.CopyIcon}
+                alt="arrow-left"
+              />
             </div>
           </TableRowItem>
         </TableRow>
@@ -111,7 +135,7 @@ const ExtrinsicContent = () => {
             <div className="flex">
               <img
                 className="w-5 h-5 cursor-pointer"
-                src={Images.PolkadotIcon}
+                src={Svgs.PolkadotIcon}
                 alt="polkadotIcon"
               />
               <span className="text-accent px-4">303.1701 DOT ($6,929.56)</span>
@@ -126,7 +150,7 @@ const ExtrinsicContent = () => {
             <div className="flex">
               <img
                 className="w-5 h-5 cursor-pointer"
-                src={Images.PolkadotIcon}
+                src={Svgs.PolkadotIcon}
                 alt="polkadotIcon"
               />
               <span className="text-accent px-4">303.1701 DOT ($6,929.56)</span>
@@ -139,7 +163,11 @@ const ExtrinsicContent = () => {
           </TableRowItem>
           <TableRowItem className="w-full sm:w-4/5 pt-1 sm:pt-2">
             <div className="flex">
-              <img className="w-5 h-5 cursor-pointer" src={Images.SuccessIcon} alt="arrow-left" />
+              <img
+                className="w-5 h-5 cursor-pointer"
+                src={Svgs.SuccessIcon}
+                alt="arrow-left"
+              />
               <span className="text-blue-thirdry px-4">Success</span>
             </div>
           </TableRowItem>
@@ -158,13 +186,17 @@ const ExtrinsicContent = () => {
                 <div className="flex w-8/12">
                   <img
                     className="w-5 h-5 cursor-pointer"
-                    src={Images.FlowerIcon}
+                    src={Svgs.FlowerIcon}
                     alt="arrow-left"
                   />
                   <span className="text-accent mx-3">
                     0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
                   </span>
-                  <img className="w-4 h-4 cursor-pointer" src={Images.CopyIcon} alt="arrow-left" />
+                  <img
+                    className="w-4 h-4 cursor-pointer"
+                    src={Svgs.CopyIcon}
+                    alt="arrow-left"
+                  />
                 </div>
               </div>
               <div className="w-full flex py-2">

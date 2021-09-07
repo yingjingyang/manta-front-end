@@ -1,5 +1,5 @@
 import React from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 import TableColumnHeader from 'components/elements/Table/TableColumnHeader';
@@ -47,7 +47,8 @@ const TableRowData = ({ highlight, cancel }) => {
       </TableRowItem>
       <TableRowItem width="20%">
         <span className="text-blue-thirdry flex">
-          16DmDSH...BhULcQM3 <img className="pl-3" src={Images.ArrowRightIcon} alt="arrow" />
+          16DmDSH...BhULcQM3{' '}
+          <img className="pl-3" src={Svgs.ArrowRightIcon} alt="arrow" />
         </span>
       </TableRowItem>
       <TableRowItem width="20%">
@@ -58,9 +59,9 @@ const TableRowData = ({ highlight, cancel }) => {
       </TableRowItem>
       <TableRowItem width="8%">
         {cancel ? (
-          <img className="w-5 h-5" src={Images.CancelIcon} alt="success" />
+          <img className="w-5 h-5" src={Svgs.CancelIcon} alt="success" />
         ) : (
-          <img className="w-5 h-5" src={Images.SuccessIcon} alt="success" />
+          <img className="w-5 h-5" src={Svgs.SuccessIcon} alt="success" />
         )}
       </TableRowItem>
       <TableRowItem width="16%">

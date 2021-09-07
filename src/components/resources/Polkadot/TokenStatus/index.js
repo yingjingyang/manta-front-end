@@ -1,5 +1,5 @@
 import React from 'react';
-import { PoolSvg } from 'common/Svgs';
+import { PoolSvg } from 'resources/svgs';
 import CardContent from 'components/elements/CardContent';
 
 const TokenStatus = () => {
@@ -17,21 +17,27 @@ const TokenStatus = () => {
               <div className="w-3 h-3 manta-bg-primary-blue rounded-sm"></div>
               <div className="manta-gray text-sm px-4">Circulating</div>
             </div>
-            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">224,434M (32,4%)</div>
+            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">
+              224,434M (32,4%)
+            </div>
           </div>
           <div className="py-2 flex justify-between sm:flex-col">
             <div className="flex items-center">
               <div className="w-3 h-3 manta-bg-secondary-blue rounded-sm"></div>
               <div className="manta-gray text-sm px-4">Staking</div>
             </div>
-            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">224,434M (32,4%)</div>
+            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">
+              224,434M (32,4%)
+            </div>
           </div>
           <div className="flex justify-between sm:flex-col">
             <div className="flex items-center">
               <div className="w-3 h-3 manta-bg-gray rounded-sm"></div>
               <div className="manta-gray text-sm px-4">Others</div>
             </div>
-            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">224,434M (32,4%)</div>
+            <div className="text-sm sm:text-base font-semibold pl-8 text-accent">
+              224,434M (32,4%)
+            </div>
           </div>
         </div>
         <div className="w-full pt-6 sm:pt-0 sm:w-3/5 sm:pl-6 ">

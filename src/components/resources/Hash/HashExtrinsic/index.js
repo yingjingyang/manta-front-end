@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 import TableColumnHeader from 'components/elements/Table/TableColumnHeader';
@@ -18,19 +18,31 @@ const BlockExtrinsic = () => {
             <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
               Events (4)
             </div>
-            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">Log (2)</div>
-            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">Comments</div>
+            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
+              Log (2)
+            </div>
+            <div className="cursor-pointer item px-4 py-2 rounded-lg manta-gray mx-2">
+              Comments
+            </div>
           </div>
           <span className="px-4 py-2 hidden sm:block cursor-pointer rounded-lg btn-primary">
             All
           </span>
         </div>
         <div className="px-4 md:px-10 md:hidden items-center justify-between flex">
-          <img className="w-4 h-4 cursor-pointer" src={Images.LeftIcon} alt="arrow-left" />
+          <img
+            className="w-4 h-4 cursor-pointer"
+            src={Svgs.LeftIcon}
+            alt="arrow-left"
+          />
           <div className="cursor-pointer item px-4 py-2 rounded-lg active manta-gray mx-2">
             Extrinsics (2888999)
           </div>
-          <img className="w-4 h-4 cursor-pointer" src={Images.RightIcon} alt="arrow-right" />
+          <img
+            className="w-4 h-4 cursor-pointer"
+            src={Svgs.RightIcon}
+            alt="arrow-right"
+          />
         </div>
         <div className="overflow-x-auto">
           <div className="mb-4 min-w-lg">
@@ -57,16 +69,22 @@ const BlockExtrinsic = () => {
                   <span className="text-accent">55 secs ago</span>
                 </TableRowItem>
                 <TableRowItem width="10%">
-                  <img className="w-5 h-5" src={Images.SuccessIcon} alt="arrow-left" />
+                  <img
+                    className="w-5 h-5"
+                    src={Svgs.SuccessIcon}
+                    alt="arrow-left"
+                  />
                 </TableRowItem>
                 <TableRowItem width="25%">
-                  <span className="text-blue-thirdry">system (KilledAccount)</span>
+                  <span className="text-blue-thirdry">
+                    system (KilledAccount)
+                  </span>
                 </TableRowItem>
                 <TableRowItem width="5%">
                   <img
                     onClick={() => setShowDrop(!showDrop)}
                     className="w-3 h-3 cursor-pointer"
-                    src={!showDrop ? Images.DropDownIcon : Images.DropUpIcon}
+                    src={!showDrop ? Svgs.DropDownIcon : Svgs.DropUpIcon}
                     alt="drop-up"
                   />
                 </TableRowItem>
@@ -105,7 +123,11 @@ const BlockExtrinsic = () => {
                         0x0bd2432b0835a39720baea52f6026df56ef83bc1fadff44b99a5a0d15cab3446
                       </p>
                     </div>
-                    <img className="w-5 h-5 cursor-pointer" src={Images.DetailIcon} alt="detail" />
+                    <img
+                      className="w-5 h-5 cursor-pointer"
+                      src={Svgs.DetailIcon}
+                      alt="detail"
+                    />
                   </div>
                 </div>
               )}
@@ -124,13 +146,23 @@ const BlockExtrinsic = () => {
                 <span className="text-accent">55 secs ago</span>
               </TableRowItem>
               <TableRowItem width="10%">
-                <img className="w-5 h-5" src={Images.SuccessIcon} alt="arrow-left" />
+                <img
+                  className="w-5 h-5"
+                  src={Svgs.SuccessIcon}
+                  alt="arrow-left"
+                />
               </TableRowItem>
               <TableRowItem width="25%">
-                <span className="text-blue-thirdry">system (KilledAccount)</span>
+                <span className="text-blue-thirdry">
+                  system (KilledAccount)
+                </span>
               </TableRowItem>
               <TableRowItem width="5%">
-                <img className="w-3 h-3 cursor-pointer" src={Images.DropUpIcon} alt="drop-up" />
+                <img
+                  className="w-3 h-3 cursor-pointer"
+                  src={Svgs.DropUpIcon}
+                  alt="drop-up"
+                />
               </TableRowItem>
             </TableRow>
           </div>

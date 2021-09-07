@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import FormSwitch from 'components/elements/Form/FormSwitch';
 import { ThemeContext } from 'contexts/ThemeContext';
-import Images from 'common/Images';
+import Svgs from 'resources/Svgs';
 import { themeType } from 'constants/theme.constant';
 
 const ChangeThemeButton = () => {
@@ -17,7 +17,7 @@ const ChangeThemeButton = () => {
             className={classNames('absolute theme-icon left-1 top-1', {
               iconActive: !isDark,
             })}
-            src={Images.SunIcon}
+            src={Svgs.SunIcon}
             alt="sun-icon"
           />
         }
@@ -26,11 +26,13 @@ const ChangeThemeButton = () => {
             className={classNames('absolute theme-icon right-1 bottom-1.5', {
               iconActive: isDark,
             })}
-            src={Images.MoonIcon}
+            src={Svgs.MoonIcon}
             alt="off-icon"
           />
         }
-        onChange={(e) => setTheme(e.target.checked ? themeType.Dark : themeType.Light)}
+        onChange={(e) =>
+          setTheme(e.target.checked ? themeType.Dark : themeType.Light)
+        }
       />
     </div>
   );

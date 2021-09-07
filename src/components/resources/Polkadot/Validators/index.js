@@ -1,5 +1,5 @@
 import React from 'react';
-import { ValidatorSvg } from 'common/Svgs';
+import { ValidatorSvg } from 'resources/svgs';
 import CardContent from 'components/elements/CardContent';
 import TableColumnHeader from 'components/elements/Table/TableColumnHeader';
 import TableHeaderWrapper from 'components/elements/Table/TableHeaderWrapper';
@@ -42,7 +42,9 @@ const TableRowData = () => {
   return (
     <TableRow className="bg-thirdry rounded-lg px-2 my-3">
       <TableRowItem width="5%">
-        <div className="w-8 h-8 btn-primary leading-8 text-white text-center rounded-md">1</div>
+        <div className="w-8 h-8 btn-primary leading-8 text-white text-center rounded-md">
+          1
+        </div>
       </TableRowItem>
       <TableRowItem width="15%">
         <span className="text-blue-thirdry">Binance... AKE_9</span>
@@ -51,7 +53,9 @@ const TableRowData = () => {
         <span className="text-thirdry font-semibold">1 DOT</span>
       </TableRowItem>
       <TableRowItem width="15%">
-        <span className="text-thirdry text-sm sm:text-base font-semibold">2,103,524.3704 DOT</span>
+        <span className="text-thirdry text-sm sm:text-base font-semibold">
+          2,103,524.3704 DOT
+        </span>
       </TableRowItem>
       <TableRowItem width="10%">
         <span className="manta-prime-blue font-semibold">305</span>

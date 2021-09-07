@@ -1,3 +1,4 @@
 {
-  "PROVIDER_SOCKET": "wss://dev-node.substrate.dev"
+    "PROVIDER_SOCKET": "wss://dev-node.substrate.dev",
+    "DEV_CONSOLE": true
 }

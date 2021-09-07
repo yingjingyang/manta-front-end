@@ -4,7 +4,12 @@ import BN from 'bn.js';
 import { base64Decode } from '@polkadot/util-crypto';
 import { useSubstrate } from './substrate-lib';
 
-import { loadSpendableAssetsById, persistSpendableAsset, loadSpendableBalance, removeSpendableAsset } from './utils/persistence/AssetStorage';
+import {
+  loadSpendableAssetsById,
+  persistSpendableAsset,
+  loadSpendableBalance,
+  removeSpendableAsset,
+} from './utils/persistence/AssetStorage';
 import TxStatus from './utils/api/TxStatus';
 import formatPayloadForSubstrate from './utils/api/FormatPayloadForSubstrate.js';
 import { makeTxResHandler } from './utils/api/MakeTxResHandler';
@@ -12,28 +17,7 @@ import TxStatusDisplay from './utils/ui/TxStatusDisplay';
 import TxButton from './TxButton';
 import MantaAssetShieldedAddress from './types/MantaAssetShieldedAddress';
 
-export default function Main ({ fromAccount, signerClient }) {
-  // now
-
-  // todo: recovering spent assets?
-  // todo: error handling on signer client
-  // todo: money types
-  // todo: retry failures
-  // todo: forbid insecure random
-  // todo: fix memory leak / pages shouldn't reset on switching labs page
-  // todo: standardize components
-  // todo: make receiving address copy-pastable
-  // todo: handle gap limit
-  // todo: UI freezes on change tabs(?)
-  // todo: shielded address should be base58
-
-  // later
-  // todo: reduce duplication in reclaim and private transfer
-  // todo: error types
-  // todo: ledger state dto
-  // todo: store pending spends
-  // todo: intelligent coin selection
-
+export default function Main({ fromAccount, signerClient }) {
   const { api } = useSubstrate();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
@@ -87,7 +71,7 @@ export default function Main ({ fromAccount, signerClient }) {
     let totalAmount = new BN(0);
     coinSelection.current = [];
     const spendableAssets = loadSpendableAssetsById(assetId);
-    spendableAssets.forEach(asset => {
+    spendableAssets.forEach((asset) => {
       if (totalAmount.lt(amount) || coinSelection.current.length % 2) {
         totalAmount = totalAmount.add(asset.value);
         coinSelection.current.push(asset);
@@ -109,7 +93,10 @@ export default function Main ({ fromAccount, signerClient }) {
   const generatePrivateTransferPayload = async () => {
     let ledgerState1 = await getLedgerState(asset1.current);
     let ledgerState2 = await getLedgerState(asset2.current);
-    changeAsset.current = await signerClient.generateAsset(assetId, changeAmount.current);
+    changeAsset.current = await signerClient.generateAsset(
+      assetId,
+      changeAmount.current
+    );
     const payload = await signerClient.generatePrivateTransferPayload(
       asset1.current,
       asset2.current,
@@ -123,8 +110,13 @@ export default function Main ({ fromAccount, signerClient }) {
   };
 
   const generateMintZeroCoinPayload = async () => {
-    mintZeroCoinAsset.current = await signerClient.generateAsset(assetId, new BN(0));
-    const payload = await signerClient.generateMintPayload(mintZeroCoinAsset.current);
+    mintZeroCoinAsset.current = await signerClient.generateAsset(
+      assetId,
+      new BN(0)
+    );
+    const payload = await signerClient.generateMintPayload(
+      mintZeroCoinAsset.current
+    );
     return formatPayloadForSubstrate([payload]);
   };
 
@@ -134,22 +126,31 @@ export default function Main ({ fromAccount, signerClient }) {
    *
    */
 
-  const submitPrivateTransfer = payload => {
+  const submitPrivateTransfer = (payload) => {
     const handleTxResponse = makeTxResHandler(
-      api, onPrivateTransferSuccess, onPrivateTransferFailure, onPrivateTransferUpdate);
+      api,
+      onPrivateTransferSuccess,
+      onPrivateTransferFailure,
+      onPrivateTransferUpdate
+    );
     const tx = api.tx.mantaPay.privateTransfer(...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
     setUnsub(() => unsub);
   };
 
-  const submitMintZeroCoinTx = payload => {
-    const handleTxResponse = makeTxResHandler(api, onMintSuccess, onMintFailure, onMintUpdate);
+  const submitMintZeroCoinTx = (payload) => {
+    const handleTxResponse = makeTxResHandler(
+      api,
+      onMintSuccess,
+      onMintFailure,
+      onMintUpdate
+    );
     const tx = api.tx.mantaPay.mintPrivateAsset(...payload);
     const unsub = tx.signAndSend(fromAccount, handleTxResponse);
     setUnsub(() => unsub);
   };
 
-  const getLedgerState = async asset => {
+  const getLedgerState = async (asset) => {
     const shardIndex = asset.utxo[0];
     const shards = await api.query.mantaPay.coinShards();
     return shards.shard[shardIndex].list;
@@ -161,7 +162,7 @@ export default function Main ({ fromAccount, signerClient }) {
    *
    */
 
-  const onPrivateTransferSuccess = async block => {
+  const onPrivateTransferSuccess = async (block) => {
     removeSpendableAsset(asset1.current);
     removeSpendableAsset(asset2.current);
     persistSpendableAsset(changeAsset.current);
@@ -183,11 +184,11 @@ export default function Main ({ fromAccount, signerClient }) {
     forgetAllTransactions();
   };
 
-  const onPrivateTransferUpdate = message => {
+  const onPrivateTransferUpdate = (message) => {
     setStatus(TxStatus.processing(message));
   };
 
-  const onMintSuccess = block => {
+  const onMintSuccess = (block) => {
     coinSelection.current.push(mintZeroCoinAsset.current);
     persistSpendableAsset(mintZeroCoinAsset.current);
     mintZeroCoinAsset.current = null;
@@ -200,7 +201,7 @@ export default function Main ({ fromAccount, signerClient }) {
     forgetAllTransactions();
   };
 
-  const onMintUpdate = message => {
+  const onMintUpdate = (message) => {
     setStatus(TxStatus.processing(message));
   };
 
@@ -222,13 +223,11 @@ export default function Main ({ fromAccount, signerClient }) {
     }
   }, [amount, assetId, selectCoins]);
 
-
-  const onChangeAssetId = e => {
+  const onChangeAssetId = (e) => {
     setAssetId(parseInt(e.target.value));
   };
 
-
-  const onChangeAddress = e => {
+  const onChangeAddress = (e) => {
     try {
       setAddress(new MantaAssetShieldedAddress(base64Decode(e.target.value)));
     } catch (e) {
@@ -245,24 +244,26 @@ export default function Main ({ fromAccount, signerClient }) {
   };
 
   const formIsDisabled = status && status.isProcessing();
-  const buttonIsDisabled = (
-    formIsDisabled || insufficientFunds || !address ||
-    !(assetId > 0) || !amount.gt(new BN(0))
-  );
+  const buttonIsDisabled =
+    formIsDisabled ||
+    insufficientFunds ||
+    !address ||
+    !(assetId > 0) ||
+    !amount.gt(new BN(0));
 
   return (
     <>
-      <Grid.Column width={2}/>
-      <Grid.Column width={12} textAlign='center'>
-        <Header textAlign='center'>Private Transfer</Header>
+      <Grid.Column width={2} />
+      <Grid.Column width={12} textAlign="center">
+        <Header textAlign="center">Private Transfer</Header>
         <Form>
           <Form.Field style={{ width: '500px', marginLeft: '2em' }}>
             <Input
               fluid
               disabled={formIsDisabled}
-              label='Asset ID'
-              type='number'
-              state='assetId'
+              label="Asset ID"
+              type="number"
+              state="assetId"
               onChange={onChangeAssetId}
             />
           </Form.Field>
@@ -270,9 +271,9 @@ export default function Main ({ fromAccount, signerClient }) {
             <Input
               fluid
               disabled={formIsDisabled}
-              label='Address'
-              type='string'
-              state='address'
+              label="Address"
+              type="string"
+              state="address"
               onChange={onChangeAddress}
             />
           </Form.Field>
@@ -280,15 +281,15 @@ export default function Main ({ fromAccount, signerClient }) {
             <Input
               fluid
               disabled={formIsDisabled}
-              label='Amount'
-              type='number'
-              state='amount'
-              onChange={e => setAmount(new BN(e.target.value))}
+              label="Amount"
+              type="number"
+              state="amount"
+              onChange={(e) => setAmount(new BN(e.target.value))}
             />
           </Form.Field>
           <Form.Field style={{ textAlign: 'center' }}>
             <TxButton
-              label='Submit'
+              label="Submit"
               onClick={onClick}
               disabled={buttonIsDisabled}
             />
@@ -299,12 +300,14 @@ export default function Main ({ fromAccount, signerClient }) {
             totalBatches={totalBatches}
             batchNumber={currentBatchIdx.current}
           />
-          {
-            insufficientFunds && <div style={{ textAlign: 'center', overflowWrap: 'break-word' }}>Insufficient Funds</div>
-          }
+          {insufficientFunds && (
+            <div style={{ textAlign: 'center', overflowWrap: 'break-word' }}>
+              Insufficient Funds
+            </div>
+          )}
         </Form>
       </Grid.Column>
-      <Grid.Column width={2}/>
+      <Grid.Column width={2} />
     </>
   );
 }
