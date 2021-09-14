@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import FormSelect from 'components/elements/Form/FormSelect';
 import FormInput from 'components/elements/Form/FormInput';
 

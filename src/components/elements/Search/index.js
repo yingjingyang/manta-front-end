@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import PropTypes from 'prop-types';
 
 const Search = ({ className, onClick }) => {

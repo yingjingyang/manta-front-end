@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import FormSelect from 'components/elements/Form/FormSelect';

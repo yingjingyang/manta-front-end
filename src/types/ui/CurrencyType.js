@@ -1,4 +1,4 @@
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 
 export default class CurrencyType {
   constructor(assetId, name, ticker, icon) {

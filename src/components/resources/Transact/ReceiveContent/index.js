@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from 'components/elements/Button';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import FormSelect from 'components/elements/Form/FormSelect';
 
 const ReceiveContent = () => {

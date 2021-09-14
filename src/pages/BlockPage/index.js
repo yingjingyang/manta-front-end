@@ -1,5 +1,5 @@
 import React from 'react';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import Search from 'components/elements/Search';
 import { BlockContent, BlockExtrinsic } from 'components/resources/Blocks';
 import { useHistory } from 'react-router-dom';

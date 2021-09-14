@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 import TableColumnHeader from 'components/elements/Table/TableColumnHeader';

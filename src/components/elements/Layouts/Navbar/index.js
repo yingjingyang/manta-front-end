@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Images from 'resources/Svgs';
+import Images from 'resources/icons';
 import MainMenu from 'components/resources/Sidebar/MainMenu';
 import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';

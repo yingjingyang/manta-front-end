@@ -1,5 +1,5 @@
 import React from 'react';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import { useHistory } from 'react-router-dom';
 import { HashContent, HashExtrinsic } from 'components/resources/Hash';
 import { Navbar } from 'components/elements/Layouts';

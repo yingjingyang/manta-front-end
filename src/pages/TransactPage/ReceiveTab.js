@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from 'components/elements/Button';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import FormSelect from 'components/elements/Form/FormSelect';
 import { useSigner } from 'contexts/SignerContext';
 import CurrencyType from 'types/ui/CurrencyType';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import TableRow from 'components/elements/Table/TableRow';
 import TableRowItem from 'components/elements/Table/TableRowItem';
 

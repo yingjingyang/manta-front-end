@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlockSvg } from 'resources/svgs';
-import BlockItem from './BlockItem';
 import CardContent from 'components/elements/CardContent';
+import BlockItem from './BlockItem';
 
 const LatestBlocks = () => {
   return (

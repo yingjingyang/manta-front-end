@@ -1,5 +1,5 @@
 import React from 'react';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import Sticky from 'components/elements/ScrollFollow/Sticky';
 import Search from 'components/elements/Search';
 import { Navbar } from 'components/elements/Layouts';

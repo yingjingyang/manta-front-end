@@ -5,7 +5,7 @@ import BN from 'bn.js';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/SubstrateContext';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import {
   loadSpendableAssetsById,
   loadSpendableBalance,

@@ -1,8 +1,8 @@
 import React from 'react';
-import Svgs from 'resources/Svgs';
-import ChainItem from './ChainItem';
+import Svgs from 'resources/icons';
 import { ChainSvg } from 'resources/svgs';
 import CardContent from 'components/elements/CardContent';
+import ChainItem from './ChainItem';
 
 const ChainData = () => {
   return (

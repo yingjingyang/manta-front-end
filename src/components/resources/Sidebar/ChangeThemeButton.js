@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import FormSwitch from 'components/elements/Form/FormSwitch';
 import { ThemeContext } from 'contexts/ThemeContext';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import { themeType } from 'constants/theme.constant';
 
 const ChangeThemeButton = () => {

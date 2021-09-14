@@ -1,6 +1,6 @@
 import { themeType } from 'constants/theme.constant';
 import React, { useContext } from 'react';
-import Svgs from 'resources/Svgs';
+import Svgs from 'resources/icons';
 import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import MainMenu from 'components/resources/Sidebar/MainMenu';
 import { ThemeContext } from 'contexts/ThemeContext';

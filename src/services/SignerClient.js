@@ -127,7 +127,10 @@ export default class SignerClient {
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,
     });
-    const res = await axios.post('generatePrivateTransferData', params.toU8a());
+    const res = await axios.post(
+      'requestGeneratePrivateTransferData',
+      params.toU8a()
+    );
     return base64Decode(res.data.private_transfer_data);
   }
 
@@ -153,7 +156,6 @@ export default class SignerClient {
       change_path: changePath,
       reclaim_value: reclaimValue,
     });
-    console.log('!!', asset1, asset2, ledgerState1, ledgerState2, reclaimValue);
 
     const res = await axios.post('generateReclaimData', params.toU8a());
     return base64Decode(res.data.reclaim_data);
