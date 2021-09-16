@@ -63,7 +63,7 @@ const SendTab = () => {
   const txResWasHandled = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
-  const signerClient = useSigner();
+  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
@@ -154,6 +154,7 @@ const SendTab = () => {
     if (txResWasHandled.current === true) {
       return;
     }
+    console.error(error);
     showError('Withdrawal failed');
     txResWasHandled.current = true;
     setStatus(TxStatus.failed(block, error));
@@ -190,12 +191,17 @@ const SendTab = () => {
       const privateTransferTransaction = api.tx.mantaPay.privateTransfer(
         privateTransferPayload
       );
-      transactions.push(privateTransferTransaction);
+      const unsub = privateTransferTransaction.signAndSend(
+        currentExternalAccount,
+        txResHandler
+      );
+      setUnsub(() => unsub);
+      // transactions.push(privateTransferTransaction);
     }
-    const unsub = api.tx.utility
-      .batch(transactions)
-      .signAndSend(currentExternalAccount, txResHandler);
-    setUnsub(() => unsub);
+    // const unsub = api.tx.utility
+    //   .batch(transactions)
+    //   .signAndSend(currentExternalAccount, txResHandler);
+    // setUnsub(() => unsub);
   };
 
   const insufficientFunds = false; // todo

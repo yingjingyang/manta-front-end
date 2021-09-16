@@ -38,7 +38,7 @@ const DepositTab = () => {
   const [publicAssetBalance, setPublicAssetBalance] = useState(null);
   let mintAsset = useRef(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
-  const signerClient = useSigner();
+  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {

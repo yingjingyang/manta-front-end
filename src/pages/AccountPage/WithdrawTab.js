@@ -32,7 +32,7 @@ const WithdrawTab = () => {
   const [unsub, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
-  const signerClient = useSigner();
+  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
@@ -116,6 +116,7 @@ const WithdrawTab = () => {
 
   const onReclaimFailure = async (block, error) => {
     // Seems like every batched tx gets handled?
+    console.error(error);
     if (txResWasHandled.current === true) {
       return;
     }
@@ -155,11 +156,16 @@ const WithdrawTab = () => {
       );
       const reclaimTransaction = api.tx.mantaPay.reclaim(reclaimPayload);
       transactions.push(reclaimTransaction);
+      const unsub = reclaimTransaction.signAndSend(
+        currentExternalAccount,
+        txResHandler
+      );
+      setUnsub(() => unsub);
     }
-    const unsub = api.tx.utility
-      .batch(transactions)
-      .signAndSend(currentExternalAccount, txResHandler);
-    setUnsub(() => unsub);
+    // const unsub = api.tx.utility
+    //   .batch(transactions)
+    //   .signAndSend(currentExternalAccount, txResHandler);
+    // setUnsub(() => unsub);
   };
 
   const onChangeWithdrawAmountInput = (amountStr) => {

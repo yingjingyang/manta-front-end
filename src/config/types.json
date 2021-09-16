@@ -53,6 +53,9 @@
         "receiver_2": "ReceiverData",
         "proof": "[u8; 192]"
     },
+    "PrivateTransferDataBatch": {
+        "private_transfer_data_list": "Vec<PrivateTransferData>"
+    },
     "ReclaimData": {
         "asset_id": "AssetId",
         "reclaim_amount": "AssetBalance",
@@ -60,6 +63,9 @@
         "sender_2": "SenderData",
         "receiver": "ReceiverData",
         "proof": "[u8; 192]"
+    },
+    "ReclaimDataBatch": {
+        "reclaim_data_list": "Vec<ReclaimData>"
     },
     "DeriveShieldedAddressParams": {
         "path": "String",
@@ -81,6 +87,9 @@
         "change_path": "String",
         "reclaim_value": "AssetBalance"
     },
+    "GenerateReclaimDataParamsBatch": {
+        "params_list": "Vec<GenerateReclaimDataParams>"
+    },
     "GeneratePrivateTransferDataParams": {
         "asset_id": "AssetId",
         "asset_1_value": "AssetBalance",
@@ -93,6 +102,9 @@
         "change_path": "String",
         "non_change_output_value": "AssetBalance",
         "change_output_value": "AssetBalance"
+    },
+    "GeneratePrivateTransferDataParamsBatch": {
+        "params_list": "Vec<GeneratePrivateTransferDataParams>"
     },
     "RecoverAccountParams": {
         "encrypted_notes": "Vec<MantaEciesCiphertext>",

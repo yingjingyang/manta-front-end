@@ -22,7 +22,7 @@ import { useSigner } from 'contexts/SignerContext';
 
 function MainApp() {
   const { api } = useSubstrate();
-  const signerClient = useSigner();
+  const { signerClient } = useSigner();
 
   useEffect(() => {
     const devClearLocalStorage = async () => {

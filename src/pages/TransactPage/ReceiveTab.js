@@ -9,7 +9,7 @@ const ReceiveTab = () => {
   const [currentAddress, setCurrentAddress] = useState(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
 
-  const signerClient = useSigner();
+  const { signerClient } = useSigner();
   const onClickNewAddress = async () => {
     const newAddress = await signerClient.generateNextExternalAddress(
       selectedAssetType.assetId

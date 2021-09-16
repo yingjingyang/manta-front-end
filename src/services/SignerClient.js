@@ -26,6 +26,15 @@ export default class SignerClient {
     }
   }
 
+  async checkSignerIsOpen() {
+    try {
+      await axios.get('heartbeat', { timeout: 2 });
+      return true;
+    } catch (timeoutError) {
+      return false;
+    }
+  }
+
   async recoverWallet() {
     const encryptedNotes = await this.api.query.mantaPay.encValueList();
     const voidNumbers = await this.api.query.mantaPay.vNList();
@@ -127,6 +136,7 @@ export default class SignerClient {
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,
     });
+    console.log(params, 'params');
     const res = await axios.post(
       'requestGeneratePrivateTransferData',
       params.toU8a()
@@ -141,6 +151,8 @@ export default class SignerClient {
     ledgerState2,
     reclaimValue
   ) {
+    console.log('generateReclaimPayload');
+
     this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx =
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
@@ -157,7 +169,9 @@ export default class SignerClient {
       reclaim_value: reclaimValue,
     });
 
-    const res = await axios.post('generateReclaimData', params.toU8a());
+    console.log('params', params);
+
+    const res = await axios.post('requestGenerateReclaimData', params.toU8a());
     return base64Decode(res.data.reclaim_data);
   }
 }
