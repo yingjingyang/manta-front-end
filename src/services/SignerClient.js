@@ -109,7 +109,7 @@ export default class SignerClient {
     return base64Decode(res.data.mint_data);
   }
 
-  async generatePrivateTransferPayload(
+  async generatePrivateTransferParams(
     asset1,
     asset2,
     ledgerState1,
@@ -118,7 +118,7 @@ export default class SignerClient {
     spendAmount,
     changeAmount
   ) {
-    this.generateNextInternalAddress(asset1.assetId);
+    await this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx =
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
     const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
@@ -136,23 +136,32 @@ export default class SignerClient {
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,
     });
-    console.log(params, 'params');
-    const res = await axios.post(
-      'requestGeneratePrivateTransferData',
-      params.toU8a()
-    );
-    return base64Decode(res.data.private_transfer_data);
+    return params.toU8a();
   }
 
-  async generateReclaimPayload(
+  async requestGeneratePrivateTransferPayloads(privateTransferParamsList) {
+    const privateTransferParamsBatch = this.api.createType(
+      'GeneratePrivateTransferDataParamsBatch',
+      { params_list: privateTransferParamsList }
+    );
+    const res = await axios.post(
+      'requestGeneratePrivateTransferData',
+      privateTransferParamsBatch.toU8a()
+    );
+    const decoded = this.api.createType(
+      'PrivateTransferDataBatch',
+      base64Decode(res.data.private_transfer_data)
+    );
+    return decoded.private_transfer_data_list.map((data) => data.toU8a());
+  }
+
+  async generateReclaimParams(
     asset1,
     asset2,
     ledgerState1,
     ledgerState2,
     reclaimValue
   ) {
-    console.log('generateReclaimPayload');
-
     this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx =
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
@@ -169,9 +178,22 @@ export default class SignerClient {
       reclaim_value: reclaimValue,
     });
 
-    console.log('params', params);
+    return params.toU8a();
+  }
 
-    const res = await axios.post('requestGenerateReclaimData', params.toU8a());
-    return base64Decode(res.data.reclaim_data);
+  async requestGenerateReclaimPayloads(reclaimParamsList) {
+    const reclaimParamsBatch = this.api.createType(
+      'GenerateReclaimDataParamsBatch',
+      { params_list: reclaimParamsList }
+    );
+    const res = await axios.post(
+      'requestGenerateReclaimData',
+      reclaimParamsBatch.toU8a()
+    );
+    const decoded = this.api.createType(
+      'ReclaimDataBatch',
+      base64Decode(res.data.reclaim_data)
+    );
+    return decoded.reclaim_data_list.map((data) => data.toU8a());
   }
 }

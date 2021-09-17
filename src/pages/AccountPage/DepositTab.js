@@ -105,7 +105,6 @@ const DepositTab = () => {
   };
 
   const onChangeDepositAmountInput = (amountStr) => {
-    console.log(amountStr);
     setDepositAmountInput(amountStr);
     try {
       setMintAmount(new BN(amountStr));
@@ -117,9 +116,13 @@ const DepositTab = () => {
   const onClickMax = () => {
     onChangeDepositAmountInput(publicAssetBalance.toString());
   };
+  const insufficientFunds = mintAmount?.gt(publicAssetBalance);
   const formIsDisabled = status && status.isProcessing();
   const buttonIsDisabled =
-    formIsDisabled || !mintAmount || !mintAmount.gt(new BN(0));
+    formIsDisabled ||
+    insufficientFunds ||
+    !mintAmount ||
+    !mintAmount.gt(new BN(0));
 
   const balanceString =
     selectedAssetType &&
@@ -139,7 +142,7 @@ const DepositTab = () => {
           onClickMax={onClickMax}
           onChange={(e) => onChangeDepositAmountInput(e.target.value)}
           value={depositAmountInput}
-          step="0.01"
+          step="1"
         >
           {balanceString}
         </FormInput>

@@ -16,7 +16,6 @@ export const SignerContextProvider = (props) => {
         return;
       }
       await api.isReady;
-      console.log(api);
       setSignerClient(new SignerClient(api));
     };
     initSignerClient();

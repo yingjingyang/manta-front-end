@@ -25,12 +25,9 @@ const SendTab = () => {
 
   // Replace BN with decimal
   // hande insufficient funds
-  // get default to populate in dropdown
-  // show available balances
 
   // todo: extract coin selection logic
   // todo: recovering spent assets?
-  // todo: error handling on signer client
   // todo: money types
   // todo: forbid insecure random
   // todo: fix memory leak / pages shouldn't reset on switching labs page
@@ -42,7 +39,6 @@ const SendTab = () => {
   // later
   // todo: reduce duplication in reclaim and private transfer
   // todo: error types
-  // todo: ledger state dto?
   // todo: store pending spends?
   // todo: intelligent coin selection?
 
@@ -111,14 +107,14 @@ const SendTab = () => {
     return payload;
   };
 
-  const generatePrivateTransferPayload = async (inputAsset1, inputAsset2) => {
+  const generatePrivateTransferParams = async (inputAsset1, inputAsset2) => {
     let ledgerState1 = await getLedgerState(inputAsset1);
     let ledgerState2 = await getLedgerState(inputAsset2);
     changeAsset.current = await signerClient.generateAsset(
       inputAsset1.assetId,
       changeAmount.current
     );
-    const payload = await signerClient.generatePrivateTransferPayload(
+    const payload = await signerClient.generatePrivateTransferParams(
       inputAsset1,
       inputAsset2,
       ledgerState1,
@@ -150,7 +146,7 @@ const SendTab = () => {
   };
 
   const onWithdrawFailure = (block, error) => {
-    // Seems like every batched tx gets handled?
+    // Seems like every batched tx gets handled separately?
     if (txResWasHandled.current === true) {
       return;
     }
@@ -181,30 +177,32 @@ const SendTab = () => {
       transactions.push(mintZeroCoinTx);
       coinSelection.current.push(mintZeroCoinAsset.current);
     }
+    const privateTransferParamsList = [];
     for (let i = 0; i < coinSelection.current.length; i += 2) {
       const inputAsset1 = coinSelection.current[i];
       const inputAsset2 = coinSelection.current[i + 1];
-      const privateTransferPayload = await generatePrivateTransferPayload(
+      const privateTransferParams = await generatePrivateTransferParams(
         inputAsset1,
         inputAsset2
       );
-      const privateTransferTransaction = api.tx.mantaPay.privateTransfer(
-        privateTransferPayload
-      );
-      const unsub = privateTransferTransaction.signAndSend(
-        currentExternalAccount,
-        txResHandler
-      );
-      setUnsub(() => unsub);
-      // transactions.push(privateTransferTransaction);
+      privateTransferParamsList.push(privateTransferParams);
     }
-    // const unsub = api.tx.utility
-    //   .batch(transactions)
-    //   .signAndSend(currentExternalAccount, txResHandler);
-    // setUnsub(() => unsub);
+
+    const privateTransferPayloads =
+      await signerClient.requestGeneratePrivateTransferPayloads(
+        privateTransferParamsList
+      );
+    privateTransferPayloads.forEach((payload) => {
+      transactions.push(api.tx.mantaPay.privateTransfer(payload));
+    });
+
+    const unsub = api.tx.utility
+      .batch(transactions)
+      .signAndSend(currentExternalAccount, txResHandler);
+    setUnsub(() => unsub);
   };
 
-  const insufficientFunds = false; // todo
+  const insufficientFunds = privateBalance?.lt(privateTransferAmount);
   const formIsDisabled = status && status.isProcessing();
   const buttonIsDisabled =
     formIsDisabled || insufficientFunds || !privateTransferAmount.gt(new BN(0));

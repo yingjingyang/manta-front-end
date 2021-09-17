@@ -24,7 +24,6 @@ const WithdrawTab = () => {
   const [reclaimAmount, setReclaimAmount] = useState(new BN(-1));
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
-  const [insufficientFunds, setInsufficientFunds] = useState(false);
   const coinSelection = useRef(null);
   const mintBatchIsRequired = useRef(null);
   const changeAmount = useRef(null);
@@ -66,13 +65,13 @@ const WithdrawTab = () => {
     return ledgerState;
   };
 
-  const generateReclaimPayload = async (reclaimAsset1, reclaimAsset2) => {
+  const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
     let ledgerState1 = await getLedgerState(reclaimAsset1);
     let ledgerState2 = await getLedgerState(reclaimAsset2);
     const changeAddress = await signerClient.generateNextInternalAddress(
       selectedAssetType.assetId
     );
-    const payload = await signerClient.generateReclaimPayload(
+    const payload = await signerClient.generateReclaimParams(
       reclaimAsset1,
       reclaimAsset2,
       ledgerState1,
@@ -147,25 +146,26 @@ const WithdrawTab = () => {
       transactions.push(mintZeroCoinTx);
       coinSelection.current.push(mintZeroCoinAsset.current);
     }
+    const reclaimParamsList = [];
     for (let i = 0; i < coinSelection.current.length; i += 2) {
       const reclaimAsset1 = coinSelection.current[i];
       const reclaimAsset2 = coinSelection.current[i + 1];
-      const reclaimPayload = await generateReclaimPayload(
+      const reclaimPayload = await generateReclaimParams(
         reclaimAsset1,
         reclaimAsset2
       );
-      const reclaimTransaction = api.tx.mantaPay.reclaim(reclaimPayload);
-      transactions.push(reclaimTransaction);
-      const unsub = reclaimTransaction.signAndSend(
-        currentExternalAccount,
-        txResHandler
-      );
-      setUnsub(() => unsub);
+      reclaimParamsList.push(reclaimPayload);
     }
-    // const unsub = api.tx.utility
-    //   .batch(transactions)
-    //   .signAndSend(currentExternalAccount, txResHandler);
-    // setUnsub(() => unsub);
+    const reclaimPayloads = await signerClient.requestGenerateReclaimPayloads(
+      reclaimParamsList
+    );
+    reclaimPayloads.forEach((payload) => {
+      transactions.push(api.tx.mantaPay.reclaim(payload));
+    });
+    const unsub = api.tx.utility
+      .batch(transactions)
+      .signAndSend(currentExternalAccount, txResHandler);
+    setUnsub(() => unsub);
   };
 
   const onChangeWithdrawAmountInput = (amountStr) => {
@@ -181,6 +181,7 @@ const WithdrawTab = () => {
     onChangeWithdrawAmountInput(privateBalance.toString());
   };
 
+  const insufficientFunds = privateBalance?.lt(reclaimAmount);
   const formIsDisabled = status?.isProcessing();
   const buttonIsDisabled =
     formIsDisabled || insufficientFunds || !reclaimAmount.gt(new BN(0));
