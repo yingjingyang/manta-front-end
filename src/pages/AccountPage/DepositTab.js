@@ -6,7 +6,7 @@ import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import FormSelect from 'components/elements/Form/FormSelect';
-import { showError, showSuccess } from 'utils/Notifications';
+import { showError, showSuccess } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
 import {
   assetIsInitialized,

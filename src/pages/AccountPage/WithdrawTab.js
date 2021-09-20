@@ -1,15 +1,14 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
 import FormSelect from 'components/elements/Form/FormSelect';
-import { showSuccess, showError } from 'utils/Notifications';
+import { showSuccess, showError } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
 import CurrencyType from 'types/ui/CurrencyType';
 import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import BN from 'bn.js';
 import {
-  loadSpendableAssetsById,
   loadSpendableBalance,
   removeSpendableAsset,
 } from 'utils/persistence/AssetStorage';
@@ -17,6 +16,8 @@ import TxStatus from 'types/ui/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import getLedgerState from 'api/GetLedgerState';
+import selectCoins from 'utils/SelectCoins';
+import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
@@ -27,10 +28,8 @@ const WithdrawTab = () => {
   const txResWasHandled = useRef(null);
   const coinSelection = useRef(null);
   const changeAmount = useRef(null);
-  const mintZeroCoinAsset = useRef(null);
   const [, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-
   const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
@@ -38,28 +37,6 @@ const WithdrawTab = () => {
     selectedAssetType &&
       setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
   }, [selectedAssetType, status]);
-
-  /**
-   * 1. Load all assets of the correct asset_id
-   * 2. Add assets to our coin selection until we reach target amount
-   * 3. If we have selected an odd number of coins and have remaining unselected assets,
-   * add one more asset to the coin selection.
-   * 4. If we have an odd number of coins but no remaining unselected assets,
-   * add an asset with zero value to the coin selection
-   */
-  const selectCoins = useCallback(() => {
-    let totalAmount = new BN(0);
-    coinSelection.current = [];
-    const spendableAssets = loadSpendableAssetsById(selectedAssetType.assetId);
-    spendableAssets.forEach((asset) => {
-      if (totalAmount.lt(reclaimAmount) || coinSelection.current.length % 2) {
-        totalAmount = totalAmount.add(asset.value);
-        coinSelection.current.push(asset);
-      }
-    });
-    // If odd number of coins selected, we will have to mint a zero value coin
-    changeAmount.current = totalAmount.sub(reclaimAmount);
-  }, [selectedAssetType, reclaimAmount]);
 
   const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
     let ledgerState1 = await getLedgerState(reclaimAsset1, api);
@@ -78,25 +55,8 @@ const WithdrawTab = () => {
     return payload;
   };
 
-  const generateMintZeroCoinPayload = async () => {
-    mintZeroCoinAsset.current = await signerClient.generateAsset(
-      selectedAssetType.assetId,
-      new BN(0)
-    );
-    const payload = await signerClient.generateMintPayload(
-      mintZeroCoinAsset.current
-    );
-    return payload;
-  };
-
-  /**
-   *
-   * polkadot.js API response Handlers
-   *
-   */
-
   const onReclaimSuccess = async (block) => {
-    // Seems like every batched tx gets handled?
+    // Every tx in the batch gets handled by default, only handle 1
     if (txResWasHandled.current === true) {
       return;
     }
@@ -110,7 +70,7 @@ const WithdrawTab = () => {
   };
 
   const onReclaimFailure = async (block, error) => {
-    // Seems like every batched tx gets handled?
+    // Every tx in the batch gets handled by default, only handle 1
     console.error(error);
     if (txResWasHandled.current === true) {
       return;
@@ -126,43 +86,24 @@ const WithdrawTab = () => {
 
   const onClickWithdraw = async () => {
     setStatus(TxStatus.processing());
-    selectCoins();
+    [coinSelection.current, changeAmount.current] = selectCoins(
+      reclaimAmount,
+      selectedAssetType.assetId
+    );
+    const transactions = await batchGenerateTransactions(
+      coinSelection.current,
+      generateReclaimParams,
+      signerClient.requestGenerateReclaimPayloads.bind(signerClient),
+      api.tx.mantaPay.reclaim.bind(api),
+      signerClient,
+      api
+    );
     const txResHandler = makeTxResHandler(
       api,
       onReclaimSuccess,
       onReclaimFailure,
       onReclaimUpdate
     );
-
-    let transactions = [];
-    if (coinSelection.current.length % 2 === 1) {
-      const mintZeroCoinPayload = await generateMintZeroCoinPayload();
-      const mintZeroCoinTx =
-        api.tx.mantaPay.mintPrivateAsset(mintZeroCoinPayload);
-      transactions.push(mintZeroCoinTx);
-      coinSelection.current.push(mintZeroCoinAsset.current);
-    }
-    const reclaimParamsList = [];
-    const INPUTS_PER_TRANSFER = 2;
-    for (
-      let i = 0;
-      i < coinSelection.current.length;
-      i += INPUTS_PER_TRANSFER
-    ) {
-      const reclaimAsset1 = coinSelection.current[i];
-      const reclaimAsset2 = coinSelection.current[i + 1];
-      const reclaimPayload = await generateReclaimParams(
-        reclaimAsset1,
-        reclaimAsset2
-      );
-      reclaimParamsList.push(reclaimPayload);
-    }
-    const reclaimPayloads = await signerClient.requestGenerateReclaimPayloads(
-      reclaimParamsList
-    );
-    reclaimPayloads.forEach((payload) => {
-      transactions.push(api.tx.mantaPay.reclaim(payload));
-    });
     const unsub = api.tx.utility
       .batch(transactions)
       .signAndSend(currentExternalAccount, txResHandler);

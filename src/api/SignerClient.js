@@ -86,7 +86,6 @@ export default class SignerClient {
     await this.generateNextInternalAddress(assetId);
     let addressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
     const path = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${addressIdx}`;
-    console.log('path', path);
     const params = this.api.createType('GenerateAssetParams', {
       asset_id: assetId,
       path: path,
@@ -129,7 +128,7 @@ export default class SignerClient {
       asset_2_path: asset2.path,
       asset_1_shard: ledgerState1,
       asset_2_shard: ledgerState2,
-      receiving_address: receivingAddress,
+      receiving_address: base64Decode(receivingAddress),
       change_path: changePath,
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,

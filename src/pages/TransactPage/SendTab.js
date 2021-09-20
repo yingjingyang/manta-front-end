@@ -1,5 +1,6 @@
 import FormSelect from 'components/elements/Form/FormSelect';
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { base64Encode } from '@polkadot/util-crypto';
 import CurrencyType from 'types/ui/CurrencyType';
 import BN from 'bn.js';
 import FormInput from 'components/elements/Form/FormInput';
@@ -7,7 +8,6 @@ import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import Svgs from 'resources/icons';
 import {
-  loadSpendableAssetsById,
   loadSpendableBalance,
   removeSpendableAsset,
 } from 'utils/persistence/AssetStorage';
@@ -17,8 +17,10 @@ import TxStatus from 'types/ui/TxStatus';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
-import { showError, showSuccess } from 'utils/Notifications';
+import { showError, showSuccess } from 'utils/ui/Notifications';
 import getLedgerState from 'api/GetLedgerState';
+import selectCoins from 'utils/SelectCoins';
+import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
 
 const SendTab = () => {
   const { api } = useSubstrate();
@@ -30,14 +32,11 @@ const SendTab = () => {
   );
   const [receiverAddress, setReceiverAddress] = useState('');
   const coinSelection = useRef(null);
-  const mintZeroCoinAsset = useRef(null);
-  const mintBatchIsRequired = useRef(null);
   const changeAsset = useRef(null);
   const changeAmount = useRef(null);
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-
   const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
@@ -45,35 +44,6 @@ const SendTab = () => {
     selectedAssetType &&
       setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
   }, [selectedAssetType, status]);
-
-  const selectCoins = useCallback(() => {
-    let totalAmount = new BN(0);
-    coinSelection.current = [];
-    const spendableAssets = loadSpendableAssetsById(selectedAssetType.assetId);
-    spendableAssets.forEach((asset) => {
-      if (
-        totalAmount.lt(privateTransferAmount) ||
-        coinSelection.current.length % 2
-      ) {
-        totalAmount = totalAmount.add(asset.value);
-        coinSelection.current.push(asset);
-      }
-    });
-    // If odd number of coins selected, we will have to mint a zero value coin
-    mintBatchIsRequired.current = coinSelection.current.length % 2 === 1;
-    changeAmount.current = totalAmount.sub(privateTransferAmount);
-  }, [selectedAssetType, privateTransferAmount]);
-
-  const generateMintZeroCoinPayload = async () => {
-    mintZeroCoinAsset.current = await signerClient.generateAsset(
-      selectedAssetType.assetId,
-      new BN(0)
-    );
-    const payload = await signerClient.generateMintPayload(
-      mintZeroCoinAsset.current
-    );
-    return payload;
-  };
 
   const generatePrivateTransferParams = async (inputAsset1, inputAsset2) => {
     let ledgerState1 = await getLedgerState(inputAsset1, api);
@@ -87,7 +57,7 @@ const SendTab = () => {
       inputAsset2,
       ledgerState1,
       ledgerState2,
-      receiverAddress.serialize(),
+      receiverAddress,
       inputAsset1.value.add(inputAsset2.value.sub(changeAmount.current)),
       changeAmount.current
     );
@@ -100,7 +70,7 @@ const SendTab = () => {
    *
    */
 
-  const onWithdrawSuccess = async (block) => {
+  const onPrivateTransferSuccess = async (block) => {
     // Seems like every batched tx gets handled?
     if (txResWasHandled.current === true) {
       return;
@@ -113,57 +83,41 @@ const SendTab = () => {
     setStatus(TxStatus.finalized(block));
   };
 
-  const onWithdrawFailure = (block, error) => {
-    // Seems like every batched tx gets handled separately?
+  const onPrivateTransferFailure = (block, error) => {
+    // Every batched tx gets handled separately
     if (txResWasHandled.current === true) {
       return;
     }
     console.error(error);
-    showError('Withdrawal failed');
+    showError('Transfer failed');
     txResWasHandled.current = true;
     setStatus(TxStatus.failed(block, error));
   };
 
-  const onWithdrawUpdate = (message) => {
+  const onPrivateTransferUpdate = (message) => {
     setStatus(TxStatus.processing(message));
   };
 
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
-    selectCoins();
+    [coinSelection.current, changeAmount.current] = selectCoins(
+      privateTransferAmount,
+      selectedAssetType.assetId
+    );
+    const transactions = await batchGenerateTransactions(
+      coinSelection.current,
+      generatePrivateTransferParams,
+      signerClient.requestGeneratePrivateTransferPayloads.bind(signerClient),
+      api.tx.mantaPay.privateTransfer.bind(api),
+      signerClient,
+      api
+    );
     const txResHandler = makeTxResHandler(
       api,
-      onWithdrawSuccess,
-      onWithdrawFailure,
-      onWithdrawUpdate
+      onPrivateTransferSuccess,
+      onPrivateTransferFailure,
+      onPrivateTransferUpdate
     );
-    let transactions = [];
-    if (coinSelection.current.length % 2 === 1) {
-      const mintZeroCoinPayload = await generateMintZeroCoinPayload();
-      const mintZeroCoinTx =
-        api.tx.mantaPay.mintPrivateAsset(mintZeroCoinPayload);
-      transactions.push(mintZeroCoinTx);
-      coinSelection.current.push(mintZeroCoinAsset.current);
-    }
-    const privateTransferParamsList = [];
-    for (let i = 0; i < coinSelection.current.length; i += 2) {
-      const inputAsset1 = coinSelection.current[i];
-      const inputAsset2 = coinSelection.current[i + 1];
-      const privateTransferParams = await generatePrivateTransferParams(
-        inputAsset1,
-        inputAsset2
-      );
-      privateTransferParamsList.push(privateTransferParams);
-    }
-
-    const privateTransferPayloads =
-      await signerClient.requestGeneratePrivateTransferPayloads(
-        privateTransferParamsList
-      );
-    privateTransferPayloads.forEach((payload) => {
-      transactions.push(api.tx.mantaPay.privateTransfer(payload));
-    });
-
     const unsub = api.tx.utility
       .batch(transactions)
       .signAndSend(currentExternalAccount, txResHandler);
@@ -191,9 +145,14 @@ const SendTab = () => {
   const onChangeReceiverAddress = (e) => {
     try {
       setReceiverAddress(
-        api
-          .createType('MantaAssetShieldedAddress', base64Decode(e.target.value))
-          .toBytes()
+        base64Encode(
+          api
+            .createType(
+              'MantaAssetShieldedAddress',
+              base64Decode(e.target.value)
+            )
+            .toU8a()
+        )
       );
     } catch (e) {
       setReceiverAddress(null);
