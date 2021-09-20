@@ -23,7 +23,7 @@ const Validators = () => {
             <TableColumnHeader label="Total Bonded" width="15%" />
             <TableColumnHeader label="Nominator" width="10%" />
             <TableColumnHeader label="Commission" width="11%" />
-            <TableColumnHeader label="Granpa Vote" width="11%" />
+            <TableColumnHeader label="Grandpa Vote" width="11%" />
             <TableColumnHeader label="Reward Point" width="11%" />
             <TableColumnHeader label="Latest Mining" width="11%" />
           </TableHeaderWrapper>

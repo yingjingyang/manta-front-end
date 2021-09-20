@@ -1,19 +1,14 @@
+import {
+  MANTA_WALLET_BASE_PATH,
+  INTERNAL_CHAIN_ID,
+  EXTERNAL_CHAIN_ID,
+} from 'constants/Bip39Constants';
 import store from 'store';
-import { base64Decode } from '@polkadot/util-crypto';
-import config from 'config';
+import { base64Decode, base64Encode } from '@polkadot/util-crypto';
 import axios from 'axios';
 import MantaUIAsset from 'types/MantaUIAsset';
-import MantaAssetShieldedAddress from 'types/MantaAssetShieldedAddress';
 import { persistSpendableAssets } from 'utils/persistence/AssetStorage';
 
-const BIP_44_PURPOSE_INDEX = 44;
-
-const DEFAULT_ACCOUNT_ID = 0;
-
-export const EXTERNAL_CHAIN_ID = 0;
-export const INTERNAL_CHAIN_ID = 1;
-
-export const MANTA_WALLET_BASE_PATH = `m/${BIP_44_PURPOSE_INDEX}'/${config.COIN_TYPE_ID}'/${DEFAULT_ACCOUNT_ID}'`;
 export default class SignerClient {
   constructor(api) {
     axios.defaults.baseURL = 'http://localhost:29986/';
@@ -61,7 +56,9 @@ export default class SignerClient {
     });
     const res = await axios.post('deriveShieldedAddress', params.toU8a());
     let addressBytes = base64Decode(res.data.address);
-    return new MantaAssetShieldedAddress(addressBytes);
+    return base64Encode(
+      this.api.createType('MantaAssetShieldedAddress', addressBytes).toU8a()
+    );
   }
 
   async _generateNextAddress(isInternal, assetId) {

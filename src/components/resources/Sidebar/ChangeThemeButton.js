@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import FormSwitch from 'components/elements/Form/FormSwitch';
 import { ThemeContext } from 'contexts/ThemeContext';
 import Svgs from 'resources/icons';
-import { themeType } from 'constants/theme.constant';
+import { themeType } from 'constants/ThemeConstants';
 
 const ChangeThemeButton = () => {
   const { theme, setTheme } = useContext(ThemeContext);

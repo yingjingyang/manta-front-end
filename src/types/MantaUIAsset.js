@@ -1,8 +1,7 @@
 import BN from 'bn.js';
 
-
 export default class MantaUIAsset {
-  constructor (assetId, value, utxo, path) {
+  constructor(assetId, value, utxo, path) {
     this.assetId = assetId;
     this.value = value;
     this.utxo = utxo;
@@ -17,7 +16,7 @@ export default class MantaUIAsset {
     return new MantaUIAsset(assetId, value, utxo, path);
   }
 
-  static fromStorage (obj) {
+  static fromStorage(obj) {
     return new MantaUIAsset(
       new BN(obj.assetId, 10, 'le').toNumber(),
       new BN(obj.value, 10, 'le'),
@@ -26,7 +25,7 @@ export default class MantaUIAsset {
     );
   }
 
-  serialize () {
+  serialize() {
     const assetId = new BN(this.assetId);
     return {
       assetId: assetId.toArray('le', 4),

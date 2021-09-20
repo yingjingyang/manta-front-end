@@ -6,7 +6,7 @@ import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import FormSelect from 'components/elements/Form/FormSelect';
-import { showError, showSuccess } from 'utils/notifications.util';
+import { showError, showSuccess } from 'utils/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
 import {
   assetIsInitialized,
@@ -15,10 +15,7 @@ import {
 import CurrencyType from 'types/ui/CurrencyType';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import TxStatus from 'types/ui/TxStatus';
-import {
-  loadSpendableAssets,
-  persistSpendableAsset,
-} from 'utils/persistence/AssetStorage';
+import { persistSpendableAsset } from 'utils/persistence/AssetStorage';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import BN from 'bn.js';
 import { useSigner } from 'contexts/SignerContext';

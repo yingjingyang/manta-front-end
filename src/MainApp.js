@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
+
 import {
   TransactPage,
   SwapPage,
@@ -19,6 +20,7 @@ import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { useSigner } from 'contexts/SignerContext';
+import { INTERNAL_CHAIN_ID, EXTERNAL_CHAIN_ID } from 'constants/Bip39Constants';
 
 function MainApp() {
   const { api } = useSubstrate();
@@ -34,7 +36,10 @@ function MainApp() {
       store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
-        store.set('mantaAddresses', { 0: [], 1: [] });
+        store.set('mantaAddresses', {
+          INTERNAL_CHAIN_ID: [],
+          EXTERNAL_CHAIN_ID: [],
+        });
         store.set('manta_initialized_assets', []);
         store.set('dummyPublicAssetBalance', {});
         console.log('Reset local storage');

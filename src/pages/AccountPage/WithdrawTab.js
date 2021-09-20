@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
 import FormSelect from 'components/elements/Form/FormSelect';
-import { showSuccess, showError } from 'utils/notifications.util';
+import { showSuccess, showError } from 'utils/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
 import CurrencyType from 'types/ui/CurrencyType';
 import { useSigner } from 'contexts/SignerContext';
@@ -16,6 +16,7 @@ import {
 import TxStatus from 'types/ui/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
+import getLedgerState from 'api/GetLedgerState';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
@@ -25,10 +26,9 @@ const WithdrawTab = () => {
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const coinSelection = useRef(null);
-  const mintBatchIsRequired = useRef(null);
   const changeAmount = useRef(null);
   const mintZeroCoinAsset = useRef(null);
-  const [unsub, setUnsub] = useState(null);
+  const [, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
   const { signerClient } = useSigner();
@@ -58,24 +58,12 @@ const WithdrawTab = () => {
       }
     });
     // If odd number of coins selected, we will have to mint a zero value coin
-    mintBatchIsRequired.current = coinSelection.current.length % 2 === 1;
     changeAmount.current = totalAmount.sub(reclaimAmount);
   }, [selectedAssetType, reclaimAmount]);
 
-  const getLedgerState = async (asset) => {
-    const shardIndex = asset.utxo[0];
-    const shards = await api.query.mantaPay.coinShards();
-    let ledgerState = shards.shard[shardIndex].list;
-    // If zero asset, it won't be on chain yet
-    if (asset.value.eq(new BN(0))) {
-      ledgerState.push(asset.utxo);
-    }
-    return ledgerState;
-  };
-
   const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
-    let ledgerState1 = await getLedgerState(reclaimAsset1);
-    let ledgerState2 = await getLedgerState(reclaimAsset2);
+    let ledgerState1 = await getLedgerState(reclaimAsset1, api);
+    let ledgerState2 = await getLedgerState(reclaimAsset2, api);
     const changeAddress = await signerClient.generateNextInternalAddress(
       selectedAssetType.assetId
     );

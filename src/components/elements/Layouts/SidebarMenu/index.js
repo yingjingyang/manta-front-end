@@ -1,4 +1,4 @@
-import { themeType } from 'constants/theme.constant';
+import { themeType } from 'constants/ThemeConstants';
 import React, { useContext } from 'react';
 import Svgs from 'resources/icons';
 import SocialMenu from 'components/resources/Sidebar/SocialMenu';

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import SignerClient from 'services/SignerClient';
+import SignerClient from 'api/SignerClient';
 import { useSubstrate } from 'contexts/SubstrateContext';
 
 const SignerContext = createContext();

@@ -15,10 +15,10 @@ import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import TxStatus from 'types/ui/TxStatus';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import MantaAssetShieldedAddress from 'types/MantaAssetShieldedAddress';
 import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
-import { showError, showSuccess } from 'utils/notifications.util';
+import { showError, showSuccess } from 'utils/Notifications';
+import getLedgerState from 'api/GetLedgerState';
 
 const SendTab = () => {
   const { api } = useSubstrate();
@@ -64,17 +64,6 @@ const SendTab = () => {
     changeAmount.current = totalAmount.sub(privateTransferAmount);
   }, [selectedAssetType, privateTransferAmount]);
 
-  const getLedgerState = async (asset) => {
-    const shardIndex = asset.utxo[0];
-    const shards = await api.query.mantaPay.coinShards();
-    let ledgerState = shards.shard[shardIndex].list;
-    // If zero asset, it won't be on chain yet
-    if (asset.value.eq(new BN(0))) {
-      ledgerState.push(asset.utxo);
-    }
-    return ledgerState;
-  };
-
   const generateMintZeroCoinPayload = async () => {
     mintZeroCoinAsset.current = await signerClient.generateAsset(
       selectedAssetType.assetId,
@@ -87,8 +76,8 @@ const SendTab = () => {
   };
 
   const generatePrivateTransferParams = async (inputAsset1, inputAsset2) => {
-    let ledgerState1 = await getLedgerState(inputAsset1);
-    let ledgerState2 = await getLedgerState(inputAsset2);
+    let ledgerState1 = await getLedgerState(inputAsset1, api);
+    let ledgerState2 = await getLedgerState(inputAsset2, api);
     changeAsset.current = await signerClient.generateAsset(
       inputAsset1.assetId,
       changeAmount.current
@@ -202,7 +191,9 @@ const SendTab = () => {
   const onChangeReceiverAddress = (e) => {
     try {
       setReceiverAddress(
-        new MantaAssetShieldedAddress(base64Decode(e.target.value))
+        api
+          .createType('MantaAssetShieldedAddress', base64Decode(e.target.value))
+          .toBytes()
       );
     } catch (e) {
       setReceiverAddress(null);

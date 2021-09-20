@@ -1,10 +1,12 @@
-import { themeType } from 'constants/theme.constant';
-import { themeColorType } from 'constants/localstorage.constant';
+import { themeType } from 'constants/ThemeConstants';
+import { themeColorType } from 'constants/LocalStorageConstants';
 import React, { createContext, useState, useEffect } from 'react';
 
 const getInitialTheme = () => {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const storedPrefs = window.localStorage.getItem(themeColorType.CurrentTheme);
+    const storedPrefs = window.localStorage.getItem(
+      themeColorType.CurrentTheme
+    );
     if (typeof storedPrefs === 'string') {
       return storedPrefs;
     }
@@ -40,5 +42,9 @@ export const ThemeProvider = ({ initialTheme, children }) => {
     rawSetTheme(theme);
   }, [theme]);
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
