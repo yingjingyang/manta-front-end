@@ -21,27 +21,6 @@ import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/notifications.util';
 
 const SendTab = () => {
-  // now
-
-  // Replace BN with decimal
-  // hande insufficient funds
-
-  // todo: extract coin selection logic
-  // todo: recovering spent assets?
-  // todo: money types
-  // todo: forbid insecure random
-  // todo: fix memory leak / pages shouldn't reset on switching labs page
-  // todo: standardize components
-  // todo: make receiving address copy-pastable
-  // todo: handle gap limit
-  // todo: shielded address should be base58
-
-  // later
-  // todo: reduce duplication in reclaim and private transfer
-  // todo: error types
-  // todo: store pending spends?
-  // todo: intelligent coin selection?
-
   const { api } = useSubstrate();
   const [, setUnsub] = useState(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
