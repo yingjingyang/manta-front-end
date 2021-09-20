@@ -39,6 +39,14 @@ const WithdrawTab = () => {
       setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
   }, [selectedAssetType, status]);
 
+  /**
+   * 1. Load all assets of the correct asset_id
+   * 2. Add assets to our coin selection until we reach target amount
+   * 3. If we have selected an odd number of coins and have remaining unselected assets,
+   * add one more asset to the coin selection.
+   * 4. If we have an odd number of coins but no remaining unselected assets,
+   * add an asset with zero value to the coin selection
+   */
   const selectCoins = useCallback(() => {
     let totalAmount = new BN(0);
     coinSelection.current = [];
@@ -147,7 +155,12 @@ const WithdrawTab = () => {
       coinSelection.current.push(mintZeroCoinAsset.current);
     }
     const reclaimParamsList = [];
-    for (let i = 0; i < coinSelection.current.length; i += 2) {
+    const INPUTS_PER_TRANSFER = 2;
+    for (
+      let i = 0;
+      i < coinSelection.current.length;
+      i += INPUTS_PER_TRANSFER
+    ) {
       const reclaimAsset1 = coinSelection.current[i];
       const reclaimAsset2 = coinSelection.current[i + 1];
       const reclaimPayload = await generateReclaimParams(

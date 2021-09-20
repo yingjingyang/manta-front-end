@@ -119,10 +119,10 @@ const DepositTab = () => {
   const insufficientFunds = mintAmount?.gt(publicAssetBalance);
   const formIsDisabled = status && status.isProcessing();
   const buttonIsDisabled =
-    formIsDisabled ||
-    insufficientFunds ||
-    !mintAmount ||
-    !mintAmount.gt(new BN(0));
+    formIsDisabled || // transaction in progress
+    insufficientFunds || // public funds < attempted deposit
+    !mintAmount || // amount in form is blank
+    !mintAmount.gt(new BN(0)); // amount in form < 0
 
   const balanceString =
     selectedAssetType &&
