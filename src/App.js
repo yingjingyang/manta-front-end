@@ -1,65 +1,25 @@
-import React, { useState, createRef } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Container, Dimmer, Loader, Grid, Message } from 'semantic-ui-react';
-import 'semantic-ui-css/semantic.min.css';
+import React from 'react';
+import AppRouter from 'AppRouter';
+import { ThemeProvider } from 'contexts/ThemeContext';
+import { SignerContextProvider } from 'contexts/SignerContext';
+import { SubstrateContextProvider } from 'contexts/SubstrateContext';
+import { ExternalAccountContextProvider } from 'contexts/ExternalAccountContext';
+import DeveloperConsole from 'components/elements/Developer/DeveloperConsole';
+import config from 'config';
 
-import { SubstrateContextProvider, useSubstrate } from './substrate-lib';
-import { DeveloperConsole } from './substrate-lib/components';
-
-import Navbar from './Navbar';
-import Routes from './Routes';
-
-function Main () {
-  const [accountAddress, setAccountAddress] = useState(null);
-  const { apiState, keyring, keyringState, apiError } = useSubstrate();
-  const accountPair =
-    accountAddress &&
-    keyringState === 'READY' &&
-    keyring.getPair(accountAddress);
-
-  const loader = text =>
-    <Dimmer active>
-      <Loader size='small'>{text}</Loader>
-    </Dimmer>;
-
-  const message = err =>
-    <Grid centered columns={2} padded>
-      <Grid.Column>
-        <Message negative compact floating
-          header='Error Connecting to Substrate'
-          content={`${JSON.stringify(err, null, 4)}`}
-        />
-      </Grid.Column>
-    </Grid>;
-
-  if (apiState === 'ERROR') return message(apiError);
-  else if (apiState !== 'READY') return loader('Connecting to Substrate');
-
-  if (keyringState !== 'READY') {
-    return loader('Loading accounts (please review any extension\'s authorization)');
-  }
-
-  const contextRef = createRef();
-
-  return (
-    <div ref={contextRef}>
-        <Router>
-            <Navbar setAccountAddress={setAccountAddress} />
-            <Container style={{ paddingTop: '3em' }}>
-            <Grid centered>
-            <Routes accountPair={accountPair} />
-            </Grid>
-            </Container>
-            <DeveloperConsole />
-        </Router>
-    </div>
-  );
-}
-
-export default function App () {
+function App() {
   return (
     <SubstrateContextProvider>
-      <Main />
+      <ExternalAccountContextProvider>
+        <SignerContextProvider>
+          <ThemeProvider>
+            <AppRouter />
+            {config.DEV_CONSOLE && <DeveloperConsole />}
+          </ThemeProvider>
+        </SignerContextProvider>
+      </ExternalAccountContextProvider>
     </SubstrateContextProvider>
   );
 }
+
+export default App;

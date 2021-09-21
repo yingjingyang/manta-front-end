@@ -1,0 +1,43 @@
+.border-5 {
+  border-width: 5px;
+}
+.frame-box-shadow {
+  box-shadow: 0px 0px 18px rgba(0, 0, 0, 0.03);
+}
+.field-box-shadow {
+  box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.17);
+}
+.search-box-shadow {
+  box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.09);
+}
+.manta-bg-gray {
+  background-color: $gray-primary-color;
+}
+.manta-bg-light-gray {
+  background-color: $gray-light-color;
+}
+.manta-bg-secondary {
+  background: $gray-secondary-bgcolor;
+}
+.manta-bg-thirdry {
+  background: $blue-thirdry-color;
+}
+.manta-bg-blue {
+  background: $blue-light-bgcolor;
+}
+.manta-bg-primary-blue {
+  background: $blue-primary-color;
+}
+.manta-bg-secondary-blue {
+  background: $green-primary-color;
+}
+.rounded-3 {
+  border-radius: 3px;
+}
+.rounded-7 {
+  border-radius: 7px;
+}
+
+.btn-hover:hover {
+  background: linear-gradient(180deg, #59B9AE 0%, #398BA8 0%);
+}

@@ -10,3 +10,6 @@ build
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# tailwind class
+src/tailwind.css

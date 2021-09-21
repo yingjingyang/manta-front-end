@@ -1,15 +1,123 @@
 {
+    "AssetId": "u32",
+    "AssetBalance": "u128",
+    "MantaRandomValue": "[u8; 32]",
+    "MantaSecretKey": "[u8; 32]",
+    "UTXO": "[u8; 32]",
+    "MantaEciesCiphertext": {
+        "encrypted_msg": "[u8; 36]",
+        "ephemeral_pk": "[u8; 32]"
+    },
+    "MantaAssetShieldedAddress": {
+        "asset_id": "AssetId",
+        "k": "MantaRandomValue",
+        "s": "MantaRandomValue",
+        "r": "MantaRandomValue",
+        "ecpk": "MantaSecretKey"
+    },
     "SenderData": {
-        "k": "[u8; 32]",
-        "void_number": "[u8; 32]",
-        "root": "[u8; 32]"
+        "k": "MantaRandomValue",
+        "void_number": "MantaRandomValue",
+        "root": "MantaRandomValue"
     },
     "ReceiverData": {
-        "k": "[u8; 32]",
-        "cm": "[u8; 32]",
-        "sender_pk": "[u8; 32]",
-        "cipher": "[u8; 16]"
+        "k": "MantaRandomValue",
+        "cm": "MantaRandomValue",
+        "encrypted_note": "MantaEciesCiphertext"
     },
-    "PrivateTransferPayload": "[u8; 608]",
-    "ReclaimPayload": "[u8; 512]"
+    "MintPayload": "[u8; 184]",
+    "PrivateTransferPayload": "[u8; 648]",
+    "ReclaimPayload": "[u8; 536]",
+    "Shard": {
+        "list": "Vec<[u8; 32]>",
+        "root": "[u8; 32]"
+    },
+    "Shards": {
+        "shard": "[Shard; 256]"
+    },
+    "MantaPrivateAssetLedger": {
+        "shard": "[Shard; 256]"
+    },
+    "MintData": {
+        "asset_id": "AssetId",
+        "amount": "AssetBalance",
+        "cm": "MantaRandomValue",
+        "k": "MantaRandomValue",
+        "s": "MantaRandomValue",
+        "encrypted_note": "MantaEciesCiphertext"
+    },
+    "PrivateTransferData": {
+        "sender_1": "SenderData",
+        "sender_2": "SenderData",
+        "receiver_1": "ReceiverData",
+        "receiver_2": "ReceiverData",
+        "proof": "[u8; 192]"
+    },
+    "PrivateTransferDataBatch": {
+        "private_transfer_data_list": "Vec<PrivateTransferData>"
+    },
+    "ReclaimData": {
+        "asset_id": "AssetId",
+        "reclaim_amount": "AssetBalance",
+        "sender_1": "SenderData",
+        "sender_2": "SenderData",
+        "receiver": "ReceiverData",
+        "proof": "[u8; 192]"
+    },
+    "ReclaimDataBatch": {
+        "reclaim_data_list": "Vec<ReclaimData>"
+    },
+    "DeriveShieldedAddressParams": {
+        "path": "String",
+        "asset_id": "AssetId"
+    },
+    "GenerateAssetParams": {
+        "asset_id": "AssetId",
+        "value": "AssetBalance",
+        "path": "String"
+    },
+    "GenerateReclaimDataParams": {
+        "asset_id": "AssetId",
+        "asset_1_value": "AssetBalance",
+        "asset_2_value": "AssetBalance",
+        "asset_1_path": "String",
+        "asset_2_path": "String",
+        "asset_1_shard": "Vec<[u8; 32]>",
+        "asset_2_shard": "Vec<[u8; 32]>",
+        "change_path": "String",
+        "reclaim_value": "AssetBalance"
+    },
+    "GenerateReclaimDataParamsBatch": {
+        "params_list": "Vec<GenerateReclaimDataParams>"
+    },
+    "GeneratePrivateTransferDataParams": {
+        "asset_id": "AssetId",
+        "asset_1_value": "AssetBalance",
+        "asset_2_value": "AssetBalance",
+        "asset_1_path": "String",
+        "asset_2_path": "String",
+        "asset_1_shard": "Vec<[u8; 32]>",
+        "asset_2_shard": "Vec<[u8; 32]>",
+        "receiving_address": "MantaAssetShieldedAddress",
+        "change_path": "String",
+        "non_change_output_value": "AssetBalance",
+        "change_output_value": "AssetBalance"
+    },
+    "GeneratePrivateTransferDataParamsBatch": {
+        "params_list": "Vec<GeneratePrivateTransferDataParams>"
+    },
+    "RecoverAccountParams": {
+        "encrypted_notes": "Vec<MantaEciesCiphertext>",
+        "void_numbers": "Vec<MantaRandomValue>",
+        "utxos": "Vec<UTXO>"
+    },
+    "MantaUIAsset": {
+        "asset_id": "AssetId",
+        "value": "AssetBalance",
+        "utxo": "UTXO",
+        "path": "String"
+    },
+    "RecoveredAccount": {
+        "assets": "Vec<MantaUIAsset>"
+    }
 }
