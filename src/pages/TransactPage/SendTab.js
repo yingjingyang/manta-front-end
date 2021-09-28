@@ -57,7 +57,6 @@ const SendTab = () => {
       inputAsset2,
       ledgerState1,
       ledgerState2,
-      receiverAddress,
       inputAsset1.value.add(inputAsset2.value.sub(changeAmount.current)),
       changeAmount.current
     );
@@ -107,7 +106,11 @@ const SendTab = () => {
     const transactions = await batchGenerateTransactions(
       coinSelection.current,
       generatePrivateTransferParams,
-      signerClient.requestGeneratePrivateTransferPayloads.bind(signerClient),
+      signerClient.requestGeneratePrivateTransferPayloads.bind(
+        signerClient,
+        selectedAssetType.assetId,
+        receiverAddress
+      ),
       api.tx.mantaPay.privateTransfer.bind(api),
       signerClient,
       api

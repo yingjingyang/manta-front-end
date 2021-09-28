@@ -111,7 +111,6 @@ export default class SignerClient {
     asset2,
     ledgerState1,
     ledgerState2,
-    receivingAddress,
     spendAmount,
     changeAmount
   ) {
@@ -121,14 +120,12 @@ export default class SignerClient {
     const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
 
     const params = this.api.createType('GeneratePrivateTransferDataParams', {
-      asset_id: asset1.assetId,
       asset_1_value: asset1.value,
       asset_2_value: asset2.value,
       asset_1_path: asset1.path,
       asset_2_path: asset2.path,
       asset_1_shard: ledgerState1,
       asset_2_shard: ledgerState2,
-      receiving_address: base64Decode(receivingAddress),
       change_path: changePath,
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,
@@ -136,10 +133,18 @@ export default class SignerClient {
     return params.toU8a();
   }
 
-  async requestGeneratePrivateTransferPayloads(privateTransferParamsList) {
+  async requestGeneratePrivateTransferPayloads(
+    assetId,
+    receivingAddress,
+    privateTransferParamsList
+  ) {
     const privateTransferParamsBatch = this.api.createType(
-      'GeneratePrivateTransferDataParamsBatch',
-      { params_list: privateTransferParamsList }
+      'GeneratePrivateTransferBatchParams',
+      {
+        asset_id: assetId,
+        receiving_address: base64Decode(receivingAddress),
+        private_transfer_params_list: privateTransferParamsList,
+      }
     );
     const res = await axios.post(
       'requestGeneratePrivateTransferData',
@@ -164,7 +169,6 @@ export default class SignerClient {
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
     const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
     const params = this.api.createType('GenerateReclaimDataParams', {
-      asset_id: asset1.assetId,
       asset_1_value: asset1.value,
       asset_2_value: asset2.value,
       asset_1_path: asset1.path,
@@ -178,10 +182,10 @@ export default class SignerClient {
     return params.toU8a();
   }
 
-  async requestGenerateReclaimPayloads(reclaimParamsList) {
+  async requestGenerateReclaimPayloads(assetId, reclaimParamsList) {
     const reclaimParamsBatch = this.api.createType(
-      'GenerateReclaimDataParamsBatch',
-      { params_list: reclaimParamsList }
+      'GenerateReclaimBatchParams',
+      { asset_id: assetId, reclaim_params_list: reclaimParamsList }
     );
     const res = await axios.post(
       'requestGenerateReclaimData',

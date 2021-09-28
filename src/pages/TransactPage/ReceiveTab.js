@@ -35,7 +35,9 @@ const ReceiveTab = () => {
         {currentAddress && (
           <div className="flex pb-4 pt-2 px-2 items-center text-xl">
             <img className="pr-2" src={Svgs.WalletIcon} alt="setting-icon" />
-            <span className="text-lg manta-gray">{currentAddressString}</span>
+            <span className="text-lg wrap-text manta-gray">
+              {currentAddressString}
+            </span>
           </div>
         )}
       </div>

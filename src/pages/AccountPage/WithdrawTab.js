@@ -93,7 +93,10 @@ const WithdrawTab = () => {
     const transactions = await batchGenerateTransactions(
       coinSelection.current,
       generateReclaimParams,
-      signerClient.requestGenerateReclaimPayloads.bind(signerClient),
+      signerClient.requestGenerateReclaimPayloads.bind(
+        signerClient,
+        selectedAssetType.assetId
+      ),
       api.tx.mantaPay.reclaim.bind(api),
       signerClient,
       api
