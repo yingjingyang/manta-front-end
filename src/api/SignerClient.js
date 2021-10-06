@@ -49,10 +49,10 @@ export default class SignerClient {
     persistSpendableAssets(recoveredAssets);
   }
 
-  async _deriveAddress(path, assetId) {
+  async _deriveAddress(keypath, assetId) {
     const params = this.api.createType('DeriveShieldedAddressParams', {
       asset_id: assetId,
-      path: path,
+      keypath: keypath,
     });
     const res = await axios.post('deriveShieldedAddress', params.toU8a());
     let addressBytes = base64Decode(res.data.address);
@@ -66,9 +66,9 @@ export default class SignerClient {
     let addresses = store.get('mantaAddresses');
     const chainAddresses = addresses[chainId];
     const addressIdx = chainAddresses.length;
-    const path = `${MANTA_WALLET_BASE_PATH}/${chainId}/${addressIdx}`;
+    const keypath = `${MANTA_WALLET_BASE_PATH}/${chainId}/${addressIdx}`;
 
-    const address = this._deriveAddress(path, assetId);
+    const address = this._deriveAddress(keypath, assetId);
     chainAddresses.push(address);
     store.set('mantaAddresses', addresses);
     return address;
@@ -85,10 +85,10 @@ export default class SignerClient {
   async generateAsset(assetId, amount) {
     await this.generateNextInternalAddress(assetId);
     let addressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
-    const path = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${addressIdx}`;
+    const keypath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${addressIdx}`;
     const params = this.api.createType('GenerateAssetParams', {
       asset_id: assetId,
-      path: path,
+      keypath: keypath,
       value: amount,
     });
     const res = await axios.post('generateAsset', params.toU8a());
@@ -99,7 +99,7 @@ export default class SignerClient {
   async generateMintPayload(asset) {
     const params = this.api.createType('GenerateAssetParams', {
       asset_id: asset.assetId,
-      path: asset.path,
+      keypath: asset.keypath,
       value: asset.value,
     });
     const res = await axios.post('generateMintData', params.toU8a());
@@ -117,16 +117,16 @@ export default class SignerClient {
     await this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx =
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
-    const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
+    const changeKeypath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
 
     const params = this.api.createType('GeneratePrivateTransferDataParams', {
       asset_1_value: asset1.value,
       asset_2_value: asset2.value,
-      asset_1_path: asset1.path,
-      asset_2_path: asset2.path,
+      asset_1_keypath: asset1.keypath,
+      asset_2_keypath: asset2.keypath,
       asset_1_shard: ledgerState1,
       asset_2_shard: ledgerState2,
-      change_path: changePath,
+      change_keypath: changeKeypath,
       non_change_output_value: spendAmount,
       change_output_value: changeAmount,
     });
@@ -167,15 +167,15 @@ export default class SignerClient {
     this.generateNextInternalAddress(asset1.assetId);
     let changeAddressIdx =
       store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length - 1;
-    const changePath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
+    const changeKeypath = `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${changeAddressIdx}`;
     const params = this.api.createType('GenerateReclaimDataParams', {
       asset_1_value: asset1.value,
       asset_2_value: asset2.value,
-      asset_1_path: asset1.path,
-      asset_2_path: asset2.path,
+      asset_1_keypath: asset1.keypath,
+      asset_2_keypath: asset2.keypath,
       asset_1_shard: ledgerState1,
       asset_2_shard: ledgerState2,
-      change_path: changePath,
+      change_keypath: changeKeypath,
       reclaim_value: reclaimValue,
     });
 
