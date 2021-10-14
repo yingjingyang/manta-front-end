@@ -3,6 +3,7 @@ import AppRouter from 'AppRouter';
 import { ThemeProvider } from 'contexts/ThemeContext';
 import { SignerContextProvider } from 'contexts/SignerContext';
 import { SubstrateContextProvider } from 'contexts/SubstrateContext';
+import { WalletContextProvider } from 'contexts/WalletContext';
 import { ExternalAccountContextProvider } from 'contexts/ExternalAccountContext';
 import DeveloperConsole from 'components/elements/Developer/DeveloperConsole';
 import config from 'config';
@@ -12,10 +13,12 @@ function App() {
     <SubstrateContextProvider>
       <ExternalAccountContextProvider>
         <SignerContextProvider>
-          <ThemeProvider>
-            <AppRouter />
-            {config.DEV_CONSOLE && <DeveloperConsole />}
-          </ThemeProvider>
+          <WalletContextProvider>
+            <ThemeProvider>
+              <AppRouter />
+              {config.DEV_CONSOLE && <DeveloperConsole />}
+            </ThemeProvider>
+          </WalletContextProvider>
         </SignerContextProvider>
       </ExternalAccountContextProvider>
     </SubstrateContextProvider>

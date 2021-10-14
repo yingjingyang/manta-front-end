@@ -7,10 +7,7 @@ import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import Svgs from 'resources/icons';
-import {
-  loadSpendableBalance,
-  removeSpendableAsset,
-} from 'utils/persistence/AssetStorage';
+import { useWallet } from 'contexts/WalletContext';
 import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import TxStatus from 'types/ui/TxStatus';
@@ -18,50 +15,33 @@ import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
-import getLedgerState from 'api/GetLedgerState';
 import selectCoins from 'utils/SelectCoins';
-import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
+import { generateMintZeroCoinTx } from 'utils/api/BatchGenerateTransactions';
+import { generateExternalTransferParams } from 'utils/api/BatchGenerateTransactions';
 
 const SendTab = () => {
   const { api } = useSubstrate();
+  const { signerClient } = useSigner();
+  const { currentExternalAccount } = useExternalAccount();
+  const { getSpendableBalance, spendableAssets, removeSpendableAsset } =
+    useWallet();
+
   const [, setUnsub] = useState(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [sendAmountInput, setSendAmountInput] = useState(null);
   const [privateTransferAmount, setPrivateTransferAmount] = useState(
     new BN(-1)
   );
-  const [receiverAddress, setReceiverAddress] = useState('');
+  const [receivingAddress, setreceivingAddress] = useState('');
   const coinSelection = useRef(null);
-  const changeAsset = useRef(null);
-  const changeAmount = useRef(null);
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-  const { signerClient } = useSigner();
-  const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
     selectedAssetType &&
-      setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status]);
-
-  const generatePrivateTransferParams = async (inputAsset1, inputAsset2) => {
-    let ledgerState1 = await getLedgerState(inputAsset1, api);
-    let ledgerState2 = await getLedgerState(inputAsset2, api);
-    changeAsset.current = await signerClient.generateAsset(
-      inputAsset1.assetId,
-      changeAmount.current
-    );
-    const payload = await signerClient.generatePrivateTransferParams(
-      inputAsset1,
-      inputAsset2,
-      ledgerState1,
-      ledgerState2,
-      inputAsset1.value.add(inputAsset2.value.sub(changeAmount.current)),
-      changeAmount.current
-    );
-    return payload;
-  };
+      setPrivateBalance(getSpendableBalance(selectedAssetType.assetId));
+  }, [selectedAssetType, status, spendableAssets]);
 
   /**
    *
@@ -74,8 +54,8 @@ const SendTab = () => {
     if (txResWasHandled.current === true) {
       return;
     }
-    coinSelection.current.forEach((asset) => {
-      removeSpendableAsset(asset.current);
+    coinSelection.current.coins.forEach((coins) => {
+      removeSpendableAsset(coins);
     });
     showSuccess('Transfer successful');
     txResWasHandled.current = true;
@@ -99,28 +79,45 @@ const SendTab = () => {
 
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
-    [coinSelection.current, changeAmount.current] = selectCoins(
-      privateTransferAmount,
-      selectedAssetType.assetId
-    );
-    const transactions = await batchGenerateTransactions(
-      coinSelection.current,
-      generatePrivateTransferParams,
-      signerClient.requestGeneratePrivateTransferPayloads.bind(
+    coinSelection.current = selectCoins(privateTransferAmount, spendableAssets);
+
+    let transactions = [];
+
+    if (coinSelection.current.coins.length === 1) {
+      const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
+        coinSelection.current.coins[0].asset_id,
         signerClient,
-        selectedAssetType.assetId,
-        receiverAddress
-      ),
-      api.tx.mantaPay.privateTransfer.bind(api),
+        api
+      );
+      transactions.push(mintZeroCoinTx);
+      coinSelection.current.coins.push(mintZeroCoinAsset);
+    }
+
+    const privateTransferParamsList = await generateExternalTransferParams(
+      receivingAddress,
+      coinSelection.current,
       signerClient,
       api
     );
+
+    const privateTransferPayloads =
+      await signerClient.requestGeneratePrivateTransferPayloads(
+        privateTransferParamsList
+      );
+
+    privateTransferPayloads
+      .map((payload) => api.tx.mantaPay.privateTransfer(payload))
+      .forEach((privateTransferTransaction) =>
+        transactions.push(privateTransferTransaction)
+      );
+
     const txResHandler = makeTxResHandler(
       api,
       onPrivateTransferSuccess,
       onPrivateTransferFailure,
       onPrivateTransferUpdate
     );
+
     const unsub = api.tx.utility
       .batch(transactions)
       .signAndSend(currentExternalAccount, txResHandler);
@@ -145,9 +142,9 @@ const SendTab = () => {
     onChangeSendAmountInput(privateBalance.toString());
   };
 
-  const onChangeReceiverAddress = (e) => {
+  const onChangereceivingAddress = (e) => {
     try {
-      setReceiverAddress(
+      setreceivingAddress(
         base64Encode(
           api
             .createType(
@@ -158,7 +155,7 @@ const SendTab = () => {
         )
       );
     } catch (e) {
-      setReceiverAddress(null);
+      setreceivingAddress(null);
     }
   };
 
@@ -193,7 +190,7 @@ const SendTab = () => {
       <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />
       <div className="py-2">
         <FormInput
-          onChange={onChangeReceiverAddress}
+          onChange={onChangereceivingAddress}
           prefixIcon={Svgs.WalletIcon}
           isMax={false}
           type="text"

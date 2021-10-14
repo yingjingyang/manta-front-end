@@ -1,29 +1,19 @@
 import { INTERNAL_CHAIN_ID, EXTERNAL_CHAIN_ID } from 'constants/Bip39Constants';
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import {
-  TransactPage,
-  SwapPage,
-  GovernPage,
-  PoolPage,
-  AuditPage,
-  ExplorePage,
-  ExtrinsicPage,
-  BlockPage,
-  HashDetailPage,
-  ExtrinsicHistory,
-  AccountPage,
-} from 'pages';
+import { TransactPage, AccountPage } from 'pages';
 import { SidebarMenu } from 'components/elements/Layouts';
 import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { useSigner } from 'contexts/SignerContext';
+import { useWallet } from 'contexts/WalletContext';
 
 function MainApp() {
   const { api } = useSubstrate();
   const { signerClient } = useSigner();
+  const { saveSpendableAssets } = useWallet();
 
   useEffect(() => {
     const devClearLocalStorage = async () => {
@@ -53,10 +43,11 @@ function MainApp() {
     }
     const recoverWallet = async () => {
       await api.isReady;
-      signerClient.recoverWallet();
+      const spendableAssets = await signerClient.recoverWallet();
+      saveSpendableAssets(spendableAssets);
     };
     recoverWallet();
-  });
+  }, [api, signerClient]);
 
   return (
     <div className="main-app bg-primary">
@@ -73,8 +64,8 @@ function MainApp() {
           <Route path="/explore" component={ExplorePage} exact />
           <Route path="/explore/extrinsic" component={ExtrinsicPage} exact />
           <Route path="/explore/block" component={BlockPage} exact />
-          <Route path="/explore/extrinsic-history" component={ExtrinsicHistory} exact /> */}
-          <Route path="/explore/hash/:id" component={HashDetailPage} exact />
+          <Route path="/explore/extrinsic-history" component={ExtrinsicHistory} exact />
+          <Route path="/explore/hash/:id" component={HashDetailPage} exact /> */}
         </Switch>
         <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
           <ChangeThemeButton />

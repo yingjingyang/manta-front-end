@@ -18,7 +18,8 @@
     "SenderData": {
         "k": "MantaRandomValue",
         "void_number": "MantaRandomValue",
-        "root": "MantaRandomValue"
+        "root": "MantaRandomValue",
+        "shard_index": "u8"
     },
     "ReceiverData": {
         "k": "MantaRandomValue",
@@ -56,6 +57,10 @@
     "PrivateTransferDataBatch": {
         "private_transfer_data_list": "Vec<PrivateTransferData>"
     },
+    "ReclaimDataBatch": {
+        "private_transfer_data_list": "Vec<PrivateTransferData>",
+        "reclaim_data": "ReclaimData"
+    },
     "ReclaimData": {
         "asset_id": "AssetId",
         "reclaim_amount": "AssetBalance",
@@ -63,9 +68,6 @@
         "sender_2": "SenderData",
         "receiver": "ReceiverData",
         "proof": "[u8; 192]"
-    },
-    "ReclaimDataBatch": {
-        "reclaim_data_list": "Vec<ReclaimData>"
     },
     "DeriveShieldedAddressParams": {
         "keypath": "String",
@@ -75,20 +77,6 @@
         "asset_id": "AssetId",
         "value": "AssetBalance",
         "keypath": "String"
-    },
-    "GenerateReclaimParams": {
-        "asset_1_value": "AssetBalance",
-        "asset_2_value": "AssetBalance",
-        "asset_1_keypath": "String",
-        "asset_2_keypath": "String",
-        "asset_1_shard": "Vec<[u8; 32]>",
-        "asset_2_shard": "Vec<[u8; 32]>",
-        "change_keypath": "String",
-        "reclaim_value": "AssetBalance"
-    },
-    "GenerateReclaimBatchParams": {
-        "asset_id": "AssetId",
-        "reclaim_params_list": "Vec<GenerateReclaimDataParams>"
     },
     "GeneratePrivateTransferParams": {
         "asset_id": "AssetId",
@@ -105,20 +93,40 @@
         "change_output_value": "AssetBalance"
     },
     "GeneratePrivateTransferBatchParams": {
-        "private_transfer_params_list": "Vec<GeneratePrivateTransferDataParams>"
+        "private_transfer_params_list": "Vec<GeneratePrivateTransferParams>"
+    },
+    "GenerateReclaimParams": {
+        "asset_id": "AssetId",
+        "input_asset_1_value": "AssetBalance",
+        "input_asset_2_value": "AssetBalance",
+        "input_asset_1_keypath": "String",
+        "input_asset_2_keypath": "String",
+        "input_asset_1_shard": "Vec<[u8; 32]>",
+        "input_asset_2_shard": "Vec<[u8; 32]>",
+        "change_keypath": "String",
+        "reclaim_value": "AssetBalance"
+    },
+    "GenerateReclaimBatchParams": {
+        "private_transfer_params_list": "Vec<GeneratePrivateTransferParams>",
+        "reclaim_params": "GenerateReclaimParams"
     },
     "RecoverAccountParams": {
         "encrypted_notes": "Vec<MantaEciesCiphertext>",
         "void_numbers": "Vec<MantaRandomValue>",
         "utxos": "Vec<UTXO>"
     },
-    "MantaUIAsset": {
+    "MantaSignerInputAsset": {
         "asset_id": "AssetId",
         "value": "AssetBalance",
         "utxo": "UTXO",
-        "keypath": "String"
+        "keypath": "String",
+        "shard_index": "u8"
     },
     "RecoveredAccount": {
-        "assets": "Vec<MantaUIAsset>"
+        "assets": "Vec<MantaSignerInputAsset>"
+    },
+    "ShardMetaData": {
+        "current_index": "u64",
+        "current_auth_path": "[u8; 584]"
     }
 }

@@ -6,20 +6,28 @@ import {
   loadSpendableAssetsFromStorage,
   persistSpendableAssetsToStorage,
 } from 'utils/persistence/AssetStorage';
+import { useSubstrate } from './SubstrateContext';
 
 const WalletContext = createContext();
 
 export const WalletContextProvider = (props) => {
-  const [spendableAssets, setSpendableAssets] = useState(null);
+  const { api } = useSubstrate();
+  const [spendableAssets, setSpendableAssets] = useState([]);
 
   useEffect(() => {
-    if (spendableAssets === null) {
-      setSpendableAssets(loadSpendableAssetsFromStorage());
-    }
-  });
+    const loadSpendableAssets = async () => {
+      if (spendableAssets === null && api) {
+        await api.isReady;
+        setSpendableAssets(loadSpendableAssetsFromStorage(api));
+      }
+    };
+    loadSpendableAssets();
+  }, [api]);
 
   const getSpendableAssetsByAssetId = (assetId) => {
-    return spendableAssets.filter((asset) => asset.assetId === assetId);
+    return spendableAssets.filter(
+      (asset) => asset.asset_id.toNumber() === assetId
+    );
   };
 
   const removeSpendableAsset = (assetToRemove) => {

@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
-import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
-import TabMenu from 'components/elements/TabMenu/TabMenu';
-import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import FormSelect from 'components/elements/Form/FormSelect';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
@@ -15,7 +11,7 @@ import {
 import CurrencyType from 'types/ui/CurrencyType';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import TxStatus from 'types/ui/TxStatus';
-import { persistSpendableAsset } from 'utils/persistence/AssetStorage';
+import { useWallet } from 'contexts/WalletContext';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import BN from 'bn.js';
 import { useSigner } from 'contexts/SignerContext';
@@ -28,6 +24,7 @@ import {
 
 const DepositTab = () => {
   const { api } = useSubstrate();
+  const { saveSpendableAsset } = useWallet();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [depositAmountInput, setDepositAmountInput] = useState(null);
@@ -51,7 +48,7 @@ const DepositTab = () => {
       selectedAssetType.assetId,
       publicAssetBalance.sub(mintAmount)
     );
-    persistSpendableAsset(mintAsset.current);
+    saveSpendableAsset(mintAsset.current);
     mintAsset.current = null;
     showSuccess('Deposit successful');
     setStatus(TxStatus.finalized(block));

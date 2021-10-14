@@ -8,52 +8,55 @@ import CurrencyType from 'types/ui/CurrencyType';
 import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import BN from 'bn.js';
-import {
-  loadSpendableBalance,
-  removeSpendableAsset,
-} from 'utils/persistence/AssetStorage';
+import { useWallet } from 'contexts/WalletContext';
 import TxStatus from 'types/ui/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import getLedgerState from 'api/GetLedgerState';
+import {
+  generateMintZeroCoinTx,
+  generateInternalTransferParams,
+  generateReclaimParams,
+} from 'utils/api/BatchGenerateTransactions';
 import selectCoins from 'utils/SelectCoins';
-import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
+//
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
+  const { getSpendableBalance, removeSpendableAsset, spendableAssets } =
+    useWallet();
+  const { signerClient } = useSigner();
+  const { currentExternalAccount } = useExternalAccount();
+
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [withdrawAmountInput, setWithdrawAmountInput] = useState('');
   const [reclaimAmount, setReclaimAmount] = useState(new BN(-1));
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const coinSelection = useRef(null);
-  const changeAmount = useRef(null);
   const [, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-  const { signerClient } = useSigner();
-  const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
     selectedAssetType &&
-      setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status]);
+      setPrivateBalance(getSpendableBalance(selectedAssetType.assetId));
+  }, [selectedAssetType, status, spendableAssets]);
 
-  const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
-    let ledgerState1 = await getLedgerState(reclaimAsset1, api);
-    let ledgerState2 = await getLedgerState(reclaimAsset2, api);
-    const changeAddress = await signerClient.generateNextInternalAddress(
-      selectedAssetType.assetId
-    );
-    const payload = await signerClient.generateReclaimParams(
-      reclaimAsset1,
-      reclaimAsset2,
-      ledgerState1,
-      ledgerState2,
-      reclaimAsset1.value.add(reclaimAsset2.value.sub(changeAmount.current)),
-      changeAddress
-    );
-    return payload;
-  };
+  // const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
+  //   let ledgerState1 = await getLedgerState(reclaimAsset1, api);
+  //   let ledgerState2 = await getLedgerState(reclaimAsset2, api);
+  //   const changeAddress = await signerClient.generateNextInternalAddress(
+  //     selectedAssetType.assetId
+  //   );
+  //   const payload = await signerClient.generateReclaimParams(
+  //     reclaimAsset1,
+  //     reclaimAsset2,
+  //     ledgerState1,
+  //     ledgerState2,
+  //     reclaimAsset1.value.add(reclaimAsset2.value.sub(changeAmount.current)),
+  //     changeAddress
+  //   );
+  //   return payload;
+  // };
 
   const onReclaimSuccess = async (block) => {
     // Every tx in the batch gets handled by default, only handle 1
@@ -61,8 +64,8 @@ const WithdrawTab = () => {
       return;
     }
     showSuccess('Withdrawal successful');
-    coinSelection.current.forEach((asset) => {
-      removeSpendableAsset(asset.current);
+    coinSelection.current.coins.forEach((asset) => {
+      removeSpendableAsset(asset);
     });
     coinSelection.current = null;
     txResWasHandled.current = true;
@@ -86,27 +89,62 @@ const WithdrawTab = () => {
 
   const onClickWithdraw = async () => {
     setStatus(TxStatus.processing());
-    [coinSelection.current, changeAmount.current] = selectCoins(
-      reclaimAmount,
-      selectedAssetType.assetId
-    );
-    const transactions = await batchGenerateTransactions(
-      coinSelection.current,
-      generateReclaimParams,
-      signerClient.requestGenerateReclaimPayloads.bind(
+    coinSelection.current = selectCoins(reclaimAmount, spendableAssets);
+
+    let transactions = [];
+
+    if (coinSelection.length === 1) {
+      const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
+        coinSelection.current.coins[0].asset_id,
         signerClient,
-        selectedAssetType.assetId
-      ),
-      api.tx.mantaPay.reclaim.bind(api),
+        api
+      );
+      transactions.push(mintZeroCoinTx);
+      coinSelection.current.coins.push(mintZeroCoinAsset);
+    }
+
+    const [privateTransferParamsList, intermediateAssets] =
+      await generateInternalTransferParams(
+        coinSelection.current,
+        signerClient,
+        api
+      );
+
+    const secondLastAsset =
+      coinSelection.current.coins[coinSelection.current.coins.length - 2];
+    const accumulatorAsset =
+      intermediateAssets[intermediateAssets.length - 1] || secondLastAsset;
+    const lastAsset =
+      coinSelection.current.coins[coinSelection.current.coins.length - 1];
+    const reclaimParams = await generateReclaimParams(
+      accumulatorAsset,
+      lastAsset,
+      intermediateAssets,
+      coinSelection.current.targetAmount,
       signerClient,
       api
     );
+
+    const payloads = await signerClient.requestGenerateReclaimPayloads(
+      reclaimParams,
+      privateTransferParamsList
+    );
+
+    payloads.private_transfer_data_list
+      .map((payload) => api.tx.mantaPay.privateTransfer(payload))
+      .forEach((privateTransferTransaction) =>
+        transactions.push(privateTransferTransaction)
+      );
+    const reclaimTx = api.tx.mantaPay.reclaim(payloads.reclaim_data);
+    transactions.push(reclaimTx);
+
     const txResHandler = makeTxResHandler(
       api,
       onReclaimSuccess,
       onReclaimFailure,
       onReclaimUpdate
     );
+
     const unsub = api.tx.utility
       .batch(transactions)
       .signAndSend(currentExternalAccount, txResHandler);

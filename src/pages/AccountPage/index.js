@@ -17,16 +17,8 @@ const TABS = {
 };
 
 const AccountPage = () => {
-  // const [loading, setLoading] = useState(false);
   const [selectedTabIdx, setSelectedTabIdx] = useState(TABS.Deposit);
 
-  // const onDepositHandler = () => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     showSuccess('Deposited successfully!');
-  //     setLoading(false);
-  //   }, 3000);
-  // };
   return (
     <PageContent>
       <Navbar />

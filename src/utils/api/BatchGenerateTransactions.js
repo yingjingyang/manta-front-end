@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import getLedgerState from 'api/GetLedgerState';
 
 export const generateMintZeroCoinTx = async (assetId, signerClient, api) => {
   const mintZeroCoinAsset = await signerClient.generateAsset(
@@ -13,46 +14,102 @@ export const generateMintZeroCoinTx = async (assetId, signerClient, api) => {
   return [mintZeroCoinAsset, mintZeroCoinTx];
 };
 
-const batchGenerateTransactionParameters = async (
+export const generateInternalTransferParams = async (
   coinSelection,
-  generateParamsFn
-) => {
-  const paramsList = [];
-  const INPUTS_PER_TRANSFER = 2;
-  for (let i = 0; i < coinSelection.length; i += INPUTS_PER_TRANSFER) {
-    const inputAsset1 = coinSelection[i];
-    const inputAsset2 = coinSelection[i + 1];
-    const params = await generateParamsFn(inputAsset1, inputAsset2);
-    paramsList.push(params);
-  }
-  return paramsList;
-};
-
-export const batchGenerateTransactions = async (
-  coinSelection,
-  generateParamsFn,
-  generatePayloadsFunction,
-  generateTxFunction,
   signerClient,
   api
 ) => {
-  let transactions = [];
-  if (coinSelection.length % 2 === 1) {
-    const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
-      coinSelection[0].assetId,
-      signerClient,
+  const privateTransferParamsList = [];
+  const intermediateAssets = [];
+  // Build private transfers that accumulate assets within our internal chain until we have only two assets to send
+  let accumulatorAsset = coinSelection.coins[0];
+  for (let i = 1; i < coinSelection.coins.length - 1; i++) {
+    let inputAsset = coinSelection.coins[i];
+    let inputAssetledgerState = await getLedgerState(
+      inputAsset,
+      intermediateAssets,
       api
     );
-    transactions.push(mintZeroCoinTx);
-    coinSelection.push(mintZeroCoinAsset);
+    let accumulatorAssetLedgerState = await getLedgerState(
+      accumulatorAsset,
+      intermediateAssets,
+      api
+    );
+    let [privateTransferParams, nextAccumulatorAsset] =
+      await signerClient.generateIntermediatePrivateTransferParams(
+        accumulatorAsset,
+        inputAsset,
+        accumulatorAssetLedgerState,
+        inputAssetledgerState
+      );
+    intermediateAssets.push(nextAccumulatorAsset);
+    accumulatorAsset = nextAccumulatorAsset;
+    privateTransferParamsList.push(privateTransferParams);
   }
-  const paramsList = await batchGenerateTransactionParameters(
-    coinSelection,
-    generateParamsFn
+  return [privateTransferParamsList, intermediateAssets];
+};
+
+export const generateExternalTransferParams = async (
+  receivingAddress,
+  coinSelection,
+  signerClient,
+  api
+) => {
+  const [privateTransferParamsList, intermediateAssets] =
+    await generateInternalTransferParams(coinSelection, signerClient, api);
+
+  const secondLastAsset = coinSelection.coins[coinSelection.coins.length - 2];
+  const accumulatorAsset =
+    intermediateAssets[intermediateAssets.length - 1] || secondLastAsset;
+  const accumulatorAssetLedgerState = await getLedgerState(
+    accumulatorAsset,
+    intermediateAssets,
+    api
   );
-  const payloads = await generatePayloadsFunction(paramsList);
-  payloads.forEach((payload) => {
-    transactions.push(generateTxFunction(payload));
-  });
-  return transactions;
+  const lastAsset = coinSelection.coins[coinSelection.coins.length - 1];
+  const lastAssetledgerState = await getLedgerState(
+    lastAsset,
+    intermediateAssets,
+    api
+  );
+  const externalPrivateTransferParams =
+    await signerClient.generateTerminalPrivateTransferParams(
+      accumulatorAsset,
+      lastAsset,
+      accumulatorAssetLedgerState,
+      lastAssetledgerState,
+      coinSelection.targetAmount,
+      coinSelection.changeAmount,
+      receivingAddress
+    );
+  privateTransferParamsList.push(externalPrivateTransferParams);
+  return privateTransferParamsList;
+};
+
+export const generateReclaimParams = async (
+  reclaimAsset1,
+  reclaimAsset2,
+  intermediateAssets,
+  reclaimValue,
+  signerClient,
+  api
+) => {
+  let ledgerState1 = await getLedgerState(
+    reclaimAsset1,
+    intermediateAssets,
+    api
+  );
+  let ledgerState2 = await getLedgerState(
+    reclaimAsset2,
+    intermediateAssets,
+    api
+  );
+  const reclaimParams = await signerClient.generateReclaimParams(
+    reclaimAsset1,
+    reclaimAsset2,
+    ledgerState1,
+    ledgerState2,
+    reclaimValue
+  );
+  return reclaimParams;
 };
