@@ -36,7 +36,9 @@ export default class SignerClient {
 
   async getAllVoidNumbers() {
     let storage = await this.api.query.mantaPay.voidNumbers.entries();
-    return storage.map((storageItem) => storageItem[0]);
+    const res = storage.map((storageItem) => storageItem[0].args).flat();
+    console.log(res);
+    return res;
   }
 
   async getAllUTXOs() {

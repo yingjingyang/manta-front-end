@@ -18,7 +18,6 @@ import {
   generateReclaimParams,
 } from 'utils/api/BatchGenerateTransactions';
 import selectCoins from 'utils/SelectCoins';
-//
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
@@ -40,23 +39,6 @@ const WithdrawTab = () => {
     selectedAssetType &&
       setPrivateBalance(getSpendableBalance(selectedAssetType.assetId));
   }, [selectedAssetType, status, spendableAssets]);
-
-  // const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
-  //   let ledgerState1 = await getLedgerState(reclaimAsset1, api);
-  //   let ledgerState2 = await getLedgerState(reclaimAsset2, api);
-  //   const changeAddress = await signerClient.generateNextInternalAddress(
-  //     selectedAssetType.assetId
-  //   );
-  //   const payload = await signerClient.generateReclaimParams(
-  //     reclaimAsset1,
-  //     reclaimAsset2,
-  //     ledgerState1,
-  //     ledgerState2,
-  //     reclaimAsset1.value.add(reclaimAsset2.value.sub(changeAmount.current)),
-  //     changeAddress
-  //   );
-  //   return payload;
-  // };
 
   const onReclaimSuccess = async (block) => {
     // Every tx in the batch gets handled by default, only handle 1
