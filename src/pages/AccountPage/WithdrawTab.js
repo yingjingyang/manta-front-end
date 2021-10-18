@@ -75,7 +75,7 @@ const WithdrawTab = () => {
 
     let transactions = [];
 
-    if (coinSelection.length === 1) {
+    if (coinSelection.current.coins.length === 1) {
       const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
         coinSelection.current.coins[0].asset_id,
         signerClient,
@@ -98,6 +98,7 @@ const WithdrawTab = () => {
       intermediateAssets[intermediateAssets.length - 1] || secondLastAsset;
     const lastAsset =
       coinSelection.current.coins[coinSelection.current.coins.length - 1];
+
     const reclaimParams = await generateReclaimParams(
       accumulatorAsset,
       lastAsset,
