@@ -102,6 +102,8 @@ const SendTab = () => {
 
     const privateTransferPayloads =
       await signerClient.requestGeneratePrivateTransferPayloads(
+        selectedAssetType.assetId,
+        receivingAddress,
         privateTransferParamsList
       );
 

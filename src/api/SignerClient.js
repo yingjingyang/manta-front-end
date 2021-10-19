@@ -189,10 +189,16 @@ export default class SignerClient {
     return params.toU8a();
   }
 
-  async requestGeneratePrivateTransferPayloads(privateTransferParamsList) {
+  async requestGeneratePrivateTransferPayloads(
+    assetId,
+    receivingAddress,
+    privateTransferParamsList
+  ) {
     const privateTransferParamsBatch = this.api.createType(
       'GeneratePrivateTransferBatchParams',
       {
+        asset_id: assetId,
+        receiving_address: base64Decode(receivingAddress),
         private_transfer_params_list: privateTransferParamsList,
       }
     );
@@ -233,12 +239,14 @@ export default class SignerClient {
   }
 
   async requestGenerateReclaimPayloads(
+    assetId,
     reclaimParams,
     privateTransferParamsList
   ) {
     const reclaimParamsBatch = this.api.createType(
       'GenerateReclaimBatchParams',
       {
+        asset_id: assetId,
         reclaim_params: reclaimParams,
         private_transfer_params_list: privateTransferParamsList,
       }

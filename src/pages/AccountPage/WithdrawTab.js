@@ -109,6 +109,7 @@ const WithdrawTab = () => {
     );
 
     const payloads = await signerClient.requestGenerateReclaimPayloads(
+      selectedAssetType.assetId,
       reclaimParams,
       privateTransferParamsList
     );
