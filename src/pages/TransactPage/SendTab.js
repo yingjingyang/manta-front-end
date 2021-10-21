@@ -8,7 +8,6 @@ import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import Svgs from 'resources/icons';
 import { useWallet } from 'contexts/WalletContext';
-import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import TxStatus from 'types/ui/TxStatus';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
@@ -16,12 +15,10 @@ import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import selectCoins from 'utils/SelectCoins';
-import { generateMintZeroCoinTx } from 'utils/api/BatchGenerateTransactions';
-import { generateExternalTransferParams } from 'utils/api/BatchGenerateTransactions';
+import TransactionController from 'api/TransactionController';
 
 const SendTab = () => {
   const { api } = useSubstrate();
-  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
   const { getSpendableBalance, spendableAssets, removeSpendableAsset } =
     useWallet();
@@ -32,16 +29,21 @@ const SendTab = () => {
   const [privateTransferAmount, setPrivateTransferAmount] = useState(
     new BN(-1)
   );
-  const [receivingAddress, setreceivingAddress] = useState('');
+  const [receivingAddress, setReceivingAddress] = useState('');
   const coinSelection = useRef(null);
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
   useEffect(() => {
-    selectedAssetType &&
-      setPrivateBalance(getSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status, spendableAssets]);
+    const displaySpendableBalance = async () => {
+      if (!api) return;
+      await api.isReady;
+      selectedAssetType &&
+        setPrivateBalance(getSpendableBalance(selectedAssetType.assetId, api));
+    };
+    displaySpendableBalance();
+  }, [selectedAssetType, status, spendableAssets, api]);
 
   /**
    *
@@ -55,7 +57,7 @@ const SendTab = () => {
       return;
     }
     coinSelection.current.coins.forEach((coins) => {
-      removeSpendableAsset(coins);
+      removeSpendableAsset(coins, api);
     });
     showSuccess('Transfer successful');
     txResWasHandled.current = true;
@@ -79,39 +81,15 @@ const SendTab = () => {
 
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
+    await doPrivateTransfer();
+  };
+
+  const doPrivateTransfer = async () => {
     coinSelection.current = selectCoins(privateTransferAmount, spendableAssets);
-
-    let transactions = [];
-
-    if (coinSelection.current.coins.length === 1) {
-      const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
-        coinSelection.current.coins[0].asset_id,
-        signerClient,
-        api
-      );
-      transactions.push(mintZeroCoinTx);
-      coinSelection.current.coins.push(mintZeroCoinAsset);
-    }
-
-    const privateTransferParamsList = await generateExternalTransferParams(
-      receivingAddress,
-      coinSelection.current,
-      signerClient,
-      api
+    const controller = new TransactionController(api, coinSelection.current);
+    const transactions = await controller.buildExternalPrivateTransfer(
+      receivingAddress
     );
-
-    const privateTransferPayloads =
-      await signerClient.requestGeneratePrivateTransferPayloads(
-        selectedAssetType.assetId,
-        receivingAddress,
-        privateTransferParamsList
-      );
-
-    privateTransferPayloads
-      .map((payload) => api.tx.mantaPay.privateTransfer(payload))
-      .forEach((privateTransferTransaction) =>
-        transactions.push(privateTransferTransaction)
-      );
 
     const txResHandler = makeTxResHandler(
       api,
@@ -144,9 +122,9 @@ const SendTab = () => {
     onChangeSendAmountInput(privateBalance.toString());
   };
 
-  const onChangereceivingAddress = (e) => {
+  const onChangeReceivingAddress = (e) => {
     try {
-      setreceivingAddress(
+      setReceivingAddress(
         base64Encode(
           api
             .createType(
@@ -157,7 +135,7 @@ const SendTab = () => {
         )
       );
     } catch (e) {
-      setreceivingAddress(null);
+      setReceivingAddress(null);
     }
   };
 
@@ -192,7 +170,7 @@ const SendTab = () => {
       <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />
       <div className="py-2">
         <FormInput
-          onChange={onChangereceivingAddress}
+          onChange={onChangeReceivingAddress}
           prefixIcon={Svgs.WalletIcon}
           isMax={false}
           type="text"

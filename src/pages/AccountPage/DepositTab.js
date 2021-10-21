@@ -21,10 +21,11 @@ import {
   loadPublicAssetBalance,
   savePublicAssetBalance,
 } from 'utils/persistence/DummyPublicAssetStorage';
+import TransactionController from 'api/TransactionController';
 
 const DepositTab = () => {
   const { api } = useSubstrate();
-  const { saveSpendableAsset } = useWallet();
+  // const { saveSpendableAsset } = useWallet();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [depositAmountInput, setDepositAmountInput] = useState(null);
@@ -32,7 +33,6 @@ const DepositTab = () => {
   const [publicAssetBalance, setPublicAssetBalance] = useState(null);
   let mintAsset = useRef(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
-  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
@@ -48,8 +48,9 @@ const DepositTab = () => {
       selectedAssetType.assetId,
       publicAssetBalance.sub(mintAmount)
     );
-    saveSpendableAsset(mintAsset.current);
-    mintAsset.current = null;
+    // saveSpendableAsset(mintAsset.current, api);
+    // mintAsset.current = null;
+    // todo: recover wallet here
     showSuccess('Deposit successful');
     setStatus(TxStatus.finalized(block));
   };
@@ -65,8 +66,13 @@ const DepositTab = () => {
     setStatus(TxStatus.processing(message));
   };
 
-  const submitTransaction = (payload) => {
-    const mintTx = api.tx.mantaPay.mintPrivateAsset(payload);
+  const doMint = async () => {
+    const transactionController = new TransactionController(api);
+    const mintTx = await transactionController.buildMintTx(
+      selectedAssetType.assetId,
+      mintAmount
+    );
+
     const txResHandler = makeTxResHandler(
       api,
       onDepositSuccess,
@@ -74,6 +80,11 @@ const DepositTab = () => {
       onDepositUpdate
     );
 
+    console.log(
+      'asset initialized?',
+      selectedAssetType.assetId,
+      assetIsInitialized(selectedAssetType.assetId)
+    );
     if (!assetIsInitialized(selectedAssetType.assetId)) {
       const initTx = api.tx.mantaPay.initAsset(
         selectedAssetType.assetId,
@@ -90,12 +101,7 @@ const DepositTab = () => {
   };
 
   const onClickDeposit = async () => {
-    mintAsset.current = await signerClient.generateAsset(
-      selectedAssetType.assetId,
-      mintAmount
-    );
-    const mintInfo = await signerClient.generateMintPayload(mintAsset.current);
-    submitTransaction(mintInfo);
+    doMint();
   };
 
   const onChangeDepositAmountInput = (amountStr) => {

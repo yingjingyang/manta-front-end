@@ -9,6 +9,8 @@ import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { useSigner } from 'contexts/SignerContext';
 import { useWallet } from 'contexts/WalletContext';
+import SignerParamGen from 'api/SignerParamGen';
+import SignerClient from 'api/SignerClient';
 
 function MainApp() {
   const { api } = useSubstrate();
@@ -43,8 +45,11 @@ function MainApp() {
     }
     const recoverWallet = async () => {
       await api.isReady;
-      const spendableAssets = await signerClient.recoverWallet();
-      saveSpendableAssets(spendableAssets);
+      const signerParamGen = new SignerParamGen(api);
+      const signerClient = new SignerClient(api);
+      const params = await signerParamGen.generateRecoverWalletParams();
+      const spendableAssets = await signerClient.recoverWallet(params);
+      saveSpendableAssets(spendableAssets, api);
     };
     recoverWallet();
   }, [api, signerClient]);

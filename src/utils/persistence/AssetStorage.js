@@ -8,7 +8,7 @@ export const loadSpendableAssetsFromStorage = (api) => {
   );
 };
 
-export const persistSpendableAssetsToStorage = (spendableAssets) => {
-  const serializedAssets = spendableAssets.map((asset) => asset.toU8a());
+export const persistSpendableAssetsToStorage = (spendableAssets, api) => {
+  const serializedAssets = spendableAssets.map((asset) => asset.toU8a(api));
   store.set(SPENDABLE_ASSETS_STORAGE_KEY, serializedAssets);
 };

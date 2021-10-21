@@ -26,31 +26,31 @@ export const WalletContextProvider = (props) => {
 
   const getSpendableAssetsByAssetId = (assetId) => {
     return spendableAssets.filter(
-      (asset) => asset.asset_id.toNumber() === assetId
+      (asset) => asset.assetId.toNumber() === assetId
     );
   };
 
-  const removeSpendableAsset = (assetToRemove) => {
+  const removeSpendableAsset = (assetToRemove, api) => {
     const newSpendableAssets = spendableAssets.filter(
       (asset) => !_.isEqual(asset, assetToRemove)
     );
     setSpendableAssets(newSpendableAssets);
-    persistSpendableAssetsToStorage(newSpendableAssets);
+    persistSpendableAssetsToStorage(newSpendableAssets, api);
   };
 
-  const saveSpendableAssets = (spendableAssets) => {
+  const saveSpendableAssets = (spendableAssets, api) => {
     setSpendableAssets(spendableAssets);
-    persistSpendableAssetsToStorage(spendableAssets);
+    persistSpendableAssetsToStorage(spendableAssets, api);
   };
 
-  const saveSpendableAsset = (newSpendableAsset) => {
+  const saveSpendableAsset = (newSpendableAsset, api) => {
     const newSpendableAssets = [...spendableAssets, newSpendableAsset];
     setSpendableAssets(newSpendableAssets);
-    persistSpendableAssetsToStorage(newSpendableAssets);
+    persistSpendableAssetsToStorage(newSpendableAssets, api);
   };
 
-  const getSpendableBalance = (assetId) => {
-    return getSpendableAssetsByAssetId(assetId)
+  const getSpendableBalance = (assetId, api) => {
+    return getSpendableAssetsByAssetId(assetId, api)
       .map((asset) => asset.value)
       .reduce((prev, curr) => {
         return prev.add(curr);

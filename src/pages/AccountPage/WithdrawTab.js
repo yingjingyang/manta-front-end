@@ -5,25 +5,19 @@ import FormSelect from 'components/elements/Form/FormSelect';
 import { showSuccess, showError } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
 import CurrencyType from 'types/ui/CurrencyType';
-import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import BN from 'bn.js';
 import { useWallet } from 'contexts/WalletContext';
 import TxStatus from 'types/ui/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import {
-  generateMintZeroCoinTx,
-  generateInternalTransferParams,
-  generateReclaimParams,
-} from 'utils/api/BatchGenerateTransactions';
 import selectCoins from 'utils/SelectCoins';
+import TransactionController from 'api/TransactionController';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
   const { getSpendableBalance, removeSpendableAsset, spendableAssets } =
     useWallet();
-  const { signerClient } = useSigner();
   const { currentExternalAccount } = useExternalAccount();
 
   const [selectedAssetType, setSelectedAssetType] = useState(null);
@@ -36,9 +30,16 @@ const WithdrawTab = () => {
   const [privateBalance, setPrivateBalance] = useState(null);
 
   useEffect(() => {
-    selectedAssetType &&
-      setPrivateBalance(getSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status, spendableAssets]);
+    const displaySpendableBalance = async () => {
+      if (!api) {
+        return;
+      }
+      await api.isReady;
+      selectedAssetType &&
+        setPrivateBalance(getSpendableBalance(selectedAssetType.assetId, api));
+    };
+    displaySpendableBalance();
+  }, [selectedAssetType, status, spendableAssets, api]);
 
   const onReclaimSuccess = async (block) => {
     // Every tx in the batch gets handled by default, only handle 1
@@ -47,7 +48,7 @@ const WithdrawTab = () => {
     }
     showSuccess('Withdrawal successful');
     coinSelection.current.coins.forEach((asset) => {
-      removeSpendableAsset(asset);
+      removeSpendableAsset(asset, api);
     });
     coinSelection.current = null;
     txResWasHandled.current = true;
@@ -72,63 +73,14 @@ const WithdrawTab = () => {
   const onClickWithdraw = async () => {
     setStatus(TxStatus.processing());
     coinSelection.current = selectCoins(reclaimAmount, spendableAssets);
-
-    let transactions = [];
-
-    if (coinSelection.current.coins.length === 1) {
-      const [mintZeroCoinAsset, mintZeroCoinTx] = await generateMintZeroCoinTx(
-        coinSelection.current.coins[0].asset_id,
-        signerClient,
-        api
-      );
-      transactions.push(mintZeroCoinTx);
-      coinSelection.current.coins.push(mintZeroCoinAsset);
-    }
-
-    const [privateTransferParamsList, intermediateAssets] =
-      await generateInternalTransferParams(
-        coinSelection.current,
-        signerClient,
-        api
-      );
-
-    const secondLastAsset =
-      coinSelection.current.coins[coinSelection.current.coins.length - 2];
-    const accumulatorAsset =
-      intermediateAssets[intermediateAssets.length - 1] || secondLastAsset;
-    const lastAsset =
-      coinSelection.current.coins[coinSelection.current.coins.length - 1];
-
-    const reclaimParams = await generateReclaimParams(
-      accumulatorAsset,
-      lastAsset,
-      intermediateAssets,
-      coinSelection.current.targetAmount,
-      signerClient,
-      api
-    );
-
-    const payloads = await signerClient.requestGenerateReclaimPayloads(
-      selectedAssetType.assetId,
-      reclaimParams,
-      privateTransferParamsList
-    );
-
-    payloads.private_transfer_data_list
-      .map((payload) => api.tx.mantaPay.privateTransfer(payload))
-      .forEach((privateTransferTransaction) =>
-        transactions.push(privateTransferTransaction)
-      );
-    const reclaimTx = api.tx.mantaPay.reclaim(payloads.reclaim_data);
-    transactions.push(reclaimTx);
-
+    const controller = new TransactionController(api, coinSelection.current);
+    const transactions = await controller.buildReclaim();
     const txResHandler = makeTxResHandler(
       api,
       onReclaimSuccess,
       onReclaimFailure,
       onReclaimUpdate
     );
-
     const unsub = api.tx.utility
       .batch(transactions)
       .signAndSend(currentExternalAccount, txResHandler);
