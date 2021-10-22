@@ -5,6 +5,8 @@ import {
 } from 'constants/Bip39Constants';
 import store from 'store';
 
+// todo: general address store with these methods
+// low level address store that only loads and sets addresses of both chains (4 methods)
 export default class BrowserAddressStore {
   loadInternalAddresses() {
     return this._loadAddresses(true)[INTERNAL_CHAIN_ID];
@@ -43,8 +45,8 @@ export default class BrowserAddressStore {
   }
 
   getNextExternalKeypath() {
-    let addressIdx = store.get('mantaAddresses')[INTERNAL_CHAIN_ID].length;
-    return `${MANTA_WALLET_BASE_PATH}/${INTERNAL_CHAIN_ID}/${addressIdx}`;
+    let addressIdx = store.get('mantaAddresses')[EXTERNAL_CHAIN_ID].length;
+    return `${MANTA_WALLET_BASE_PATH}/${EXTERNAL_CHAIN_ID}/${addressIdx}`;
   }
 
   _loadAddresses() {
@@ -56,9 +58,7 @@ export default class BrowserAddressStore {
     let addresses = store.get('mantaAddresses');
     const chainId = isInternal ? INTERNAL_CHAIN_ID : EXTERNAL_CHAIN_ID;
     const chainAddresses = addresses[chainId];
-    console.log('chainAddresses?', chainAddresses);
     chainAddresses.push(address);
-    console.log('saving addresses', addresses);
     store.set('mantaAddresses', addresses);
   }
 }

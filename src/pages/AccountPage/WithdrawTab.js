@@ -12,7 +12,8 @@ import TxStatus from 'types/ui/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import selectCoins from 'utils/SelectCoins';
-import TransactionController from 'api/TransactionController';
+import SignerInterface from 'manta-signer-interface';
+import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
@@ -73,8 +74,15 @@ const WithdrawTab = () => {
   const onClickWithdraw = async () => {
     setStatus(TxStatus.processing());
     coinSelection.current = selectCoins(reclaimAmount, spendableAssets);
-    const controller = new TransactionController(api, coinSelection.current);
-    const transactions = await controller.buildReclaim();
+    const signerInterface = new SignerInterface(api, new BrowserAddressStore());
+    const signerIsConnected = await signerInterface.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Manta Signer must be connected');
+      return;
+    }
+    const transactions = await signerInterface.buildReclaimTxs(
+      coinSelection.current
+    );
     const txResHandler = makeTxResHandler(
       api,
       onReclaimSuccess,

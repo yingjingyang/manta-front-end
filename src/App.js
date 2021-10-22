@@ -1,7 +1,6 @@
 import React from 'react';
 import AppRouter from 'AppRouter';
 import { ThemeProvider } from 'contexts/ThemeContext';
-import { SignerContextProvider } from 'contexts/SignerContext';
 import { SubstrateContextProvider } from 'contexts/SubstrateContext';
 import { WalletContextProvider } from 'contexts/WalletContext';
 import { ExternalAccountContextProvider } from 'contexts/ExternalAccountContext';
@@ -12,14 +11,12 @@ function App() {
   return (
     <SubstrateContextProvider>
       <ExternalAccountContextProvider>
-        <SignerContextProvider>
-          <WalletContextProvider>
-            <ThemeProvider>
-              <AppRouter />
-              {config.DEV_CONSOLE && <DeveloperConsole />}
-            </ThemeProvider>
-          </WalletContextProvider>
-        </SignerContextProvider>
+        <WalletContextProvider>
+          <ThemeProvider>
+            <AppRouter />
+            {config.DEV_CONSOLE && <DeveloperConsole />}
+          </ThemeProvider>
+        </WalletContextProvider>
       </ExternalAccountContextProvider>
     </SubstrateContextProvider>
   );

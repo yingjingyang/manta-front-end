@@ -7,14 +7,12 @@ import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
-import { useSigner } from 'contexts/SignerContext';
 import { useWallet } from 'contexts/WalletContext';
-import SignerParamGen from 'api/SignerParamGen';
-import SignerClient from 'api/SignerClient';
+import SignerInterface from 'manta-signer-interface';
+import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
 
 function MainApp() {
   const { api } = useSubstrate();
-  const { signerClient } = useSigner();
   const { saveSpendableAssets } = useWallet();
 
   useEffect(() => {
@@ -40,19 +38,24 @@ function MainApp() {
   }, [api]);
 
   useEffect(() => {
-    if (!api || !api.isConnected || !signerClient) {
+    if (!api || !api.isConnected) {
       return;
     }
     const recoverWallet = async () => {
+      // todo: move to controller
       await api.isReady;
-      const signerParamGen = new SignerParamGen(api);
-      const signerClient = new SignerClient(api);
-      const params = await signerParamGen.generateRecoverWalletParams();
-      const spendableAssets = await signerClient.recoverWallet(params);
-      saveSpendableAssets(spendableAssets, api);
+      const signerInterface = new SignerInterface(
+        api,
+        new BrowserAddressStore()
+      );
+      const signerIsConnected = await signerInterface.signerIsConnected();
+      if (signerIsConnected) {
+        const spendableAssets = await signerInterface.recoverWallet();
+        saveSpendableAssets(spendableAssets, api);
+      }
     };
     recoverWallet();
-  }, [api, signerClient]);
+  }, [api]);
 
   return (
     <div className="main-app bg-primary">

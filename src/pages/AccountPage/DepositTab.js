@@ -11,17 +11,16 @@ import {
 import CurrencyType from 'types/ui/CurrencyType';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import TxStatus from 'types/ui/TxStatus';
-import { useWallet } from 'contexts/WalletContext';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import BN from 'bn.js';
-import { useSigner } from 'contexts/SignerContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import {
   DUMMY_ASSET_BALANCE,
   loadPublicAssetBalance,
   savePublicAssetBalance,
 } from 'utils/persistence/DummyPublicAssetStorage';
-import TransactionController from 'api/TransactionController';
+import SignerInterface from 'manta-signer-interface';
+import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
 
 const DepositTab = () => {
   const { api } = useSubstrate();
@@ -66,9 +65,14 @@ const DepositTab = () => {
     setStatus(TxStatus.processing(message));
   };
 
-  const doMint = async () => {
-    const transactionController = new TransactionController(api);
-    const mintTx = await transactionController.buildMintTx(
+  const onClickDeposit = async () => {
+    const signerInterface = new SignerInterface(api, new BrowserAddressStore());
+    const signerIsConnected = await signerInterface.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Manta Signer must be connected');
+      return;
+    }
+    const mintTx = await signerInterface.buildMintTx(
       selectedAssetType.assetId,
       mintAmount
     );
@@ -78,12 +82,6 @@ const DepositTab = () => {
       onDepositSuccess,
       onDepositFailure,
       onDepositUpdate
-    );
-
-    console.log(
-      'asset initialized?',
-      selectedAssetType.assetId,
-      assetIsInitialized(selectedAssetType.assetId)
     );
     if (!assetIsInitialized(selectedAssetType.assetId)) {
       const initTx = api.tx.mantaPay.initAsset(
@@ -98,10 +96,6 @@ const DepositTab = () => {
       const unsub = mintTx.signAndSend(currentExternalAccount, txResHandler);
       setUnsub(() => unsub);
     }
-  };
-
-  const onClickDeposit = async () => {
-    doMint();
   };
 
   const onChangeDepositAmountInput = (amountStr) => {

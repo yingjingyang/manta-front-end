@@ -14,4 +14,8 @@ export default class CoinSelection {
   last() {
     return this.coins[this.coins.length - 1];
   }
+
+  secondLast() {
+    return this.coins[this.coins.length - 2];
+  }
 }

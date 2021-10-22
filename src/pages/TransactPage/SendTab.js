@@ -15,7 +15,8 @@ import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import selectCoins from 'utils/SelectCoins';
-import TransactionController from 'api/TransactionController';
+import SignerInterface from 'manta-signer-interface';
+import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
 
 const SendTab = () => {
   const { api } = useSubstrate();
@@ -81,14 +82,16 @@ const SendTab = () => {
 
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
-    await doPrivateTransfer();
-  };
-
-  const doPrivateTransfer = async () => {
     coinSelection.current = selectCoins(privateTransferAmount, spendableAssets);
-    const controller = new TransactionController(api, coinSelection.current);
-    const transactions = await controller.buildExternalPrivateTransfer(
-      receivingAddress
+    const signerInterface = new SignerInterface(api, new BrowserAddressStore());
+    const signerIsConnected = await signerInterface.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Manta Signer must be connected');
+      return;
+    }
+    const transactions = await signerInterface.buildExternalPrivateTransferTxs(
+      receivingAddress,
+      coinSelection.current
     );
 
     const txResHandler = makeTxResHandler(
