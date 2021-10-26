@@ -5,7 +5,7 @@ import FormSelect from 'components/elements/Form/FormSelect';
 import CurrencyType from 'types/ui/CurrencyType';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import SignerInterface from 'manta-signer-interface';
-import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
+import { BrowserAddressStore } from 'manta-signer-interface';
 import { showError } from 'utils/ui/Notifications';
 
 const ReceiveTab = () => {

@@ -96,7 +96,6 @@
         "private_transfer_params_list": "Vec<GeneratePrivateTransferParams>"
     },
     "GenerateReclaimParams": {
-        "asset_id": "AssetId",
         "input_asset_1_value": "AssetBalance",
         "input_asset_2_value": "AssetBalance",
         "input_asset_1_keypath": "String",

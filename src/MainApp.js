@@ -1,4 +1,3 @@
-import { INTERNAL_CHAIN_ID, EXTERNAL_CHAIN_ID } from 'constants/Bip39Constants';
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { TransactPage, AccountPage } from 'pages';
@@ -9,7 +8,7 @@ import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { useWallet } from 'contexts/WalletContext';
 import SignerInterface from 'manta-signer-interface';
-import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
+import { BrowserAddressStore } from 'manta-signer-interface';
 
 function MainApp() {
   const { api } = useSubstrate();
@@ -25,10 +24,8 @@ function MainApp() {
       store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
         store.set('manta_spendable_assets', []);
-        store.set('mantaAddresses', {
-          [INTERNAL_CHAIN_ID]: [],
-          [EXTERNAL_CHAIN_ID]: [],
-        });
+        store.set('mantaInternalAddresses', []);
+        store.set('mantaExternalAddresses', []);
         store.set('manta_initialized_assets', []);
         store.set('dummyPublicAssetBalance', {});
         console.log('Reset local storage');

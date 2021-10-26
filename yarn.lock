@@ -8255,14 +8255,15 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
-manta-signer-interface@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/manta-signer-interface/-/manta-signer-interface-0.0.3.tgz#2f55c85a2075a5d756d8a93b8e2e434d4f389eaf"
-  integrity sha512-QfYaOpp8EHuO3SWEd9dKNL7s+Aqg5lScRretSc6eGViuRD2aa3Sdy4r8s2Z1L3+zt7o2SWi+NYv65d/YOZ4sPA==
+manta-signer-interface@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/manta-signer-interface/-/manta-signer-interface-0.0.5.tgz#086cc58f5a87aee6d34ea6c3709346613b73ab68"
+  integrity sha512-RVl+BwOgokqkR3eu4oaxGqfd0UFH9WBaE0jpUU53FPYTQJyJDrVfpDq6kJuYhWy9bIiU3uSXNbNAm/2U7NZp/Q==
   dependencies:
     "@polkadot/util-crypto" "^7.5.1"
     axios "^0.23.0"
     bn.js "^5.2.0"
+    store "^2.0.12"
 
 map-cache@^0.2.2:
   version "0.2.2"

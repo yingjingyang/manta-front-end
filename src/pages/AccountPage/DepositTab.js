@@ -20,7 +20,7 @@ import {
   savePublicAssetBalance,
 } from 'utils/persistence/DummyPublicAssetStorage';
 import SignerInterface from 'manta-signer-interface';
-import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
+import { BrowserAddressStore } from 'manta-signer-interface';
 
 const DepositTab = () => {
   const { api } = useSubstrate();
@@ -66,6 +66,8 @@ const DepositTab = () => {
   };
 
   const onClickDeposit = async () => {
+    setStatus(TxStatus.processing());
+
     const signerInterface = new SignerInterface(api, new BrowserAddressStore());
     const signerIsConnected = await signerInterface.signerIsConnected();
     if (!signerIsConnected) {
@@ -76,7 +78,6 @@ const DepositTab = () => {
       selectedAssetType.assetId,
       mintAmount
     );
-
     const txResHandler = makeTxResHandler(
       api,
       onDepositSuccess,

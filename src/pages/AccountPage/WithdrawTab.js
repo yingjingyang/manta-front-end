@@ -13,7 +13,7 @@ import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import selectCoins from 'utils/SelectCoins';
 import SignerInterface from 'manta-signer-interface';
-import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
+import { BrowserAddressStore } from 'manta-signer-interface';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();

@@ -16,7 +16,7 @@ import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import selectCoins from 'utils/SelectCoins';
 import SignerInterface from 'manta-signer-interface';
-import BrowserAddressStore from 'utils/persistence/BrowserAddressStore';
+import { BrowserAddressStore } from 'manta-signer-interface';
 
 const SendTab = () => {
   const { api } = useSubstrate();
