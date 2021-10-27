@@ -41,7 +41,6 @@ function MainApp() {
       return;
     }
     const recoverWallet = async () => {
-      // todo: move to controller
       await api.isReady;
       const signerInterface = new SignerInterface(
         api,
