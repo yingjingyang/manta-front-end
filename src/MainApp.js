@@ -9,6 +9,7 @@ import { useSubstrate } from 'contexts/SubstrateContext';
 import { useWallet } from 'contexts/WalletContext';
 import SignerInterface from 'manta-signer-interface';
 import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 function MainApp() {
   const { api } = useSubstrate();
@@ -23,11 +24,12 @@ function MainApp() {
       const currentBlockNumber = currentBlock.block.header.number.toNumber();
       store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
-        store.set('manta_spendable_assets', []);
+        store.set('mantaSpendableAssets', []);
         store.set('mantaInternalAddresses', []);
         store.set('mantaExternalAddresses', []);
-        store.set('manta_initialized_assets', []);
-        store.set('dummyPublicAssetBalance', {});
+        store.set('mantaInternalAddressesUncommitedOffset', 0);
+        store.set('mantaInitializedAssets', []);
+        store.set('mantaDummyPublicAssetBalance', {});
         console.log('Reset local storage');
       }
     };
@@ -43,7 +45,7 @@ function MainApp() {
       await api.isReady;
       const signerInterface = new SignerInterface(
         api,
-        new BrowserAddressStore()
+        new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
       );
       const signerIsConnected = await signerInterface.signerIsConnected();
       if (signerIsConnected) {

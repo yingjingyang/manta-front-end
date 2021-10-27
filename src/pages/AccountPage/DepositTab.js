@@ -8,9 +8,9 @@ import {
   assetIsInitialized,
   saveInitializedAsset,
 } from 'utils/persistence/InitializedAssetStorage';
-import CurrencyType from 'types/ui/CurrencyType';
+import CurrencyType from 'types/CurrencyType';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import TxStatus from 'types/ui/TxStatus';
+import TxStatus from 'types/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import BN from 'bn.js';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
@@ -21,16 +21,18 @@ import {
 } from 'utils/persistence/DummyPublicAssetStorage';
 import SignerInterface from 'manta-signer-interface';
 import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 const DepositTab = () => {
   const { api } = useSubstrate();
-  // const { saveSpendableAsset } = useWallet();
   const [, setUnsub] = useState(null);
   const [status, setStatus] = useState(null);
   const [depositAmountInput, setDepositAmountInput] = useState(null);
   const [mintAmount, setMintAmount] = useState(null);
   const [publicAssetBalance, setPublicAssetBalance] = useState(null);
   let mintAsset = useRef(null);
+  const txResWasHandled = useRef(null);
+  let signerInterface = useRef(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const { currentExternalAccount } = useExternalAccount();
 
@@ -40,6 +42,10 @@ const DepositTab = () => {
   }, [selectedAssetType, status]);
 
   const onDepositSuccess = (block) => {
+    // Every tx in the batch gets handled by default, only handle 1
+    if (txResWasHandled.current === true) {
+      return;
+    }
     if (!assetIsInitialized(selectedAssetType.assetId)) {
       saveInitializedAsset(selectedAssetType.assetId);
     }
@@ -47,18 +53,23 @@ const DepositTab = () => {
       selectedAssetType.assetId,
       publicAssetBalance.sub(mintAmount)
     );
-    // saveSpendableAsset(mintAsset.current, api);
-    // mintAsset.current = null;
-    // todo: recover wallet here
-    showSuccess('Deposit successful');
+    txResWasHandled.current = true;
+    signerInterface.current.cleanupTxSuccess();
     setStatus(TxStatus.finalized(block));
+    showSuccess('Deposit successful');
   };
 
   const onDepositFailure = (block, error) => {
-    mintAsset.current = null;
-    showError('Deposit failed');
-    setStatus(TxStatus.failed(block, error));
+    // Every tx in the batch gets handled by default, only handle 1
+    if (txResWasHandled.current === true) {
+      return;
+    }
     console.error(error);
+    mintAsset.current = null;
+    txResWasHandled.current = true;
+    signerInterface.current.cleanupTxFailure();
+    setStatus(TxStatus.failed(block, error));
+    showError('Deposit failed');
   };
 
   const onDepositUpdate = (message) => {
@@ -68,34 +79,41 @@ const DepositTab = () => {
   const onClickDeposit = async () => {
     setStatus(TxStatus.processing());
 
-    const signerInterface = new SignerInterface(api, new BrowserAddressStore());
-    const signerIsConnected = await signerInterface.signerIsConnected();
+    signerInterface.current = new SignerInterface(
+      api,
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
+    );
+    const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
       showError('Manta Signer must be connected');
       return;
     }
-    const mintTx = await signerInterface.buildMintTx(
-      selectedAssetType.assetId,
-      mintAmount
-    );
-    const txResHandler = makeTxResHandler(
-      api,
-      onDepositSuccess,
-      onDepositFailure,
-      onDepositUpdate
-    );
-    if (!assetIsInitialized(selectedAssetType.assetId)) {
-      const initTx = api.tx.mantaPay.initAsset(
+    try {
+      const mintTx = await signerInterface.current.buildMintTx(
         selectedAssetType.assetId,
-        DUMMY_ASSET_BALANCE
+        mintAmount
       );
-      const unsub = api.tx.utility
-        .batch([initTx, mintTx])
-        .signAndSend(currentExternalAccount, txResHandler);
-      setUnsub(() => unsub);
-    } else {
-      const unsub = mintTx.signAndSend(currentExternalAccount, txResHandler);
-      setUnsub(() => unsub);
+      const txResHandler = makeTxResHandler(
+        api,
+        onDepositSuccess,
+        onDepositFailure,
+        onDepositUpdate
+      );
+      if (!assetIsInitialized(selectedAssetType.assetId)) {
+        const initTx = api.tx.mantaPay.initAsset(
+          selectedAssetType.assetId,
+          DUMMY_ASSET_BALANCE
+        );
+        const unsub = api.tx.utility
+          .batch([initTx, mintTx])
+          .signAndSend(currentExternalAccount, txResHandler);
+        setUnsub(() => unsub);
+      } else {
+        const unsub = mintTx.signAndSend(currentExternalAccount, txResHandler);
+        setUnsub(() => unsub);
+      }
+    } catch (error) {
+      onDepositFailure();
     }
   };
 

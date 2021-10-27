@@ -8255,10 +8255,17 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
-manta-signer-interface@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/manta-signer-interface/-/manta-signer-interface-0.0.8.tgz#f983080f2b0ab687554a663e413937e465bf29dc"
-  integrity sha512-m0ZE8WVsB/5TUUIstd/zjEnaXQOsWs2gkYjya+d/xosERI0cfX7ch5ufQ9l384+Z01KC9zH5uz+V0U/DIMGpZA==
+manta-coin-selection@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/manta-coin-selection/-/manta-coin-selection-0.0.0.tgz#b818848f4f6245e9a40199aa619aa1e2ffdb31be"
+  integrity sha512-UPloMo6bdLA5cAjAmQF1lRT6aper7N3jb7VNDnOBnVk448Tzhq8wzJ4xHg4gdIFwBSgDySpn3991PpzUcDEWLQ==
+  dependencies:
+    bn.js "^5.2.0"
+
+manta-signer-interface@^0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/manta-signer-interface/-/manta-signer-interface-0.0.13.tgz#bf1c566a2d7154ffa651f1fd8fdc228f0b2d3f31"
+  integrity sha512-XBEvLOqpmwBCLIGDOemOQ4EFf3H1Xca31Mfhxaa6bBw/ZZ6H/9F6x1T6T26beq5eBu2UHp4VwNJhLLrevIkV4w==
   dependencies:
     "@polkadot/util-crypto" "^7.5.1"
     axios "^0.23.0"

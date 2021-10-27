@@ -1,7 +1,7 @@
 import FormSelect from 'components/elements/Form/FormSelect';
 import React, { useState, useRef, useEffect } from 'react';
 import { base64Encode } from '@polkadot/util-crypto';
-import CurrencyType from 'types/ui/CurrencyType';
+import CurrencyType from 'types/CurrencyType';
 import BN from 'bn.js';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
@@ -9,14 +9,15 @@ import { useSubstrate } from 'contexts/SubstrateContext';
 import Svgs from 'resources/icons';
 import { useWallet } from 'contexts/WalletContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
-import TxStatus from 'types/ui/TxStatus';
+import TxStatus from 'types/TxStatus';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
-import selectCoins from 'utils/SelectCoins';
+import { selectCoins } from 'manta-coin-selection';
 import SignerInterface from 'manta-signer-interface';
 import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 const SendTab = () => {
   const { api } = useSubstrate();
@@ -34,6 +35,7 @@ const SendTab = () => {
   const coinSelection = useRef(null);
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
+  const signerInterface = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
   useEffect(() => {
@@ -46,34 +48,30 @@ const SendTab = () => {
     displaySpendableBalance();
   }, [selectedAssetType, status, spendableAssets, api]);
 
-  /**
-   *
-   * polkadot.js API API response Handlers
-   *
-   */
-
   const onPrivateTransferSuccess = async (block) => {
-    // Seems like every batched tx gets handled?
+    // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
     coinSelection.current.coins.forEach((coins) => {
       removeSpendableAsset(coins, api);
     });
+    signerInterface.current.cleanupTxSuccess();
     showSuccess('Transfer successful');
     txResWasHandled.current = true;
     setStatus(TxStatus.finalized(block));
   };
 
   const onPrivateTransferFailure = (block, error) => {
-    // Every batched tx gets handled separately
+    // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
     console.error(error);
-    showError('Transfer failed');
+    signerInterface.current.cleanupTxFailure();
     txResWasHandled.current = true;
     setStatus(TxStatus.failed(block, error));
+    showError('Transfer failed');
   };
 
   const onPrivateTransferUpdate = (message) => {
@@ -83,28 +81,37 @@ const SendTab = () => {
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
     coinSelection.current = selectCoins(privateTransferAmount, spendableAssets);
-    const signerInterface = new SignerInterface(api, new BrowserAddressStore());
-    const signerIsConnected = await signerInterface.signerIsConnected();
+    signerInterface.current = new SignerInterface(
+      api,
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
+    );
+
+    const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
       showError('Manta Signer must be connected');
       return;
     }
-    const transactions = await signerInterface.buildExternalPrivateTransferTxs(
-      receivingAddress,
-      coinSelection.current
-    );
 
-    const txResHandler = makeTxResHandler(
-      api,
-      onPrivateTransferSuccess,
-      onPrivateTransferFailure,
-      onPrivateTransferUpdate
-    );
+    try {
+      const transactions =
+        await signerInterface.current.buildExternalPrivateTransferTxs(
+          receivingAddress,
+          coinSelection.current
+        );
+      const txResHandler = makeTxResHandler(
+        api,
+        onPrivateTransferSuccess,
+        onPrivateTransferFailure,
+        onPrivateTransferUpdate
+      );
 
-    const unsub = api.tx.utility
-      .batch(transactions)
-      .signAndSend(currentExternalAccount, txResHandler);
-    setUnsub(() => unsub);
+      const unsub = api.tx.utility
+        .batch(transactions)
+        .signAndSend(currentExternalAccount, txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      onPrivateTransferFailure();
+    }
   };
 
   const insufficientFunds = privateBalance?.lt(privateTransferAmount);

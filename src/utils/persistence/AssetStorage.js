@@ -1,5 +1,5 @@
 import store from 'store';
-const SPENDABLE_ASSETS_STORAGE_KEY = 'manta_spendable_assets';
+const SPENDABLE_ASSETS_STORAGE_KEY = 'mantaSpendableAssets';
 
 export const loadSpendableAssetsFromStorage = (api) => {
   const assetsStorage = store.get(SPENDABLE_ASSETS_STORAGE_KEY) || [];

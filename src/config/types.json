@@ -96,6 +96,7 @@
         "private_transfer_params_list": "Vec<GeneratePrivateTransferParams>"
     },
     "GenerateReclaimParams": {
+        "asset_id": "AssetId",
         "input_asset_1_value": "AssetBalance",
         "input_asset_2_value": "AssetBalance",
         "input_asset_1_keypath": "String",
@@ -111,9 +112,9 @@
         "reclaim_params": "GenerateReclaimParams"
     },
     "RecoverAccountParams": {
-        "encrypted_notes": "Vec<MantaEciesCiphertext>",
         "void_numbers": "Vec<MantaRandomValue>",
-        "utxos": "Vec<UTXO>"
+        "utxos": "Vec<UTXO>",
+        "encrypted_notes": "Vec<MantaEciesCiphertext>"
     },
     "MantaSignerInputAsset": {
         "asset_id": "AssetId",
