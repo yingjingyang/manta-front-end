@@ -101,7 +101,10 @@ const DepositTab = () => {
         onDepositFailure,
         onDepositUpdate
       );
-      if (!assetIsInitialized(selectedAssetType.assetId)) {
+      if (
+        process.env.NODE_ENV === 'development' &&
+        !assetIsInitialized(selectedAssetType.assetId)
+      ) {
         const initTx = api.tx.mantaPay.initAsset(
           selectedAssetType.assetId,
           DUMMY_ASSET_BALANCE
