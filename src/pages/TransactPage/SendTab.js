@@ -88,7 +88,7 @@ const SendTab = () => {
 
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
-      showError('Manta Signer must be connected');
+      showError('Open Manta Signer desktop app and sign in to continue');
       return;
     }
 

@@ -7,10 +7,8 @@ const loadInitializedAssets = () => {
 };
 
 export const assetIsInitialized = (assetId) => {
-  return (
-    loadInitializedAssets().filter(
-      (initializedAssetId) => initializedAssetId === assetId
-    ).length === 1
+  return loadInitializedAssets().find(
+    (initializedAssetId) => initializedAssetId === assetId
   );
 };
 

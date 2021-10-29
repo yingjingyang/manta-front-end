@@ -32,7 +32,7 @@ export const WalletContextProvider = (props) => {
 
   const removeSpendableAsset = (assetToRemove, api) => {
     const newSpendableAssets = spendableAssets.filter(
-      (asset) => !_.isEqual(asset, assetToRemove)
+      (asset) => !_.isEqual(asset.utxo, assetToRemove.utxo)
     );
     setSpendableAssets(newSpendableAssets);
     persistSpendableAssetsToStorage(newSpendableAssets, api);

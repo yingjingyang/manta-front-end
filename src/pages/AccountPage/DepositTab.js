@@ -77,17 +77,19 @@ const DepositTab = () => {
   };
 
   const onClickDeposit = async () => {
-    setStatus(TxStatus.processing());
-
     signerInterface.current = new SignerInterface(
       api,
       new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
     );
+
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
-      showError('Manta Signer must be connected');
+      showError('Open Manta Signer desktop app and sign in to continue');
       return;
     }
+
+    setStatus(TxStatus.processing());
+
     try {
       const mintTx = await signerInterface.current.buildMintTx(
         selectedAssetType.assetId,
