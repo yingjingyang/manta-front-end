@@ -2,19 +2,36 @@ import React, { useState } from 'react';
 import Button from 'components/elements/Button';
 import Svgs from 'resources/icons';
 import FormSelect from 'components/elements/Form/FormSelect';
-import { useSigner } from 'contexts/SignerContext';
-import CurrencyType from 'types/ui/CurrencyType';
+import CurrencyType from 'types/CurrencyType';
+import { useSubstrate } from 'contexts/SubstrateContext';
+import SignerInterface from 'manta-signer-interface';
+import { BrowserAddressStore } from 'manta-signer-interface';
+import { showError } from 'utils/ui/Notifications';
+import config from 'config';
 
 const ReceiveTab = () => {
   const [currentAddress, setCurrentAddress] = useState(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
+  const { api } = useSubstrate();
 
-  const { signerClient } = useSigner();
   const onClickNewAddress = async () => {
-    const newAddress = await signerClient.generateNextExternalAddress(
-      selectedAssetType.assetId
+    const signerInterface = new SignerInterface(
+      api,
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
     );
-    setCurrentAddress(newAddress);
+    const signerIsConnected = await signerInterface.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Open Manta Signer desktop app and sign in to continue');
+      return;
+    }
+    try {
+      const newAddress = await signerInterface.generateNextExternalAddress(
+        selectedAssetType.assetId
+      );
+      setCurrentAddress(newAddress);
+    } catch (error) {
+      showError('Error getting next address');
+    }
   };
 
   const currentAddressString = currentAddress && `${currentAddress.toString()}`;

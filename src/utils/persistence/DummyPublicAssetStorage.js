@@ -1,7 +1,7 @@
 import store from 'store';
 import BN from 'bn.js';
 
-const DUMMY_PUBLIC_ASSET_BALANCE_STORAGE_KEY = 'dummyPublicAssetBalance';
+const DUMMY_PUBLIC_ASSET_BALANCE_STORAGE_KEY = 'mantaDummyPublicAssetBalance';
 export const DUMMY_ASSET_BALANCE = 100000;
 
 export const loadPublicAssetBalance = (assetId) => {

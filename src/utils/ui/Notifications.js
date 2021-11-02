@@ -4,6 +4,7 @@ export const showError = (msg) => {
   Notification.error({
     title: 'Error',
     message: msg,
+    duration: 0,
   });
 };
 
@@ -12,6 +13,7 @@ export const showWarning = (msg) => {
     title: 'Warning',
     message: msg,
     type: 'warning',
+    duration: 0,
   });
 };
 
@@ -20,6 +22,7 @@ export const showSuccess = (msg) => {
     title: 'Success',
     message: msg,
     type: 'success',
+    duration: 0,
   });
 };
 
@@ -27,5 +30,6 @@ export const showInfo = (msg) => {
   Notification.info({
     title: 'Info',
     message: msg,
+    duration: 0,
   });
 };

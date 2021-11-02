@@ -1,29 +1,19 @@
-import { INTERNAL_CHAIN_ID, EXTERNAL_CHAIN_ID } from 'constants/Bip39Constants';
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import {
-  TransactPage,
-  SwapPage,
-  GovernPage,
-  PoolPage,
-  AuditPage,
-  ExplorePage,
-  ExtrinsicPage,
-  BlockPage,
-  HashDetailPage,
-  ExtrinsicHistory,
-  AccountPage,
-} from 'pages';
+import { TransactPage, AccountPage } from 'pages';
 import { SidebarMenu } from 'components/elements/Layouts';
 import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import store from 'store';
 import { useSubstrate } from 'contexts/SubstrateContext';
-import { useSigner } from 'contexts/SignerContext';
+import { useWallet } from 'contexts/WalletContext';
+import SignerInterface from 'manta-signer-interface';
+import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 function MainApp() {
   const { api } = useSubstrate();
-  const { signerClient } = useSigner();
+  const { saveSpendableAssets } = useWallet();
 
   useEffect(() => {
     const devClearLocalStorage = async () => {
@@ -34,13 +24,12 @@ function MainApp() {
       const currentBlockNumber = currentBlock.block.header.number.toNumber();
       store.set('block num', currentBlockNumber);
       if (currentBlockNumber < oldBlockNumber) {
-        store.set('manta_spendable_assets', []);
-        store.set('mantaAddresses', {
-          [INTERNAL_CHAIN_ID]: [],
-          [EXTERNAL_CHAIN_ID]: [],
-        });
-        store.set('manta_initialized_assets', []);
-        store.set('dummyPublicAssetBalance', {});
+        store.set('mantaSpendableAssets', []);
+        store.set('mantaInternalAddresses', []);
+        store.set('mantaExternalAddresses', []);
+        store.set('mantaInternalAddressesUncommitedOffset', 0);
+        store.set('mantaInitializedAssets', []);
+        store.set('mantaDummyPublicAssetBalance', {});
         console.log('Reset local storage');
       }
     };
@@ -48,15 +37,23 @@ function MainApp() {
   }, [api]);
 
   useEffect(() => {
-    if (!api || !api.isConnected || !signerClient) {
+    if (!api || !api.isConnected) {
       return;
     }
     const recoverWallet = async () => {
       await api.isReady;
-      signerClient.recoverWallet();
+      const signerInterface = new SignerInterface(
+        api,
+        new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
+      );
+      const signerIsConnected = await signerInterface.signerIsConnected();
+      if (signerIsConnected) {
+        const spendableAssets = await signerInterface.recoverWallet();
+        saveSpendableAssets(spendableAssets, api);
+      }
     };
     recoverWallet();
-  });
+  }, [api]);
 
   return (
     <div className="main-app bg-primary">
@@ -73,8 +70,8 @@ function MainApp() {
           <Route path="/explore" component={ExplorePage} exact />
           <Route path="/explore/extrinsic" component={ExtrinsicPage} exact />
           <Route path="/explore/block" component={BlockPage} exact />
-          <Route path="/explore/extrinsic-history" component={ExtrinsicHistory} exact /> */}
-          <Route path="/explore/hash/:id" component={HashDetailPage} exact />
+          <Route path="/explore/extrinsic-history" component={ExtrinsicHistory} exact />
+          <Route path="/explore/hash/:id" component={HashDetailPage} exact /> */}
         </Switch>
         <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
           <ChangeThemeButton />

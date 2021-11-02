@@ -1,49 +1,14 @@
 import store from 'store';
-import BN from 'bn.js';
-import _ from 'lodash';
-import MantaUIAsset from '../../types/MantaUIAsset';
+const SPENDABLE_ASSETS_STORAGE_KEY = 'mantaSpendableAssets';
 
-const SPENDABLE_ASSETS_STORAGE_KEY = 'manta_spendable_assets';
-
-export const loadSpendableAssets = () => {
+export const loadSpendableAssetsFromStorage = (api) => {
   const assetsStorage = store.get(SPENDABLE_ASSETS_STORAGE_KEY) || [];
-  return assetsStorage
-    .map(asset => MantaUIAsset.fromStorage(asset));
+  return assetsStorage.map((bytes) =>
+    api.createType('MantaSignerInputAsset', bytes)
+  );
 };
 
-export const loadSpendableAssetsById = assetId => {
-  return loadSpendableAssets()
-    .filter(asset => asset.assetId === assetId);
-};
-
-export const removeSpendableAsset = assetToRemove => {
-  const spendableAssets = loadSpendableAssets()
-    .filter(asset => !_.isEqual(asset, assetToRemove));
-  persistSpendableAssets(spendableAssets);
-};
-
-export const persistSpendableAssets = spendableAssets => {
-  const serializedAssets = spendableAssets.map(asset => asset.serialize());
+export const persistSpendableAssetsToStorage = (spendableAssets, api) => {
+  const serializedAssets = spendableAssets.map((asset) => asset.toU8a(api));
   store.set(SPENDABLE_ASSETS_STORAGE_KEY, serializedAssets);
-};
-
-export const persistSpendableAsset = spendableAsset => {
-  const spendableAssets = loadSpendableAssets();
-  spendableAssets.push(spendableAsset);
-  persistSpendableAssets(spendableAssets);
-};
-
-export const loadSpendableBalances = () => {
-  const balanceByAssetId = {};
-  loadSpendableAssets().forEach(asset => {
-    const currentValue = balanceByAssetId[asset.assetId]
-      ? balanceByAssetId[asset.assetId]
-      : new BN(0);
-    balanceByAssetId[asset.assetId] = currentValue.add(asset.value);
-  });
-  return balanceByAssetId;
-};
-
-export const loadSpendableBalance = assetId => {
-  return loadSpendableBalances()[assetId] || new BN(0);
 };

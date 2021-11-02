@@ -1,5 +1,5 @@
+import TxStatus from '../../types/TxStatus';
 import getFailedExtrinsicError from './GetFailedExtrinsicError';
-import TxStatus from '../../types/ui/TxStatus';
 
 export function makeTxResHandler(
   api,

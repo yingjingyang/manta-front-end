@@ -1,96 +1,77 @@
 import FormSelect from 'components/elements/Form/FormSelect';
 import React, { useState, useRef, useEffect } from 'react';
 import { base64Encode } from '@polkadot/util-crypto';
-import CurrencyType from 'types/ui/CurrencyType';
+import CurrencyType from 'types/CurrencyType';
 import BN from 'bn.js';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import Svgs from 'resources/icons';
-import {
-  loadSpendableBalance,
-  removeSpendableAsset,
-} from 'utils/persistence/AssetStorage';
-import { useSigner } from 'contexts/SignerContext';
+import { useWallet } from 'contexts/WalletContext';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
-import TxStatus from 'types/ui/TxStatus';
+import TxStatus from 'types/TxStatus';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import { base64Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
-import getLedgerState from 'api/GetLedgerState';
-import selectCoins from 'utils/SelectCoins';
-import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
+import { selectCoins } from 'manta-coin-selection';
+import SignerInterface from 'manta-signer-interface';
+import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 const SendTab = () => {
   const { api } = useSubstrate();
+  const { currentExternalAccount } = useExternalAccount();
+  const { getSpendableBalance, spendableAssets, removeSpendableAsset } =
+    useWallet();
+
   const [, setUnsub] = useState(null);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [sendAmountInput, setSendAmountInput] = useState(null);
   const [privateTransferAmount, setPrivateTransferAmount] = useState(
     new BN(-1)
   );
-  const [receiverAddress, setReceiverAddress] = useState('');
+  const [receivingAddress, setReceivingAddress] = useState('');
   const coinSelection = useRef(null);
-  const changeAsset = useRef(null);
-  const changeAmount = useRef(null);
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
+  const signerInterface = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-  const { signerClient } = useSigner();
-  const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
-    selectedAssetType &&
-      setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status]);
-
-  const generatePrivateTransferParams = async (inputAsset1, inputAsset2) => {
-    let ledgerState1 = await getLedgerState(inputAsset1, api);
-    let ledgerState2 = await getLedgerState(inputAsset2, api);
-    changeAsset.current = await signerClient.generateAsset(
-      inputAsset1.assetId,
-      changeAmount.current
-    );
-    const payload = await signerClient.generatePrivateTransferParams(
-      inputAsset1,
-      inputAsset2,
-      ledgerState1,
-      ledgerState2,
-      inputAsset1.value.add(inputAsset2.value.sub(changeAmount.current)),
-      changeAmount.current
-    );
-    return payload;
-  };
-
-  /**
-   *
-   * polkadot.js API API response Handlers
-   *
-   */
+    const displaySpendableBalance = async () => {
+      if (!api) return;
+      await api.isReady;
+      selectedAssetType &&
+        setPrivateBalance(getSpendableBalance(selectedAssetType.assetId, api));
+    };
+    displaySpendableBalance();
+  }, [selectedAssetType, status, spendableAssets, api]);
 
   const onPrivateTransferSuccess = async (block) => {
-    // Seems like every batched tx gets handled?
+    // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
-    coinSelection.current.forEach((asset) => {
-      removeSpendableAsset(asset.current);
+    coinSelection.current.coins.forEach((coins) => {
+      removeSpendableAsset(coins, api);
     });
+    signerInterface.current.cleanupTxSuccess();
     showSuccess('Transfer successful');
     txResWasHandled.current = true;
     setStatus(TxStatus.finalized(block));
   };
 
   const onPrivateTransferFailure = (block, error) => {
-    // Every batched tx gets handled separately
+    // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
     console.error(error);
-    showError('Transfer failed');
+    signerInterface.current.cleanupTxFailure();
     txResWasHandled.current = true;
     setStatus(TxStatus.failed(block, error));
+    showError('Transfer failed');
   };
 
   const onPrivateTransferUpdate = (message) => {
@@ -99,32 +80,38 @@ const SendTab = () => {
 
   const onClickSend = async () => {
     setStatus(TxStatus.processing());
-    [coinSelection.current, changeAmount.current] = selectCoins(
-      privateTransferAmount,
-      selectedAssetType.assetId
-    );
-    const transactions = await batchGenerateTransactions(
-      coinSelection.current,
-      generatePrivateTransferParams,
-      signerClient.requestGeneratePrivateTransferPayloads.bind(
-        signerClient,
-        selectedAssetType.assetId,
-        receiverAddress
-      ),
-      api.tx.mantaPay.privateTransfer.bind(api),
-      signerClient,
-      api
-    );
-    const txResHandler = makeTxResHandler(
+    coinSelection.current = selectCoins(privateTransferAmount, spendableAssets);
+    signerInterface.current = new SignerInterface(
       api,
-      onPrivateTransferSuccess,
-      onPrivateTransferFailure,
-      onPrivateTransferUpdate
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
     );
-    const unsub = api.tx.utility
-      .batch(transactions)
-      .signAndSend(currentExternalAccount, txResHandler);
-    setUnsub(() => unsub);
+
+    const signerIsConnected = await signerInterface.current.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Open Manta Signer desktop app and sign in to continue');
+      return;
+    }
+
+    try {
+      const transactions =
+        await signerInterface.current.buildExternalPrivateTransferTxs(
+          receivingAddress,
+          coinSelection.current
+        );
+      const txResHandler = makeTxResHandler(
+        api,
+        onPrivateTransferSuccess,
+        onPrivateTransferFailure,
+        onPrivateTransferUpdate
+      );
+
+      const unsub = api.tx.utility
+        .batch(transactions)
+        .signAndSend(currentExternalAccount, txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      onPrivateTransferFailure();
+    }
   };
 
   const insufficientFunds = privateBalance?.lt(privateTransferAmount);
@@ -145,9 +132,9 @@ const SendTab = () => {
     onChangeSendAmountInput(privateBalance.toString());
   };
 
-  const onChangeReceiverAddress = (e) => {
+  const onChangeReceivingAddress = (e) => {
     try {
-      setReceiverAddress(
+      setReceivingAddress(
         base64Encode(
           api
             .createType(
@@ -158,7 +145,7 @@ const SendTab = () => {
         )
       );
     } catch (e) {
-      setReceiverAddress(null);
+      setReceivingAddress(null);
     }
   };
 
@@ -193,7 +180,7 @@ const SendTab = () => {
       <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />
       <div className="py-2">
         <FormInput
-          onChange={onChangeReceiverAddress}
+          onChange={onChangeReceivingAddress}
           prefixIcon={Svgs.WalletIcon}
           isMax={false}
           type="text"

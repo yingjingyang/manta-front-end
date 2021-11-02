@@ -4,56 +4,45 @@ import MantaLoading from 'components/elements/Loading';
 import FormSelect from 'components/elements/Form/FormSelect';
 import { showSuccess, showError } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
-import CurrencyType from 'types/ui/CurrencyType';
-import { useSigner } from 'contexts/SignerContext';
+import CurrencyType from 'types/CurrencyType';
 import { useExternalAccount } from 'contexts/ExternalAccountContext';
 import BN from 'bn.js';
-import {
-  loadSpendableBalance,
-  removeSpendableAsset,
-} from 'utils/persistence/AssetStorage';
-import TxStatus from 'types/ui/TxStatus';
+import { useWallet } from 'contexts/WalletContext';
+import TxStatus from 'types/TxStatus';
 import { useSubstrate } from 'contexts/SubstrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import getLedgerState from 'api/GetLedgerState';
-import selectCoins from 'utils/SelectCoins';
-import { batchGenerateTransactions } from 'utils/api/BatchGenerateTransactions';
+import { selectCoins } from 'manta-coin-selection';
+import SignerInterface from 'manta-signer-interface';
+import { BrowserAddressStore } from 'manta-signer-interface';
+import config from 'config';
 
 const WithdrawTab = () => {
   const { api } = useSubstrate();
+  const { getSpendableBalance, removeSpendableAsset, spendableAssets } =
+    useWallet();
+  const { currentExternalAccount } = useExternalAccount();
+
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [withdrawAmountInput, setWithdrawAmountInput] = useState('');
   const [reclaimAmount, setReclaimAmount] = useState(new BN(-1));
   const [status, setStatus] = useState(null);
   const txResWasHandled = useRef(null);
   const coinSelection = useRef(null);
-  const changeAmount = useRef(null);
+  const signerInterface = useRef(null);
   const [, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
-  const { signerClient } = useSigner();
-  const { currentExternalAccount } = useExternalAccount();
 
   useEffect(() => {
-    selectedAssetType &&
-      setPrivateBalance(loadSpendableBalance(selectedAssetType.assetId));
-  }, [selectedAssetType, status]);
-
-  const generateReclaimParams = async (reclaimAsset1, reclaimAsset2) => {
-    let ledgerState1 = await getLedgerState(reclaimAsset1, api);
-    let ledgerState2 = await getLedgerState(reclaimAsset2, api);
-    const changeAddress = await signerClient.generateNextInternalAddress(
-      selectedAssetType.assetId
-    );
-    const payload = await signerClient.generateReclaimParams(
-      reclaimAsset1,
-      reclaimAsset2,
-      ledgerState1,
-      ledgerState2,
-      reclaimAsset1.value.add(reclaimAsset2.value.sub(changeAmount.current)),
-      changeAddress
-    );
-    return payload;
-  };
+    const displaySpendableBalance = async () => {
+      if (!api) {
+        return;
+      }
+      await api.isReady;
+      selectedAssetType &&
+        setPrivateBalance(getSpendableBalance(selectedAssetType.assetId, api));
+    };
+    displaySpendableBalance();
+  }, [selectedAssetType, status, spendableAssets, api]);
 
   const onReclaimSuccess = async (block) => {
     // Every tx in the batch gets handled by default, only handle 1
@@ -61,9 +50,10 @@ const WithdrawTab = () => {
       return;
     }
     showSuccess('Withdrawal successful');
-    coinSelection.current.forEach((asset) => {
-      removeSpendableAsset(asset.current);
+    coinSelection.current.coins.forEach((asset) => {
+      removeSpendableAsset(asset, api);
     });
+    signerInterface.current.cleanupTxSuccess();
     coinSelection.current = null;
     txResWasHandled.current = true;
     setStatus(TxStatus.finalized(block));
@@ -71,13 +61,14 @@ const WithdrawTab = () => {
 
   const onReclaimFailure = async (block, error) => {
     // Every tx in the batch gets handled by default, only handle 1
-    console.error(error);
     if (txResWasHandled.current === true) {
       return;
     }
-    showError('Withdrawal failed');
+    console.error(error);
+    signerInterface.current.cleanupTxFailure();
     txResWasHandled.current = true;
     setStatus(TxStatus.failed(block, error));
+    showError('Withdrawal failed');
   };
 
   const onReclaimUpdate = (message) => {
@@ -86,31 +77,33 @@ const WithdrawTab = () => {
 
   const onClickWithdraw = async () => {
     setStatus(TxStatus.processing());
-    [coinSelection.current, changeAmount.current] = selectCoins(
-      reclaimAmount,
-      selectedAssetType.assetId
-    );
-    const transactions = await batchGenerateTransactions(
-      coinSelection.current,
-      generateReclaimParams,
-      signerClient.requestGenerateReclaimPayloads.bind(
-        signerClient,
-        selectedAssetType.assetId
-      ),
-      api.tx.mantaPay.reclaim.bind(api),
-      signerClient,
-      api
-    );
-    const txResHandler = makeTxResHandler(
+    coinSelection.current = selectCoins(reclaimAmount, spendableAssets);
+    signerInterface.current = new SignerInterface(
       api,
-      onReclaimSuccess,
-      onReclaimFailure,
-      onReclaimUpdate
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
     );
-    const unsub = api.tx.utility
-      .batch(transactions)
-      .signAndSend(currentExternalAccount, txResHandler);
-    setUnsub(() => unsub);
+    const signerIsConnected = await signerInterface.current.signerIsConnected();
+    if (!signerIsConnected) {
+      showError('Open Manta Signer desktop app and sign in to continue');
+      return;
+    }
+    try {
+      const transactions = await signerInterface.current.buildReclaimTxs(
+        coinSelection.current
+      );
+      const txResHandler = makeTxResHandler(
+        api,
+        onReclaimSuccess,
+        onReclaimFailure,
+        onReclaimUpdate
+      );
+      const unsub = api.tx.utility
+        .batch(transactions)
+        .signAndSend(currentExternalAccount, txResHandler);
+      setUnsub(() => unsub);
+    } catch (error) {
+      onReclaimFailure();
+    }
   };
 
   const onChangeWithdrawAmountInput = (amountStr) => {
