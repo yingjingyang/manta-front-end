@@ -5,8 +5,8 @@ const PageContent = ({ children, className }) => {
   return (
     <section
       className={classNames(
-        'py-4 px-4 md:p-8 page-content min-h-screen lg:flex flex-col justify-between',
-        className,
+        'px-4 page-content min-h-screen lg:flex flex-col justify-top',
+        className
       )}
     >
       {children}

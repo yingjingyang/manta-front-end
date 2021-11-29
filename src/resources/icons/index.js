@@ -1,4 +1,10 @@
-import Logo from 'resources/images/logo.svg';
+import Logo from 'resources/images/dolphinLogo.svg';
+// coin icons
+import BitcoinIcon from 'resources/icons/coins/bitcoin-icon.svg';
+import EtheriumIcon from 'resources/icons/coins/etherium-icon.svg';
+import AcalaIcon from 'resources/icons/coins/acala-icon.svg';
+import KusamaIcon from 'resources/icons/coins/kusama-icon.svg';
+
 // sidebar icons
 import AuditIcon from 'resources/icons/sidebar/audit.svg';
 import CloseIcon from 'resources/icons/sidebar/close.svg';
@@ -50,6 +56,10 @@ import ArrowRightIcon from 'resources/icons/arrow-right.svg';
 import CancelIcon from 'resources/icons/cancel.svg';
 
 const Svgs = {
+  BitcoinIcon,
+  EtheriumIcon,
+  AcalaIcon,
+  KusamaIcon,
   Logo,
   AuditIcon,
   CloseIcon,

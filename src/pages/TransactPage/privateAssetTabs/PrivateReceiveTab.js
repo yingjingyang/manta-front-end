@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import Svgs from 'resources/icons';
-import FormSelect from 'components/elements/Form/FormSelect';
-import CurrencyType from 'types/CurrencyType';
-import { useSubstrate } from 'contexts/SubstrateContext';
-import SignerInterface from 'manta-signer-interface';
-import { BrowserAddressStore } from 'manta-signer-interface';
+import { useSubstrate } from 'contexts/substrateContext';
+import { SignerInterface, BrowserAddressStore } from 'signer-interface';
 import { showError } from 'utils/ui/Notifications';
 import config from 'config';
+import PropTypes from 'prop-types';
+import AssetType from 'types/AssetType';
 
-const ReceiveTab = () => {
-  const [currentAddress, setCurrentAddress] = useState(null);
-  const [selectedAssetType, setSelectedAssetType] = useState(null);
+const PrivateReceiveTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
+  const [currentAddress, setCurrentAddress] = useState(null);
+
+  useEffect(() => {
+    setCurrentAddress(null);
+  }, [selectedAssetType]);
 
   const onClickNewAddress = async () => {
     const signerInterface = new SignerInterface(
@@ -38,13 +40,6 @@ const ReceiveTab = () => {
 
   return (
     <div className="receive-content">
-      <div className="py-2">
-        <FormSelect
-          selectedOption={selectedAssetType}
-          setSelectedOption={setSelectedAssetType}
-          options={CurrencyType.AllCurrencies()}
-        />
-      </div>
       {currentAddress && (
         <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />
       )}
@@ -68,4 +63,8 @@ const ReceiveTab = () => {
   );
 };
 
-export default ReceiveTab;
+PrivateReceiveTab.propTypes = {
+  selectedAssetType: PropTypes.instanceOf(AssetType),
+};
+
+export default PrivateReceiveTab;

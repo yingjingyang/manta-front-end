@@ -5,8 +5,12 @@ import { Loading } from 'element-react';
 
 const MantaLoading = ({ className, loading }) => {
   return (
-    <div className={classNames('p-3', className)}>
-      <Loading loading={loading} text="Processing..."></Loading>
+    <div className={classNames('pt-7 pb-6 pr-8', className)}>
+      <Loading
+        style={{ alignSelf: 'center' }}
+        loading={loading}
+        text="Processing..."
+      ></Loading>
     </div>
   );
 };

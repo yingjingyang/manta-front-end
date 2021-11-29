@@ -1,35 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
-import FormSelect from 'components/elements/Form/FormSelect';
 import { showSuccess, showError } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
-import CurrencyType from 'types/CurrencyType';
-import { useExternalAccount } from 'contexts/ExternalAccountContext';
-import BN from 'bn.js';
-import { useWallet } from 'contexts/WalletContext';
+import AssetType from 'types/AssetType';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import Decimal from 'decimal.js';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import TxStatus from 'types/TxStatus';
-import { useSubstrate } from 'contexts/SubstrateContext';
+import { useSubstrate } from 'contexts/substrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
-import { selectCoins } from 'manta-coin-selection';
-import SignerInterface from 'manta-signer-interface';
-import { BrowserAddressStore } from 'manta-signer-interface';
+import { selectCoins } from 'coin-selection';
+import { SignerInterface, BrowserAddressStore } from 'signer-interface';
 import config from 'config';
+import { useTxStatus } from 'contexts/txStatusContext';
+import PropTypes from 'prop-types';
+import getBalanceString from 'utils/ui/getBalanceString';
+import Balance from 'types/Balance';
+import {
+  getIsInsuficientFunds,
+  getToPublicButtonIsDisabled,
+} from 'utils/ui/formValidation';
 
-const WithdrawTab = () => {
+const ToPublicTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
-  const { getSpendableBalance, removeSpendableAsset, spendableAssets } =
-    useWallet();
-  const { currentExternalAccount } = useExternalAccount();
+  const { getSpendableBalance, getSpendableAssetsByAssetId } =
+    usePrivateWallet();
+  const { externalAccountSigner } = useExternalAccount();
+  const { txStatus, setTxStatus } = useTxStatus();
 
-  const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [withdrawAmountInput, setWithdrawAmountInput] = useState('');
-  const [reclaimAmount, setReclaimAmount] = useState(new BN(-1));
-  const [status, setStatus] = useState(null);
+  const [reclaimAmount, setReclaimAmount] = useState(null);
   const txResWasHandled = useRef(null);
   const coinSelection = useRef(null);
   const signerInterface = useRef(null);
-  const [, setUnsub] = useState(null);
   const [privateBalance, setPrivateBalance] = useState(null);
 
   useEffect(() => {
@@ -39,10 +43,10 @@ const WithdrawTab = () => {
       }
       await api.isReady;
       selectedAssetType &&
-        setPrivateBalance(getSpendableBalance(selectedAssetType.assetId, api));
+        setPrivateBalance(getSpendableBalance(selectedAssetType));
     };
     displaySpendableBalance();
-  }, [selectedAssetType, status, spendableAssets, api]);
+  }, [selectedAssetType, txStatus, getSpendableBalance, api]);
 
   const onReclaimSuccess = async (block) => {
     // Every tx in the batch gets handled by default, only handle 1
@@ -50,13 +54,10 @@ const WithdrawTab = () => {
       return;
     }
     showSuccess('Withdrawal successful');
-    coinSelection.current.coins.forEach((asset) => {
-      removeSpendableAsset(asset, api);
-    });
     signerInterface.current.cleanupTxSuccess();
     coinSelection.current = null;
     txResWasHandled.current = true;
-    setStatus(TxStatus.finalized(block));
+    setTxStatus(TxStatus.finalized(block));
   };
 
   const onReclaimFailure = async (block, error) => {
@@ -67,17 +68,15 @@ const WithdrawTab = () => {
     console.error(error);
     signerInterface.current.cleanupTxFailure();
     txResWasHandled.current = true;
-    setStatus(TxStatus.failed(block, error));
+    setTxStatus(TxStatus.failed(block, error));
     showError('Withdrawal failed');
   };
 
   const onReclaimUpdate = (message) => {
-    setStatus(TxStatus.processing(message));
+    setTxStatus(TxStatus.processing(message));
   };
 
   const onClickWithdraw = async () => {
-    setStatus(TxStatus.processing());
-    coinSelection.current = selectCoins(reclaimAmount, spendableAssets);
     signerInterface.current = new SignerInterface(
       api,
       new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
@@ -87,6 +86,15 @@ const WithdrawTab = () => {
       showError('Open Manta Signer desktop app and sign in to continue');
       return;
     }
+
+    txResWasHandled.current = false;
+    setTxStatus(TxStatus.processing());
+
+    coinSelection.current = selectCoins(
+      reclaimAmount.valueAtomicUnits,
+      getSpendableAssetsByAssetId(selectedAssetType.assetId),
+      selectedAssetType.assetId
+    );
     try {
       const transactions = await signerInterface.current.buildReclaimTxs(
         coinSelection.current
@@ -97,11 +105,11 @@ const WithdrawTab = () => {
         onReclaimFailure,
         onReclaimUpdate
       );
-      const unsub = api.tx.utility
+      api.tx.utility
         .batch(transactions)
-        .signAndSend(currentExternalAccount, txResHandler);
-      setUnsub(() => unsub);
+        .signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {
+      console.error(error);
       onReclaimFailure();
     }
   };
@@ -109,48 +117,43 @@ const WithdrawTab = () => {
   const onChangeWithdrawAmountInput = (amountStr) => {
     setWithdrawAmountInput(amountStr);
     try {
-      setReclaimAmount(new BN(amountStr));
+      setReclaimAmount(
+        Balance.fromBaseUnits(selectedAssetType, new Decimal(amountStr))
+      );
     } catch (error) {
-      return;
+      setReclaimAmount(null);
     }
   };
 
   const onClickMax = () => {
-    onChangeWithdrawAmountInput(privateBalance.toString());
+    privateBalance &&
+      onChangeWithdrawAmountInput(privateBalance.toString(false));
   };
 
-  const insufficientFunds = privateBalance?.lt(reclaimAmount);
-  const formIsDisabled = status?.isProcessing();
-  const buttonIsDisabled =
-    formIsDisabled || insufficientFunds || !reclaimAmount.gt(new BN(0));
-
-  const balanceString =
-    privateBalance &&
-    selectedAssetType &&
-    `Available: ${privateBalance.toString()} private ${
-      selectedAssetType.ticker
-    }`;
+  const insufficientFunds = getIsInsuficientFunds(
+    reclaimAmount,
+    privateBalance
+  );
+  const buttonIsDisabled = getToPublicButtonIsDisabled(
+    reclaimAmount,
+    insufficientFunds,
+    txStatus
+  );
 
   return (
     <>
-      <FormSelect
-        label="Token"
-        selectedOption={selectedAssetType}
-        setSelectedOption={setSelectedAssetType}
-        options={CurrencyType.AllCurrencies()}
-        disabled={formIsDisabled}
-      />
       <div className="pb-6">
         <FormInput
+          type="number"
           step="0.01"
           value={withdrawAmountInput}
           onChange={(e) => onChangeWithdrawAmountInput(e.target.value)}
           onClickMax={onClickMax}
         >
-          {balanceString}
+          {getBalanceString(privateBalance)}
         </FormInput>
       </div>
-      {status?.isProcessing() ? (
+      {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />
       ) : (
         <Button
@@ -165,4 +168,8 @@ const WithdrawTab = () => {
   );
 };
 
-export default WithdrawTab;
+ToPublicTab.propTypes = {
+  selectedAssetType: PropTypes.instanceOf(AssetType),
+};
+
+export default ToPublicTab;

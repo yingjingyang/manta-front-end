@@ -5,7 +5,7 @@ import classNames from 'classnames';
 const MainMenu = ({ className }) => {
   return (
     <div className={classNames('menu-content lg:py-16', className)}>
-      <NavLink
+      {/* <NavLink
         className="text-secondary"
         activeClassName="text-primary active"
         to="/account"
@@ -26,7 +26,7 @@ const MainMenu = ({ className }) => {
             Account
           </span>
         </div>
-      </NavLink>
+      </NavLink> */}
       <NavLink
         className="text-secondary"
         activeClassName="text-primary active"
@@ -47,6 +47,54 @@ const MainMenu = ({ className }) => {
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
             Transact
+          </span>
+        </div>
+      </NavLink>
+      <NavLink
+        className="text-secondary"
+        activeClassName="text-primary active"
+        to="/swap"
+      >
+        <div className="py-2 w-full group menu-content__item flex items-center">
+          <div className="p-3">
+            <svg
+              width="26"
+              height="30"
+              viewBox="0 0 26 30"
+              className="fill-current lg:group-hover:fill-primary"
+            >
+              <path d="M0.399902 18.6V24C0.399902 26.9823 6.04111 29.4 12.9999 29.4C19.9587 29.4 25.5999 26.9823 25.5999 24V18.6C25.5999 21.5823 19.9587 24 12.9999 24C6.04111 24 0.399902 21.5823 0.399902 18.6Z" />
+              <path d="M0.399902 9.59998V15C0.399902 17.9823 6.04111 20.4 12.9999 20.4C19.9587 20.4 25.5999 17.9823 25.5999 15V9.59998C25.5999 12.5823 19.9587 15 12.9999 15C6.04111 15 0.399902 12.5823 0.399902 9.59998Z" />
+              <path d="M25.5999 5.99998C25.5999 8.98231 19.9587 11.4 12.9999 11.4C6.04111 11.4 0.399902 8.98231 0.399902 5.99998C0.399902 3.01764 6.04111 0.599976 12.9999 0.599976C19.9587 0.599976 25.5999 3.01764 25.5999 5.99998Z" />
+            </svg>
+          </div>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Swap (coming soon)
+          </span>
+        </div>
+      </NavLink>
+      <NavLink
+        className="text-secondary"
+        activeClassName="text-primary active"
+        to="/govern"
+      >
+        <div className="py-2 w-full group menu-content__item flex items-center">
+          <div className="p-3">
+            <svg
+              width="30"
+              height="28"
+              className="fill-current lg:group-hover:fill-primary"
+              viewBox="0 0 30 28"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M15.893 0.837138C15.3396 0.520921 14.6602 0.520921 14.1069 0.837138L1.50687 8.03714C0.643736 8.53036 0.343862 9.6299 0.83708 10.493C1.16897 11.0738 1.77541 11.3996 2.39961 11.4003V24C1.4055 24 0.599609 24.8059 0.599609 25.8C0.599609 26.7941 1.4055 27.6 2.39961 27.6H27.5996C28.5937 27.6 29.3996 26.7941 29.3996 25.8C29.3996 24.8059 28.5937 24 27.5996 24V11.4003C28.224 11.3998 28.8308 11.074 29.1628 10.493C29.656 9.6299 29.3561 8.53036 28.493 8.03714L15.893 0.837138ZM7.79961 13.2C6.8055 13.2 5.99961 14.0059 5.99961 15V20.4C5.99961 21.3941 6.8055 22.2 7.79961 22.2C8.79372 22.2 9.59961 21.3941 9.59961 20.4V15C9.59961 14.0059 8.79372 13.2 7.79961 13.2ZM13.1996 15C13.1996 14.0059 14.0055 13.2 14.9996 13.2C15.9937 13.2 16.7996 14.0059 16.7996 15V20.4C16.7996 21.3941 15.9937 22.2 14.9996 22.2C14.0055 22.2 13.1996 21.3941 13.1996 20.4V15ZM22.1996 13.2C21.2055 13.2 20.3996 14.0059 20.3996 15V20.4C20.3996 21.3941 21.2055 22.2 22.1996 22.2C23.1937 22.2 23.9996 21.3941 23.9996 20.4V15C23.9996 14.0059 23.1937 13.2 22.1996 13.2Z"
+              />
+            </svg>
+          </div>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Govern (coming soon)
           </span>
         </div>
       </NavLink>

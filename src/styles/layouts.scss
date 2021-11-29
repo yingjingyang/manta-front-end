@@ -1,47 +1,54 @@
 // sidebar layout css
 .sidebar-menu {
-  width: 250px;
-  box-shadow: 6px 0px 23px rgba(0, 0, 0, 0.11);
-  border-radius: 0px;
-  .logo-content {
-    .logo {
-      width: 55px;
+    width: 260px;
+    box-shadow: 6px 0px 23px rgba(0, 0, 0, 0.11);
+    border-radius: 0px;
+    .logo-content {
+        .logo {
+            width: 55px;
+        }
     }
-  }
 }
+
 // menu content css
 .menu-content {
-  &__item svg {
-    width: 28px;
-    height: 28px;
-  }
-  .active {
-    .menu-content__item svg {
-      fill: $blue-primary-color;
+    &__item svg {
+        width: 28px;
+        height: 28px;
     }
-  }
+    .active {
+        .menu-content__item svg {
+            fill: $blue-primary-color;
+        }
+    }
 }
+
 // menu mobile css
 .nav-menu-mobile {
-  position: fixed;
-  top: 65px;
-  left: 0;
-  width: 65%;
-  max-width: 350px;
-  height: 95%;
-  transform: translate3d(-100%, 0, 0);
-  text-align: left;
-  transition: transform 0.25s ease-in-out;
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 65%;
+    max-width: 350px;
+    height: 95%;
+    transform: translate3d(-100%, 0, 0);
+    text-align: left;
+    transition: transform 0.25s ease-in-out;
 }
+
 .navbar-mobile-overlay {
-  box-shadow: inset 6px 0px 23px rgba(0, 0, 0, 0.11);
+    box-shadow: inset 6px 0px 23px rgba(0, 0, 0, 0.11);
 }
 
 // extrinsic css
 .extrinsic-page,
 .extrinsic-history {
-  .events .item.active {
-    color: $blue-primary-color;
-    border: 1px solid $blue-primary-color;
-  }
+    .events .item.active {
+        color: $blue-primary-color;
+        border: 1px solid $blue-primary-color;
+    }
+}
+
+.navbar {
+    min-height: 2.5rem;
 }

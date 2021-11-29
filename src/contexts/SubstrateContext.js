@@ -22,7 +22,7 @@ const INIT_STATE = {
   keyringState: null,
   api: null,
   apiError: null,
-  apiState: null
+  apiState: null,
 };
 
 ///
@@ -76,7 +76,7 @@ const connect = (state, dispatch) => {
     _api.isReady.then((_api) => dispatch({ type: 'CONNECT_SUCCESS' }));
   });
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
-  _api.on('error', err => dispatch({ type: 'CONNECT_ERROR', payload: err }));
+  _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
 };
 
 ///
@@ -89,9 +89,14 @@ const loadAccounts = (state, dispatch) => {
     try {
       await web3Enable(config.APP_NAME);
       let allAccounts = await web3Accounts();
-      allAccounts = allAccounts.map(({ address, meta }) =>
-        ({ address, meta: { ...meta, name: `${meta.name} (${meta.source})` } }));
-      keyring.loadAll({ isDevelopment: config.DEVELOPMENT_KEYRING }, allAccounts);
+      allAccounts = allAccounts.map(({ address, meta }) => ({
+        address,
+        meta: { ...meta, name: meta.name },
+      }));
+      keyring.loadAll(
+        { isDevelopment: config.DEVELOPMENT_KEYRING },
+        allAccounts
+      );
       dispatch({ type: 'SET_KEYRING', payload: keyring });
     } catch (e) {
       console.error(e);
@@ -116,24 +121,27 @@ const SubstrateContextProvider = (props) => {
   // filtering props and merge with default param value
   const initState = { ...INIT_STATE };
   const neededPropNames = ['socket', 'types'];
-  neededPropNames.forEach(key => {
-    initState[key] = (typeof props[key] === 'undefined' ? initState[key] : props[key]);
+  neededPropNames.forEach((key) => {
+    initState[key] =
+      typeof props[key] === 'undefined' ? initState[key] : props[key];
   });
 
   const [state, dispatch] = useReducer(reducer, initState);
   connect(state, dispatch);
   loadAccounts(state, dispatch);
 
-  return <SubstrateContext.Provider value={state}>
-    {props.children}
-  </SubstrateContext.Provider>;
+  return (
+    <SubstrateContext.Provider value={state}>
+      {props.children}
+    </SubstrateContext.Provider>
+  );
 };
 
 // prop typechecking
 SubstrateContextProvider.propTypes = {
   socket: PropTypes.string,
   types: PropTypes.object,
-  children: PropTypes.any
+  children: PropTypes.any,
 };
 
 const useSubstrate = () => ({ ...useContext(SubstrateContext) });

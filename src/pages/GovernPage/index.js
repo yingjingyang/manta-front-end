@@ -16,10 +16,12 @@ const GovernPage = () => {
   return (
     <PageContent className="lg:justify-start">
       <Navbar />
-      <div className="flex h-full justify-center pt-20 lg:pt-12 pb-4">
+      <div className="flex h-full justify-center pt-20 lg:pt-8 pb-4">
         <div className="w-full lg:w-5/6 bg-secondary p-4 sm:p-10 rounded-lg">
           <div className="pb-6 flex flex-col sm:flex-row justify-between sm:items-center">
-            <h1 className="text-3xl pb-5 sm:pb-0 font-semibold text-accent">Govern</h1>
+            <h1 className="text-3xl pb-5 sm:pb-0 font-semibold text-accent">
+              Govern
+            </h1>
             <TabMenuWrapper className="sm:w-80">
               <TabMenu
                 label="Open"
@@ -35,12 +37,18 @@ const GovernPage = () => {
               />
             </TabMenuWrapper>
           </div>
-          <TabContentItemWrapper tabIndex={TABS.Open} currentTabIndex={selectedTabIdx}>
+          <TabContentItemWrapper
+            tabIndex={TABS.Open}
+            currentTabIndex={selectedTabIdx}
+          >
             <GovernCard className="mb-4" />
             <GovernCard className="mb-4" />
             <GovernCard />
           </TabContentItemWrapper>
-          <TabContentItemWrapper tabIndex={TABS.Closed} currentTabIndex={selectedTabIdx}>
+          <TabContentItemWrapper
+            tabIndex={TABS.Closed}
+            currentTabIndex={selectedTabIdx}
+          >
             <GovernCard className="mb-4" />
           </TabContentItemWrapper>
         </div>

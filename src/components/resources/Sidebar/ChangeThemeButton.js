@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import classNames from 'classnames';
 import FormSwitch from 'components/elements/Form/FormSwitch';
-import { ThemeContext } from 'contexts/ThemeContext';
+import { ThemeContext } from 'contexts/themeContext';
 import Svgs from 'resources/icons';
 import { themeType } from 'constants/ThemeConstants';
 

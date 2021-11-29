@@ -1,4 +1,5 @@
 import TransactPage from './TransactPage';
-import AccountPage from './AccountPage';
+import GovernPage from './GovernPage';
+import SwapPage from './SwapPage';
 
-export { TransactPage, AccountPage };
+export { TransactPage, GovernPage, SwapPage };

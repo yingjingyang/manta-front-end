@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
+import { useTxStatus } from 'contexts/txStatusContext';
 
 const FormInput = ({
   children,
@@ -11,7 +12,11 @@ const FormInput = ({
   prefixIcon,
   type = 'number',
   step,
+  isDisabled = false,
 }) => {
+  const { txStatus } = useTxStatus();
+  const disabled = isDisabled || txStatus?.isProcessing();
+
   return (
     <div
       className={classNames(
@@ -19,7 +24,7 @@ const FormInput = ({
         className
       )}
     >
-      <div className="w-4/5">
+      <div className={onClickMax ? 'w-4/5' : 'w-full'}>
         <div className="flex">
           {prefixIcon && (
             <img className="w-6 h-6 mr-2" src={prefixIcon} alt="prefix-icon" />
@@ -30,13 +35,14 @@ const FormInput = ({
             step={step}
             className="w-full text-lg outline-none manta-bg-gray"
             value={value}
+            disabled={disabled}
           />
         </div>
         <div className="text-sm manta-gray">{children}</div>
       </div>
       {onClickMax && (
         <span
-          onClick={onClickMax}
+          onClick={!disabled && onClickMax}
           className="py-0.5 px-5 w-1/5 uppercase cursor-pointer btn-hover text-center rounded-lg btn-primary"
         >
           Max
