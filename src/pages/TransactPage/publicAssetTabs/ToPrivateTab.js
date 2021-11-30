@@ -16,7 +16,7 @@ import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
   getIsInsuficientFunds,
-  getToPrivateButtonIsDisabled,
+  getToPrivateButtonIsDisabled
 } from 'utils/ui/formValidation';
 
 const ToPrivateTab = ({ selectedAssetType }) => {
@@ -165,7 +165,7 @@ const ToPrivateTab = ({ selectedAssetType }) => {
 };
 
 ToPrivateTab.propTypes = {
-  selectedAssetType: AssetType,
+  selectedAssetType: AssetType
 };
 
 export default ToPrivateTab;

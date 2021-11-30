@@ -17,7 +17,7 @@ import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import {
   getIsInsuficientFunds,
-  getTransferButtonIsDisabled,
+  getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 
 const PublicSendTab = ({ selectedAssetType }) => {
@@ -170,7 +170,7 @@ const PublicSendTab = ({ selectedAssetType }) => {
 };
 
 PublicSendTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default PublicSendTab;

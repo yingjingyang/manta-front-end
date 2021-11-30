@@ -59,7 +59,7 @@ export default class AssetType {
       AssetType.Kusama(isPrivate),
       AssetType.Bitcoin(isPrivate),
       AssetType.Etherium(isPrivate),
-      AssetType.Acala(isPrivate),
+      AssetType.Acala(isPrivate)
     ];
     if (!isPrivate) {
       currencies.push(AssetType.Dolphin());

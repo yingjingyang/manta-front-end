@@ -23,7 +23,7 @@ import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
   getIsInsuficientFunds,
-  getTransferButtonIsDisabled,
+  getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 
 const PrivateSendTab = ({ selectedAssetType }) => {
@@ -210,7 +210,7 @@ const PrivateSendTab = ({ selectedAssetType }) => {
 };
 
 PrivateSendTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default PrivateSendTab;

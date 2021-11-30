@@ -16,7 +16,7 @@ import Balance from 'types/Balance';
 import getBalanceString from 'utils/ui/getBalanceString';
 import {
   getIsInsuficientFunds,
-  getTransferButtonIsDisabled,
+  getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 import Decimal from 'decimal.js';
 
@@ -167,7 +167,7 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
 };
 
 NativeTokenSendTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default NativeTokenSendTab;

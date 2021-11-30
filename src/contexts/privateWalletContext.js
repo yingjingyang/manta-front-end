@@ -3,13 +3,13 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useRef,
+  useRef
 } from 'react';
 import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
 import {
   // loadSpendableAssetsFromStorage,
-  persistSpendableAssetsToStorage,
+  persistSpendableAssetsToStorage
 } from 'utils/persistence/AssetStorage';
 import Balance from 'types/Balance';
 import { SignerInterface, BrowserAddressStore } from 'signer-interface';
@@ -88,7 +88,7 @@ export const PrivateWalletContextProvider = (props) => {
     getSpendableAssetsByAssetId: getSpendableAssetsByAssetId,
     saveSpendableAssets: saveSpendableAssets,
     saveSpendableAsset: saveSpendableAsset,
-    getSpendableBalance: getSpendableBalance,
+    getSpendableBalance: getSpendableBalance
   };
 
   return (
@@ -99,7 +99,7 @@ export const PrivateWalletContextProvider = (props) => {
 };
 
 PrivateWalletContext.propTypes = {
-  children: PropTypes.any,
+  children: PropTypes.any
 };
 
 export const usePrivateWallet = () => ({ ...useContext(PrivateWalletContext) });

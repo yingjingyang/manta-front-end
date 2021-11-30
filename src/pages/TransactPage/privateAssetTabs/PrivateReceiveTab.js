@@ -64,7 +64,7 @@ const PrivateReceiveTab = ({ selectedAssetType }) => {
 };
 
 PrivateReceiveTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default PrivateReceiveTab;

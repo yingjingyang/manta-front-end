@@ -19,7 +19,7 @@ import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
   getIsInsuficientFunds,
-  getToPublicButtonIsDisabled,
+  getToPublicButtonIsDisabled
 } from 'utils/ui/formValidation';
 
 const ToPublicTab = ({ selectedAssetType }) => {
@@ -99,6 +99,7 @@ const ToPublicTab = ({ selectedAssetType }) => {
       const transactions = await signerInterface.current.buildReclaimTxs(
         coinSelection.current
       );
+
       const txResHandler = makeTxResHandler(
         api,
         onReclaimSuccess,
@@ -169,7 +170,7 @@ const ToPublicTab = ({ selectedAssetType }) => {
 };
 
 ToPublicTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default ToPublicTab;
