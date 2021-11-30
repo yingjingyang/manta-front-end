@@ -28,7 +28,6 @@ const ToPrivateTab = ({ selectedAssetType }) => {
   const [mintAmount, setMintAmount] = useState(null);
   const [publicBalance, setPublicBalance] = useState(null);
   let mintAsset = useRef(null);
-  const txResWasHandled = useRef(null);
   let signerInterface = useRef(null);
 
   const refreshPublicBalance = async () => {
@@ -54,25 +53,15 @@ const ToPrivateTab = ({ selectedAssetType }) => {
   }, [selectedAssetType, externalAccount, api]);
 
   const onDepositSuccess = (block) => {
-    // Every tx in the batch gets handled by default, only handle 1
-    if (txResWasHandled.current === true) {
-      return;
-    }
     refreshPublicBalance();
-    txResWasHandled.current = true;
     signerInterface.current.cleanupTxSuccess();
     setTxStatus(TxStatus.finalized(block));
     showSuccess('Deposit successful');
   };
 
   const onDepositFailure = (block, error) => {
-    // Every tx in the batch gets handled by default, only handle 1
-    if (txResWasHandled.current === true) {
-      return;
-    }
     console.error(error);
     mintAsset.current = null;
-    txResWasHandled.current = true;
     refreshPublicBalance();
     signerInterface.current.cleanupTxFailure();
     setTxStatus(TxStatus.failed(block, error));
