@@ -56,8 +56,8 @@ export const PrivateWalletContextProvider = (props) => {
   const getSpendableAssetsByAssetId = (assetId) => {
     return spendableAssets !== null
       ? spendableAssets.filter((asset) => {
-          return asset.assetId === assetId;
-        })
+        return asset.assetId === assetId;
+      })
       : null;
   };
 
