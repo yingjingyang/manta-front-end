@@ -19,11 +19,13 @@ import {
   getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
 const PublicSendTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [publicBalance, setPublicBalance] = useState(null);
   const [publicTransferAmount, setPublicTransferAmount] = useState(null);
@@ -66,6 +68,11 @@ const PublicSendTab = ({ selectedAssetType }) => {
     setTxStatus(TxStatus.processing(message));
   };
 
+  const handleUserCannotPayFee = () => {
+    setTxStatus(TxStatus.failed());
+    showError('Transfer failed: cannot pay fee');
+  };
+
   const onClickSend = async () => {
     setTxStatus(TxStatus.processing());
 
@@ -77,13 +84,17 @@ const PublicSendTab = ({ selectedAssetType }) => {
     );
 
     try {
-      api.tx.mantaPay
-        .transferAsset(
-          receivingAddress,
-          selectedAssetType.assetId,
-          publicTransferAmount.valueAtomicUnits
-        )
-        .signAndSend(externalAccountSigner, txResHandler);
+      const tx = api.tx.mantaPay.transferAsset(
+        receivingAddress,
+        selectedAssetType.assetId,
+        publicTransferAmount.valueAtomicUnits
+      );
+      const userCanPayFee = await getUserCanPayFee(tx);
+      if (!userCanPayFee) {
+        handleUserCannotPayFee();
+        return;
+      }
+      tx.signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {
       onPublicTransferFailure();
     }

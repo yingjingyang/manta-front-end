@@ -87,8 +87,13 @@ const SwapPage = () => {
       <div className="flex justify-center pt-20 lg:pt-8 pb-4">
         <div className="w-full md:w-2/3 lg:w-1/3 lg:min-w-layout p-4 sm:p-8 bg-secondary rounded-lg">
           <div>
-            <span className="flex justify-between pb-1">
-              <h1 className="text-3xl font-semibold text-accent">Swap</h1>
+            <span
+              className="flex space-between pb-1"
+              style={{ 'justify-content': 'space-between' }}
+            >
+              <h1 className="text-2xl font-semibold text-accent">
+                Swap (coming soon)
+              </h1>
               <span className="flex">
                 <img
                   className="pr-2 cursor-pointer w-7"

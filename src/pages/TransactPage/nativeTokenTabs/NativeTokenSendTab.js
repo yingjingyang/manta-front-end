@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import BN from 'bn.js';
+import React, { useState, useCallback } from 'react';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -19,51 +18,36 @@ import {
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 import Decimal from 'decimal.js';
+import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
 const NativeTokenSendTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { getUserCanPayFee, nativeTokenBalance } = useNativeTokenWallet();
 
-  const [publicBalance, setPublicBalance] = useState(null);
   const [publicTransferAmount, setPublicTransferAmount] = useState(null);
   const [sendAmountInput, setSendAmountInput] = useState(null);
   const [receivingAddress, setReceivingAddress] = useState('');
   const [addressInfoText, setAddressInfoText] = useState('Receiver');
 
-  const refreshPublicBalance = async () => {
-    const balanceAmount = await api.query.system.account(
-      externalAccount.address
-    );
-    setPublicBalance(
-      new Balance(selectedAssetType, new BN(balanceAmount.data.free.toString()))
-    );
-  };
-
-  useEffect(() => {
-    const refreshPublicBalanceOnLoad = async () => {
-      if (selectedAssetType && externalAccount && api) {
-        await api.isReady;
-        refreshPublicBalance();
-      }
-    };
-    refreshPublicBalanceOnLoad();
-  }, [externalAccount, api, selectedAssetType]);
-
   const onPublicTransferSuccess = async (block) => {
-    refreshPublicBalance();
     showSuccess('Transfer successful');
     setTxStatus(TxStatus.finalized(block));
   };
 
   const onPublicTransferFailure = (block, error) => {
-    refreshPublicBalance();
     setTxStatus(TxStatus.failed(block, error));
     showError('Transfer failed');
   };
 
   const onPublicTransferUpdate = (message) => {
     setTxStatus(TxStatus.processing(message));
+  };
+
+  const handleUserCannotPayFee = () => {
+    setTxStatus(TxStatus.failed());
+    showError('Transfer failed: cannot pay fee');
   };
 
   const onClickSend = async () => {
@@ -77,9 +61,16 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
     );
 
     try {
-      api.tx.balances
-        .transfer(receivingAddress, publicTransferAmount.valueAtomicUnits)
-        .signAndSend(externalAccountSigner, txResHandler);
+      const tx = api.tx.balances.transfer(
+        receivingAddress,
+        publicTransferAmount.valueAtomicUnits
+      );
+      const userCanPayFee = await getUserCanPayFee(tx);
+      if (!userCanPayFee) {
+        handleUserCannotPayFee();
+        return;
+      }
+      await tx.signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {
       console.error(error);
       onPublicTransferFailure();
@@ -88,7 +79,7 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
 
   const insufficientFunds = getIsInsuficientFunds(
     publicTransferAmount,
-    publicBalance
+    nativeTokenBalance
   );
   const buttonIsDisabled = getTransferButtonIsDisabled(
     publicTransferAmount,
@@ -109,7 +100,8 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
   };
 
   const onClickMax = useCallback(() => {
-    publicBalance && onChangeSendAmountInput(publicBalance.toString(false));
+    nativeTokenBalance &&
+      onChangeSendAmountInput(nativeTokenBalance.toString(false));
   });
 
   const onChangeReceivingAddress = (address) => {
@@ -137,7 +129,7 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
           onClickMax={onClickMax}
           type="number"
         >
-          {getBalanceString(publicBalance)}
+          {getBalanceString(nativeTokenBalance)}
         </FormInput>
       </div>
       <img className="mx-auto" src={Svgs.ArrowDownIcon} alt="switch-icon" />

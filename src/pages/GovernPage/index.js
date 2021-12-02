@@ -20,7 +20,7 @@ const GovernPage = () => {
         <div className="w-full lg:w-5/6 bg-secondary p-4 sm:p-10 rounded-lg">
           <div className="pb-6 flex flex-col sm:flex-row justify-between sm:items-center">
             <h1 className="text-3xl pb-5 sm:pb-0 font-semibold text-accent">
-              Govern
+              Govern (coming soon)
             </h1>
             <TabMenuWrapper className="sm:w-80">
               <TabMenu
@@ -41,15 +41,13 @@ const GovernPage = () => {
             tabIndex={TABS.Open}
             currentTabIndex={selectedTabIdx}
           >
-            <GovernCard className="mb-4" />
-            <GovernCard className="mb-4" />
             <GovernCard />
           </TabContentItemWrapper>
           <TabContentItemWrapper
             tabIndex={TABS.Closed}
             currentTabIndex={selectedTabIdx}
           >
-            <GovernCard className="mb-4" />
+            <GovernCard />
           </TabContentItemWrapper>
         </div>
       </div>

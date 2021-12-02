@@ -25,6 +25,7 @@ import {
   getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
 const PrivateSendTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
@@ -32,6 +33,7 @@ const PrivateSendTab = ({ selectedAssetType }) => {
   const { getSpendableAssetsByAssetId, getSpendableBalance } =
     usePrivateWallet();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [privateBalance, setPrivateBalance] = useState(null);
   const [sendAmountInput, setSendAmountInput] = useState(null);
@@ -81,6 +83,11 @@ const PrivateSendTab = ({ selectedAssetType }) => {
     setTxStatus(TxStatus.processing(message));
   };
 
+  const handleUserCannotPayFee = () => {
+    setTxStatus(TxStatus.failed());
+    showError('Transfer failed: cannot pay fee');
+  };
+
   const onClickSend = async () => {
     signerInterface.current = new SignerInterface(
       api,
@@ -114,8 +121,13 @@ const PrivateSendTab = ({ selectedAssetType }) => {
         onPrivateTransferFailure,
         onPrivateTransferUpdate
       );
-
-      api.tx.utility
+      const batchTx = await api.tx.utility.batch(transactions);
+      const userCanPayFee = await getUserCanPayFee(batchTx);
+      if (!userCanPayFee) {
+        handleUserCannotPayFee();
+        return;
+      }
+      await api.tx.utility
         .batch(transactions)
         .signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {

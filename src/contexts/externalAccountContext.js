@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { useSubstrate } from './substrateContext';
@@ -7,6 +13,7 @@ const ExternalAccountContext = createContext();
 
 export const ExternalAccountContextProvider = (props) => {
   const { api, keyring, keyringState } = useSubstrate();
+  const externalAccountRef = useRef(null);
   const [externalAccount, setExternalAccount] = useState(null);
   const [externalAccountSigner, setExternalAccountSigner] = useState(null);
 
@@ -29,12 +36,14 @@ export const ExternalAccountContextProvider = (props) => {
       api.setSigner(injected.signer);
     }
     setExternalAccount(account);
+    externalAccountRef.current = account;
     const signer = account.meta.isInjected ? account.address : account;
     setExternalAccountSigner(signer);
   };
 
   const value = {
     externalAccount: externalAccount,
+    externalAccountRef: externalAccountRef,
     externalAccountSigner: externalAccountSigner,
     changeExternalAccount: changeExternalAccount,
   };

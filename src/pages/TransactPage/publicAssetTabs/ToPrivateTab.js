@@ -18,11 +18,13 @@ import {
   getIsInsuficientFunds,
   getToPrivateButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
 const ToPrivateTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [depositAmountInput, setDepositAmountInput] = useState(null);
   const [mintAmount, setMintAmount] = useState(null);
@@ -72,6 +74,11 @@ const ToPrivateTab = ({ selectedAssetType }) => {
     setTxStatus(TxStatus.processing(message));
   };
 
+  const handleUserCannotPayFee = () => {
+    setTxStatus(TxStatus.failed());
+    showError('Transfer failed: cannot pay fee');
+  };
+
   const onClickDeposit = async () => {
     signerInterface.current = new SignerInterface(
       api,
@@ -91,13 +98,18 @@ const ToPrivateTab = ({ selectedAssetType }) => {
         selectedAssetType.assetId,
         mintAmount.valueAtomicUnits
       );
+      const userCanPayFee = await getUserCanPayFee(mintTx);
+      if (!userCanPayFee) {
+        handleUserCannotPayFee();
+        return;
+      }
       const txResHandler = makeTxResHandler(
         api,
         onDepositSuccess,
         onDepositFailure,
         onDepositUpdate
       );
-      mintTx.signAndSend(externalAccountSigner, txResHandler);
+      await mintTx.signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {
       onDepositFailure(null, error);
     }

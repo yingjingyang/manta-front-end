@@ -7,18 +7,21 @@ import { ExternalAccountContextProvider } from 'contexts/externalAccountContext'
 import DeveloperConsole from 'components/elements/Developer/DeveloperConsole';
 import config from 'config';
 import { TxStatusContextProvider } from 'contexts/txStatusContext';
+import { NativeTokenWalletContextProvider } from 'contexts/nativeTokenWalletContext';
 
 function App() {
   return (
     <SubstrateContextProvider>
       <ExternalAccountContextProvider>
         <PrivateWalletContextProvider>
-          <TxStatusContextProvider>
-            <ThemeProvider>
-              <AppRouter />
-              {config.DEV_CONSOLE && <DeveloperConsole />}
-            </ThemeProvider>
-          </TxStatusContextProvider>
+          <NativeTokenWalletContextProvider>
+            <TxStatusContextProvider>
+              <ThemeProvider>
+                <AppRouter />
+                {config.DEV_CONSOLE && <DeveloperConsole />}
+              </ThemeProvider>
+            </TxStatusContextProvider>
+          </NativeTokenWalletContextProvider>
         </PrivateWalletContextProvider>
       </ExternalAccountContextProvider>
     </SubstrateContextProvider>

@@ -21,6 +21,7 @@ import {
   getIsInsuficientFunds,
   getToPublicButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
 const ToPublicTab = ({ selectedAssetType }) => {
   const { api } = useSubstrate();
@@ -28,6 +29,7 @@ const ToPublicTab = ({ selectedAssetType }) => {
     usePrivateWallet();
   const { externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [withdrawAmountInput, setWithdrawAmountInput] = useState('');
   const [reclaimAmount, setReclaimAmount] = useState(null);
@@ -76,7 +78,14 @@ const ToPublicTab = ({ selectedAssetType }) => {
     setTxStatus(TxStatus.processing(message));
   };
 
+  const handleUserCannotPayFee = () => {
+    setTxStatus(TxStatus.failed());
+    showError('Withdrawal failed: cannot pay fee');
+  };
+
   const onClickWithdraw = async () => {
+    txResWasHandled.current = false;
+
     signerInterface.current = new SignerInterface(
       api,
       new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
@@ -86,8 +95,6 @@ const ToPublicTab = ({ selectedAssetType }) => {
       showError('Open Manta Signer desktop app and sign in to continue');
       return;
     }
-
-    txResWasHandled.current = false;
     setTxStatus(TxStatus.processing());
 
     coinSelection.current = selectCoins(
@@ -106,9 +113,13 @@ const ToPublicTab = ({ selectedAssetType }) => {
         onReclaimFailure,
         onReclaimUpdate
       );
-      api.tx.utility
-        .batch(transactions)
-        .signAndSend(externalAccountSigner, txResHandler);
+      const batchTx = api.tx.utility.batch(transactions);
+      const userCanPayFee = await getUserCanPayFee(batchTx);
+      if (!userCanPayFee) {
+        handleUserCannotPayFee();
+        return;
+      }
+      batchTx.signAndSend(externalAccountSigner, txResHandler);
     } catch (error) {
       console.error(error);
       onReclaimFailure();
