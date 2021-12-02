@@ -1,1 +1,5 @@
-{}
+{
+    "PROVIDER_SOCKET": "ws://localhost:9944",
+    "BIP_44_COIN_TYPE_ID": 1,
+    "DEV_CONSOLE": false
+}
