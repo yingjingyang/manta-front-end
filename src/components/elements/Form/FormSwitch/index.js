@@ -23,9 +23,11 @@ const FormSwitch = ({
         disabled={disabled}
       />
       <span
-        className={
-          'FormSwitch__slider round tracking-tight flex items-center justify-between text-sm border-gray-300 border text-white px-2 py-1 ' +
-          (name == 'PublicPrivateToggle' ? 'public-private-toggle' : '')
+        className={classNames('FormSwitch__slider round tracking-tight',
+          'flex items-center justify-between text-sm border-gray-300 border',
+          'text-white px-2 py-1',
+          {'public-private-toggle': name == 'PublicPrivateToggle'},
+          {'disabled': disabled})
         }
       >
         <span>{onLabel}</span>

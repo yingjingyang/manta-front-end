@@ -1,10 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 
-const MainMenu = ({ className }) => {
+const MainMenu = () => {
+  const { txStatus } = useTxStatus();
+
+  const onClickNavlink = (e) => {
+    if (txStatus?.isProcessing()) {
+      e.preventDefault();
+    }
+  };
+
+  const navlinksDisabled = txStatus?.isProcessing();
+
   return (
-    <div className={classNames('menu-content lg:py-16', className)}>
+    <div className='menu-content lg:py-16'>
       {/* <NavLink
         className="text-secondary"
         activeClassName="text-primary active"
@@ -28,11 +39,12 @@ const MainMenu = ({ className }) => {
         </div>
       </NavLink> */}
       <NavLink
+        onClick={onClickNavlink}
         className="text-secondary"
         activeClassName="text-primary active"
         to="/transact"
       >
-        <div className="py-2 w-full menu-content__item group flex items-center">
+        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
           <div className="p-3">
             <svg
               viewBox="0 0 32 32"
@@ -51,11 +63,12 @@ const MainMenu = ({ className }) => {
         </div>
       </NavLink>
       <NavLink
+        onClick={onClickNavlink}
         className="text-secondary"
         activeClassName="text-primary active"
         to="/swap"
       >
-        <div className="py-2 w-full group menu-content__item flex items-center">
+        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
           <div className="p-3">
             <svg
               width="30"
@@ -75,11 +88,12 @@ const MainMenu = ({ className }) => {
         </div>
       </NavLink>
       <NavLink
+        onClick={onClickNavlink}
         className="text-secondary"
         activeClassName="text-primary active"
         to="/govern"
       >
-        <div className="py-2 w-full group menu-content__item flex items-center">
+        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
           <div className="p-3">
             <svg
               width="30"
@@ -197,5 +211,7 @@ const MainMenu = ({ className }) => {
     </div>
   );
 };
+
+
 
 export default MainMenu;

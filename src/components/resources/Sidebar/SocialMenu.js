@@ -3,7 +3,7 @@ import React from 'react';
 
 const SocialMenu = () => {
   return (
-    <div>
+    <div className='pl-4'>
       <div className="flex">
         <a
           className="px-2"

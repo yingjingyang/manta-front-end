@@ -1,6 +1,4 @@
 import React, { useState, useCallback } from 'react';
-
-import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import Button from 'components/elements/Button';
@@ -9,7 +7,6 @@ import FormSelect from 'components/elements/Form/FormSelect';
 import FormInput from 'components/elements/Form/FormInput';
 
 const SwapPage = () => {
-  const { txStatus } = useTxStatus();
   const [fromAssetType, setFromAssetType] = useState(null);
   const [toAssetType, setToAssetType] = useState(null);
   const [fromSwapAmount, setFromSwapAmount] = useState('');
@@ -112,7 +109,6 @@ const SwapPage = () => {
               selectedOption={fromAssetType}
               setSelectedOption={setFromAssetType}
               options={AssetType.AllCurrencies(true)}
-              disabled={txStatus?.isProcessing()}
             />
             <FormInput
               value={fromSwapAmount}
@@ -132,16 +128,18 @@ const SwapPage = () => {
               selectedOption={toAssetType}
               setSelectedOption={setToAssetType}
               options={AssetType.AllCurrencies(true)}
-              disabled={txStatus?.isProcessing()}
             />
             <FormInput
+              className='disabled'
               value={toSwapAmount}
               onChange={(e) => setToSwapAmount(e.target.value)}
               type="number"
               isDisabled={true}
             ></FormInput>
           </div>
-          <Button className="btn-primary w-full text-lg py-3" disabled>
+          <Button
+            className="btn-primary w-full text-lg py-3 btn-unreleased" disabled
+          >
             Swap
           </Button>
         </div>

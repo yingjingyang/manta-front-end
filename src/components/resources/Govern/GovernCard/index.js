@@ -16,7 +16,7 @@ const GovernCard = ({ className }) => {
           Manta Network Redemption Fee Update
         </span>
         <div className="flex items-center pb-2">
-          <img src={Svgs.ClockIcon} className="pr-2" alt="clock-time" />
+          <img src={Svgs.ClockIcon} className="pr-2 pb-1" alt="clock-time" />
           <span className="manta-prime-blue text-xs sm:text-sm">
             Time left: 3 Days, 12 Hours, 27 minutes
           </span>
@@ -25,10 +25,7 @@ const GovernCard = ({ className }) => {
       <div className="flex flex-col xl:flex-row xl:items-center">
         <div className="w-full pb-4 xl:pb-0 xl:w-3/4">
           <span className="manta-dark-gray text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-            ut.Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            This fake proposal will change the base redemption fee for private tokens from 0.123 DOL to 0.234 DOL.
           </span>
         </div>
         <div className="w-full md:w-1/2 xl:w-1/4 flex xl:justify-end">

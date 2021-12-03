@@ -21,7 +21,8 @@ const FormInput = ({
     <div
       className={classNames(
         'flex items-start w-full field-box-shadow p-3 rounded-lg manta-bg-gray my-2',
-        className
+        className,
+        {'disabled': disabled}
       )}
     >
       <div className={onClickMax ? 'w-4/5' : 'w-full'}>
@@ -33,7 +34,10 @@ const FormInput = ({
             type={type}
             onChange={onChange}
             step={step}
-            className="w-full text-lg outline-none manta-bg-gray"
+            className={classNames(
+              'w-full text-lg outline-none manta-bg-gray',
+              {'disabled': disabled}
+            )}
             value={value}
             disabled={disabled}
           />
@@ -43,7 +47,12 @@ const FormInput = ({
       {onClickMax && (
         <span
           onClick={!disabled && onClickMax}
-          className="py-0.5 px-5 w-1/5 uppercase cursor-pointer btn-hover text-center rounded-lg btn-primary"
+          className={
+            classNames(
+              'py-0.5 px-5 w-1/5 uppercase cursor-pointer btn-hover',
+              'text-center rounded-lg btn-primary',
+              {'disabled': disabled}
+            )}
         >
           Max
         </span>

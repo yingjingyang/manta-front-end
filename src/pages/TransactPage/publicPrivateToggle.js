@@ -10,10 +10,7 @@ const PublicPrivateToggle = () => {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center'
-      }}
+      className='public-private-toggle'
     >
       <span className="manta-gray text-xl pr-8 text-accent">Public 🏖 </span>
       <FormSwitch

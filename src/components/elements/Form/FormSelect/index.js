@@ -2,15 +2,17 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Select } from 'element-react';
+import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
 
 const FormSelect = ({
   className,
   options,
   selectedOption,
-  setSelectedOption,
-  disabled
+  setSelectedOption
 }) => {
+  const { txStatus } = useTxStatus();
+
   useEffect(() => {
     if (!selectedOption && options && options.length) {
       setSelectedOption(options[0]);
@@ -30,13 +32,13 @@ const FormSelect = ({
             {selectedOption?.ticker}
           </span>
           <Select
-            className="white"
+            className={classNames('white', { 'disabled': txStatus?.isProcessing() })}
             onChange={(v) =>
               setSelectedOption(options.find((option) => option.ticker === v))
             }
             value={selectedOption?.ticker}
             placeholder="select"
-            disabled={disabled}
+            disabled={txStatus?.isProcessing()}
           >
             {options &&
               options.map((option) => {
