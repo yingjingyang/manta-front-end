@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Select } from 'element-react';
+import AssetType from 'types/AssetType';
 
 const FormSelect = ({
   className,
   options,
   selectedOption,
   setSelectedOption,
-  selectedAssetIsPrivate,
   disabled
 }) => {
   useEffect(() => {
@@ -16,10 +16,6 @@ const FormSelect = ({
       setSelectedOption(options[0]);
     }
   }, [selectedOption, options]);
-
-  useEffect(() => {
-    options && options.length && setSelectedOption(options[0]);
-  }, [selectedAssetIsPrivate]);
 
   return (
     <div className={classNames('pt-4 pb-6', className)}>
@@ -73,7 +69,10 @@ const FormSelect = ({
 
 FormSelect.propTypes = {
   className: PropTypes.string,
-  onChange: PropTypes.func
+  options: PropTypes.arrayOf(PropTypes.instanceOf(AssetType)),
+  selectedOption: PropTypes.instanceOf(AssetType),
+  setSelectedOption: PropTypes.string,
+  disabled: PropTypes.bool
 };
 
 export default FormSelect;

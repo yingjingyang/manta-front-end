@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import PropTypes from 'prop-types';
 import AssetType from 'types/AssetType';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { useSelectedTabIndex } from 'contexts/selectedTabContext';
 import NativeTokenSendTab from './NativeTokenSendTab';
 import NativeTokenReceiveTab from './NativeTokenReceiveTab';
 
 const TABS = {
-  Send: 'send',
-  Receive: 'receive',
+  Send: 0,
+  Receive: 1
 };
 
-const NativeTokenTabs = ({ selectedAssetType }) => {
-  const [selectedTabIdx, setSelectedTabIdx] = useState(TABS.Send);
+const NativeTokenTabs = () => {
+  const { selectedTabIndex, setSelectedTabIndex } = useSelectedTabIndex();
 
+  // Other pages have a third tab, not this, because you can't privatize
+  // the native token (yet)
+  useEffect(() => {
+    const NATIVE_TOKEN_MAX_TAB_INDEX = 1;
+    if (selectedTabIndex > NATIVE_TOKEN_MAX_TAB_INDEX) {
+      setSelectedTabIndex(TABS.Send);
+    }
+  });
   const { txStatus } = useTxStatus();
 
   const onClickTab = (tab) => {
     if (txStatus?.isProcessing()) {
       return;
     }
-    setSelectedTabIdx(tab);
+    setSelectedTabIndex(tab);
   };
 
   return (
@@ -31,34 +40,30 @@ const NativeTokenTabs = ({ selectedAssetType }) => {
         <TabMenu
           label="Send"
           onClick={() => onClickTab(TABS.Send)}
-          active={selectedTabIdx === TABS.Send}
+          active={selectedTabIndex === TABS.Send}
           className="rounded-l-lg"
         />
         <TabMenu
           label="Receive"
           onClick={() => onClickTab(TABS.Receive)}
-          active={selectedTabIdx === TABS.Receive}
+          active={selectedTabIndex === TABS.Receive}
           className="rounded-r-lg"
         />
       </TabMenuWrapper>
       <TabContentItemWrapper
         tabIndex={TABS.Send}
-        currentTabIndex={selectedTabIdx}
+        currentTabIndex={selectedTabIndex}
       >
-        <NativeTokenSendTab selectedAssetType={selectedAssetType} />
+        <NativeTokenSendTab />
       </TabContentItemWrapper>
       <TabContentItemWrapper
         tabIndex={TABS.Receive}
-        currentTabIndex={selectedTabIdx}
+        currentTabIndex={selectedTabIndex}
       >
-        <NativeTokenReceiveTab selectedAssetType={selectedAssetType} />
+        <NativeTokenReceiveTab />
       </TabContentItemWrapper>
     </>
   );
-};
-
-NativeTokenTabs.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
 };
 
 export default NativeTokenTabs;

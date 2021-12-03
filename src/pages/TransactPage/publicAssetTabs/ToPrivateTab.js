@@ -18,18 +18,19 @@ import {
   getIsInsuficientFunds,
   getToPrivateButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
-const ToPrivateTab = ({ selectedAssetType }) => {
+const ToPrivateTab = () => {
   const { api } = useSubstrate();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { selectedAssetType } = useSelectedAssetType();
   const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [depositAmountInput, setDepositAmountInput] = useState(null);
   const [mintAmount, setMintAmount] = useState(null);
   const [publicBalance, setPublicBalance] = useState(null);
-  let mintAsset = useRef(null);
   let signerInterface = useRef(null);
 
   const refreshPublicBalance = async () => {
@@ -63,7 +64,6 @@ const ToPrivateTab = ({ selectedAssetType }) => {
 
   const onDepositFailure = (block, error) => {
     console.error(error);
-    mintAsset.current = null;
     refreshPublicBalance();
     signerInterface.current.cleanupTxFailure();
     setTxStatus(TxStatus.failed(block, error));

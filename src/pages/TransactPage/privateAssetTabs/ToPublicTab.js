@@ -3,7 +3,6 @@ import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
 import { showSuccess, showError } from 'utils/ui/Notifications';
 import FormInput from 'components/elements/Form/FormInput';
-import AssetType from 'types/AssetType';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Decimal from 'decimal.js';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -14,21 +13,22 @@ import { selectCoins } from 'coin-selection';
 import { SignerInterface, BrowserAddressStore } from 'signer-interface';
 import config from 'config';
 import { useTxStatus } from 'contexts/txStatusContext';
-import PropTypes from 'prop-types';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
   getIsInsuficientFunds,
   getToPublicButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
-const ToPublicTab = ({ selectedAssetType }) => {
+const ToPublicTab = () => {
   const { api } = useSubstrate();
   const { getSpendableBalance, getSpendableAssetsByAssetId } =
     usePrivateWallet();
   const { externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { selectedAssetType } = useSelectedAssetType();
   const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [withdrawAmountInput, setWithdrawAmountInput] = useState('');
@@ -178,10 +178,6 @@ const ToPublicTab = ({ selectedAssetType }) => {
       )}
     </>
   );
-};
-
-ToPublicTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default ToPublicTab;

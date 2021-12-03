@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import BN from 'bn.js';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -19,12 +18,14 @@ import {
   getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
-const PublicSendTab = ({ selectedAssetType }) => {
+const PublicSendTab = () => {
   const { api } = useSubstrate();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { selectedAssetType } = useSelectedAssetType();
   const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [publicBalance, setPublicBalance] = useState(null);

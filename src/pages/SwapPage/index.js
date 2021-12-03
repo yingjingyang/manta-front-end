@@ -109,7 +109,6 @@ const SwapPage = () => {
           </div>
           <div className="py-2">
             <FormSelect
-              label="From"
               selectedOption={fromAssetType}
               setSelectedOption={setFromAssetType}
               options={AssetType.AllCurrencies(true)}
@@ -130,7 +129,6 @@ const SwapPage = () => {
           />
           <div className="py-2 pb-4">
             <FormSelect
-              label="To"
               selectedOption={toAssetType}
               setSelectedOption={setToAssetType}
               options={AssetType.AllCurrencies(true)}

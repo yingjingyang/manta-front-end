@@ -7,6 +7,8 @@ import { ExternalAccountContextProvider } from 'contexts/externalAccountContext'
 import DeveloperConsole from 'components/elements/Developer/DeveloperConsole';
 import config from 'config';
 import { TxStatusContextProvider } from 'contexts/txStatusContext';
+import { SelectedTabContextProvider } from 'contexts/selectedTabContext';
+import { SelectedAssetTypeContextProvider } from 'contexts/selectedAssetTypeContext';
 import { NativeTokenWalletContextProvider } from 'contexts/nativeTokenWalletContext';
 
 function App() {
@@ -16,10 +18,16 @@ function App() {
         <PrivateWalletContextProvider>
           <NativeTokenWalletContextProvider>
             <TxStatusContextProvider>
-              <ThemeProvider>
-                <AppRouter />
-                {config.DEV_CONSOLE && <DeveloperConsole />}
-              </ThemeProvider>
+              <SelectedTabContextProvider>
+                <SelectedAssetTypeContextProvider>
+                  <TxStatusContextProvider>
+                    <ThemeProvider>
+                      <AppRouter />
+                      {config.DEV_CONSOLE && <DeveloperConsole />}
+                    </ThemeProvider>
+                  </TxStatusContextProvider>
+                </SelectedAssetTypeContextProvider>
+              </SelectedTabContextProvider>
             </TxStatusContextProvider>
           </NativeTokenWalletContextProvider>
         </PrivateWalletContextProvider>

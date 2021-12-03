@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PageContent, Navbar } from 'components/elements/Layouts';
 import FormSelect from 'components/elements/Form/FormSelect';
 import AssetType from 'types/AssetType';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import PublicPrivateToggle from 'pages/TransactPage/publicPrivateToggle';
 import PrivateAssetTabs from './privateAssetTabs';
 import PublicAssetTabs from './publicAssetTabs';
 import NativeTokenTabs from './nativeTokenTabs';
 
 const TransactPage = () => {
-  const [selectedAssetType, setSelectedAssetType] = useState(null);
-  const [selectedAssetIsPrivate, setSelectedAssetIsPrivate] = useState(false);
+  const { selectedAssetType, setSelectedAssetType } = useSelectedAssetType();
   const { txStatus } = useTxStatus();
 
-  let tabs;
+  let tabs = <div />;
   if (selectedAssetType?.isNativeToken) {
-    tabs = <NativeTokenTabs selectedAssetType={selectedAssetType} />;
-  } else if (selectedAssetIsPrivate) {
-    tabs = <PrivateAssetTabs selectedAssetType={selectedAssetType} />;
+    tabs = <NativeTokenTabs />;
+  } else if (selectedAssetType?.isPrivate) {
+    tabs = <PrivateAssetTabs />;
   } else {
-    tabs = <PublicAssetTabs selectedAssetType={selectedAssetType} />;
+    tabs = <PublicAssetTabs />;
   }
 
   return (
@@ -31,18 +31,13 @@ const TransactPage = () => {
             <h1 className="text-3xl pb-4 mb-0 font-semibold text-accent">
               Transact
             </h1>
-            <PublicPrivateToggle
-              selectedAssetIsPrivate={selectedAssetIsPrivate}
-              setSelectedAssetIsPrivate={setSelectedAssetIsPrivate}
-            />
+            <PublicPrivateToggle />
           </div>
           <FormSelect
-            label="Token"
             selectedOption={selectedAssetType}
             setSelectedOption={setSelectedAssetType}
-            options={AssetType.AllCurrencies(selectedAssetIsPrivate)}
+            options={AssetType.AllCurrencies(selectedAssetType.isPrivate)}
             disabled={txStatus?.isProcessing()}
-            selectedAssetIsPrivate={selectedAssetIsPrivate}
           />
           {tabs}
         </div>

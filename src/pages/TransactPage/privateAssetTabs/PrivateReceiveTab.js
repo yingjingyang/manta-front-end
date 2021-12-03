@@ -5,12 +5,12 @@ import { useSubstrate } from 'contexts/substrateContext';
 import { SignerInterface, BrowserAddressStore } from 'signer-interface';
 import { showError } from 'utils/ui/Notifications';
 import config from 'config';
-import PropTypes from 'prop-types';
-import AssetType from 'types/AssetType';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 
-const PrivateReceiveTab = ({ selectedAssetType }) => {
+const PrivateReceiveTab = () => {
   const { api } = useSubstrate();
   const [currentAddress, setCurrentAddress] = useState(null);
+  const { selectedAssetType } = useSelectedAssetType();
 
   useEffect(() => {
     setCurrentAddress(null);
@@ -61,10 +61,6 @@ const PrivateReceiveTab = ({ selectedAssetType }) => {
       </Button>
     </div>
   );
-};
-
-PrivateReceiveTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default PrivateReceiveTab;

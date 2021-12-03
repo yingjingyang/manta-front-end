@@ -1,18 +1,19 @@
 import Svgs from 'resources/icons';
-
 export default class AssetType {
   constructor(
     assetId,
-    name,
-    ticker,
+    baseName,
+    baseTicker,
     icon,
     numberOfDecimals,
     isPrivate = false,
     isNativeToken = false
   ) {
     this.assetId = assetId;
-    this.name = name;
-    this.ticker = ticker;
+    this.baseName = baseName;
+    this.baseTicker = baseTicker;
+    this.name = AssetType._getFullName(baseName, isPrivate);
+    this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
     this.icon = icon;
     this.numberOfDecimals = numberOfDecimals;
     this.isPrivate = isPrivate;
@@ -24,33 +25,30 @@ export default class AssetType {
   }
 
   static Polkadot(isPrivate) {
-    const name = isPrivate ? 'Fake Private Polkadot' : 'Fake Polkadot';
-    const ticker = isPrivate ? 'pDOT' : 'DOT';
-    return new AssetType(0, name, ticker, Svgs.TokenIcon, 10, isPrivate);
+    return new AssetType(0, 'Polkadot', 'DOT', Svgs.TokenIcon, 10, isPrivate);
   }
 
   static Kusama(isPrivate) {
-    const name = isPrivate ? 'Fake Private Kusama' : 'Fake Kusama';
-    const ticker = isPrivate ? 'pKSM' : 'KSM';
-    return new AssetType(1, name, ticker, Svgs.KusamaIcon, 12, isPrivate);
+    return new AssetType(1, 'Kusama', 'KSM', Svgs.KusamaIcon, 12, isPrivate);
   }
 
   static Bitcoin(isPrivate) {
-    const name = isPrivate ? 'Fake Private Bitcoin' : 'Fake Bitcoin';
-    const ticker = isPrivate ? 'pBTC' : 'BTC';
-    return new AssetType(2, name, ticker, Svgs.BitcoinIcon, 8, isPrivate);
+    return new AssetType(2, 'Bitcoin', 'BTC', Svgs.BitcoinIcon, 8, isPrivate);
   }
 
-  static Etherium(isPrivate) {
-    const name = isPrivate ? 'Fake Private Etherium' : 'Fake Etherium';
-    const ticker = isPrivate ? 'pETH' : 'ETH';
-    return new AssetType(3, name, ticker, Svgs.EtheriumIcon, 18, isPrivate);
+  static Ethereum(isPrivate) {
+    return new AssetType(
+      3,
+      'Ethereum',
+      'ETH',
+      Svgs.EtheriumIcon,
+      18,
+      isPrivate
+    );
   }
 
   static Acala(isPrivate) {
-    const name = isPrivate ? 'Fake Private Acala' : 'Fake Acala';
-    const ticker = isPrivate ? 'pACA' : 'ACA';
-    return new AssetType(4, name, ticker, Svgs.AcalaIcon, 18, isPrivate);
+    return new AssetType(4, 'Acala', 'ACA', Svgs.AcalaIcon, 18, isPrivate);
   }
 
   static AllCurrencies(isPrivate) {
@@ -58,7 +56,7 @@ export default class AssetType {
       AssetType.Polkadot(isPrivate),
       AssetType.Kusama(isPrivate),
       AssetType.Bitcoin(isPrivate),
-      AssetType.Etherium(isPrivate),
+      AssetType.Ethereum(isPrivate),
       AssetType.Acala(isPrivate)
     ];
     if (!isPrivate) {
@@ -67,7 +65,38 @@ export default class AssetType {
     return currencies;
   }
 
-  static AllPublicCurrencies(isPrivate) {
-    return [AssetType.Polkadot(isPrivate), AssetType.Kusama(isPrivate)];
+  static _getFullName(baseName, isPrivate) {
+    return isPrivate ? `Fake Private ${baseName}` : `Fake ${baseName}`;
+  }
+
+  static _getFullTicker(baseTicker, isPrivate) {
+    return isPrivate ? `p${baseTicker}` : baseTicker;
+  }
+
+  toPrivate() {
+    if (this.isNativeToken) {
+      throw new Error('Native token cannot be privatized');
+    }
+    return new AssetType(
+      this.assetId,
+      this.baseName,
+      this.baseTicker,
+      this.icon,
+      this.numberOfDecimals,
+      true,
+      this.isNativeToken
+    );
+  }
+
+  toPublic() {
+    return new AssetType(
+      this.assetId,
+      this.baseName,
+      this.baseTicker,
+      this.icon,
+      this.numberOfDecimals,
+      false,
+      this.isNativeToken
+    );
   }
 }

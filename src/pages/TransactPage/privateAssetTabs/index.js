@@ -1,30 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
-import PropTypes from 'prop-types';
-import AssetType from 'types/AssetType';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
+import { useSelectedTabIndex } from 'contexts/selectedTabContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import PrivateSendTab from './PrivateSendTab';
 import PrivateReceiveTab from './PrivateReceiveTab';
 import ToPublicTab from './ToPublicTab';
 
 const TABS = {
-  Receive: 'receive',
-  Send: 'send',
-  ToPublic: 'toPubliic',
+  Send: 0,
+  Receive: 1,
+  ToPublic: 2
 };
 
-const PrivateAssetTabs = ({ selectedAssetType }) => {
-  const [selectedTabIdx, setSelectedTabIdx] = useState(TABS.Send);
-
+const PrivateAssetTabs = () => {
+  const { selectedTabIndex, setSelectedTabIndex } = useSelectedTabIndex();
   const { txStatus } = useTxStatus();
 
   const onClickTab = (tab) => {
     if (txStatus?.isProcessing()) {
       return;
     }
-    setSelectedTabIdx(tab);
+    setSelectedTabIndex(tab);
   };
 
   return (
@@ -33,45 +31,41 @@ const PrivateAssetTabs = ({ selectedAssetType }) => {
         <TabMenu
           label="Send"
           onClick={() => onClickTab(TABS.Send)}
-          active={selectedTabIdx === TABS.Send}
+          active={selectedTabIndex === TABS.Send}
           className="rounded-l-lg"
         />
         <TabMenu
           label="Receive"
           onClick={() => onClickTab(TABS.Receive)}
-          active={selectedTabIdx === TABS.Receive}
+          active={selectedTabIndex === TABS.Receive}
         />
         <TabMenu
           label="To Public"
           onClick={() => onClickTab(TABS.ToPublic)}
-          active={selectedTabIdx === TABS.ToPublic}
+          active={selectedTabIndex === TABS.ToPublic}
           className="rounded-r-lg"
         />
       </TabMenuWrapper>
       <TabContentItemWrapper
         tabIndex={TABS.Send}
-        currentTabIndex={selectedTabIdx}
+        currentTabIndex={selectedTabIndex}
       >
-        <PrivateSendTab selectedAssetType={selectedAssetType} />
+        <PrivateSendTab />
       </TabContentItemWrapper>
       <TabContentItemWrapper
         tabIndex={TABS.Receive}
-        currentTabIndex={selectedTabIdx}
+        currentTabIndex={selectedTabIndex}
       >
-        <PrivateReceiveTab selectedAssetType={selectedAssetType} />
+        <PrivateReceiveTab />
       </TabContentItemWrapper>
       <TabContentItemWrapper
         tabIndex={TABS.ToPublic}
-        currentTabIndex={selectedTabIdx}
+        currentTabIndex={selectedTabIndex}
       >
-        <ToPublicTab selectedAssetType={selectedAssetType} />
+        <ToPublicTab />
       </TabContentItemWrapper>
     </>
   );
-};
-
-PrivateAssetTabs.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType),
 };
 
 export default PrivateAssetTabs;

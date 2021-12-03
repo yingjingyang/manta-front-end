@@ -14,25 +14,25 @@ import { selectCoins } from 'coin-selection';
 import { SignerInterface, BrowserAddressStore } from 'signer-interface';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import PropTypes from 'prop-types';
 import Decimal from 'decimal.js';
 
 import config from 'config';
-import AssetType from 'types/AssetType';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
   getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
-const PrivateSendTab = ({ selectedAssetType }) => {
+const PrivateSendTab = () => {
   const { api } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
   const { getSpendableAssetsByAssetId, getSpendableBalance } =
     usePrivateWallet();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { selectedAssetType } = useSelectedAssetType();
   const { getUserCanPayFee } = useNativeTokenWallet();
 
   const [privateBalance, setPrivateBalance] = useState(null);
@@ -89,6 +89,8 @@ const PrivateSendTab = ({ selectedAssetType }) => {
   };
 
   const onClickSend = async () => {
+    txResWasHandled.current = false;
+
     signerInterface.current = new SignerInterface(
       api,
       new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
@@ -98,8 +100,6 @@ const PrivateSendTab = ({ selectedAssetType }) => {
       showError('Open Manta Signer desktop app and sign in to continue');
       return;
     }
-
-    txResWasHandled.current = false;
 
     setTxStatus(TxStatus.processing());
 
@@ -219,10 +219,6 @@ const PrivateSendTab = ({ selectedAssetType }) => {
       )}
     </div>
   );
-};
-
-PrivateSendTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default PrivateSendTab;

@@ -9,8 +9,6 @@ import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import { useTxStatus } from 'contexts/txStatusContext';
-import PropTypes from 'prop-types';
-import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import getBalanceString from 'utils/ui/getBalanceString';
 import {
@@ -18,17 +16,19 @@ import {
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 import Decimal from 'decimal.js';
+import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
-const NativeTokenSendTab = ({ selectedAssetType }) => {
+const NativeTokenSendTab = () => {
   const { api } = useSubstrate();
-  const { externalAccount, externalAccountSigner } = useExternalAccount();
+  const { externalAccountSigner } = useExternalAccount();
   const { txStatus, setTxStatus } = useTxStatus();
+  const { selectedAssetType } = useSelectedAssetType();
   const { getUserCanPayFee, nativeTokenBalance } = useNativeTokenWallet();
 
   const [publicTransferAmount, setPublicTransferAmount] = useState(null);
   const [sendAmountInput, setSendAmountInput] = useState(null);
-  const [receivingAddress, setReceivingAddress] = useState('');
+  const [receivingAddress, setReceivingAddress] = useState(null);
   const [addressInfoText, setAddressInfoText] = useState('Receiver');
 
   const onPublicTransferSuccess = async (block) => {
@@ -156,10 +156,6 @@ const NativeTokenSendTab = ({ selectedAssetType }) => {
       )}
     </div>
   );
-};
-
-NativeTokenSendTab.propTypes = {
-  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default NativeTokenSendTab;
