@@ -7,6 +7,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended'
   ],
+  'parser': 'babel-eslint',
   'parserOptions': {
     'ecmaFeatures': {
       'jsx': true
@@ -18,6 +19,11 @@ module.exports = {
     'react',
     'eslint-plugin-import'
   ],
+  'globals': {
+    'process': true,
+    'require': true
+  },
+  'root': true,
   'rules': {
     'indent': [
       'error',
@@ -35,8 +41,8 @@ module.exports = {
       'error',
       'always'
     ],
-
     'no-unused-vars': ['error', { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': false }],
-    'import/order': ['error', {'groups': ['builtin', 'external', 'parent', 'sibling', 'index']}]
+    'import/order': ['error', {'groups': ['builtin', 'external', 'parent', 'sibling', 'index']}],
+    'jsx-quotes': ["error", "prefer-double"]
   }
 };

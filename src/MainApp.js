@@ -43,16 +43,16 @@ function MainApp() {
   }, [api, externalAccountSigner]);
 
   return (
-    <div className='main-app bg-primary'>
+    <div className="main-app bg-primary">
       <ScrollIntoView>
         <SidebarMenu />
         <Switch>
-          <Route path='/' render={() => <Redirect to='/transact' />} exact />
-          <Route path='/transact' component={TransactPage} exact />
-          <Route path='/govern' component={GovernPage} exact />
-          <Route path='/swap' component={SwapPage} exact />
+          <Route path="/" render={() => <Redirect to="/transact" />} exact />
+          <Route path="/transact" component={TransactPage} exact />
+          <Route path="/govern" component={GovernPage} exact />
+          <Route path="/swap" component={SwapPage} exact />
         </Switch>
-        <div className='p-4 hidden change-theme lg:block fixed right-0 bottom-0'>
+        <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
           <ChangeThemeButton />
         </div>
       </ScrollIntoView>

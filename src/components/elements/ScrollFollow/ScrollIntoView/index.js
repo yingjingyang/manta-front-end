@@ -1,5 +1,6 @@
-import { PureComponent } from "react";
-import { withRouter } from "react-router-dom";
+import { PureComponent } from 'react';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class ScrollIntoView extends PureComponent {
   componentDidMount = () => window.scrollTo(0, 0);
@@ -10,5 +11,10 @@ class ScrollIntoView extends PureComponent {
 
   render = () => this.props.children;
 }
+
+ScrollIntoView.propTypes = {
+  location: PropTypes.any,
+  children: PropTypes.element
+};
 
 export default withRouter(ScrollIntoView);

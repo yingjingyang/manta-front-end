@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import AssetType from 'types/AssetType';
+import PropTypes from 'prop-types';
+
 
 const SelectedAssetTypeContext = createContext();
 
@@ -33,6 +35,10 @@ export const SelectedAssetTypeContextProvider = (props) => {
       {props.children}
     </SelectedAssetTypeContext.Provider>
   );
+};
+
+SelectedAssetTypeContextProvider.propTypes = {
+  children: PropTypes.element
 };
 
 export const useSelectedAssetType = () => ({

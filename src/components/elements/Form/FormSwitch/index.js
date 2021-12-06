@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
 import './FormSwitch.css';
 
 const FormSwitch = ({
@@ -39,9 +38,11 @@ const FormSwitch = ({
 
 FormSwitch.propTypes = {
   checked: PropTypes.bool,
-  onChange: PropTypes.func,
   name: PropTypes.string,
+  onChange: PropTypes.func,
   disabled: PropTypes.bool,
+  onLabel: PropTypes.string,
+  offLabel: PropTypes.string,
   className: PropTypes.string,
 };
 

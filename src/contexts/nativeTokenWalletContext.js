@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
+import PropTypes from 'prop-types';
 import AssetType from 'types/AssetType';
 import { useSubstrate } from './substrateContext';
 import { useExternalAccount } from './externalAccountContext';
@@ -91,6 +92,10 @@ export const NativeTokenWalletContextProvider = (props) => {
       {props.children}
     </NativeTokenWalletContext.Provider>
   );
+};
+
+NativeTokenWalletContextProvider.propTypes = {
+  children: PropTypes.element
 };
 
 export const useNativeTokenWallet = () => ({

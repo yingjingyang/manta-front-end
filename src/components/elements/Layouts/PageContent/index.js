@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const PageContent = ({ children, className }) => {
   return (
@@ -12,6 +13,11 @@ const PageContent = ({ children, className }) => {
       {children}
     </section>
   );
+};
+
+PageContent.propTypes = {
+  children: PropTypes.element,
+  className: PropTypes.string
 };
 
 export default PageContent;

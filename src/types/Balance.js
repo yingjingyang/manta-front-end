@@ -32,9 +32,9 @@ export default class Balance {
     return !shouldFormat
       ? this.valueBaseUnits().toString()
       : `${this.valueBaseUnits().toNumber().toLocaleString(undefined, {
-          maximumFractionDigits: 3,
-          minimumFractionDigits: 0,
-        })} ${this.assetType.ticker}`;
+        maximumFractionDigits: 3,
+        minimumFractionDigits: 0,
+      })} ${this.assetType.ticker}`;
   }
 
   gt(other) {

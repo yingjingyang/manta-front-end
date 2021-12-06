@@ -1,6 +1,8 @@
 import { themeType } from 'constants/ThemeConstants';
 import { themeColorType } from 'constants/LocalStorageConstants';
 import React, { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
 
 const getInitialTheme = () => {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -47,4 +49,9 @@ export const ThemeProvider = ({ initialTheme, children }) => {
       {children}
     </ThemeContext.Provider>
   );
+};
+
+ThemeProvider.propTypes = {
+  initialTheme: PropTypes.string,
+  children: PropTypes.element
 };

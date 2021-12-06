@@ -130,7 +130,7 @@ const SwapPage = () => {
               options={AssetType.AllCurrencies(true)}
             />
             <FormInput
-              className='disabled'
+              className="disabled"
               value={toSwapAmount}
               onChange={(e) => setToSwapAmount(e.target.value)}
               type="number"

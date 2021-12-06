@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
+
 
 const SelectedTabContext = createContext();
 
@@ -15,6 +17,10 @@ export const SelectedTabContextProvider = (props) => {
       {props.children}
     </SelectedTabContext.Provider>
   );
+};
+
+SelectedTabContextProvider.propTypes = {
+  children: PropTypes.element
 };
 
 export const useSelectedTabIndex = () => ({

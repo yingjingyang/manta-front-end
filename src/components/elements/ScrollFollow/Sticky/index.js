@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import './index.css';
+import PropTypes from 'prop-types';
 
 const Sticky = ({ children, left = 250 }) => {
   const [isSticky, setSticky] = useState(false);
@@ -27,6 +28,11 @@ const Sticky = ({ children, left = 250 }) => {
       </div>
     </div>
   );
+};
+
+Sticky.propTypes = {
+  children: PropTypes.element,
+  left: PropTypes.number
 };
 
 export default Sticky;

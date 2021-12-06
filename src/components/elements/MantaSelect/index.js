@@ -2,13 +2,13 @@ import React from 'react';
 import Select from 'react-select';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
+import PropTypes from 'prop-types';
 
-const MantaSelect = ({ options, value, onChange, className, defaultValue }) => {
+const MantaSelect = ({ options, onChange, className, defaultValue }) => {
   const { txStatus } = useTxStatus();
 
   return (
     <Select
-      value={value}
       className={classNames('manta-select', className)}
       defaultValue={defaultValue}
       onChange={onChange}
@@ -18,6 +18,13 @@ const MantaSelect = ({ options, value, onChange, className, defaultValue }) => {
       isDisabled={txStatus?.isProcessing()}
     />
   );
+};
+
+MantaSelect.propTypes = {
+  options: PropTypes.object,
+  onChange: PropTypes.func,
+  className: PropTypes.string,
+  defaultValue: PropTypes.object
 };
 
 export default MantaSelect;

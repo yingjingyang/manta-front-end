@@ -23,7 +23,10 @@ const CardContent = ({ className, leftIcon = null, cardTitle, onClick, isShowAll
 
 CardContent.propTypes = {
   className: PropTypes.string,
+  leftIcon: PropTypes.element,
+  cardTitle: PropTypes.string,
   onClick: PropTypes.func,
+  isShowAll: PropTypes.bool
 };
 
 export default CardContent;

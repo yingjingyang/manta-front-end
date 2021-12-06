@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 const TableColumnHeader = ({ label, className, width = 'auto', children }) => {
   return (
@@ -13,6 +14,13 @@ const TableColumnHeader = ({ label, className, width = 'auto', children }) => {
       {label ? label : children}
     </div>
   );
+};
+
+TableColumnHeader.propTypes = {
+  label: PropTypes.string,
+  className: PropTypes.string,
+  width: PropTypes.string,
+  children: PropTypes.element
 };
 
 export default TableColumnHeader;

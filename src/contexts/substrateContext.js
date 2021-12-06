@@ -73,7 +73,7 @@ const connect = (state, dispatch) => {
   _api.on('connected', () => {
     dispatch({ type: 'CONNECT', payload: _api });
     // `ready` event is not emitted upon reconnection and is checked explicitly here.
-    _api.isReady.then((_api) => dispatch({ type: 'CONNECT_SUCCESS' }));
+    _api.isReady.then(() => dispatch({ type: 'CONNECT_SUCCESS' }));
   });
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
   _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));

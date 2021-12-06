@@ -5,6 +5,7 @@ import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import { SearchSvg, MenuSvg, CloseMenuSvg } from 'resources/svgs';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import AccountSelectDropdown from './AccountSelectDropdown';
 
 const Navbar = ({ isVisible = false, isSearch = false, hidden }) => {
@@ -66,6 +67,12 @@ const Navbar = ({ isVisible = false, isSearch = false, hidden }) => {
       )}
     </div>
   );
+};
+
+Navbar.propTypes = {
+  isVisible: PropTypes.bool,
+  isSearch: PropTypes.bool,
+  hidden: PropTypes.bool
 };
 
 export default Navbar;

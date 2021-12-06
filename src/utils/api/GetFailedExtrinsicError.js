@@ -9,6 +9,7 @@ export default function getFailedExtrinsicError(events, api) {
     .forEach(
       ({
         event: {
+          /* eslint-disable no-unused-vars */
           data: [error, info],
         },
       }) => {

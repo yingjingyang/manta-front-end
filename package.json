@@ -49,15 +49,9 @@
         "start": "craco start",
         "build": "craco build",
         "test": "craco test",
-        "lint": "eslint src/**/*.js",
+        "lint": "npx eslint src/**/*.js",
         "eject": "react-scripts eject",
         "deploy": "gh-pages -d build -m '[ci skip] Updates'"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
     },
     "browserslist": {
         "production": [
@@ -72,6 +66,7 @@
         ]
     },
     "devDependencies": {
+        "eslint": "^7.5.0",
         "babel-eslint": "^10.1.0",
         "eslint-config-react-app": "^6.0.0",
         "eslint-plugin-flowtype": "^5.9.0",

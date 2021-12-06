@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
-import PropTypes from 'prop-types';
-import AssetType from 'types/AssetType';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useSelectedTabIndex } from 'contexts/selectedTabContext';

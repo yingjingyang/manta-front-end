@@ -3,9 +3,12 @@ import getFailedExtrinsicError from './GetFailedExtrinsicError';
 
 export function makeTxResHandler(
   api,
+  /* eslint-disable no-unused-vars */
   onSuccess = (block) => null,
   onFailure = (block, error) => null,
   onUpdate = (message) => null
+  /* eslint-enable no-unused-vars */
+
 ) {
   return ({ status, events }) => {
     let error;
