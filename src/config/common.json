@@ -1,5 +1,4 @@
 {
     "APP_NAME": "manta-web-app",
-    "DEVELOPMENT_KEYRING": true,
     "RPC": {}
 }

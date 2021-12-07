@@ -1,5 +1,6 @@
 {
-    "PROVIDER_SOCKET": "ws://localhost:9944",
+    "PROVIDER_SOCKET": "wss://anjie.dolphin.red",
     "BIP_44_COIN_TYPE_ID": 1,
-    "DEV_CONSOLE": false
+    "DEV_CONSOLE": false,
+    "DEVELOPMENT_KEYRING": false
 }

@@ -12,7 +12,14 @@ const SidebarMenu = () => {
             <div className="logo border-white">
               <img src={Svgs.Logo} alt="logo" />
             </div>
-            <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">Dolphin</h1>
+            <div>
+              <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
+                Dolphin
+              </h1>
+              <h3 className="text-l mb-0 pl-3 font-semibold text-secondary">
+                Boto version
+              </h3>
+            </div>
           </div>
           <MainMenu />
         </div>

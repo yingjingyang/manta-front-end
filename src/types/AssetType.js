@@ -66,7 +66,7 @@ export default class AssetType {
   }
 
   static _getFullName(baseName, isPrivate) {
-    return isPrivate ? `Fake Private ${baseName}` : `Fake ${baseName}`;
+    return isPrivate ? `Test Private ${baseName}` : `Test ${baseName}`;
   }
 
   static _getFullTicker(baseTicker, isPrivate) {
