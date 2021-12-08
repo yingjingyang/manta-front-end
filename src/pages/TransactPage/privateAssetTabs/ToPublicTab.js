@@ -94,7 +94,7 @@ const ToPublicTab = () => {
 
     signerInterface.current = new SignerInterface(
       api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
+      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
     );
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {

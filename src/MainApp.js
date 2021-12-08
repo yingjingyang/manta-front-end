@@ -7,6 +7,7 @@ import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import store from 'store';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import config from 'config';
 
 function MainApp() {
   const { api } = useSubstrate();
@@ -15,19 +16,19 @@ function MainApp() {
   useEffect(() => {
     const shouldDevReset = async () => {
       if (process.env.NODE_ENV === 'production') return false;
-      const oldBlockNumber = store.get('block num') || 0;
+      const blockNumberStorageKey = `${config.BASE_STORAGE_KEY}blockNumber`;
+      const oldBlockNumber = store.get(blockNumberStorageKey) || 0;
       const currentBlock = await api.rpc.chain.getBlock();
       const currentBlockNumber = currentBlock.block.header.number.toNumber();
-      store.set('block num', currentBlockNumber);
+      store.set(blockNumberStorageKey, currentBlockNumber);
       return currentBlockNumber < oldBlockNumber;
     };
 
     const devClearLocalStorage = async () => {
-      store.set('mantaSpendableAssets', []);
-      store.set('mantaInternalAddresses', []);
-      store.set('mantaExternalAddresses', []);
-      store.set('mantaInternalAddressesUncommitedOffset', 0);
-      store.set('mantaDummyPublicAssetBalance', {});
+      store.set(`${config.BASE_STORAGE_KEY}SpendableAssets`, []);
+      store.set(`${config.BASE_STORAGE_KEY}InternalAddresses`, []);
+      store.set(`${config.BASE_STORAGE_KEY}ExternalAddresses`, []);
+      store.set(`${config.BASE_STORAGE_KEY}InternalAddressesUncommitedOffset`, 0);
       console.log('Reset local storage');
     };
 

@@ -27,7 +27,7 @@ export const PrivateWalletContextProvider = (props) => {
     const refreshPrivateAssets = async () => {
       const signerInterface = new SignerInterface(
         api,
-        new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID)
+        new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
       );
       const signerIsConnected = await signerInterface.signerIsConnected();
       if (signerIsConnected) {
