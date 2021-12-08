@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import FormInput from 'components/elements/Form/FormInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -11,10 +11,7 @@ import { showError, showSuccess } from 'utils/ui/Notifications';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
 import getBalanceString from 'utils/ui/getBalanceString';
-import {
-  getIsInsuficientFunds,
-  getTransferButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getTransferButtonIsDisabled } from 'utils/ui/formValidation';
 import Decimal from 'decimal.js';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
@@ -30,6 +27,13 @@ const NativeTokenSendTab = () => {
   const [sendAmountInput, setSendAmountInput] = useState(null);
   const [receivingAddress, setReceivingAddress] = useState(null);
   const [addressInfoText, setAddressInfoText] = useState('Receiver');
+
+  useEffect(() => {
+    const refreshAssetType = () => {
+      onChangeSendAmountInput(sendAmountInput);
+    };
+    refreshAssetType();
+  }, [selectedAssetType]);
 
   const onPublicTransferSuccess = async (block) => {
     showSuccess('Transfer successful');
@@ -77,14 +81,10 @@ const NativeTokenSendTab = () => {
     }
   };
 
-  const insufficientFunds = getIsInsuficientFunds(
-    publicTransferAmount,
-    nativeTokenBalance
-  );
   const buttonIsDisabled = getTransferButtonIsDisabled(
     publicTransferAmount,
+    nativeTokenBalance,
     receivingAddress,
-    insufficientFunds,
     txStatus
   );
 

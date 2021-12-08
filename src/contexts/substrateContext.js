@@ -4,8 +4,6 @@ import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import queryString from 'query-string';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
-import keyring from '@polkadot/ui-keyring';
 import config from '../config';
 
 const parsedQuery = queryString.parse(window.location.search);
@@ -18,8 +16,6 @@ const INIT_STATE = {
   socket: connectedSocket,
   jsonrpc: { ...jsonrpc, ...config.RPC },
   types: config.types,
-  keyring: null,
-  keyringState: null,
   api: null,
   apiError: null,
   apiState: null,
@@ -41,15 +37,6 @@ const reducer = (state, action) => {
 
   case 'CONNECT_ERROR':
     return { ...state, apiState: 'ERROR', apiError: action.payload };
-
-  case 'LOAD_KEYRING':
-    return { ...state, keyringState: 'LOADING' };
-
-  case 'SET_KEYRING':
-    return { ...state, keyring: action.payload, keyringState: 'READY' };
-
-  case 'KEYRING_ERROR':
-    return { ...state, keyring: null, keyringState: 'ERROR' };
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -79,42 +66,6 @@ const connect = (state, dispatch) => {
   _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
 };
 
-///
-// Loading accounts from dev and polkadot-js extension
-
-let loadAccts = false;
-const loadAccounts = (state, dispatch) => {
-  const asyncLoadAccounts = async () => {
-    dispatch({ type: 'LOAD_KEYRING' });
-    try {
-      await web3Enable(config.APP_NAME);
-      let allAccounts = await web3Accounts();
-      allAccounts = allAccounts.map(({ address, meta }) => ({
-        address,
-        meta: { ...meta, name: meta.name },
-      }));
-      keyring.loadAll(
-        { isDevelopment: config.DEVELOPMENT_KEYRING },
-        allAccounts
-      );
-      dispatch({ type: 'SET_KEYRING', payload: keyring });
-    } catch (e) {
-      console.error(e);
-      dispatch({ type: 'KEYRING_ERROR' });
-    }
-  };
-
-  const { keyringState } = state;
-  // If `keyringState` is not null `asyncLoadAccounts` is running.
-  if (keyringState) return;
-  // If `loadAccts` is true, the `asyncLoadAccounts` has been run once.
-  if (loadAccts) return dispatch({ type: 'SET_KEYRING', payload: keyring });
-
-  // This is the heavy duty work
-  loadAccts = true;
-  asyncLoadAccounts();
-};
-
 const SubstrateContext = React.createContext();
 
 const SubstrateContextProvider = (props) => {
@@ -125,11 +76,8 @@ const SubstrateContextProvider = (props) => {
     initState[key] =
       typeof props[key] === 'undefined' ? initState[key] : props[key];
   });
-
   const [state, dispatch] = useReducer(reducer, initState);
   connect(state, dispatch);
-  loadAccounts(state, dispatch);
-
   return (
     <SubstrateContext.Provider value={state}>
       {props.children}

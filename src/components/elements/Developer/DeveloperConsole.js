@@ -1,17 +1,23 @@
 // This component will simply add utility functions to your developer console.
-import { Keyring } from '@polkadot/api';
+import { useEffect } from 'react';
 import { useSubstrate } from 'contexts/substrateContext';
+import { useKeyring } from '../../../contexts/keyringContext';
 
 export default function DeveloperConsole() {
-  //
-  const keyring2 = new Keyring();
-  window.keyring2 = keyring2;
-  //
-  const { api, apiState, keyring, keyringState } = useSubstrate();
+  const { api, apiState } = useSubstrate();
+  const { keyring } = useKeyring();
+
+  useEffect(() => {
+    if (keyring) {
+      window.keyring = keyring;
+    }
+  }, [keyring]);
+
   if (apiState === 'READY') {
     window.api = api;
   }
-  if (keyringState === 'READY') {
+
+  if (keyring) {
     window.keyring = keyring;
   }
   window.util = require('@polkadot/util');

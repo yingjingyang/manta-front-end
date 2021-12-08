@@ -11,7 +11,7 @@ const TableHeaderWrapper = ({ children, className }) => {
 };
 
 TableHeaderWrapper.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.any,
   className: PropTypes.string,
 };
 

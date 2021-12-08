@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import MantaSelect from 'components/elements/MantaSelect';
-import { useSubstrate } from 'contexts/substrateContext';
+import { useKeyring } from 'contexts/keyringContext';
 
 const AccountSelectDropdown = () => {
-  const { keyring, keyringState } = useSubstrate();
+  const { keyring } = useKeyring();
   const { externalAccount, changeExternalAccount } = useExternalAccount();
   const [options, setOptions] = useState([]);
   const [defaultValue, setDefaultValue] = useState(null);
 
-
   useEffect(() => {
-    if (keyringState === 'READY') {
+    if (keyring) {
       setOptions(
         keyring.getPairs().map((account) => {
           return { value: account.address, label: account.meta.name };
@@ -24,12 +23,12 @@ const AccountSelectDropdown = () => {
           label: externalAccount.meta.name,
         });
     }
-  }, [externalAccount, keyringState, keyring]);
+  }, [externalAccount, keyring]);
 
   return (
     defaultValue && (
       <MantaSelect
-        onChange={(e) => changeExternalAccount(keyring.getPair(e.value))}
+        onChange={(e) => changeExternalAccount(keyring?.getPair(e.value))}
         options={options}
         className="w-40 border-0"
         defaultValue={defaultValue}

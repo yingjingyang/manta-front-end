@@ -38,7 +38,7 @@ export const SelectedAssetTypeContextProvider = (props) => {
 };
 
 SelectedAssetTypeContextProvider.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.any
 };
 
 export const useSelectedAssetType = () => ({

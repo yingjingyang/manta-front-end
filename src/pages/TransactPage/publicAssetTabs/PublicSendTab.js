@@ -15,7 +15,6 @@ import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import {
-  getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
@@ -33,6 +32,13 @@ const PublicSendTab = () => {
   const [sendAmountInput, setSendAmountInput] = useState(null);
   const [receivingAddress, setReceivingAddress] = useState(null);
   const [addressInfoText, setAddressInfoText] = useState('Receiver');
+
+  useEffect(() => {
+    const refreshAssetType = () => {
+      onChangeSendAmountInput(sendAmountInput);
+    };
+    refreshAssetType();
+  }, [selectedAssetType]);
 
   const refreshPublicBalance = async () => {
     const balanceAmount = await api.query.mantaPay.balances(
@@ -101,14 +107,10 @@ const PublicSendTab = () => {
     }
   };
 
-  const insufficientFunds = getIsInsuficientFunds(
-    publicTransferAmount,
-    publicBalance
-  );
   const buttonIsDisabled = getTransferButtonIsDisabled(
     publicTransferAmount,
+    publicBalance,
     receivingAddress,
-    insufficientFunds,
     txStatus
   );
 

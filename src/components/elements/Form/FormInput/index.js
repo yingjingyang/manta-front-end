@@ -62,15 +62,15 @@ const FormInput = ({
 };
 
 FormInput.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.any,
   onChange: PropTypes.func,
   className: PropTypes.string,
   isMax: PropTypes.bool,
   value: PropTypes.any,
   onClickMax: PropTypes.func,
-  prefixIcon: PropTypes.element,
+  prefixIcon: PropTypes.string,
   type: PropTypes.string,
-  step: PropTypes.number,
+  step: PropTypes.string,
   isDisabled: PropTypes.bool
 };
 

@@ -20,7 +20,7 @@ TableColumnHeader.propTypes = {
   label: PropTypes.string,
   className: PropTypes.string,
   width: PropTypes.string,
-  children: PropTypes.element
+  children: PropTypes.any
 };
 
 export default TableColumnHeader;

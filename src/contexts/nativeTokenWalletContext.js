@@ -95,7 +95,7 @@ export const NativeTokenWalletContextProvider = (props) => {
 };
 
 NativeTokenWalletContextProvider.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.any
 };
 
 export const useNativeTokenWallet = () => ({

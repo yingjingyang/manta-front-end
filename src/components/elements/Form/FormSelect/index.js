@@ -73,7 +73,7 @@ FormSelect.propTypes = {
   className: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.instanceOf(AssetType)),
   selectedOption: PropTypes.instanceOf(AssetType),
-  setSelectedOption: PropTypes.string,
+  setSelectedOption: PropTypes.func,
   disabled: PropTypes.bool
 };
 

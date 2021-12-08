@@ -1,39 +1,49 @@
-export function getIsInsuficientFunds(targetBalance, presentBalance) {
-  if (presentBalance === null) {
-    return false;
-  } else if (targetBalance === null) {
-    return false;
-  } else {
-    return targetBalance.gt(presentBalance);
-  }
-}
+
 
 export function getToPublicButtonIsDisabled(
   reclaimAmount,
-  insufficientFunds,
+  presentBalance,
   txStatus
 ) {
-  return !reclaimAmount || insufficientFunds || txStatus?.isProcessing();
+  return (
+    !presentBalance ||
+    !reclaimAmount ||
+    reclaimAmount.assetType.assetId !== presentBalance.assetType.assetId ||
+    getIsInsuficientFunds(reclaimAmount, presentBalance) ||
+    txStatus?.isProcessing()
+  );
 }
 
 export function getToPrivateButtonIsDisabled(
   mintAmount,
-  insufficientFunds,
+  presentBalance,
   txStatus
 ) {
-  return !mintAmount || insufficientFunds || txStatus?.isProcessing();
+  return (
+    !presentBalance ||
+    !mintAmount ||
+    mintAmount.assetType.assetId !== presentBalance.assetType.assetId ||
+    getIsInsuficientFunds(mintAmount, presentBalance) ||
+    txStatus?.isProcessing()
+  );
 }
 
 export function getTransferButtonIsDisabled(
   transferAmount,
+  presentBalance,
   receivingAddress,
-  insufficientFunds,
   txStatus
 ) {
   return (
+    !presentBalance ||
     !transferAmount ||
     !receivingAddress ||
-    insufficientFunds ||
+    transferAmount.assetType.assetId !== presentBalance.assetType.assetId ||
+    getIsInsuficientFunds(transferAmount, presentBalance) ||
     txStatus?.isProcessing()
   );
+}
+
+function getIsInsuficientFunds(targetBalance, presentBalance) {
+  return targetBalance.gt(presentBalance);
 }

@@ -99,7 +99,7 @@ export const PrivateWalletContextProvider = (props) => {
 };
 
 PrivateWalletContextProvider.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.any
 };
 
 export const usePrivateWallet = () => ({ ...useContext(PrivateWalletContext) });

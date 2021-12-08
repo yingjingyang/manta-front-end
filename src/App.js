@@ -10,28 +10,31 @@ import { TxStatusContextProvider } from 'contexts/txStatusContext';
 import { SelectedTabContextProvider } from 'contexts/selectedTabContext';
 import { SelectedAssetTypeContextProvider } from 'contexts/selectedAssetTypeContext';
 import { NativeTokenWalletContextProvider } from 'contexts/nativeTokenWalletContext';
+import { KeyringContextProvider } from './contexts/keyringContext';
 
 function App() {
   return (
     <SubstrateContextProvider>
-      <ExternalAccountContextProvider>
-        <PrivateWalletContextProvider>
-          <NativeTokenWalletContextProvider>
-            <TxStatusContextProvider>
-              <SelectedTabContextProvider>
-                <SelectedAssetTypeContextProvider>
-                  <TxStatusContextProvider>
-                    <ThemeProvider>
-                      <AppRouter />
-                      {config.DEV_CONSOLE && <DeveloperConsole />}
-                    </ThemeProvider>
-                  </TxStatusContextProvider>
-                </SelectedAssetTypeContextProvider>
-              </SelectedTabContextProvider>
-            </TxStatusContextProvider>
-          </NativeTokenWalletContextProvider>
-        </PrivateWalletContextProvider>
-      </ExternalAccountContextProvider>
+      <KeyringContextProvider>
+        <ExternalAccountContextProvider>
+          <PrivateWalletContextProvider>
+            <NativeTokenWalletContextProvider>
+              <TxStatusContextProvider>
+                <SelectedTabContextProvider>
+                  <SelectedAssetTypeContextProvider>
+                    <TxStatusContextProvider>
+                      <ThemeProvider>
+                        <AppRouter />
+                        {config.DEV_CONSOLE && <DeveloperConsole />}
+                      </ThemeProvider>
+                    </TxStatusContextProvider>
+                  </SelectedAssetTypeContextProvider>
+                </SelectedTabContextProvider>
+              </TxStatusContextProvider>
+            </NativeTokenWalletContextProvider>
+          </PrivateWalletContextProvider>
+        </ExternalAccountContextProvider>
+      </KeyringContextProvider>
     </SubstrateContextProvider>
   );
 }

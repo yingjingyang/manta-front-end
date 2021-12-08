@@ -21,7 +21,7 @@ const MantaSelect = ({ options, onChange, className, defaultValue }) => {
 };
 
 MantaSelect.propTypes = {
-  options: PropTypes.object,
+  options: PropTypes.array,
   onChange: PropTypes.func,
   className: PropTypes.string,
   defaultValue: PropTypes.object

@@ -53,5 +53,5 @@ export const ThemeProvider = ({ initialTheme, children }) => {
 
 ThemeProvider.propTypes = {
   initialTheme: PropTypes.string,
-  children: PropTypes.element
+  children: PropTypes.any
 };

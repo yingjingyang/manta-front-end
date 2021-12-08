@@ -20,7 +20,7 @@ export const SelectedTabContextProvider = (props) => {
 };
 
 SelectedTabContextProvider.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.any
 };
 
 export const useSelectedTabIndex = () => ({

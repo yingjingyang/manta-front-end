@@ -16,7 +16,6 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
-  getIsInsuficientFunds,
   getToPublicButtonIsDisabled
 } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
@@ -37,6 +36,13 @@ const ToPublicTab = () => {
   const coinSelection = useRef(null);
   const signerInterface = useRef(null);
   const [privateBalance, setPrivateBalance] = useState(null);
+
+  useEffect(() => {
+    const refreshAssetType = () => {
+      onChangeWithdrawAmountInput(withdrawAmountInput);
+    };
+    refreshAssetType();
+  }, [selectedAssetType]);
 
   useEffect(() => {
     const displaySpendableBalance = async () => {
@@ -142,13 +148,9 @@ const ToPublicTab = () => {
       onChangeWithdrawAmountInput(privateBalance.toString(false));
   };
 
-  const insufficientFunds = getIsInsuficientFunds(
-    reclaimAmount,
-    privateBalance
-  );
   const buttonIsDisabled = getToPublicButtonIsDisabled(
     reclaimAmount,
-    insufficientFunds,
+    privateBalance,
     txStatus
   );
 

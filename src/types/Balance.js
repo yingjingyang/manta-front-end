@@ -12,6 +12,9 @@ export default class Balance {
       new Decimal(assetType.numberOfDecimals)
     );
     const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(valueBaseUnits);
+    // This conversion to BN doesn't work if our valueAtomicUnits Decimal
+    // is formatted as an exponent
+    Decimal.set({ toExpPos: 1000 });
     return new Balance(assetType, new BN(valueAtomicUnits.toString()));
   }
 
@@ -39,14 +42,14 @@ export default class Balance {
 
   gt(other) {
     if (this.assetType.assetId !== other.assetType.assetId) {
-      throw new Error('Cannot comparse different asset types');
+      throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.gt(other.valueAtomicUnits);
   }
 
   lt(other) {
     if (this.assetType.assetId !== other.assetType.assetId) {
-      throw new Error('Cannot comparse different asset types');
+      throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.lt(other.valueAtomicUnits);
   }

@@ -41,8 +41,8 @@ FormSwitch.propTypes = {
   name: PropTypes.string,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
-  onLabel: PropTypes.string,
-  offLabel: PropTypes.string,
+  onLabel: PropTypes.object,
+  offLabel: PropTypes.object,
   className: PropTypes.string,
 };
 

@@ -15,11 +15,11 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
-  getIsInsuficientFunds,
   getToPrivateButtonIsDisabled
 } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
+import PropTypes from 'prop-types';
 
 const ToPrivateTab = () => {
   const { api } = useSubstrate();
@@ -32,6 +32,13 @@ const ToPrivateTab = () => {
   const [mintAmount, setMintAmount] = useState(null);
   const [publicBalance, setPublicBalance] = useState(null);
   let signerInterface = useRef(null);
+
+  useEffect(() => {
+    const refreshAssetType = () => {
+      onChangeDepositAmountInput(depositAmountInput);
+    };
+    refreshAssetType();
+  }, [selectedAssetType]);
 
   const refreshPublicBalance = async () => {
     try {
@@ -130,10 +137,9 @@ const ToPrivateTab = () => {
     if (publicBalance)
       onChangeDepositAmountInput(publicBalance.toString(false));
   });
-  const insufficientFunds = getIsInsuficientFunds(mintAmount, publicBalance);
   const buttonIsDisabled = getToPrivateButtonIsDisabled(
     mintAmount,
-    insufficientFunds,
+    publicBalance,
     txStatus
   );
 
@@ -166,7 +172,7 @@ const ToPrivateTab = () => {
 };
 
 ToPrivateTab.propTypes = {
-  selectedAssetType: AssetType
+  selectedAssetType: PropTypes.instanceOf(AssetType)
 };
 
 export default ToPrivateTab;

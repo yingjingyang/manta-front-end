@@ -20,7 +20,6 @@ import config from 'config';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import {
-  getIsInsuficientFunds,
   getTransferButtonIsDisabled
 } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
@@ -43,6 +42,13 @@ const PrivateSendTab = () => {
   const coinSelection = useRef(null);
   const txResWasHandled = useRef(null);
   const signerInterface = useRef(null);
+
+  useEffect(() => {
+    const refreshAssetType = () => {
+      onChangeSendAmountInput(sendAmountInput);
+    };
+    refreshAssetType();
+  }, [selectedAssetType]);
 
   useEffect(() => {
     const displaySpendableBalance = async () => {
@@ -135,14 +141,10 @@ const PrivateSendTab = () => {
     }
   };
 
-  const insufficientFunds = getIsInsuficientFunds(
-    privateTransferAmount,
-    privateBalance
-  );
   const buttonIsDisabled = getTransferButtonIsDisabled(
     privateTransferAmount,
+    privateBalance,
     receivingAddress,
-    insufficientFunds,
     txStatus
   );
 

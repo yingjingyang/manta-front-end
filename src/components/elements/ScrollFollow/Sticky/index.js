@@ -31,7 +31,7 @@ const Sticky = ({ children, left = 250 }) => {
 };
 
 Sticky.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.any,
   left: PropTypes.number
 };
 
