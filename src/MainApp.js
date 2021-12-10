@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { TransactPage, GovernPage, SwapPage } from 'pages';
+import MissingRequiredSoftwareModal from 'components/elements/Modal/missingRequiredSoftwareModal';
 import { SidebarMenu } from 'components/elements/Layouts';
 import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
@@ -47,6 +48,7 @@ function MainApp() {
     <div className="main-app bg-primary">
       <ScrollIntoView>
         <SidebarMenu />
+        <MissingRequiredSoftwareModal />
         <Switch>
           <Route path="/" render={() => <Redirect to="/transact" />} exact />
           <Route path="/transact" component={TransactPage} exact />

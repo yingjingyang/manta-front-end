@@ -21,6 +21,7 @@ const PrivateWalletContext = createContext();
 export const PrivateWalletContextProvider = (props) => {
   const { api } = useSubstrate();
   const [spendableAssets, setSpendableAssets] = useState(null);
+  const [signerIsConnected, setSignerIsConnected] = useState(null);
   const refreshIsInProgress = useRef(false);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export const PrivateWalletContextProvider = (props) => {
         new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
       );
       const signerIsConnected = await signerInterface.signerIsConnected();
+      setSignerIsConnected(signerIsConnected);
       if (signerIsConnected) {
         const privateAssets = await signerInterface.recoverAccount();
         setSpendableAssets(privateAssets);
@@ -88,7 +90,8 @@ export const PrivateWalletContextProvider = (props) => {
     getSpendableAssetsByAssetId: getSpendableAssetsByAssetId,
     saveSpendableAssets: saveSpendableAssets,
     saveSpendableAsset: saveSpendableAsset,
-    getSpendableBalance: getSpendableBalance
+    getSpendableBalance: getSpendableBalance,
+    signerIsConnected: signerIsConnected
   };
 
   return (

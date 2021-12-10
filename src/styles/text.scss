@@ -1,18 +1,28 @@
 .manta-blue {
-  color: $blue-primary-color;
+    color: $blue-primary-color;
 }
+
 .manta-prime-blue {
-  color: $blue-primary-color;
+    color: $blue-primary-color;
 }
+
 .manta-green {
-  color: $green-primary-color;
+    color: $green-primary-color;
 }
+
 .manta-gray {
-  color: $gray-light-color;
+    color: $gray-light-color;
 }
+
 .manta-dark-gray {
-  color: $gray-dark-color;
+    color: $gray-dark-color;
 }
+
 .text-blue-thirdry {
-  color: $blue-thirdry-color;
+    color: $blue-thirdry-color;
+}
+
+.link-text {
+    color: $blue-primary-color !important;
+    text-decoration: underline;
 }

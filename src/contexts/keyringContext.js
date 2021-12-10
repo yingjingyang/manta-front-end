@@ -38,10 +38,12 @@ export const KeyringContextProvider = (props) => {
       if (polkadotJsIsInjected()) {
         await initKeyring();
       } else {
-        const timer = setInterval(async () => {
-          if (!polkadotJsIsInjected()) return;
-          await initKeyring();
-          clearInterval(timer);
+        setTimeout(async () => {
+          if (!polkadotJsIsInjected()) {
+            setKeyring(false);
+          } else if (!keyring) {
+            await initKeyring();
+          }
         }, 500);
       }
     };

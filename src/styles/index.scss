@@ -5,12 +5,21 @@
 @import './common.scss';
 @import './layouts.scss';
 @import './components.scss';
-body {
+body,
+html {
     font-family: 'Ubuntu Mono', monospace !important;
     font-size: 16px !important;
 }
 
-.main-app {}
+.ui,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Ubuntu Mono', monospace !important;
+}
 
 // diable input auto increment
 input[type='number']::-webkit-inner-spin-button,
