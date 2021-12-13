@@ -15,9 +15,7 @@ import config from 'config';
 import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
-import {
-  getToPublicButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getToPublicButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
@@ -61,7 +59,7 @@ const ToPublicTab = () => {
     if (txResWasHandled.current === true) {
       return;
     }
-    showSuccess('Withdrawal successful');
+    showSuccess('Withdrawal successful', block);
     signerInterface.current.cleanupTxSuccess();
     coinSelection.current = null;
     txResWasHandled.current = true;
@@ -94,7 +92,10 @@ const ToPublicTab = () => {
 
     signerInterface.current = new SignerInterface(
       api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
+      new BrowserAddressStore(
+        config.BIP_44_COIN_TYPE_ID,
+        config.BASE_STORAGE_KEY
+      )
     );
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {

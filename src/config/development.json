@@ -1,7 +1,8 @@
 {
-    "PROVIDER_SOCKET": "ws://localhost:9944",
-    "BIP_44_COIN_TYPE_ID": 1,
-    "DEV_CONSOLE": true,
-    "DEVELOPMENT_KEYRING": true,
-    "BASE_STORAGE_KEY": "dolphinDev"
+  "PROVIDER_SOCKET": "ws://localhost:9944",
+  "BIP_44_COIN_TYPE_ID": 1,
+  "DEV_CONSOLE": true,
+  "DEVELOPMENT_KEYRING": true,
+  "BASE_STORAGE_KEY": "dolphinDev",
+  "SUBSCAN_URL": "https://dolphin.subscan.io"
 }

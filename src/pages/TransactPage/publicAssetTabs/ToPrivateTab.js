@@ -14,9 +14,7 @@ import AssetType from 'types/AssetType';
 import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
-import {
-  getToPrivateButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getToPrivateButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 import PropTypes from 'prop-types';
@@ -66,7 +64,7 @@ const ToPrivateTab = () => {
     refreshPublicBalance();
     signerInterface.current.cleanupTxSuccess();
     setTxStatus(TxStatus.finalized(block));
-    showSuccess('Deposit successful');
+    showSuccess('Deposit successful', block);
   };
 
   const onDepositFailure = (block, error) => {
@@ -89,7 +87,10 @@ const ToPrivateTab = () => {
   const onClickDeposit = async () => {
     signerInterface.current = new SignerInterface(
       api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
+      new BrowserAddressStore(
+        config.BIP_44_COIN_TYPE_ID,
+        config.BASE_STORAGE_KEY
+      )
     );
 
     const signerIsConnected = await signerInterface.current.signerIsConnected();

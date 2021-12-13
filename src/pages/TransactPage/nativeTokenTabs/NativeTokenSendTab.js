@@ -36,7 +36,7 @@ const NativeTokenSendTab = () => {
   }, [selectedAssetType]);
 
   const onPublicTransferSuccess = async (block) => {
-    showSuccess('Transfer successful');
+    showSuccess('Transfer successful', block);
     setTxStatus(TxStatus.finalized(block));
   };
 

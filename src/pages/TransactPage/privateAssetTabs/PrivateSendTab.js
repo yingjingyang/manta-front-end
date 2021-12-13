@@ -19,9 +19,7 @@ import Decimal from 'decimal.js';
 import config from 'config';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
-import {
-  getTransferButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getTransferButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
@@ -69,7 +67,7 @@ const PrivateSendTab = () => {
     }
     signerInterface.current.cleanupTxSuccess();
     txResWasHandled.current = true;
-    showSuccess('Transfer successful');
+    showSuccess('Transfer successful', block);
     setTxStatus(TxStatus.finalized(block));
   };
 
@@ -99,7 +97,10 @@ const PrivateSendTab = () => {
 
     signerInterface.current = new SignerInterface(
       api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
+      new BrowserAddressStore(
+        config.BIP_44_COIN_TYPE_ID,
+        config.BASE_STORAGE_KEY
+      )
     );
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {

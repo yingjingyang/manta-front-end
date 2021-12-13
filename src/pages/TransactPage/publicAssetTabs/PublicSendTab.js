@@ -14,9 +14,7 @@ import AssetType from 'types/AssetType';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
-import {
-  getTransferButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getTransferButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
@@ -59,7 +57,7 @@ const PublicSendTab = () => {
   }, [selectedAssetType, externalAccount, api]);
 
   const onPublicTransferSuccess = async (block) => {
-    showSuccess('Transfer successful');
+    showSuccess('Transfer successful', block);
     setTxStatus(TxStatus.finalized(block));
     refreshPublicBalance();
   };
