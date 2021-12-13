@@ -46,7 +46,7 @@ export const PrivateWalletContextProvider = (props) => {
       await api.isReady;
       api.rpc.chain.subscribeNewHeads(async () => {
         if (refreshIsInProgress.current === false) {
-          refreshIsInProgress.current === true;
+          refreshIsInProgress.current = true;
           await refreshPrivateAssets();
           refreshIsInProgress.current = false;
         }
