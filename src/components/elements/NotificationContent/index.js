@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import config from 'config';
 
@@ -11,12 +12,18 @@ const NotificationContent = ({ msg, block = '' }) => {
           className="link-text"
           href={`${config.SUBSCAN_URL}/block/${block}`}
           target="_blank"
+          rel="noreferrer"
         >
           View Transaction
         </a>
       )}
     </>
   );
+};
+
+NotificationContent.propTypes = {
+  msg: PropTypes.string,
+  block: PropTypes.string
 };
 
 export default NotificationContent;
