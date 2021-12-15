@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 
 import config from 'config';
 
-const NotificationContent = ({ msg, block = '' }) => {
+const NotificationContent = ({ msg, extrinsic = '' }) => {
   return (
     <>
       <p style={{ fontSize: '1rem' }}>{msg}</p>
-      {block && (
+      {extrinsic && (
         <a
           className="link-text"
-          href={`${config.SUBSCAN_URL}/extrinsic/${block}`}
+          href={`${config.SUBSCAN_URL}/extrinsic/${extrinsic}`}
           target="_blank"
           rel="noreferrer"
         >
