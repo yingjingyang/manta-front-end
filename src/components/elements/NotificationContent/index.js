@@ -10,7 +10,7 @@ const NotificationContent = ({ msg, block = '' }) => {
       {block && (
         <a
           className="link-text"
-          href={`${config.SUBSCAN_URL}/block/${block}`}
+          href={`${config.SUBSCAN_URL}/extrinsic/${block}`}
           target="_blank"
           rel="noreferrer"
         >

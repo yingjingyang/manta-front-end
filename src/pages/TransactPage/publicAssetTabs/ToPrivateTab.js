@@ -60,11 +60,11 @@ const ToPrivateTab = () => {
     refreshPublicBalanceOnChange();
   }, [selectedAssetType, externalAccount, api]);
 
-  const onDepositSuccess = (block) => {
+  const onDepositSuccess = (block, extrinsic = '') => {
     refreshPublicBalance();
     signerInterface.current.cleanupTxSuccess();
     setTxStatus(TxStatus.finalized(block));
-    showSuccess('Deposit successful', block);
+    showSuccess('Deposit successful', extrinsic);
   };
 
   const onDepositFailure = (block, error) => {

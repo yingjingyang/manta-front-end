@@ -60,14 +60,14 @@ const PrivateSendTab = () => {
     displaySpendableBalance();
   }, [selectedAssetType, txStatus, getSpendableBalance, api]);
 
-  const onPrivateTransferSuccess = async (block) => {
+  const onPrivateTransferSuccess = async (block, extrinsic = '') => {
     // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
     signerInterface.current.cleanupTxSuccess();
     txResWasHandled.current = true;
-    showSuccess('Transfer successful', block);
+    showSuccess('Transfer successful', extrinsic);
     setTxStatus(TxStatus.finalized(block));
   };
 

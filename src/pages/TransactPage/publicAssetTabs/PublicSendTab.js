@@ -56,8 +56,8 @@ const PublicSendTab = () => {
     refreshPublicBalanceOnChange();
   }, [selectedAssetType, externalAccount, api]);
 
-  const onPublicTransferSuccess = async (block) => {
-    showSuccess('Transfer successful', block);
+  const onPublicTransferSuccess = async (block, extrinsic = '') => {
+    showSuccess('Transfer successful', extrinsic);
     setTxStatus(TxStatus.finalized(block));
     refreshPublicBalance();
   };

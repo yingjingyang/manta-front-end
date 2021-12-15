@@ -54,12 +54,12 @@ const ToPublicTab = () => {
     displaySpendableBalance();
   }, [selectedAssetType, txStatus, getSpendableBalance, api]);
 
-  const onReclaimSuccess = async (block) => {
+  const onReclaimSuccess = async (block, extrinsic = '') => {
     // Every tx in the batch gets handled by default, only handle 1
     if (txResWasHandled.current === true) {
       return;
     }
-    showSuccess('Withdrawal successful', block);
+    showSuccess('Withdrawal successful', extrinsic);
     signerInterface.current.cleanupTxSuccess();
     coinSelection.current = null;
     txResWasHandled.current = true;
