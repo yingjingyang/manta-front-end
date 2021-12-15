@@ -20,10 +20,10 @@ export const showWarning = (msg) => {
   });
 };
 
-export const showSuccess = (msg, block = '') => {
+export const showSuccess = (msg, extrinsic = '') => {
   Notification({
     title: 'Success',
-    message: <NotificationContent msg={msg} block={block} />,
+    message: <NotificationContent msg={msg} extrinsic={extrinsic} />,
     type: 'success',
     duration: 0
   });
