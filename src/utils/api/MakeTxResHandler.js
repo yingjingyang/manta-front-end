@@ -12,8 +12,7 @@ export function makeTxResHandler(
   return async ({ status, events }) => {
     let error,
       extrinsic = '';
-    if (status.isInBlock) {
-    }
+
     if (status.isInBlock || status.isFinalized) {
       error = getFailedExtrinsicError(events, api);
     }

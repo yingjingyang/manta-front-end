@@ -23,7 +23,7 @@ const NotificationContent = ({ msg, extrinsic = '' }) => {
 
 NotificationContent.propTypes = {
   msg: PropTypes.string,
-  block: PropTypes.string
+  extrinsic: PropTypes.string
 };
 
 export default NotificationContent;
