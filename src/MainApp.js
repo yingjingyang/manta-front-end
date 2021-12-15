@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { TransactPage, GovernPage, SwapPage } from 'pages';
 import MissingRequiredSoftwareModal from 'components/elements/Modal/missingRequiredSoftwareModal';
+import MobileNotSupportedModal from 'components/elements/Modal/mobileNotSupported';
 import { SidebarMenu } from 'components/elements/Layouts';
 import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
@@ -9,10 +10,12 @@ import store from 'store';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import config from 'config';
+import userIsMobile from 'utils/ui/userIsMobile';
 
 function MainApp() {
   const { api } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
+  const onMobile = userIsMobile();
 
   useEffect(() => {
     const shouldDevReset = async () => {
@@ -29,7 +32,10 @@ function MainApp() {
       store.set(`${config.BASE_STORAGE_KEY}SpendableAssets`, []);
       store.set(`${config.BASE_STORAGE_KEY}InternalAddresses`, []);
       store.set(`${config.BASE_STORAGE_KEY}ExternalAddresses`, []);
-      store.set(`${config.BASE_STORAGE_KEY}InternalAddressesUncommitedOffset`, 0);
+      store.set(
+        `${config.BASE_STORAGE_KEY}InternalAddressesUncommitedOffset`,
+        0
+      );
       console.log('Reset local storage');
     };
 
@@ -48,7 +54,11 @@ function MainApp() {
     <div className="main-app bg-primary">
       <ScrollIntoView>
         <SidebarMenu />
-        <MissingRequiredSoftwareModal />
+        {onMobile ? (
+          <MobileNotSupportedModal />
+        ) : (
+          <MissingRequiredSoftwareModal />
+        )}
         <Switch>
           <Route path="/" render={() => <Redirect to="/transact" />} exact />
           <Route path="/transact" component={TransactPage} exact />
