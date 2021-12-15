@@ -57,7 +57,7 @@ const PrivateReceiveTab = () => {
         onClick={onClickNewAddress}
         className="btn-primary w-full btn-hover text-lg py-3"
       >
-        New address
+        New private address
       </Button>
     </div>
   );

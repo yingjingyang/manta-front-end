@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { web3FromSource } from '@polkadot/extension-dapp';
+import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
 
@@ -20,11 +21,18 @@ export const ExternalAccountContextProvider = (props) => {
   const [externalAccountSigner, setExternalAccountSigner] = useState(null);
 
   useEffect(() => {
-    if (keyring && api) {
-      const allAccounts = keyring.getPairs();
-      const initialAccount = allAccounts.length > 0 ? allAccounts[0] : null;
-      changeExternalAccount(initialAccount);
-    }
+    const setInitialExternalAccount = () => {
+      if (keyring && api && keyring.getPairs().length > 0) {
+        // The user's default account is either their last accessed polkadot.js account,
+        // or, as a fallback, the first account in their polkadot.js wallet
+        let initialAccount = (
+          getLastAccessedExternalAccount(keyring) ||
+          keyring.getPairs()[0]
+        );
+        changeExternalAccount(initialAccount);
+      }
+    };
+    setInitialExternalAccount();
   }, [keyring, api]);
 
   useEffect(() => {
