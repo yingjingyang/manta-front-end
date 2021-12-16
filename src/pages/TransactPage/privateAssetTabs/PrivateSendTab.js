@@ -19,9 +19,7 @@ import Decimal from 'decimal.js';
 import config from 'config';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
-import {
-  getTransferButtonIsDisabled
-} from 'utils/ui/formValidation';
+import { getTransferButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 
@@ -62,14 +60,14 @@ const PrivateSendTab = () => {
     displaySpendableBalance();
   }, [selectedAssetType, txStatus, getSpendableBalance, api]);
 
-  const onPrivateTransferSuccess = async (block) => {
+  const onPrivateTransferSuccess = async (block, extrinsic = '') => {
     // Every batched tx gets passed separately, only handle the first
     if (txResWasHandled.current === true) {
       return;
     }
     signerInterface.current.cleanupTxSuccess();
     txResWasHandled.current = true;
-    showSuccess('Transfer successful');
+    showSuccess('Transfer successful', extrinsic);
     setTxStatus(TxStatus.finalized(block));
   };
 
@@ -99,7 +97,10 @@ const PrivateSendTab = () => {
 
     signerInterface.current = new SignerInterface(
       api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
+      new BrowserAddressStore(
+        config.BIP_44_COIN_TYPE_ID,
+        config.BASE_STORAGE_KEY
+      )
     );
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {

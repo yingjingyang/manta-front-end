@@ -4,14 +4,15 @@ import getFailedExtrinsicError from './GetFailedExtrinsicError';
 export function makeTxResHandler(
   api,
   /* eslint-disable no-unused-vars */
-  onSuccess = (block) => null,
+  onSuccess = (block, extrinsic) => null,
   onFailure = (block, error) => null,
   onUpdate = (message) => null
   /* eslint-enable no-unused-vars */
-
 ) {
-  return ({ status, events }) => {
-    let error;
+  return async ({ status, events }) => {
+    let error,
+      extrinsic = '';
+
     if (status.isInBlock || status.isFinalized) {
       error = getFailedExtrinsicError(events, api);
     }
@@ -20,7 +21,18 @@ export function makeTxResHandler(
     } else if (status.isFinalized && error) {
       onFailure(status.asFinalized.toString(), error);
     } else if (status.isFinalized) {
-      onSuccess(status.asFinalized.toString());
+      try {
+        const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
+        const extrinsics = signedBlock.block.extrinsics;
+
+        extrinsic =
+          extrinsics && extrinsics.length > 0
+            ? extrinsics[extrinsics.length - 1].hash.toHex()
+            : '';
+      } catch (err) {
+        console.err(err);
+      }
+      onSuccess(status.asFinalized.toString(), extrinsic);
     } else {
       onUpdate(status.type);
     }

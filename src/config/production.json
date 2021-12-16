@@ -1,7 +1,8 @@
 {
-    "PROVIDER_SOCKET": "wss://anjie.dolphin.red",
-    "BIP_44_COIN_TYPE_ID": 1,
-    "DEV_CONSOLE": false,
-    "DEVELOPMENT_KEYRING": false,
-    "BASE_STORAGE_KEY": "dolphinProd"
+  "PROVIDER_SOCKET": "wss://anjie.dolphin.red",
+  "BIP_44_COIN_TYPE_ID": 1,
+  "DEV_CONSOLE": false,
+  "DEVELOPMENT_KEYRING": false,
+  "BASE_STORAGE_KEY": "dolphinProd",
+  "SUBSCAN_URL": "https://dolphin.subscan.io"
 }
