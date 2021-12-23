@@ -15,7 +15,7 @@ const Navbar = ({ isVisible = false, isSearch = false, hidden }) => {
     <div>
       <div
         className={classNames(
-          'navbar bg-secondary z-50 lg:bg-primary items-center fixed left-0  lg:top-4 right-0 lg:relative p-4 lg:py-0 lg:ml-6 md:px-6 flex justify-between lg:justify-end',
+          'navbar bg-secondary z-50 lg:bg-primary items-center fixed left-0  lg:top-4 right-0 lg:relative px-4 py-2 lg:py-0 lg:ml-6 md:px-6 flex justify-between lg:justify-end',
           { 'lg:hidden': isVisible }
         )}
       >

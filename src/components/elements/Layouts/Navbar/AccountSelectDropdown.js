@@ -33,12 +33,15 @@ const AccountSelectDropdown = () => {
 
   return (
     defaultValue && (
-      <MantaSelect
-        onChange={e => onChangeCurrentAccount(e.value)}
-        options={options}
-        className="w-40 border-0"
-        defaultValue={defaultValue}
-      />
+      <div>
+        <p className="text-primary text-sm pl-7 pb-1">Public Account</p>
+        <MantaSelect
+          onChange={e => onChangeCurrentAccount(e.value)}
+          options={options}
+          className="w-40 border-0"
+          defaultValue={defaultValue}
+        />
+      </div>
     )
   );
 };

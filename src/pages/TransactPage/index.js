@@ -25,7 +25,7 @@ const TransactPage = () => {
   return (
     <PageContent>
       <Navbar />
-      <div className="flex justify-center pt-20 lg:pt-8 pb-4">
+      <div className="flex justify-center pt-20 mt-2 lg:pt-4 pb-4">
         <div className="w-full md:w-2/3 lg:w-1/3 lg:min-w-layout p-4 sm:p-8 bg-secondary rounded-lg">
           <div>
             <h1 className="text-3xl pb-4 mb-0 font-semibold text-accent">
