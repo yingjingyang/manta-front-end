@@ -11,17 +11,16 @@ import { base58Decode } from '@polkadot/util-crypto';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import { selectCoins } from 'coin-selection';
-import { SignerInterface, BrowserAddressStore } from 'signer-interface';
+import { SignerInterface } from 'signer-interface';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Decimal from 'decimal.js';
-
-import config from 'config';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
 import { getTransferButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
 
 const PrivateSendTab = () => {
   const { api } = useSubstrate();
@@ -95,13 +94,7 @@ const PrivateSendTab = () => {
   const onClickSend = async () => {
     txResWasHandled.current = false;
 
-    signerInterface.current = new SignerInterface(
-      api,
-      new BrowserAddressStore(
-        config.BIP_44_COIN_TYPE_ID,
-        config.BASE_STORAGE_KEY
-      )
-    );
+    signerInterface.current = new SignerInterface(api, signerInterfaceConfig);
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
       showError('Open Manta Signer desktop app and sign in to continue');

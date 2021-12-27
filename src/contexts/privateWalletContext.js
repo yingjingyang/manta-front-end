@@ -7,13 +7,10 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
-import {
-  // loadSpendableAssetsFromStorage,
-  persistSpendableAssetsToStorage
-} from 'utils/persistence/AssetStorage';
 import Balance from 'types/Balance';
-import { SignerInterface, BrowserAddressStore } from 'signer-interface';
-import config from 'config';
+import { SignerInterface } from 'signer-interface';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
+import Version from 'types/Version';
 import { useSubstrate } from './substrateContext';
 
 const PrivateWalletContext = createContext();
@@ -22,20 +19,45 @@ export const PrivateWalletContextProvider = (props) => {
   const { api } = useSubstrate();
   const [spendableAssets, setSpendableAssets] = useState(null);
   const [signerIsConnected, setSignerIsConnected] = useState(null);
+  const [signerVersion, setSignerVersion] = useState(null);
   const refreshIsInProgress = useRef(false);
+
+  const fetchSignerVersion = async () => {
+    if (!api) return;
+    await api.isReady;
+    try {
+      const signerInterface = new SignerInterface(api, signerInterfaceConfig);
+      const signerVersion = await signerInterface.getSignerVersion();
+      const signerIsConnected = !!signerVersion;
+      setSignerIsConnected(signerIsConnected);
+      if (signerIsConnected) {
+        setSignerVersion(new Version(signerVersion));
+      } else {
+        setSignerVersion(null);
+      }
+    } catch (err) {
+      setSignerIsConnected(false);
+      setSignerVersion(null);
+      console.error('SignerVersion - ', err);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchSignerVersion();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [api]);
 
   useEffect(() => {
     const refreshPrivateAssets = async () => {
-      const signerInterface = new SignerInterface(
-        api,
-        new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
-      );
-      const signerIsConnected = await signerInterface.signerIsConnected();
-      setSignerIsConnected(signerIsConnected);
+      const signerInterface = new SignerInterface(api, signerInterfaceConfig);
+      const signerVersion = await signerInterface.getSignerVersion();
+      const signerIsConnected = !!signerVersion;
       if (signerIsConnected) {
         const privateAssets = await signerInterface.recoverAccount();
         setSpendableAssets(privateAssets);
-        persistSpendableAssetsToStorage(privateAssets, api);
       }
     };
 
@@ -65,13 +87,11 @@ export const PrivateWalletContextProvider = (props) => {
 
   const saveSpendableAssets = (spendableAssets) => {
     setSpendableAssets(spendableAssets);
-    persistSpendableAssetsToStorage(spendableAssets, api);
   };
 
   const saveSpendableAsset = (newSpendableAsset) => {
     const newSpendableAssets = [...spendableAssets, newSpendableAsset];
     setSpendableAssets(newSpendableAssets);
-    persistSpendableAssetsToStorage(newSpendableAssets, api);
   };
 
   const getSpendableBalance = (assetType) => {
@@ -91,7 +111,8 @@ export const PrivateWalletContextProvider = (props) => {
     saveSpendableAssets: saveSpendableAssets,
     saveSpendableAsset: saveSpendableAsset,
     getSpendableBalance: getSpendableBalance,
-    signerIsConnected: signerIsConnected
+    signerIsConnected: signerIsConnected,
+    signerVersion: signerVersion
   };
 
   return (

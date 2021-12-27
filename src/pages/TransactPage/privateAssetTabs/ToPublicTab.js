@@ -10,8 +10,8 @@ import TxStatus from 'types/TxStatus';
 import { useSubstrate } from 'contexts/substrateContext';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import { selectCoins } from 'coin-selection';
-import { SignerInterface, BrowserAddressStore } from 'signer-interface';
-import config from 'config';
+import { SignerInterface } from 'signer-interface';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
 import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import Balance from 'types/Balance';
@@ -89,14 +89,7 @@ const ToPublicTab = () => {
 
   const onClickWithdraw = async () => {
     txResWasHandled.current = false;
-
-    signerInterface.current = new SignerInterface(
-      api,
-      new BrowserAddressStore(
-        config.BIP_44_COIN_TYPE_ID,
-        config.BASE_STORAGE_KEY
-      )
-    );
+    signerInterface.current = new SignerInterface(api, signerInterfaceConfig);
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
       showError('Open Manta Signer desktop app and sign in to continue');

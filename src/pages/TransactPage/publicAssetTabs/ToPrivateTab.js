@@ -8,8 +8,7 @@ import TxStatus from 'types/TxStatus';
 import { useSubstrate } from 'contexts/substrateContext';
 import Decimal from 'decimal.js';
 import { useExternalAccount } from 'contexts/externalAccountContext';
-import { SignerInterface, BrowserAddressStore } from 'signer-interface';
-import config from 'config';
+import { SignerInterface } from 'signer-interface';
 import AssetType from 'types/AssetType';
 import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
@@ -18,6 +17,7 @@ import { getToPrivateButtonIsDisabled } from 'utils/ui/formValidation';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 import { useNativeTokenWallet } from 'contexts/nativeTokenWalletContext';
 import PropTypes from 'prop-types';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
 
 const ToPrivateTab = () => {
   const { api } = useSubstrate();
@@ -85,14 +85,7 @@ const ToPrivateTab = () => {
   };
 
   const onClickDeposit = async () => {
-    signerInterface.current = new SignerInterface(
-      api,
-      new BrowserAddressStore(
-        config.BIP_44_COIN_TYPE_ID,
-        config.BASE_STORAGE_KEY
-      )
-    );
-
+    signerInterface.current = new SignerInterface(api, signerInterfaceConfig);
     const signerIsConnected = await signerInterface.current.signerIsConnected();
     if (!signerIsConnected) {
       showError('Open Manta Signer desktop app and sign in to continue');

@@ -10,17 +10,23 @@ import store from 'store';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import config from 'config';
+import { SignerInterface } from 'signer-interface';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
 import userIsMobile from 'utils/ui/userIsMobile';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import NewerSignerVersionRequiredModal from 'components/elements/Modal/newerSignerVersionRequiredModal';
+import signerIsOutOfDate from 'utils/signerIsOutOfDate';
 
 function MainApp() {
   const { api } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
+  const { signerVersion } = usePrivateWallet();
   const onMobile = userIsMobile();
 
   useEffect(() => {
     const shouldDevReset = async () => {
       if (process.env.NODE_ENV === 'production') return false;
-      const blockNumberStorageKey = `${config.BASE_STORAGE_KEY}blockNumber`;
+      const blockNumberStorageKey = `${config.BASE_STORAGE_KEY}BlockNumber`;
       const oldBlockNumber = store.get(blockNumberStorageKey) || 0;
       const currentBlock = await api.rpc.chain.getBlock();
       const currentBlockNumber = currentBlock.block.header.number.toNumber();
@@ -29,13 +35,8 @@ function MainApp() {
     };
 
     const devClearLocalStorage = async () => {
-      store.set(`${config.BASE_STORAGE_KEY}SpendableAssets`, []);
-      store.set(`${config.BASE_STORAGE_KEY}InternalAddresses`, []);
-      store.set(`${config.BASE_STORAGE_KEY}ExternalAddresses`, []);
-      store.set(
-        `${config.BASE_STORAGE_KEY}InternalAddressesUncommitedOffset`,
-        0
-      );
+      const signerInterface = new SignerInterface(api, signerInterfaceConfig);
+      signerInterface.resetStorage();
       console.log('Reset local storage');
     };
 
@@ -47,18 +48,24 @@ function MainApp() {
         devClearLocalStorage();
       }
     };
+
     maybeDoDevReset();
   }, [api, externalAccountSigner]);
+
+  let warningModal;
+  if (onMobile) {
+    warningModal = <MobileNotSupportedModal />;
+  } else if (signerIsOutOfDate(signerVersion)) {
+    warningModal = <NewerSignerVersionRequiredModal />;
+  } else {
+    warningModal = <MissingRequiredSoftwareModal />;
+  }
 
   return (
     <div className="main-app bg-primary">
       <ScrollIntoView>
         <SidebarMenu />
-        {onMobile ? (
-          <MobileNotSupportedModal />
-        ) : (
-          <MissingRequiredSoftwareModal />
-        )}
+        {warningModal}
         <Switch>
           <Route path="/" render={() => <Redirect to="/transact" />} exact />
           <Route path="/transact" component={TransactPage} exact />

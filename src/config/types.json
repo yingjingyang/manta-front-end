@@ -115,7 +115,8 @@
         "asset_id": "AssetId",
         "value": "AssetBalance",
         "utxo": "UTXO",
-        "shard_index": "u8"
+        "shard_index": "u8",
+        "void_number": "MantaRandomValue"
     },
     "RecoveredAccount": {
         "assets": "Vec<MantaSignerInputAsset>"

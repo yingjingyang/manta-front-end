@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import Svgs from 'resources/icons';
 import { useSubstrate } from 'contexts/substrateContext';
-import { SignerInterface, BrowserAddressStore } from 'signer-interface';
+import { SignerInterface } from 'signer-interface';
 import { showError } from 'utils/ui/Notifications';
-import config from 'config';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
+import signerInterfaceConfig from 'config/signerInterfaceConfig';
 
 const PrivateReceiveTab = () => {
   const { api } = useSubstrate();
@@ -17,10 +17,8 @@ const PrivateReceiveTab = () => {
   }, [selectedAssetType]);
 
   const onClickNewAddress = async () => {
-    const signerInterface = new SignerInterface(
-      api,
-      new BrowserAddressStore(config.BIP_44_COIN_TYPE_ID, config.BASE_STORAGE_KEY)
-    );
+    const signerInterface = new SignerInterface(api, signerInterfaceConfig);
+
     const signerIsConnected = await signerInterface.signerIsConnected();
     if (!signerIsConnected) {
       showError('Open Manta Signer desktop app and sign in to continue');

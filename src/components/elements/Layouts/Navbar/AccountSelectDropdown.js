@@ -3,6 +3,21 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import MantaSelect from 'components/elements/MantaSelect';
 import { useKeyring } from 'contexts/keyringContext';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
+
+const AccountNotConnectedLabel = () => {
+  return (
+    <div  className="text-center">
+      <p className="text-primary text-sm pb-2">Public Account</p>
+      <p className="text-accent dark:text-white pb-2">
+        <FontAwesomeIcon icon={faTimes} color="#FA4D56" />
+        {' '}Not connected
+      </p>
+    </div>
+  );
+};
 
 const AccountSelectDropdown = () => {
   const { keyring } = useKeyring();
@@ -32,17 +47,21 @@ const AccountSelectDropdown = () => {
   }, [externalAccount, keyring]);
 
   return (
-    defaultValue && (
-      <div>
-        <p className="text-primary text-sm pl-7 pb-1">Public Account</p>
-        <MantaSelect
-          onChange={e => onChangeCurrentAccount(e.value)}
-          options={options}
-          className="w-40 border-0"
-          defaultValue={defaultValue}
-        />
-      </div>
-    )
+    <div className="text-center" >
+      {defaultValue ? (
+        <div>
+          <p className="text-primary text-sm pb-1 ">Public Account</p>
+          <MantaSelect
+            onChange={e => onChangeCurrentAccount(e.value)}
+            options={options}
+            className="w-40 border-0"
+            defaultValue={defaultValue}
+          />
+        </div>
+      )
+        : <AccountNotConnectedLabel/>
+      }
+    </div>
   );
 };
 

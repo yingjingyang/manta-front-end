@@ -1,9 +1,14 @@
 {
     "name": "manta-web-app",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "private": false,
     "dependencies": {
         "@craco/craco": "^6.2.0",
+        "@fortawesome/fontawesome-svg-core": "^1.2.36",
+        "@fortawesome/free-brands-svg-icons": "^5.15.4",
+        "@fortawesome/free-regular-svg-icons": "^5.15.4",
+        "@fortawesome/free-solid-svg-icons": "^5.15.4",
+        "@fortawesome/react-fontawesome": "^0.1.16",
         "@polkadot/api": "^6.8.1",
         "@polkadot/extension-dapp": "^0.39.3",
         "@polkadot/keyring": "^7.2.1",
@@ -40,7 +45,7 @@
         "react-select": "^4.3.1",
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^2.0.3",
-        "signer-interface": "^0.1.4",
+        "signer-interface": "^0.2.0",
         "store": "^2.0.12",
         "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7",
         "web-vitals": "^1.0.1"
@@ -66,8 +71,8 @@
         ]
     },
     "devDependencies": {
-        "eslint": "^7.5.0",
         "babel-eslint": "^10.1.0",
+        "eslint": "^7.5.0",
         "eslint-config-react-app": "^6.0.0",
         "eslint-plugin-flowtype": "^5.9.0",
         "eslint-plugin-import": "^2.24.1",

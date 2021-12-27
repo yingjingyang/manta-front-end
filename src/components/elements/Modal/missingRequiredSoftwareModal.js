@@ -13,19 +13,21 @@ function MissingRequiredSoftwareModal() {
 
   useEffect(() => {
     const maybeOpenModal = () => {
-      if (!modalCanBeOpened) {
-        return;
-      // Show the modal if web app tried and failed to detect required software
-      } else if (keyring === false || signerIsConnected === false) {
-        openModal();
       // Close modal if app  first failed to detect required software,
       // but then subsequently detects it
-      } else if (modalIsOpen) {
+      if (modalIsOpen && keyring && signerIsConnected) {
         setModalIsOpen(false);
-      // If required software is ever detected, don't allow modal to be opened later
-      // (for the case where the user quits Manta Signer)
+      // Don't activate the modal during this session as long as we have seen
+      // the required software once
       } else if (keyring && signerIsConnected) {
         setModalCanBeOpened(false);
+      }
+      // If modal has been opened before, don't open it again during this session
+      else if (!modalCanBeOpened) {
+        return;
+      // Show the modal if web app tried and failed to detect some required software
+      } else if (keyring === false || signerIsConnected === false) {
+        openModal();
       }
     };
     maybeOpenModal();
@@ -77,7 +79,7 @@ function MissingRequiredSoftwareModal() {
             >
               Manta Signer
             </a>
-            , open it, and sign in or create an account.
+            {' '}if you have not yet done so, open the app, and sign in.
           </p>
         }
       </Modal.Content>

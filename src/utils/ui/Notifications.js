@@ -7,7 +7,8 @@ export const showError = (msg) => {
   Notification.error({
     title: 'Error',
     message: msg,
-    duration: 0
+    duration: 15000,
+    pauseOnHover: true
   });
 };
 
@@ -16,7 +17,8 @@ export const showWarning = (msg) => {
     title: 'Warning',
     message: msg,
     type: 'warning',
-    duration: 0
+    duration: 15000,
+    pauseOnHover: true
   });
 };
 
@@ -25,7 +27,8 @@ export const showSuccess = (msg, extrinsic = '') => {
     title: 'Success',
     message: <NotificationContent msg={msg} extrinsic={extrinsic} />,
     type: 'success',
-    duration: 0
+    duration: 15000,
+    pauseOnHover: true
   });
 };
 
@@ -33,6 +36,7 @@ export const showInfo = (msg) => {
   Notification.info({
     title: 'Info',
     message: msg,
-    duration: 0
+    duration: 15000,
+    pauseOnHover: true
   });
 };
