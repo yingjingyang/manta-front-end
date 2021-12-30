@@ -60,9 +60,7 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
+            "Node >= 10.4.0"
         ],
         "development": [
             "last 1 chrome version",

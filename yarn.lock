@@ -1694,16 +1694,7 @@
     "@polkadot/util" "7.9.2"
     "@zondax/ledger-substrate" "^0.18.0"
 
-"@polkadot/keyring@^7.2.1", "@polkadot/keyring@^7.4.1":
-  version "7.9.2"
-  resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-7.9.2.tgz#1f5bf6b7bdb5942d275aebf72d4ed98abe874fa8"
-  integrity sha512-6UGoIxhiTyISkYEZhUbCPpgVxaneIfb/DBVlHtbvaABc8Mqh1KuqcTIq19Mh9wXlBuijl25rw4lUASrE/9sBqg==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@polkadot/util" "7.9.2"
-    "@polkadot/util-crypto" "7.9.2"
-
-"@polkadot/keyring@^8.1.2":
+"@polkadot/keyring@8.1.2", "@polkadot/keyring@^8.1.2":
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-8.1.2.tgz#c0b8e838b2e547e41a6a34051a17bed9472ae90c"
   integrity sha512-WsVx9TCJ9H6dmADTyMibwrlSPZrmPlsvFoqrbMTMD04Q7CYZXP46ht3YrF6t81YPQWDoszeDomNuSF2iPXSCTQ==
@@ -1711,6 +1702,15 @@
     "@babel/runtime" "^7.16.3"
     "@polkadot/util" "8.1.2"
     "@polkadot/util-crypto" "8.1.2"
+
+"@polkadot/keyring@^7.4.1":
+  version "7.9.2"
+  resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-7.9.2.tgz#1f5bf6b7bdb5942d275aebf72d4ed98abe874fa8"
+  integrity sha512-6UGoIxhiTyISkYEZhUbCPpgVxaneIfb/DBVlHtbvaABc8Mqh1KuqcTIq19Mh9wXlBuijl25rw4lUASrE/9sBqg==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@polkadot/util" "7.9.2"
+    "@polkadot/util-crypto" "7.9.2"
 
 "@polkadot/networks@7.9.2", "@polkadot/networks@^7.4.1":
   version "7.9.2"
