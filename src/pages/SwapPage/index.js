@@ -86,7 +86,7 @@ const SwapPage = () => {
           <div>
             <span
               className="flex space-between pb-1"
-              style={{ 'justify-content': 'space-between' }}
+              style={{ justifyContent: 'space-between' }}
             >
               <h1 className="text-2xl font-semibold text-accent">
                 Swap (coming soon)
@@ -138,7 +138,8 @@ const SwapPage = () => {
             ></FormInput>
           </div>
           <Button
-            className="btn-primary w-full text-lg py-3 btn-unreleased" disabled
+            className="btn-primary w-full text-lg py-3 btn-unreleased"
+            disabled
           >
             Swap
           </Button>

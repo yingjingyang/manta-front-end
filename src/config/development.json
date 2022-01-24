@@ -4,5 +4,12 @@
   "DEV_CONSOLE": true,
   "DEVELOPMENT_KEYRING": true,
   "BASE_STORAGE_KEY": "dolphinDev",
-  "SUBSCAN_URL": "https://dolphin.subscan.io"
+  "SUBSCAN_URL": "https://dolphin.subscan.io",
+  "NETWORK_NAME": "Local Testnet",
+  "NODES": [
+    {
+      "name": "local",
+      "url": "ws://localhost:9944"
+    }
+  ]
 }

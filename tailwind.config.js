@@ -6,7 +6,7 @@ module.exports = {
       layout: 'var(--min-width-layout)',
       table: 'var(--min-width-table)',
       md: 'var(--min-width-md)',
-      lg: 'var(--min-width-lg)',
+      lg: 'var(--min-width-lg)'
     },
     extend: {
       backgroundColor: {
@@ -16,27 +16,29 @@ module.exports = {
         fourth: 'var(--color-bg-fourth)',
         overlay: 'var(--color-bg-overlay)',
         'table-row': 'var(--color-bg-table-row)',
+        success: 'var(--color-bg-success)',
+        danger: 'var(--color-bg-danger)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
-        'gray-light': 'var(--color-text-gray)',
+        'gray-light': 'var(--color-text-gray)'
       },
       fill: {
         current: 'var(--color-text-secondary)',
         primary: 'var(--color-fill-primary)',
         secondary: 'var(--color-fill-secondary)',
-        gray: 'var(--color-fill-gray)',
-      },
-    },
+        gray: 'var(--color-fill-gray)'
+      }
+    }
   },
   variants: {
     extend: {
       fill: ['group-hover', 'active', 'hover'],
-      textColor: ['active'],
-    },
+      textColor: ['active']
+    }
   },
-  plugins: [],
+  plugins: []
 };

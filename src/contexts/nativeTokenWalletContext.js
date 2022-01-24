@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useRef,
+  useRef
 } from 'react';
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
@@ -22,6 +22,7 @@ export const NativeTokenWalletContextProvider = (props) => {
 
   useEffect(() => {
     const refreshNativeTokenBalance = async () => {
+      await api.isReady;
       const spendableBalanceAmount = await api.query.system.account(
         externalAccountRef.current.address
       );
@@ -84,7 +85,7 @@ export const NativeTokenWalletContextProvider = (props) => {
 
   const value = {
     nativeTokenBalance: nativeTokenBalance,
-    getUserCanPayFee: getUserCanPayFee,
+    getUserCanPayFee: getUserCanPayFee
   };
 
   return (
@@ -99,5 +100,5 @@ NativeTokenWalletContextProvider.propTypes = {
 };
 
 export const useNativeTokenWallet = () => ({
-  ...useContext(NativeTokenWalletContext),
+  ...useContext(NativeTokenWalletContext)
 });

@@ -4,5 +4,40 @@
   "DEV_CONSOLE": false,
   "DEVELOPMENT_KEYRING": false,
   "BASE_STORAGE_KEY": "dolphinProd",
-  "SUBSCAN_URL": "https://dolphin.subscan.io"
+  "SUBSCAN_URL": "https://dolphin.subscan.io",
+  "NETWORK_NAME": "Dolphin",
+  "NODES": [
+    {
+      "name": "anjie",
+      "url": "wss://anjie.dolphin.red"
+    },
+    {
+      "name": "eddie",
+      "url": "wss://eddie.dolphin.red"
+    },
+    {
+      "name": "ford",
+      "url": "wss://ford.dolphin.red"
+    },
+    {
+      "name": "kwaltz",
+      "url": "wss://kwaltz.dolphin.red"
+    },
+    {
+      "name": "prosser",
+      "url": "wss://prosser.dolphin.red"
+    },
+    {
+      "name": "roosta",
+      "url": "wss://roosta.dolphin.red"
+    },
+    {
+      "name": "trillian",
+      "url": "wss://trillian.dolphin.red"
+    },
+    {
+      "name": "zaphod",
+      "url": "wss://zaphod.dolphin.red"
+    }
+  ]
 }

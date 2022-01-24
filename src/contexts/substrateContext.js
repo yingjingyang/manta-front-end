@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from 'react';
+import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import queryString from 'query-string';
@@ -8,7 +8,6 @@ import config from '../config';
 
 const parsedQuery = queryString.parse(window.location.search);
 const connectedSocket = parsedQuery.rpc || config.PROVIDER_SOCKET;
-
 ///
 // Initial state for `useReducer`
 
@@ -19,6 +18,7 @@ const INIT_STATE = {
   api: null,
   apiError: null,
   apiState: null,
+  updateSubstrateContext: () => {}
 };
 
 ///
@@ -38,6 +38,12 @@ const reducer = (state, action) => {
   case 'CONNECT_ERROR':
     return { ...state, apiState: 'ERROR', apiError: action.payload };
 
+  case 'DISCONNECTED':
+    return { ...state, apiState: 'DISCONNECTED' };
+
+  case 'UPDATE_STATE':
+    return { ...state, ...action.payload };
+
   default:
     throw new Error(`Unknown type: ${action.type}`);
   }
@@ -47,9 +53,8 @@ const reducer = (state, action) => {
 // Connecting to the Substrate node
 
 const connect = (state, dispatch) => {
-  const { apiState, socket, jsonrpc, types } = state;
+  const { socket, jsonrpc, types } = state;
   // We only want this function to be performed once
-  if (apiState) return;
 
   dispatch({ type: 'CONNECT_INIT' });
 
@@ -64,20 +69,32 @@ const connect = (state, dispatch) => {
   });
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
   _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
+  _api.on('disconnected', () => dispatch({ type: 'DISCONNECTED' }));
 };
 
 const SubstrateContext = React.createContext();
 
 const SubstrateContextProvider = (props) => {
   // filtering props and merge with default param value
-  const initState = { ...INIT_STATE };
+
+  const updateSubstrateContext = (data) => {
+    dispatch({ type: 'UPDATE_STATE', payload: data });
+  };
+
+  const initState = { ...INIT_STATE, updateSubstrateContext };
   const neededPropNames = ['socket', 'types'];
   neededPropNames.forEach((key) => {
     initState[key] =
       typeof props[key] === 'undefined' ? initState[key] : props[key];
   });
   const [state, dispatch] = useReducer(reducer, initState);
-  connect(state, dispatch);
+
+  const { socket } = state;
+
+  useEffect(() => {
+    connect(state, dispatch);
+  }, [socket]);
+
   return (
     <SubstrateContext.Provider value={state}>
       {props.children}
@@ -89,7 +106,7 @@ const SubstrateContextProvider = (props) => {
 SubstrateContextProvider.propTypes = {
   socket: PropTypes.string,
   types: PropTypes.object,
-  children: PropTypes.any,
+  children: PropTypes.any
 };
 
 const useSubstrate = () => ({ ...useContext(SubstrateContext) });
