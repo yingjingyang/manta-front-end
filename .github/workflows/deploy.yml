@@ -1,19 +1,12 @@
-name: Main
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
+name: Deploy
+on: workflow_dispatch
 jobs:
-  lint:
-    name: Main
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Git repository
+      - name: Checkout Git repository
         uses: actions/checkout@v2
 
       - name: Set up Node.js
@@ -24,10 +17,11 @@ jobs:
       - name: Install Node.js dependencies
         run: yarn install
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v1
-        with:
-          eslint: true
-
       - name: Build
         run: yarn build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.2
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: build
