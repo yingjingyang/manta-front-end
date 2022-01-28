@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { base58Encode } from '@polkadot/util-crypto';
-import FormInput from 'components/elements/Form/FormInput';
+import FormInput from 'pages/SendPage/SendFromForm/SendAmountInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/substrateContext';
 import Svgs from 'resources/icons';

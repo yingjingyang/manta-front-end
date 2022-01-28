@@ -1,6 +1,7 @@
 import React from 'react';
-import { PageContent, Navbar } from 'components/elements/Layouts';
-import FormSelect from 'components/elements/Form/FormSelect';
+import PageContent from 'components/PageContent';
+import Navbar from 'components/Navbar';
+import FormSelect from 'pages/SendPage/SendFromForm/components/SendAssetTypeDropdown';
 import AssetType from 'types/AssetType';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';

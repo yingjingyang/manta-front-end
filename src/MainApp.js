@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import { TransactPage, GovernPage, SwapPage } from 'pages';
-import MissingRequiredSoftwareModal from 'components/elements/Modal/missingRequiredSoftwareModal';
-import MobileNotSupportedModal from 'components/elements/Modal/mobileNotSupported';
-import { SidebarMenu } from 'components/elements/Layouts';
-import ScrollIntoView from 'components/elements/ScrollFollow/ScrollIntoView';
-import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
+import { SendPage, GovernPage, SwapPage  } from 'pages';
+import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
+import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
+import Sidebar from 'components/Sidebar';
+import ThemeToggle from 'components/ThemeToggle';
 import store from 'store';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -14,7 +13,7 @@ import { SignerInterface } from 'signer-interface';
 import signerInterfaceConfig from 'config/signerInterfaceConfig';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import NewerSignerVersionRequiredModal from 'components/elements/Modal/newerSignerVersionRequiredModal';
+import NewerSignerVersionRequiredModal from 'components/Modal/newerSignerVersionRequiredModal';
 import signerIsOutOfDate from 'utils/signerIsOutOfDate';
 
 function MainApp() {
@@ -53,29 +52,27 @@ function MainApp() {
   }, [api, externalAccountSigner]);
 
   let warningModal;
-  if (onMobile) {
-    warningModal = <MobileNotSupportedModal />;
-  } else if (signerIsOutOfDate(signerVersion)) {
-    warningModal = <NewerSignerVersionRequiredModal />;
-  } else {
-    warningModal = <MissingRequiredSoftwareModal />;
-  }
+  // if (onMobile) {
+  //   warningModal = <MobileNotSupportedModal />;
+  // } else if (signerIsOutOfDate(signerVersion)) {
+  //   warningModal = <NewerSignerVersionRequiredModal />;
+  // } else {
+  //   warningModal = <MissingRequiredSoftwareModal />;
+  // }
 
   return (
     <div className="main-app bg-primary">
-      <ScrollIntoView>
-        <SidebarMenu />
-        {warningModal}
-        <Switch>
-          <Route path="/" render={() => <Redirect to="/transact" />} exact />
-          <Route path="/transact" component={TransactPage} exact />
-          <Route path="/govern" component={GovernPage} exact />
-          <Route path="/swap" component={SwapPage} exact />
-        </Switch>
-        <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
-          <ChangeThemeButton />
-        </div>
-      </ScrollIntoView>
+      <SidebarMenu />
+      {warningModal}
+      <Switch>
+        <Route path="/" render={() => <Redirect to="/send" />} exact />
+        <Route path="/send" component={SendPage} exact />
+        {/* <Route path="/govern" component={GovernPage} exact />
+        <Route path="/swap" component={SwapPage} exact /> */}
+      </Switch>
+      <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
+        <ThemeToggle />
+      </div>
     </div>
   );
 }

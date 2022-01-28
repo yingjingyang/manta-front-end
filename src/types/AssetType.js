@@ -21,7 +21,7 @@ export default class AssetType {
   }
 
   static Dolphin() {
-    return new AssetType(-1, 'Dolphin', 'DOL', Svgs.Logo, 12, false, true);
+    return new AssetType(-1, 'Dolphin', 'DOLPH', Svgs.Logo, 12, false, true);
   }
 
   static Polkadot(isPrivate) {

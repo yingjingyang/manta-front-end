@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { PageContent, Navbar } from 'components/elements/Layouts';
-import { GovernCard } from 'components/resources/Govern';
-import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
-import TabMenu from 'components/elements/TabMenu/TabMenu';
-import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
+import PageContent from 'components/PageContent';
+import Navbar from 'components/Navbar';
+import { GovernCard } from 'pages/Wireframes/resources/Govern';
+import TabMenuWrapper from 'components/TabMenu/TabMenuWrapper';
+import TabMenu from 'components/TabMenu/TabMenu';
+import TabContentItemWrapper from 'components/TabMenu/TabContentItemWrapper';
 
 const TABS = {
   Open: 'open',

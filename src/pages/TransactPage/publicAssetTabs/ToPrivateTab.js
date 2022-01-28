@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
 import { showError, showSuccess } from 'utils/ui/Notifications';
-import FormInput from 'components/elements/Form/FormInput';
+import FormInput from 'pages/SendPage/SendFromForm/SendAmountInput';
 import { makeTxResHandler } from 'utils/api/MakeTxResHandler';
 import TxStatus from 'types/TxStatus';
 import { useSubstrate } from 'contexts/substrateContext';

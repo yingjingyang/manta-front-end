@@ -3,7 +3,6 @@ import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { useSelectedTabIndex } from 'contexts/selectedTabContext';
 import NativeTokenSendTab from './NativeTokenSendTab';
 import NativeTokenReceiveTab from './NativeTokenReceiveTab';
 

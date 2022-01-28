@@ -5,7 +5,7 @@ import React, {
   useContext,
 } from 'react';
 import PropTypes from 'prop-types';
-import { default as uiKeyring } from '@polkadot/ui-keyring';
+import uiKeyring from '@polkadot/ui-keyring';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import config from 'config';
 

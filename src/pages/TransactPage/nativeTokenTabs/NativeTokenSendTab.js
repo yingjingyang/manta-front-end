@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import FormInput from 'components/elements/Form/FormInput';
+import FormInput from 'pages/SendPage/SendFromForm/SendAmountInput';
 import Button from 'components/elements/Button';
 import { useSubstrate } from 'contexts/substrateContext';
 import Svgs from 'resources/icons';

@@ -1,5 +1,5 @@
 import React from 'react';
-import FormSwitch from 'components/elements/Form/FormSwitch';
+import FormSwitch from 'components/FormSwitch';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useSelectedAssetType } from 'contexts/selectedAssetTypeContext';
 

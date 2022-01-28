@@ -2,7 +2,6 @@ import React from 'react';
 import TabMenu from 'components/elements/TabMenu/TabMenu';
 import TabMenuWrapper from 'components/elements/TabMenu/TabMenuWrapper';
 import TabContentItemWrapper from 'components/elements/TabMenu/TabContentItemWrapper';
-import { useSelectedTabIndex } from 'contexts/selectedTabContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import PrivateSendTab from './PrivateSendTab';
 import PrivateReceiveTab from './PrivateReceiveTab';

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Button from 'components/elements/Button';
 import MantaLoading from 'components/elements/Loading';
 import { showSuccess, showError } from 'utils/ui/Notifications';
-import FormInput from 'components/elements/Form/FormInput';
+import FormInput from 'pages/SendPage/SendFromForm/SendAmountInput';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Decimal from 'decimal.js';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
