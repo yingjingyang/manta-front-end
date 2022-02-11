@@ -15,7 +15,7 @@ const MainMenu = () => {
   const navlinksDisabled = txStatus?.isProcessing();
 
   return (
-    <div className='menu-content lg:py-16'>
+    <div className="menu-content lg:py-4">
       {/* <NavLink
         className="text-secondary"
         activeClassName="text-primary active"
@@ -44,7 +44,12 @@ const MainMenu = () => {
         activeClassName="text-primary active"
         to="/transact"
       >
-        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center',
+            { disabled: navlinksDisabled }
+          )}
+        >
           <div className="p-3">
             <svg
               viewBox="0 0 32 32"
@@ -68,7 +73,12 @@ const MainMenu = () => {
         activeClassName="text-primary active"
         to="/swap"
       >
-        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center',
+            { disabled: navlinksDisabled }
+          )}
+        >
           <div className="p-3">
             <svg
               width="30"
@@ -93,7 +103,12 @@ const MainMenu = () => {
         activeClassName="text-primary active"
         to="/govern"
       >
-        <div className={classNames('py-2 w-full menu-content__item group flex items-center', {'disabled': navlinksDisabled})}>
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center',
+            { disabled: navlinksDisabled }
+          )}
+        >
           <div className="p-3">
             <svg
               width="30"
@@ -211,7 +226,5 @@ const MainMenu = () => {
     </div>
   );
 };
-
-
 
 export default MainMenu;

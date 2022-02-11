@@ -8,7 +8,7 @@
   "NETWORK_NAME": "Local Testnet",
   "NODES": [
     {
-      "name": "local",
+      "name": "local testnet",
       "url": "ws://localhost:9944"
     }
   ]

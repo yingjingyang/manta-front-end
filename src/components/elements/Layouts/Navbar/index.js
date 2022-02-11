@@ -9,7 +9,6 @@ import SocialMenu from 'components/resources/Sidebar/SocialMenu';
 import ChangeThemeButton from 'components/resources/Sidebar/ChangeThemeButton';
 import { SearchSvg, MenuSvg, CloseMenuSvg } from 'resources/svgs';
 import AccountSelectDropdown from './AccountSelectDropdown';
-import NodeSelector from './NodeSelector';
 import SignerConnectionStatusLabel from './SignerConnectionStatusLabel';
 
 const Navbar = ({ isVisible = false, isSearch = false, hidden }) => {
@@ -23,7 +22,6 @@ const Navbar = ({ isVisible = false, isSearch = false, hidden }) => {
           { 'lg:hidden': isVisible }
         )}
       >
-        <NodeSelector />
         <div className="lg:hidden flex items-center">
           {!isOpen ? (
             <MenuSvg

@@ -52,15 +52,20 @@ const reducer = (state, action) => {
 ///
 // Connecting to the Substrate node
 
-const connect = (state, dispatch) => {
-  const { socket, jsonrpc, types } = state;
+const connect = async (state, dispatch) => {
+  const { api, socket, jsonrpc, types } = state;
   // We only want this function to be performed once
 
   dispatch({ type: 'CONNECT_INIT' });
 
+  if (api) {
+    await api.disconnect();
+  }
+
   const provider = new WsProvider(socket);
   const _api = new ApiPromise({ provider, types, rpc: jsonrpc });
 
+  dispatch({ type: 'CONNECT', payload: _api });
   // Set listeners for disconnection and reconnection event.
   _api.on('connected', () => {
     dispatch({ type: 'CONNECT', payload: _api });
