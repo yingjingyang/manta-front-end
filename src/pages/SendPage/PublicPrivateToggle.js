@@ -7,8 +7,12 @@ const PublicPrivateToggle = ({isPrivate, onToggle, label}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
+  if (label === 'To: ') {
+    console.log('isPrivate', isPrivate);
+  }
+
   return (
-    <div className="flex pb-2 mr-12 justify-center items-center">
+    <div className="flex mr-12 justify-center items-center">
       <label className="text-primary">
         {label}
       </label>
@@ -16,7 +20,7 @@ const PublicPrivateToggle = ({isPrivate, onToggle, label}) => {
         onClick={!disabled && onToggle}
         className={
           classNames(
-            'py-2 pr-1 ml-2 cursor-pointer btn-hover unselectable-text',
+            'py-2 pr-1 ml-5 cursor-pointer btn-hover unselectable-text',
             'text-center rounded-lg btn-primary w-24',
             {'disabled': disabled}
           )}

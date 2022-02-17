@@ -1,6 +1,6 @@
 const getBalanceString = (balance) => {
-  if (!balance) return 'Available: ...';
-  return `Available: ${balance.toString(true)}`;
+  if (!balance) return 'Balance: ...';
+  return `Balance: ${balance.toString(true)}`;
 };
 
 export default getBalanceString;

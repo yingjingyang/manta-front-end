@@ -4,13 +4,13 @@ import Select, { components } from 'react-select';
 import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
 import { useState } from 'react';
+import { useSend } from '../SendContext';
 
-const SendAssetTypeDropdown = ({
-  optionsArePrivate = false
-}) => {
-  const { txStatus } = useTxStatus();
-  const [selectedOption, setSelectedOption] = useState(null);
-  const options = AssetType.AllCurrencies(optionsArePrivate).map(assetType => {
+
+const SendAssetTypeDropdown = () => {
+  // const { txStatus } = useTxStatus();
+  const { senderAssetType, senderAssetTypeOptions, setSenderAssetType } = useSend();
+  const dropdownOptions = senderAssetTypeOptions.map(assetType => {
     return {
       key: assetType.assetId,
       label: assetType.ticker,
@@ -18,20 +18,19 @@ const SendAssetTypeDropdown = ({
     };
   });
 
-
-  useEffect(() => {
-    if (!selectedOption && options?.length) {
-      setSelectedOption(options[0]);
+  const onChangeAssetType = (option) => {
+    if (option.value.assetId !== senderAssetType.assetId) {
+      setSenderAssetType(option.value);
     }
-  }, [selectedOption, options]);
+  };
 
   return (
     <Select
       className="w-40"
       isSearchable={false}
-      value={selectedOption}
-      onChange={value => setSelectedOption(value)}
-      options={options}
+      value={senderAssetType}
+      onChange={onChangeAssetType}
+      options={dropdownOptions}
       placeholder=""
       styles={dropdownStyles}
       components={
@@ -53,7 +52,7 @@ SendAssetTypeDropdown.propTypes = {
 
 const dropdownStyles = {
   dropdownIndicator: () => ({paddingRight: '1rem', color: 'white' }),
-  control: (provided, state) => ({
+  control: (provided) => ({
     ...provided,
     borderStyle: 'none',
     borderWidth: '0px',
@@ -75,7 +74,7 @@ const dropdownStyles = {
     display: 'flex',
     justifyContent: 'center',
   }),
-  menu: (provided, state) => ({
+  menu: (provided) => ({
     ...provided,
     width: '250%',
   }),
@@ -91,12 +90,12 @@ const SendAssetTypeSingleValue = ({data}) => {
       <div className="pl-3">
         <img
           className="w-10 h-10 px-2 left-2 absolute manta-bg-secondary rounded-full"
-          src={data.value.icon}
+          src={data.icon}
           alt="icon"
         />
       </div>
       <div className="text-2xl pl-8 pt-1 text-white">
-        {data.value.ticker}
+        {data.ticker}
       </div>
     </div>
   );

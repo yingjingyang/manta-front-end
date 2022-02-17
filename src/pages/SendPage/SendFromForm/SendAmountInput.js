@@ -2,44 +2,45 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
+import getBalanceString from 'utils/ui/getBalanceString';
+import { useSend } from '../SendContext';
 
 const SendAmountInput = ({
-  balanceText = 'Balance: 1000 BTC',
   onChange,
   value,
   onClickMax,
   isDisabled,
 }) => {
+  const { senderAssetCurrentBalance } = useSend();
+  const balanceText = getBalanceString(senderAssetCurrentBalance);
   const { txStatus } = useTxStatus();
   const disabled = isDisabled || txStatus?.isProcessing();
 
   return (
     <div
       className={classNames(
-        'flex items-start w-60 py-2 rounded-r-lg manta-bg-gray',
+        'flex flex-col w-60 rounded-r-lg manta-bg-gray content-around justify-center',
         {'disabled': disabled}
       )}
     >
-      <div className="width-full">
+      <div className="flex justify-items-center">
         <input
           type="number"
           onChange={onChange}
           className={classNames(
-            'w-full pl-3 text-lg manta-bg-gray outline-none',
+            'w-full pl-3 pt-1 text-lg manta-bg-gray outline-none',
             {'disabled': disabled}
           )}
           value={value}
           disabled={disabled}
         />
-        <div className="w-full text-sm manta-gray pl-3">{balanceText}</div>
+        <MaxButton
+          isDisabled={disabled}
+          onC
+          lickMax={onClickMax}
+        />
       </div>
-
-      <MaxButton
-        isDisabled={disabled}
-        onC
-        lickMax={onClickMax}
-      />
-
+      <div className="w-full text-xs manta-gray mt-0.5 pl-3">{balanceText}</div>
     </div>
   );
 };
@@ -58,7 +59,7 @@ const MaxButton = ({onClickMax, disabled}) => {
       onClick={!disabled && onClickMax}
       className={
         classNames(
-          'py-0.5 mr-2 pl-5 pr-5 cursor-pointer btn-hover',
+          'mr-4 pl-5 pr-5 my-1 cursor-pointer btn-hover',
           'text-center rounded-lg btn-primary unselectable-text',
           {'disabled': disabled}
         )}

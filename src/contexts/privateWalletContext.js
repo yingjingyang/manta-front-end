@@ -85,15 +85,6 @@ export const PrivateWalletContextProvider = (props) => {
       : null;
   };
 
-  const saveSpendableAssets = (spendableAssets) => {
-    setSpendableAssets(spendableAssets);
-  };
-
-  const saveSpendableAsset = (newSpendableAsset) => {
-    const newSpendableAssets = [...spendableAssets, newSpendableAsset];
-    setSpendableAssets(newSpendableAssets);
-  };
-
   const getSpendableBalance = (assetType) => {
     const spendableAssets = getSpendableAssetsByAssetId(assetType.assetId, api);
     const valueAtomicUnits = spendableAssets
@@ -106,13 +97,11 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const value = {
-    spendableAssets: spendableAssets,
-    getSpendableAssetsByAssetId: getSpendableAssetsByAssetId,
-    saveSpendableAssets: saveSpendableAssets,
-    saveSpendableAsset: saveSpendableAsset,
-    getSpendableBalance: getSpendableBalance,
-    signerIsConnected: signerIsConnected,
-    signerVersion: signerVersion
+    spendableAssets,
+    getSpendableAssetsByAssetId,
+    getSpendableBalance,
+    signerIsConnected,
+    signerVersion
   };
 
   return (

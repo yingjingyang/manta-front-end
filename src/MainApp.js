@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import { SendPage, GovernPage, SwapPage  } from 'pages';
+import { SendPage  } from 'pages';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import Sidebar from 'components/Sidebar';
@@ -62,7 +62,7 @@ function MainApp() {
 
   return (
     <div className="main-app bg-primary">
-      <SidebarMenu />
+      <Sidebar />
       {warningModal}
       <Switch>
         <Route path="/" render={() => <Redirect to="/send" />} exact />

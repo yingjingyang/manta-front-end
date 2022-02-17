@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Select, { components } from 'react-select';
 
 
-const SendToAddressSelect = () => {
+const SendToPrivateAddressSelect = () => {
   const options = [
     {
       label: 'My private account'
@@ -11,7 +11,7 @@ const SendToAddressSelect = () => {
   const selectedOption = options[0];
 
   const onChangeOption = (option) => {
-    console.log(option);
+    return;
   };
 
   return (
@@ -24,8 +24,8 @@ const SendToAddressSelect = () => {
       styles={dropdownStyles}
       components={
         {
-          SingleValue: SendToAddressSelectSingleValue,
-          Option: SendToAddressSelectOption,
+          SingleValue: SendToPrivateAddressSelectSingleValue,
+          Option: SendToPrivateAddressSelectOption,
           IndicatorSeparator: EmptyIndicatorSeparator,
         }
       }
@@ -33,9 +33,8 @@ const SendToAddressSelect = () => {
   );
 };
 
-const SendToAddressSelectSingleValue = (props) => {
-  const {data} = props;
-  console.log('props', props);
+const SendToPrivateAddressSelectSingleValue = (props) => {
+  const { data } = props;
   return (
     <div>
       {!props.selectProps.menuIsOpen &&
@@ -52,15 +51,14 @@ const SendToAddressSelectSingleValue = (props) => {
   );
 };
 
-const SendToAddressSelectOption = (props) => {
+const SendToPrivateAddressSelectOption = (props) => {
   const { value, innerProps } = props;
-  console.log('props', props);
   return (
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">
         <div className="w-full pl-4 p-2">
           <components.Option {...props}>{}</ components.Option>
-          <div className="text-xs manta-gray block ">{"10 pBTC"}</div>
+          <div className="text-xs manta-gray block ">{'10 pBTC'}</div>
         </div>
       </div>
     </div>
@@ -81,6 +79,7 @@ const dropdownStyles = {
     paddingBottom: '0.5rem',
     paddingTop: '0.3rem',
     minHeight: '4.2rem',
+    width: '25rem',
     boxShadow: '0 0 #0000',
     cursor: 'pointer',
   }),
@@ -88,10 +87,16 @@ const dropdownStyles = {
   option: () => ({
     fontSize: '12pt'
   }),
-  input: () => ({
+  input: (provided) => ({
+    ...provided,
     fontSize: '1.125rem',
-    paddingLeft: '0.6rem'
-  })
+    paddingLeft: '0.6rem',
+    display: 'block',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  }),
 };
 
-export default SendToAddressSelect;
+export default SendToPrivateAddressSelect;

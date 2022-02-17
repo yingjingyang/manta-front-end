@@ -11,7 +11,7 @@ const SendButton = () => {
   };
 
   return (
-    <div className="flex justify-center mt-3 items-center">
+    <div >
       <button
         onClick={!disabled && onClick}
         className={

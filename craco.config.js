@@ -3,16 +3,8 @@ module.exports = {
     postcss: {
       plugins: [
         require('tailwindcss'),
-        require('autoprefixer'),
       ],
     },
-  },
-  babel: {
-    plugins: [
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-private-methods',
-      '@babel/plugin-proposal-private-property-in-object',
-    ]
   },
   webpack: {
     configure: {

@@ -1,34 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useExternalAccount } from 'contexts/externalAccountContext';
-import { useKeyring } from 'contexts/keyringContext';
-import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
+import React from 'react';
 import Select, { components } from 'react-select';
+import { useSend } from '../SendContext';
 
 const PublicFromAccountSelect = () => {
-  const { keyring } = useKeyring();
-  const { externalAccount, changeExternalAccount } = useExternalAccount();
+  const { senderPublicAccount, senderPublicAccountOptions, setSenderPublicAccount } = useSend();
 
-  const [options, setOptions] = useState([]);
-  const selectedOption = externalAccount && {
-    value: externalAccount, label: externalAccount.meta.name
+  const options = senderPublicAccountOptions?.map(account => {
+    return { value: account, label: account.meta.name };
+  });
+
+  const selectedOption = senderPublicAccount && {
+    value: senderPublicAccount, label: senderPublicAccount.meta.name
   };
 
-  useEffect(() => {
-    if (keyring) {
-      setOptions(keyring.getPairs().map(pair => {
-        return {'value': pair.address, 'label': pair.meta.name};
-      }));
-    }
-  }, [externalAccount, keyring]);
-
-
   const onChangeOption = (option) => {
-    changeExternalAccount(keyring.getPair(option.value));
-    setLastAccessedExternalAccountAddress(option.value);
+    if (option.value.address !== senderPublicAccount.address) {
+      setSenderPublicAccount(option.value);
+    }
   };
 
   return (
     <Select
+      className="w-100"
       isSearchable={false}
       value={selectedOption}
       onChange={onChangeOption}
@@ -60,7 +53,7 @@ const AccountSelectSingleValue = ({data}) => {
 };
 
 const AccountSelectOption = (props) => {
-  const { value, innerProps } = props;
+  const { label, value, innerProps } = props;
   const onClick = () => {
     return;
   };
@@ -68,8 +61,8 @@ const AccountSelectOption = (props) => {
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">
         <div onClick={onClick}  className="w-full pl-4 p-2">
-          <components.Option {...props}>foo</ components.Option>
-          <div className="text-xs block ">{value}</div>
+          <components.Option {...props}>{label}</ components.Option>
+          <div className="text-xs block ">{value.address}</div>
         </div>
       </div>
     </div>
@@ -95,6 +88,7 @@ const dropdownStyles = {
     minHeight: '4.2rem',
     boxShadow: '0 0 #0000',
     cursor: 'pointer',
+    width: '100%'
   }),
   dropdownIndicator: () => ({paddingRight: '1rem', color: 'white' }),
   option: () => ({
