@@ -7,10 +7,6 @@ const PublicPrivateToggle = ({isPrivate, onToggle, label}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
-  if (label === 'To: ') {
-    console.log('isPrivate', isPrivate);
-  }
-
   return (
     <div className="flex mr-12 justify-center items-center">
       <label className="text-primary">

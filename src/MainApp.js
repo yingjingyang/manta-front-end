@@ -14,7 +14,7 @@ import signerInterfaceConfig from 'config/signerInterfaceConfig';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import NewerSignerVersionRequiredModal from 'components/Modal/newerSignerVersionRequiredModal';
-import signerIsOutOfDate from 'utils/signerIsOutOfDate';
+import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 
 function MainApp() {
   const { api } = useSubstrate();

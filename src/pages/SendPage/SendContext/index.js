@@ -8,20 +8,6 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import sendReducer, { SEND_INIT_STATE } from './sendReducer';
 import SEND_ACTIONS from './sendActions';
 
-// senderPublicAccount: null,
-// senderPublicAccountOptions: null,
-
-// senderAccountIsPrivate: false,
-// senderAssetType: initSenderAssetType,
-// senderAssetTypeOptions: initSenderAssetTypeOptions,
-// senderAssetCurrentBalance: null,
-// senderAssetTargetBalance: null,
-
-// receiverAccountIsPrivate: false,
-// receiverAccount: null,
-// userPublicReceiverOptions: [],
-// userPrivateReceiverOptions: [],
-
 
 const SendContext = React.createContext();
 
@@ -60,30 +46,13 @@ export const SendContextProvider = (props) => {
     });
   };
 
-  const _setReceiver = (receiverIsInternal, receiverIsPrivate, receiverAddress) => {
+  const setReceiver = (receiverIsInternal, receiverIsPrivate, receiverAddress) => {
     dispatch({
       type: SEND_ACTIONS.SET_RECEIVER,
       receiverIsInternal,
       receiverIsPrivate,
       receiverAddress
     });
-  };
-
-  const setExternalPublicReceiver = (address) => {
-    _setReceiver(false, false, address);
-  };
-
-  const setInternalPublicReceiver = (address) => {
-    _setReceiver(true, false, address);
-  };
-
-  const setExternalPrivateReceiver = (address) => {
-    _setReceiver(false, true, address);
-  };
-
-  const setInternalPrivateReceiver = (address) => {
-    console.log('setInternalPrivateReceiver', address);
-    _setReceiver(true, true, address);
   };
 
   const setSenderPublicAccount = async (senderPublicAccount) => {
@@ -129,10 +98,7 @@ export const SendContextProvider = (props) => {
     toggleSenderAccountIsPrivate,
     toggleReceiverAccountIsPrivate,
     setSenderAssetType,
-    setExternalPublicReceiver,
-    setInternalPublicReceiver,
-    setExternalPrivateReceiver,
-    setInternalPrivateReceiver,
+    setReceiver,
     ...state
   };
 

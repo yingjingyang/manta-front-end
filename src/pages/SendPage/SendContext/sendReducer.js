@@ -1,23 +1,20 @@
 import AssetType from 'types/AssetType';
+import { getDefaultPrivateReceiver, getDefaultPublicReceiver, getDefaultSenderAssetType } from './defaults';
 import SEND_ACTIONS from './sendActions';
-
-
-const initSenderAssetTypeOptions = AssetType.AllCurrencies(false);
-const initSenderAssetType = initSenderAssetTypeOptions[0];
 
 export const SEND_INIT_STATE = {
   senderPublicAccount: null,
   senderPublicAccountOptions: null,
   senderAccountIsPrivate: false,
 
-  senderAssetType: initSenderAssetType,
-  senderAssetTypeOptions: initSenderAssetTypeOptions,
+  senderAssetType: getDefaultSenderAssetType(AssetType.AllCurrencies(false)),
+  senderAssetTypeOptions: AssetType.AllCurrencies(false),
   senderAssetCurrentBalance: null,
   senderAssetTargetBalance: null,
 
   receiverIsInternal: true,
   receiverIsPrivate: true,
-  receiverAddress: null,
+  receiverAddress: getDefaultPrivateReceiver(),
 };
 
 const sendReducer = (state, action) => {
@@ -41,16 +38,12 @@ const sendReducer = (state, action) => {
     return setSenderAssetCurrentBalance(state, action);
 
   case SEND_ACTIONS.SET_RECEIVER:
-    console.log('setting receiver?', action);
     return setReceiver(state, action);
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
   }
 };
-
-
-// Reducer functions
 
 const toggleSenderAccountIsPrivate = (state) => {
   const senderAccountIsPrivate = !state.senderAccountIsPrivate;
@@ -68,7 +61,9 @@ const toggleSenderAccountIsPrivate = (state) => {
 
 const toggleReceiverAccountIsPrivate = (state) => {
   const receiverIsPrivate = !state.receiverIsPrivate;
-  const receiverAddress = receiverIsPrivate ? null : getDefaultPublicReceiver(state);
+  const receiverAddress = receiverIsPrivate
+    ? getDefaultPrivateReceiver()
+    : getDefaultPublicReceiver(state);
   return { ...state, receiverIsPrivate, receiverAddress };
 };
 
@@ -109,24 +104,6 @@ const setReceiver  = (state, action) => {
     receiverIsPrivate: action.receiverIsPrivate,
     receiverAddress: action.receiverAddress,
   };
-};
-
-
-
-// Helper functions
-
-const getDefaultSenderAssetType = (senderAssetTypeOptions, state) => {
-  const identicalAsset = senderAssetTypeOptions.find(option => option.assetId === state.senderAssetType.assetId);
-  if (identicalAsset) {
-    return identicalAsset;
-  }
-  return senderAssetTypeOptions[0];
-};
-
-const getDefaultPublicReceiver = (state) => {
-  if (state.senderPublicAccountOptions?.length) {
-    return state.senderPublicAccountOptions[0].address;
-  }
 };
 
 export default sendReducer;

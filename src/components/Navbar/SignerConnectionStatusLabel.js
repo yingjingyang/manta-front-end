@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import signerIsOutOfDate from 'utils/signerIsOutOfDate';
+import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
