@@ -17,13 +17,13 @@ const SendAssetTypeDropdown = () => {
       value: assetType
     };
   });
-  console.log({ dropdownOptions });
+
   const onChangeAssetType = (option) => {
     if (option.value.assetId !== senderAssetType.assetId) {
       setSenderAssetType(option.value);
     }
   };
-
+  console.log({ dropdownOptions });
   return (
     <Select
       className="w-40"
@@ -99,7 +99,6 @@ const SendAssetTypeSingleValue = ({ data }) => {
 
 const SendAssetTypeOption = (props) => {
   const { value, innerProps } = props;
-  console.log({ value, innerProps });
   return (
     <div {...innerProps}>
       <div className="flex items-center inline w-full hover:bg-blue-100">

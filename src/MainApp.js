@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import { SendPage  } from 'pages';
+import { SendPage, BridgePage } from 'pages';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import Sidebar from 'components/Sidebar';
@@ -67,6 +67,7 @@ function MainApp() {
       <Switch>
         <Route path="/" render={() => <Redirect to="/send" />} exact />
         <Route path="/send" component={SendPage} exact />
+        <Route path="/bridge" component={BridgePage} exact />
         {/* <Route path="/govern" component={GovernPage} exact />
         <Route path="/swap" component={SwapPage} exact /> */}
       </Switch>
