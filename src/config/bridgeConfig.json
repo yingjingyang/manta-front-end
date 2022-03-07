@@ -1,0 +1,25 @@
+{
+  "chains": [
+    {
+      "name": "Moonriver",
+      "logo": "https://polkadot.js.org/apps/static/moonriver.0d6c0ca2.svg"
+    },
+    {
+      "name": "Kurara",
+      "logo": "https://polkadot.js.org/apps/static/karura.cb78f2cd.svg"
+    },
+    {
+      "name": "Interlay",
+      "logo": "https://polkadot.js.org/apps/static/interlay.5a6c8aa8.svg"
+    },
+    {
+      "name": "Kusama",
+      "logo": "https://cryptologos.cc/logos/kusama-ksm-logo.svg?v=022"
+    },
+    {
+      "name": "Calamari",
+      "logo": "https://polkadot.js.org/apps/static/calamari.0d031a56.png",
+      "default": true
+    }
+  ]
+}

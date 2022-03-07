@@ -1,14 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
-import {
-  faExchange,
-  faExchangeAlt,
-  faArrowsUpDown,
-  faArrowsUpDownLeftRight,
-  faArrow,
-  faArrowsLeftRight
-} from '@fortawesome/free-solid-svg-icons';
+import { faExchange } from '@fortawesome/free-solid-svg-icons';
+import config from 'config';
 import PageContent from 'components/PageContent';
+import PublicFromAccountSelect from 'pages/SendPage/SendFromForm/PublicFromAccountSelect';
 import Navbar from 'components/Navbar';
 import Svgs from 'resources/icons';
 import ChainDropdown from './ChainDropdown';
@@ -18,6 +13,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SendAssetSelect from './SendFromForm/SendAssetSelect';
 
 const BridgePage = () => {
+  const chains = config.bridge.chains.map((chain) => ({
+    label: chain.name,
+    value: chain
+  }));
+
+  const [fromChains, setFromChains] = useState(
+    chains.filter((chain) => !chain.value.default)
+  );
+  const [toChains, setToChains] = useState(
+    chains.filter((chain) => chain.value.default)
+  );
+  const [activeFromChain, setActiveFromChain] = useState(fromChains[0].value);
+  const [activeToChain, setActiveToChain] = useState(toChains[0].value);
+
+  const handleSwapChains = () => {
+    setFromChains(toChains);
+    setToChains(fromChains);
+    setActiveFromChain(activeToChain);
+    setActiveToChain(activeFromChain);
+  };
+
   return (
     <SendContextProvider>
       <PageContent>
@@ -27,17 +43,31 @@ const BridgePage = () => {
             <h1 className="text-2xl pb-2 mb-0 font-semibold text-accent">
               Bridge
             </h1>
+            {/* <div className="">
+              <PublicFromAccountSelect />
+            </div> */}
             <div className="flex gap-8 flex-y items-end">
               <div className="">
                 <h2 className="text-primary text-white mb-2">From</h2>
-                <ChainDropdown />
+                <ChainDropdown
+                  chains={fromChains}
+                  activeChain={activeFromChain}
+                  setActiveChain={(value) => setActiveFromChain(value)}
+                />
               </div>
-              <div className="text-primary mb-5">
+              <div
+                className="text-primary mb-5 cursor-pointer"
+                onClick={handleSwapChains}
+              >
                 <FontAwesomeIcon icon={faExchange} />
               </div>
               <div className="">
                 <h2 className="text-primary text-white mb-2">To</h2>
-                <ChainDropdown />
+                <ChainDropdown
+                  chains={toChains}
+                  activeChain={activeToChain}
+                  setActiveChain={(value) => setActiveToChain(value)}
+                />
               </div>
             </div>
             <div className="flex flex-col gap-4 flex-y mt-4">
