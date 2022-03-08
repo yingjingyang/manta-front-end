@@ -3,14 +3,19 @@ import Select, { components } from 'react-select';
 import { useSend } from '../SendContext';
 
 const PublicFromAccountSelect = () => {
-  const { senderPublicAccount, senderPublicAccountOptions, setSenderPublicAccount } = useSend();
+  const {
+    senderPublicAccount,
+    senderPublicAccountOptions,
+    setSenderPublicAccount
+  } = useSend();
 
-  const options = senderPublicAccountOptions?.map(account => {
+  const options = senderPublicAccountOptions?.map((account) => {
     return { value: account, label: account.meta.name };
   });
 
   const selectedOption = senderPublicAccount && {
-    value: senderPublicAccount, label: senderPublicAccount.meta.name
+    value: senderPublicAccount,
+    label: senderPublicAccount.meta.name
   };
 
   const onChangeOption = (option) => {
@@ -28,26 +33,20 @@ const PublicFromAccountSelect = () => {
       options={options}
       placeholder=""
       styles={dropdownStyles}
-      components={
-        {
-          SingleValue: AccountSelectSingleValue,
-          Option: AccountSelectOption,
-          IndicatorSeparator: EmptyIndicatorSeparator,
-        }
-      }
+      components={{
+        SingleValue: AccountSelectSingleValue,
+        Option: AccountSelectOption,
+        IndicatorSeparator: EmptyIndicatorSeparator
+      }}
     />
   );
 };
 
-const AccountSelectSingleValue = ({data}) => {
+const AccountSelectSingleValue = ({ data }) => {
   return (
     <div className="pl-2 border-0">
-      <div className="text-lg text-white">
-        {data.value.meta.name}
-      </div>
-      <div className="text-xs text-white">
-        {data.value.address}
-      </div>
+      <div className="text-lg text-white">{data.value.meta.name}</div>
+      <div className="text-xs text-white">{data.value.address}</div>
     </div>
   );
 };
@@ -60,8 +59,8 @@ const AccountSelectOption = (props) => {
   return (
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">
-        <div onClick={onClick}  className="w-full pl-4 p-2">
-          <components.Option {...props}>{label}</ components.Option>
+        <div onClick={onClick} className="w-full pl-4 p-2">
+          <components.Option {...props}>{label}</components.Option>
           <div className="text-xs block ">{value.address}</div>
         </div>
       </div>
@@ -69,12 +68,9 @@ const AccountSelectOption = (props) => {
   );
 };
 
-
 const EmptyIndicatorSeparator = () => {
-  return <div/>;
+  return <div />;
 };
-
-
 
 const dropdownStyles = {
   control: (provided) => ({
@@ -90,10 +86,10 @@ const dropdownStyles = {
     cursor: 'pointer',
     width: '100%'
   }),
-  dropdownIndicator: () => ({paddingRight: '1rem', color: 'white' }),
+  dropdownIndicator: () => ({ paddingRight: '1rem', color: 'white' }),
   option: () => ({
     fontSize: '12pt'
-  }),
+  })
 };
 
 export default PublicFromAccountSelect;

@@ -5,12 +5,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import getBalanceString from 'utils/ui/getBalanceString';
 import { useSend } from '../SendContext';
 
-const SendAmountInput = ({
-  onChange,
-  value,
-  onClickMax,
-  isDisabled,
-}) => {
+const SendAmountInput = ({ onChange, value, onClickMax, isDisabled }) => {
   const { senderAssetCurrentBalance } = useSend();
   const balanceText = getBalanceString(senderAssetCurrentBalance);
   const { txStatus } = useTxStatus();
@@ -19,8 +14,8 @@ const SendAmountInput = ({
   return (
     <div
       className={classNames(
-        'flex flex-col w-60 rounded-r-lg manta-bg-gray content-around justify-center',
-        {'disabled': disabled}
+        'flex flex-col flex-grow w-60 rounded-r-lg manta-bg-gray content-around justify-center',
+        { disabled: disabled }
       )}
     >
       <div className="flex justify-items-center">
@@ -29,16 +24,12 @@ const SendAmountInput = ({
           onChange={onChange}
           className={classNames(
             'w-full pl-3 pt-1 text-lg manta-bg-gray outline-none',
-            {'disabled': disabled}
+            { disabled: disabled }
           )}
           value={value}
           disabled={disabled}
         />
-        <MaxButton
-          isDisabled={disabled}
-          onC
-          lickMax={onClickMax}
-        />
+        <MaxButton isDisabled={disabled} onC lickMax={onClickMax} />
       </div>
       <div className="w-full text-xs manta-gray mt-0.5 pl-3">{balanceText}</div>
     </div>
@@ -53,16 +44,15 @@ SendAmountInput.propTypes = {
   isDisabled: PropTypes.bool
 };
 
-const MaxButton = ({onClickMax, disabled}) => {
+const MaxButton = ({ onClickMax, disabled }) => {
   return (
     <span
       onClick={!disabled && onClickMax}
-      className={
-        classNames(
-          'mr-4 pl-5 pr-5 my-1 cursor-pointer btn-hover',
-          'text-center rounded-lg btn-primary unselectable-text',
-          {'disabled': disabled}
-        )}
+      className={classNames(
+        'mr-4 pl-5 pr-5 my-1 cursor-pointer btn-hover',
+        'text-center rounded-lg btn-primary unselectable-text',
+        { disabled: disabled }
+      )}
     >
       MAX
     </span>

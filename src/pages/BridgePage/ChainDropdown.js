@@ -29,12 +29,12 @@ const ChainSingleValue = ({ data }) => {
     <div className="pl-2 border-0 flex">
       <div className="pl-3">
         <img
-          className="w-10 h-10 left-2 absolute manta-bg-secondary rounded-full"
+          className="w-8 h-8 left-2 absolute manta-bg-secondary rounded-full"
           src={data.logo}
           alt="icon"
         />
       </div>
-      <div className="text-2xl pl-8 pt-1 text-white">{data.name}</div>
+      <div className="text-xl pl-6 text-white">{data.name}</div>
     </div>
   );
 };
@@ -72,7 +72,8 @@ const dropdownStyles = {
     paddingTop: '0.3rem',
     minHeight: '4.2rem',
     boxShadow: '0 0 #0000',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    flexWrap: 'nowrap'
   }),
   option: () => ({
     fontSize: '12pt'

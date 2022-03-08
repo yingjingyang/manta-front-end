@@ -8,11 +8,14 @@ import Navbar from 'components/Navbar';
 import Svgs from 'resources/icons';
 import ChainDropdown from './ChainDropdown';
 import SendButton from './SendButton';
-import { SendContextProvider } from './SendContext';
+import { SendContextProvider } from '../SendPage/SendContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SendAssetSelect from './SendFromForm/SendAssetSelect';
+import SendAssetSelect from '../SendPage/SendFromForm/SendAssetSelect';
+import { useSend } from '../SendPage/SendContext';
 
 const BridgePage = () => {
+  const { senderPublicAccount } = useSend();
+
   const chains = config.bridge.chains.map((chain) => ({
     label: chain.name,
     value: chain
@@ -38,17 +41,18 @@ const BridgePage = () => {
     <SendContextProvider>
       <PageContent>
         <Navbar />
-        <div className="justify-center flex pt-4 pb-4 m-auto">
+        <div className="justify-center flex pt-4 pb-4">
           <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
             <h1 className="text-2xl pb-2 mb-0 font-semibold text-accent">
               Bridge
             </h1>
-            {/* <div className="">
+            <div className="">
+              <h2 className="text-primary text-white mb-2">Account</h2>
               <PublicFromAccountSelect />
-            </div> */}
-            <div className="flex gap-8 flex-y items-end">
-              <div className="">
-                <h2 className="text-primary text-white mb-2">From</h2>
+            </div>
+            <div className="flex justify-between mt-4 gap-2 flex-y items-end">
+              <div className="w-44">
+                <h2 className="text-primary text-white mb-2">Origin Chain</h2>
                 <ChainDropdown
                   chains={fromChains}
                   activeChain={activeFromChain}
@@ -61,8 +65,10 @@ const BridgePage = () => {
               >
                 <FontAwesomeIcon icon={faExchange} />
               </div>
-              <div className="">
-                <h2 className="text-primary text-white mb-2">To</h2>
+              <div className="w-44">
+                <h2 className="text-primary text-white mb-2">
+                  Destination Chain
+                </h2>
                 <ChainDropdown
                   chains={toChains}
                   activeChain={activeToChain}
@@ -75,7 +81,7 @@ const BridgePage = () => {
                 <h2 className="text-primary text-white mb-2">Amount</h2>
                 <SendAssetSelect />
               </div>
-              <div className="">
+              {/* <div className="">
                 <h2 className="text-primary text-white mb-2">
                   Destination Address
                 </h2>
@@ -87,12 +93,15 @@ const BridgePage = () => {
                   <input
                     type="text"
                     // onChange={onChange}
+                    value={
+                      senderPublicAccount ? senderPublicAccount.address : ''
+                    }
                     className={classNames(
                       'w-full pl-3 pt-1 text-lg manta-bg-gray outline-none'
                     )}
                   />
                 </div>
-              </div>
+              </div> */}
               <SendButton />
             </div>
           </div>

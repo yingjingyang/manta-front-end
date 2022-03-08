@@ -23,7 +23,7 @@ const SendAssetTypeDropdown = () => {
       setSenderAssetType(option.value);
     }
   };
-  console.log({ dropdownOptions });
+
   return (
     <Select
       className="w-40"
