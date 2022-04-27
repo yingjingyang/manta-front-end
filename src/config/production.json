@@ -1,5 +1,5 @@
 {
-  "PROVIDER_SOCKET": "wss://anjie.dolphin.red",
+  "PROVIDER_SOCKET": "wss://ford.rococo.dolphin.engineering",
   "BIP_44_COIN_TYPE_ID": 1,
   "DEV_CONSOLE": false,
   "DEVELOPMENT_KEYRING": false,
@@ -8,36 +8,32 @@
   "NETWORK_NAME": "Dolphin",
   "NODES": [
     {
-      "name": "anjie",
-      "url": "wss://anjie.dolphin.red"
-    },
-    {
-      "name": "eddie",
-      "url": "wss://eddie.dolphin.red"
-    },
-    {
       "name": "ford",
-      "url": "wss://ford.dolphin.red"
-    },
-    {
-      "name": "kwaltz",
-      "url": "wss://kwaltz.dolphin.red"
-    },
-    {
-      "name": "prosser",
-      "url": "wss://prosser.dolphin.red"
-    },
-    {
-      "name": "roosta",
-      "url": "wss://roosta.dolphin.red"
+      "url": "wss://ford.rococo.dolphin.engineering"
     },
     {
       "name": "trillian",
-      "url": "wss://trillian.dolphin.red"
+      "url": "wss://trillian.rococo.dolphin.engineering"
+    },
+    {
+      "name": "eddie",
+      "url": "wss://eddie.rococo.dolphin.engineering "
+    },
+    {
+      "name": "kwaltz",
+      "url": "wss://kwaltz.rococo.dolphin.engineering "
+    },
+    {
+      "name": "prosser",
+      "url": "wss://prosser.rococo.dolphin.engineering "
+    },
+    {
+      "name": "roosta",
+      "url": "wss://roosta.rococo.dolphin.engineering "
     },
     {
       "name": "zaphod",
-      "url": "wss://zaphod.dolphin.red"
+      "url": "wss://zaphod.rococo.dolphin.engineering "
     }
   ]
 }

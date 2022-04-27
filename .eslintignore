@@ -2,6 +2,4 @@
 craco.config.js
 postcss.config.js
 tailwind.config.js
-src/pkg
-src/__tests__
 src/components/resources

@@ -1,7 +1,20 @@
 module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
-  darkMode: false,
+  darkMode: 'class',
   theme: {
+    fontSize: {
+      xss: '.75rem',
+      xs: '.825rem',
+      sm: '.875rem',
+      base: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+      '2xl': '1.5rem',
+      '3xl': '1.875rem',
+      '4xl': '2.25rem',
+      '5xl': '3rem',
+      '6xl': '4rem'
+    },
     minWidth: {
       layout: 'var(--min-width-layout)',
       table: 'var(--min-width-table)',
@@ -9,8 +22,13 @@ module.exports = {
       lg: 'var(--min-width-lg)'
     },
     extend: {
+      backgroundImage: {
+        primary: 'var(--gradient-bg-primary)',
+        button: 'var(--gradient-button-primary)'
+      },
+
       backgroundColor: {
-        primary: 'var(--color-bg-primary)',
+        // primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
         thirdry: 'var(--color-bg-thirdry)',
         fourth: 'var(--color-bg-fourth)',

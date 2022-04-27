@@ -1,0 +1,166 @@
+// @ts-nocheck
+import Svgs from 'resources/icons';
+import BN from 'bn.js';
+export default class AssetType {
+  constructor(
+    assetId,
+    baseName,
+    baseTicker,
+    icon,
+    numberOfDecimals,
+    existentialDeposit,
+    isPrivate,
+    isNativeToken = false
+  ) {
+    this.assetId = assetId;
+    this.baseName = baseName;
+    this.baseTicker = baseTicker;
+    this.name = AssetType._getFullName(baseName, isPrivate);
+    this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
+    this.icon = icon;
+    this.numberOfDecimals = numberOfDecimals;
+    this.existentialDeposit = existentialDeposit;
+    this.isPrivate = isPrivate;
+    this.isNativeToken = isNativeToken;
+  }
+
+  static Dolphin(isPrivate) {
+    return new AssetType(
+      1,
+      'Dolphin',
+      'DOL',
+      Svgs.Logo,
+      18,
+      new BN('100000000000000000'),
+      isPrivate,
+      true
+    );
+  }
+
+  static Karura(isPrivate) {
+    return new AssetType(
+      8,
+      'Karura',
+      'KAR',
+      Svgs.KarIcon,
+      12,
+      new BN('100000000000'),
+      isPrivate
+    );
+  }
+
+  static AcalaDollar(isPrivate) {
+    return new AssetType(
+      9,
+      'Acala Dollar',
+      'aUSD',
+      Svgs.AusdIcon,
+      12,
+      new BN('10000000000'),
+      isPrivate
+    );
+  }
+
+  static Kusama(isPrivate) {
+    return new AssetType(
+      10,
+      'Kusama',
+      'KSM',
+      Svgs.KusamaIcon,
+      12,
+      new BN('500000000'),
+      isPrivate
+    );
+  }
+
+  static Rococo(isPrivate) {
+    return new AssetType(
+      11,
+      'Rococo',
+      'ROC',
+      Svgs.RocIcon,
+      12,
+      new BN('1'),
+      isPrivate
+    );
+  }
+
+  static KintsugiBTC(isPrivate) {
+    return new AssetType(
+      12,
+      'Kintsugi BTC',
+      'kBTC',
+      Svgs.KbtcIcon,
+      8,
+      new BN('1'),
+      isPrivate
+    );
+  }
+
+  static Moonriver(isPrivate) {
+    return new AssetType(
+      13,
+      'Moonriver',
+      'MOVR',
+      Svgs.KbtcIcon,
+      18,
+      new BN('10000000000000000'),
+      isPrivate
+    );
+  }
+
+
+  static AllCurrencies(isPrivate) {
+    return [
+      AssetType.Karura(isPrivate),
+      AssetType.AcalaDollar(isPrivate),
+      AssetType.Kusama(isPrivate),
+      AssetType.Rococo(isPrivate),
+      AssetType.KintsugiBTC(isPrivate),
+      AssetType.Moonriver(isPrivate),
+      AssetType.Dolphin(isPrivate)
+    ];
+  }
+
+  static _getFullName(baseName, isPrivate) {
+    return isPrivate ? `Test Private ${baseName}` : `Test ${baseName}`;
+  }
+
+  static _getFullTicker(baseTicker, isPrivate) {
+    return isPrivate ? `p${baseTicker}` : baseTicker;
+  }
+
+  toPrivate() {
+    return new AssetType(
+      this.assetId,
+      this.baseName,
+      this.baseTicker,
+      this.icon,
+      this.numberOfDecimals,
+      this.existentialDeposit,
+      true,
+      this.isNativeToken
+    );
+  }
+
+  toPublic() {
+    return new AssetType(
+      this.assetId,
+      this.baseName,
+      this.baseTicker,
+      this.icon,
+      this.numberOfDecimals,
+      this.existentialDeposit,
+      false,
+      this.isNativeToken
+    );
+  }
+
+  toggleIsPrivate() {
+    if (this.isPrivate) {
+      return this.toPublic();
+    } else {
+      return this.toPrivate();
+    }
+  }
+}
