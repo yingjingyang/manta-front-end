@@ -188,6 +188,10 @@ export const SendContextProvider = (props) => {
     // This is currently a special case because querying native token balnces
     // requires a different api call
     const fetchNativeTokenPublicBalance = async (address) => {
+      if (!api || !address) {
+        return null;
+      }
+      await api.isReady;
       const balances = await api.derive.balances.account(address);
       return new Balance(AssetType.Dolphin(false), new BN(balances.freeBalance.toString()));
     };

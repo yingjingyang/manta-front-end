@@ -8,16 +8,17 @@ import { PropTypes } from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
+import { setLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 
 const NodeSelector = () => {
-  const nodes = config.NODES ?? [];
-  const { apiState, socket, updateSubstrateContext } = useSubstrate();
+  const nodes = config.NODES;
+  const { apiState, socket, resetSocket } = useSubstrate();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
   const [showPopup, setShowPopup] = useState(false);
   const [nodeSelected, setNodeSelected] = useState(
-    nodes.length > 0 && nodes.find((node) => node.url === socket)
+
   );
   const [customNode, setCustomNode] = useState({});
   const [nodeError, setNodeError] = useState('');
@@ -25,11 +26,23 @@ const NodeSelector = () => {
     apiState === 'DISCONNECTED' || apiState === 'ERROR'
   );
 
+  useEffect(() => {
+    if (nodes.find((node) => node.url === socket)) {
+      setNodeSelected(nodes.find((node) => node.url === socket));
+    } else {
+      setCustomNode({
+        name: 'custom node',
+        url: socket
+      });
+    }
+  }, [socket]);
+
   const handleNodeChange = (node) => {
-    updateSubstrateContext({ socket: node.url });
+    resetSocket(node.url);
     setNodeSelected(node);
     setCustomNode({});
     setNodeError('');
+    setLastSelectedNodeUrl(node.url);
   };
 
   const onClick = () => {
@@ -46,7 +59,8 @@ const NodeSelector = () => {
       ) {
         setNodeError('');
         setNodeSelected(null);
-        updateSubstrateContext({ socket: customNode.url });
+        resetSocket(customNode.url);
+        setLastSelectedNodeUrl(customNode.url);
       } else {
         setNodeError('Invalid node endpoint');
       }

@@ -2,12 +2,13 @@
 import React, { useReducer, useContext, useEffect } from 'react';
 import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import PropTypes from 'prop-types';
-import queryString from 'query-string';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 import config from '../config';
 
-const parsedQuery = queryString.parse(window.location.search);
-const connectedSocket = parsedQuery.rpc || config.PROVIDER_SOCKET;
+console.log('getLastSelectedNodeUrl()', getLastSelectedNodeUrl());
+
+const connectedSocket = getLastSelectedNodeUrl() || config.PROVIDER_SOCKET;
 ///
 // Initial state for `useReducer`
 
@@ -18,7 +19,6 @@ const INIT_STATE = {
   api: null,
   apiError: null,
   apiState: null,
-  updateSubstrateContext: () => {}
 };
 
 ///
@@ -41,8 +41,9 @@ const reducer = (state, action) => {
   case 'DISCONNECTED':
     return { ...state, apiState: 'DISCONNECTED' };
 
-  case 'UPDATE_STATE':
-    return { ...state, ...action.payload };
+  case 'RESET_SOCKET':
+    state.api.disconnect();
+    return { ...INIT_STATE, socket: action.socket };
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -58,9 +59,9 @@ const connect = async (state, dispatch) => {
 
   dispatch({ type: 'CONNECT_INIT' });
 
-  if (api) {
-    await api.disconnect();
-  }
+  // if (api) {
+  //   await api.disconnect();
+  // }
 
   const provider = new WsProvider(socket);
   const _api = new ApiPromise({ provider, types, rpc: jsonrpc });
@@ -82,11 +83,11 @@ const SubstrateContext = React.createContext();
 const SubstrateContextProvider = (props) => {
   // filtering props and merge with default param value
 
-  const updateSubstrateContext = (data) => {
-    dispatch({ type: 'UPDATE_STATE', payload: data });
+  const resetSocket = (socket) => {
+    dispatch({ type: 'RESET_SOCKET', socket });
   };
 
-  const initState = { ...INIT_STATE, updateSubstrateContext };
+  const initState = { ...INIT_STATE };
   const neededPropNames = ['socket', 'types'];
   neededPropNames.forEach((key) => {
     initState[key] =
@@ -96,12 +97,17 @@ const SubstrateContextProvider = (props) => {
 
   const { socket } = state;
 
+  const value = {
+    ...state,
+    resetSocket
+  };
+
   useEffect(() => {
     connect(state, dispatch);
   }, [socket]);
 
   return (
-    <SubstrateContext.Provider value={state}>
+    <SubstrateContext.Provider value={value}>
       {props.children}
     </SubstrateContext.Provider>
   );
