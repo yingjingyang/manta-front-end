@@ -30,6 +30,7 @@ function MainApp() {
       {warningModal}
       <Switch>
         <Route path="/" render={() => <Redirect to="/send" />} exact />
+        <Route path="/transact" render={() => <Redirect to="/send" />} exact />
         <Route path="/send" component={SendPage} exact />
       </Switch>
       <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
