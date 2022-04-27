@@ -10,7 +10,7 @@ export default class Balance {
 
   static fromBaseUnits(assetType, valueBaseUnits) {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
-      new Decimal(assetType.numberOfDecimals) - new Decimal(1)
+      new Decimal(assetType.numberOfDecimals)
     );
     const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(new Decimal(valueBaseUnits.toString()));
     // This conversion to BN doesn't work if our valueAtomicUnits Decimal
@@ -24,7 +24,7 @@ export default class Balance {
       this.valueAtomicUnits.toString()
     );
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
-      new Decimal(this.assetType.numberOfDecimals) - new Decimal(1)
+      new Decimal(this.assetType.numberOfDecimals)
     );
     const valueBaseUnits = balanceAtomicUnitsDecimal.div(
       new Decimal(atomicUnitsPerBaseUnit)
