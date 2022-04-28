@@ -102,13 +102,12 @@ export default class AssetType {
       13,
       'Moonriver',
       'MOVR',
-      Svgs.KbtcIcon,
+      Svgs.MovrIcon,
       18,
       new BN('10000000000000000'),
       isPrivate
     );
   }
-
 
   static AllCurrencies(isPrivate) {
     return [

@@ -8,6 +8,7 @@ import AusdIcon from 'resources/icons/coins/ausd-icon.png';
 import KarIcon from 'resources/icons/coins/kar-icon.svg';
 import KbtcIcon from 'resources/icons/coins/kbtc-icon.svg';
 import RocIcon from 'resources/icons/coins/roc-icon.svg';
+import MovrIcon from 'resources/icons/coins/movr-icon.png';
 
 // sidebar icons
 import AuditIcon from 'resources/icons/sidebar/audit.svg';
@@ -69,6 +70,7 @@ const Svgs = {
   KarIcon,
   KbtcIcon,
   RocIcon,
+  MovrIcon,
   Logo,
   AuditIcon,
   CloseIcon,
