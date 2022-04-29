@@ -36,7 +36,8 @@ After reconnection or refresh, balances should remain the same<br/>
 - close and reopen Signer desktop app
 - refresh page
 - disconnect and reconnect from your Dolphin node.
-    -  You force a disconnect by connecting to some fake websocket like `ws://0.0.0.0:3000`
+    -  You force a disconnect by connecting to some fake websocket like `ws://0.0.0.0:3000`<br/>
+
 ![Disconnect](./disconnect-from-node.png)<br/>
 
 
