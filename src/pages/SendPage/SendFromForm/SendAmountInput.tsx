@@ -36,7 +36,8 @@ const SendAmountInput = () => {
 
   const onClickMax = () => {
     if (senderAssetCurrentBalance) {
-      onChangeSendAmountInput(senderAssetCurrentBalance.toString());
+      const maxAmount = senderAssetCurrentBalance.valueOverExistentialDeposit();
+      onChangeSendAmountInput(maxAmount.toString());
     }
   };
 

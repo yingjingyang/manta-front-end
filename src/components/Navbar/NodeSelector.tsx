@@ -11,73 +11,89 @@ import classNames from 'classnames';
 import { setLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 
 const NodeSelector = () => {
-  const nodes = config.NODES;
+  const defaultNodeOptions = config.NODES;
   const { apiState, socket, resetSocket } = useSubstrate();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-
   const [showPopup, setShowPopup] = useState(false);
-  const [nodeSelected, setNodeSelected] = useState(
 
-  );
-  const [customNode, setCustomNode] = useState({});
+  const getNodeIsDisconnected = () => apiState === 'ERROR' || apiState === 'DISCONNECTED';
+
+  const [selectedDefaultNodeOption, setSelectedDefaultNodeOption] = useState(null);
+  const [customNodeInput, setCustomNodeInput] = useState('');
   const [nodeError, setNodeError] = useState('');
-  const [nodeDisconnected, setNodeDisconnected] = useState(
-    apiState === 'DISCONNECTED' || apiState === 'ERROR'
-  );
+  const [disconnectedIndicator, setDisconnectedIndicator] = useState(getNodeIsDisconnected());
+  const selectedNodeName = selectedDefaultNodeOption ? selectedDefaultNodeOption.name : 'Custom Node';
 
   useEffect(() => {
-    if (nodes.find((node) => node.url === socket)) {
-      setNodeSelected(nodes.find((node) => node.url === socket));
+    const selectedDefaultNode = defaultNodeOptions.find((node) => node.url === socket);
+    if (selectedDefaultNode) {
+      setSelectedDefaultNodeOption(selectedDefaultNode);
     } else {
-      setCustomNode({
-        name: 'custom node',
-        url: socket
-      });
+      setCustomNodeInput(socket);
     }
   }, [socket]);
 
-  const handleNodeChange = (node) => {
-    resetSocket(node.url);
-    setNodeSelected(node);
-    setCustomNode({});
-    setNodeError('');
-    setLastSelectedNodeUrl(node.url);
-  };
 
-  const onClick = () => {
+  const onClickNodeSelector = () => {
     if (!disabled) {
       setShowPopup(true);
     }
   };
 
-  const handleCustomNodeChange = () => {
-    if (customNode && customNode.url) {
-      if (
-        customNode.url.slice(0, 5) === 'ws://' ||
-        customNode.url.slice(0, 6) === 'wss://'
-      ) {
-        setNodeError('');
-        setNodeSelected(null);
-        resetSocket(customNode.url);
-        setLastSelectedNodeUrl(customNode.url);
-      } else {
-        setNodeError('Invalid node endpoint');
-      }
+  const onClickOutsideNodeSelector = () => {
+    if (nodeError) {
+      setNodeError('');
+    }
+    setShowPopup(false);
+  };
+
+
+  const handleChangeDefaultNodeOption = (defaultNodeOption) => {
+    if (socket === defaultNodeOption.url) {
+      return;
+    }
+    resetSocket(defaultNodeOption.url);
+    setSelectedDefaultNodeOption(defaultNodeOption);
+    setNodeError('');
+    setLastSelectedNodeUrl(defaultNodeOption.url);
+  };
+
+  const handleChangeCustomNodeInput = (e) => {
+    setCustomNodeInput(e.target.value);
+    setNodeError('');
+  };
+
+  const handleSetCustomNode = () => {
+    if (socket === customNodeInput) {
+      return;
+    }
+    else if (
+      customNodeInput.slice(0, 5) === 'ws://' ||
+      customNodeInput.slice(0, 6) === 'wss://'
+    ) {
+      resetSocket(customNodeInput);
+      setSelectedDefaultNodeOption(null);
+      setNodeError('');
+      setLastSelectedNodeUrl(customNodeInput);
+    } else {
+      setNodeError('Invalid node endpoint');
     }
   };
 
   useEffect(() => {
     let timeout;
-    if (apiState === 'DISCONNECTED' || apiState === 'ERROR') {
+    if (getNodeIsDisconnected()) {
       timeout = setTimeout(() => {
-        setNodeDisconnected(true);
+        if (getNodeIsDisconnected()) {
+          setDisconnectedIndicator(true);
+        }
       }, 1000);
     } else {
       timeout && clearTimeout(timeout);
-      setNodeDisconnected(false);
+      setDisconnectedIndicator(false);
     }
-  }, [apiState, nodeDisconnected]);
+  }, [apiState]);
 
   return (
     <div className={classNames(
@@ -87,9 +103,9 @@ const NodeSelector = () => {
     >
       <div
         className="text-primary flex items-center gap-2 cursor-pointer capitalize"
-        onClick={onClick}
+        onClick={onClickNodeSelector}
       >
-        {nodeDisconnected ? (
+        {disconnectedIndicator ? (
           <FontAwesomeIcon icon={faTimes} color="#FA4D56" />
         ) : apiState === 'READY' ? (
           <FontAwesomeIcon icon={faCheck} color="#24A148" />
@@ -103,17 +119,11 @@ const NodeSelector = () => {
             </div>
           </div>
         )}
-        {nodeSelected ? nodeSelected.name : 'Custom Node'}
+        {selectedNodeName}
       </div>
       {showPopup && (
         <OutsideClickHandler
-          onOutsideClick={() => {
-            if (nodeError) {
-              setNodeError('');
-              setCustomNode({});
-            }
-            setShowPopup(false);
-          }}
+          onOutsideClick={onClickOutsideNodeSelector}
         >
           <div className="absolute w-80 bg-overlay dark:bg-fourth px-6 py-4 top-full rounded-lg z-50 whitespace-nowrap mt-3">
             <h2 className="relative text-xl text-accent font-semibold mb-3">
@@ -124,44 +134,35 @@ const NodeSelector = () => {
                 onClick={() => setShowPopup(false)}
               />
             </h2>
-            {nodes.map((node) => (
-              <div className="mb-2 overflow-hidden" key={node.name}>
+            {defaultNodeOptions.map((defaultNodeOption) => (
+              <div className="mb-2 overflow-hidden" key={defaultNodeOption.name}>
                 <input
-                  id={`node-${node.name}`}
+                  id={`node-${defaultNodeOption.name}`}
                   type="radio"
-                  value={node.name}
-                  checked={!!(nodeSelected && nodeSelected.name === node.name)}
+                  value={defaultNodeOption.name}
+                  checked={!!(defaultNodeOption.url === socket)}
                   className="hidden"
                   onChange={() => {}}
                 />
                 <label
-                  htmlFor={`node-${node.name}`}
+                  htmlFor={`node-${defaultNodeOption.name}`}
                   className="flex items-center cursor-pointer text-lg text-primary capitalize"
-                  onClick={() => handleNodeChange(node)}
+                  onClick={() => handleChangeDefaultNodeOption(defaultNodeOption)}
                 >
                   <span className="w-4 h-4 inline-block mr-2 rounded-full border border-grey flex-no-shrink flex-shrink-0"></span>
-                  {node.name}
+                  {defaultNodeOption.name}
                 </label>
               </div>
             ))}
             <div className="mb-4 relative">
               <NodeSelectorInput
-                value={customNode.url ?? ''}
-                onChange={(e) => {
-                  setNodeError('');
-                  setCustomNode({
-                    name: 'custom node',
-                    url: e.target.value
-                  });
-                }}
-              >
-                <p className={nodeError && 'text-red-500'}>
-                  {nodeError ? nodeError : 'custom endpoint'}
-                </p>
-              </NodeSelectorInput>
+                value={customNodeInput}
+                onChange={handleChangeCustomNodeInput}
+                nodeError={nodeError}
+              />
               <span
                 className="absolute top-4 right-4  uppercase cursor-pointer text-center rounded-lg"
-                onClick={handleCustomNodeChange}
+                onClick={handleSetCustomNode}
               >
                 <FontAwesomeIcon icon={faSave} />
               </span>
@@ -176,21 +177,27 @@ const NodeSelector = () => {
 const NodeSelectorInput = ({
   onChange,
   value,
+  nodeError
 }) => {
   return (
-    <div
-      className={
-        'flex items-start w-full field-box-shadow p-3 rounded-lg bg-gray-50 my-2 pr-16'
-      }
-    >
-      <div className="flex">
-        <input
-          type="text"
-          onChange={onChange}
-          className={'w-full text-lg outline-none bg-gray-50'}
-          value={value}
-        />
+    <div>
+      <div
+        className={
+          'flex items-start w-full field-box-shadow p-3 rounded-lg bg-gray-50 my-2 pr-16'
+        }
+      >
+        <div className="flex">
+          <input
+            type="text"
+            onChange={onChange}
+            className={'w-full text-lg outline-none bg-gray-50'}
+            value={value}
+          />
+        </div>
       </div>
+      <p className={nodeError && 'text-red-500'}>
+        {nodeError ? nodeError : 'custom endpoint'}
+      </p>
     </div>
   );
 };

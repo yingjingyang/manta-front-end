@@ -19,7 +19,7 @@ import { useSubstrate } from './substrateContext';
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
-  const { api } = useSubstrate();
+  const { api, socket } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
   const [privateAddress, setPrivateAddress] = useState(null);
   const [wallet, setWallet] = useState(null);
@@ -27,7 +27,18 @@ export const PrivateWalletContextProvider = (props) => {
   const [wasmApi, setWasmApi] = useState(null);
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
-  const isReady = wallet && signerIsConnected;
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    setIsReady(wallet && signerIsConnected);
+  }, [wallet, signerIsConnected]);
+
+  // WASM wallet must be reinitialized when socket changes
+  // because the old api will have been disconnected
+  useEffect(() => {
+    setIsReady(false);
+  }, [socket]);
+
 
   useEffect(() => {
     const getPrivateAddress = async (wasm, wallet) => {
@@ -61,6 +72,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
 
   }, [api, externalAccountSigner, signerIsConnected]);
+
 
   const fetchSignerVersion = async () => {
     try {
@@ -102,7 +114,8 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
-    wasmApi.setTxResHandler(txResHandler);
+    wasmApi.txResHandler = txResHandler;
+    wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, null);
     return res;
   };
@@ -112,7 +125,8 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Reclaim": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
-    wasmApi.setTxResHandler(txResHandler);
+    wasmApi.txResHandler = txResHandler;
+    wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, null);
     return res;
   };
@@ -123,7 +137,8 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const txJson = `{ "PrivateTransfer": [{ "id": ${assetId}, "value": "${value}" }, ${addressJson} ]}`;
     const transaction = wasm.Transaction.from_string(txJson);
-    wasmApi.setTxResHandler(txResHandler);
+    wasmApi.txResHandler = txResHandler;
+    wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, null);
     return res;
   };

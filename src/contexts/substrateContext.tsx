@@ -6,8 +6,6 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 import config from '../config';
 
-console.log('getLastSelectedNodeUrl()', getLastSelectedNodeUrl());
-
 const connectedSocket = getLastSelectedNodeUrl() || config.PROVIDER_SOCKET;
 ///
 // Initial state for `useReducer`
@@ -39,11 +37,15 @@ const reducer = (state, action) => {
     return { ...state, apiState: 'ERROR', apiError: action.payload };
 
   case 'DISCONNECTED':
-    return { ...state, apiState: 'DISCONNECTED' };
+    const provider = action.payload;
+    if (state.provider === provider) {
+      return { ...state, apiState: 'DISCONNECTED' };
+    }
+    return state;
 
   case 'RESET_SOCKET':
     state.api.disconnect();
-    return { ...INIT_STATE, socket: action.socket };
+    return { ...INIT_STATE, socket: action.socket, apiState: 'CONNECTING' };
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -54,14 +56,10 @@ const reducer = (state, action) => {
 // Connecting to the Substrate node
 
 const connect = async (state, dispatch) => {
-  const { api, socket, types, jsonrpc } = state;
-  // We only want this function to be performed once
+  const { socket, types, jsonrpc } = state;
+
 
   dispatch({ type: 'CONNECT_INIT' });
-
-  // if (api) {
-  //   await api.disconnect();
-  // }
 
   const provider = new WsProvider(socket);
   const _api = new ApiPromise({ provider, types, rpc: jsonrpc });
@@ -69,13 +67,14 @@ const connect = async (state, dispatch) => {
   dispatch({ type: 'CONNECT', payload: _api });
   // Set listeners for disconnection and reconnection event.
   _api.on('connected', () => {
+    console.log('connected!!!!');
     dispatch({ type: 'CONNECT', payload: _api });
     // `ready` event is not emitted upon reconnection and is checked explicitly here.
     _api.isReady.then(() => dispatch({ type: 'CONNECT_SUCCESS' }));
   });
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
   _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
-  _api.on('disconnected', () => dispatch({ type: 'DISCONNECTED' }));
+  _api.on('disconnected', () => dispatch({ type: 'DISCONNECTED', payload: provider }));
 };
 
 const SubstrateContext = React.createContext();

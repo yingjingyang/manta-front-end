@@ -155,9 +155,9 @@ export const SendContextProvider = (props) => {
   };
 
   // Dispatches the user's available balance to local state for the currently selected account and asset
-  const setSenderAssetCurrentBalance = (senderAssetCurrentBalance) => {
+  const setSenderAssetCurrentBalance = (senderAssetCurrentBalance, senderPublicAddress) => {
     dispatch({
-      type: SEND_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE, senderAssetCurrentBalance
+      type: SEND_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE, senderAssetCurrentBalance, senderPublicAddress
     });
   };
 
@@ -200,12 +200,12 @@ export const SendContextProvider = (props) => {
     const fetchSenderBalance = async () => {
       if (!senderAssetType.isPrivate) {
         const publicBalance = await fetchPublicBalance(senderPublicAccount?.address, senderAssetType);
-        setSenderAssetCurrentBalance(publicBalance);
+        setSenderAssetCurrentBalance(publicBalance, senderPublicAccount?.address);
         // private balances cannot be queries while a transaction is processing
         // because web assambly wallet panics if asked to do two things at a time
       } else if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
         const privateBalance =  await privateWallet.getSpendableBalance(senderAssetType);
-        setSenderAssetCurrentBalance(privateBalance);
+        setSenderAssetCurrentBalance(privateBalance, senderPublicAccount?.address);
       }
     };
 
@@ -231,8 +231,9 @@ export const SendContextProvider = (props) => {
       if (!api || !externalAccount) {
         return;
       }
-      const balance = await fetchNativeTokenPublicBalance(externalAccount.address);
-      setSenderNativeTokenPublicBalance(balance);
+      const address = externalAccount.address;
+      const balance = await fetchNativeTokenPublicBalance(address);
+      setSenderNativeTokenPublicBalance(balance, address);
     };
     fetchSenderBalance();
     fetchReceiverBalance();
@@ -253,7 +254,7 @@ export const SendContextProvider = (props) => {
     if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
       return null;
     }
-    return senderAssetCurrentBalance.gte(senderAssetTargetBalance);
+    return senderAssetCurrentBalance.valueOverExistentialDeposit().gte(senderAssetTargetBalance);
   };
 
   // Checks if the user has enough native token to pay fees & publish a transaction
@@ -264,7 +265,9 @@ export const SendContextProvider = (props) => {
     const conservativeFeeEstimate = Balance.fromBaseUnits(AssetType.Dolphin(false), 0.1);
     let requiredNativeTokenBalance = conservativeFeeEstimate;
     if (senderAssetType.isNativeToken) {
-      requiredNativeTokenBalance = requiredNativeTokenBalance.add(senderAssetTargetBalance);
+      requiredNativeTokenBalance = requiredNativeTokenBalance.add(
+        senderAssetTargetBalance.valueOverExistentialDeposit()
+      );
     }
     return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
   };
@@ -316,7 +319,6 @@ export const SendContextProvider = (props) => {
     if (!isValidToSend()) {
       return;
     }
-    console.log('external', externalAccount);
     setTxStatus(TxStatus.processing());
     try {
       let res;

@@ -8,6 +8,16 @@ export default class Balance {
     this.valueAtomicUnits = valueAtomicUnits;
   }
 
+  valueOverExistentialDeposit() {
+    const existentialDeposit = new Balance(
+      this.assetType,
+      this.assetType.existentialDeposit
+    );
+    const value = this.sub(existentialDeposit);
+    const zero = new Balance(this.assetType, new BN(0));
+    return Balance.max(value, zero);
+  }
+
   static fromBaseUnits(assetType, valueBaseUnits) {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(assetType.numberOfDecimals)
@@ -79,5 +89,13 @@ export default class Balance {
     }
     const value = this.valueAtomicUnits.add(other.valueAtomicUnits);
     return new Balance(this.assetType, value);
+  }
+
+  static max(a, b) {
+    if (a.assetType.assetId !== b.assetType.assetId) {
+      throw new Error('Cannot compare different asset types');
+    }
+    const value = BN.max(a.valueAtomicUnits, b.valueAtomicUnits);
+    return new Balance(a.assetType, value);
   }
 }

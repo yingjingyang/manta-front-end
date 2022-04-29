@@ -68,6 +68,7 @@ const getDefaultReceiver = (state, senderIsPrivate, receiverIsPrivate) => {
   }
 };
 
+
 const toggleSenderIsPrivate = (state) => {
   const senderAssetType = state.senderAssetType.toggleIsPrivate();
   const senderAssetTypeOptions = AssetType.AllCurrencies(senderAssetType.isPrivate);
