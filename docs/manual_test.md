@@ -37,7 +37,7 @@ After reconnection or refresh, balances should remain the same<br/>
 - refresh page
 - disconnect and reconnect from your Dolphin node.
     -  You force a disconnect by connecting to some fake websocket like `ws://0.0.0.0:3000`
-![Disconnect](./disconnect_from_node.png)<br/>
+![Disconnect](./disconnect-from-node.png)<br/>
 
 
 ## Gotchas
