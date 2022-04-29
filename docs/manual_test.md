@@ -2,13 +2,15 @@
 
 To prepare for this test, you should have an up-to-date version of `manta-signer` desktop app, a local or remote Dolphin testnet, and a local or remote `manta-front-end` UI. See top level README.md for more details.<br/>
 
-To prepare for the test, you should create two accounts in polkadot.js browser extension. Load these accounts with balances of Dolphin and at least two parachain assets. If you are running a local testnet, you can mint assets to these accounts from the default sudo account (Alice) in [polkadot.js apps wallet](https://polkadot.js.org/apps) using the `assetManager.mintAsset` extrinsic. If you are testing against the live testnet, you can use the `#dolphin-faucet` channel in the Manta/Calamari public discord.<br/>
+First, you should create two accounts in [polkadot.js browser extension](https://polkadot.js.org/extension/). Load these accounts with balances of Dolphin and at least two parachain assets.
+- If you are running a local testnet, you can mint assets to these accounts from the default sudo account (Alice) in [polkadot.js apps wallet](https://polkadot.js.org/apps) using the `assetManager.mintAsset` extrinsic.
+- If you are testing against the live testnet, you can use the `#dolphin-faucet` channel in the Manta/Calamari public discord.<br/>
 
-For these three asset types, do all of the actions listed below (grouped by theme) at least twice (more is okay), in a random order (so at least six times total). Some bugs may only surface through an unusual sequence of actions, so it is important that actions are not performed in the exact order listed.<br/>
+For your three selected asset types, do all of the actions listed below (grouped by theme) at least twice (more is okay), in a random order (so at least six times total). Some bugs may only surface through an unusual sequence of actions, so it is important that actions are not performed in the exact order listed.<br/>
 
-- [] Manual test for Dolphin
-- [] Manual test for some second parachain asset
-- [] Manual test for some third parachain asset<br/>
+- [ ] Manual test for Dolphin
+- [ ] Manual test for some second parachain asset
+- [ ] Manual test for some third parachain asset<br/>
 
 For each asset:<br/>
 
