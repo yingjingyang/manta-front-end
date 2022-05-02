@@ -7,7 +7,7 @@ import NodeSelector from 'components/Navbar/NodeSelector';
 
 const Sidebar = () => {
   return (
-    <div className="sidebar-menu hidden lg:block bg-secondary h-screen">
+    <div className="sidebar-menu hidden lg:block bg-secondary">
       <div className="py-6 h-full flex flex-col justify-between overflow-visible">
         <div>
           <div className="logo-content pl-5 hidden w-full items-center lg:flex">
