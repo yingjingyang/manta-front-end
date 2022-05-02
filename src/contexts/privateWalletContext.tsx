@@ -125,9 +125,11 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Reclaim": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
+    const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
+    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
-    const res = await wallet.post(transaction, null);
+    const res = await wallet.post(transaction, assetMetadata);
     return res;
   };
 
