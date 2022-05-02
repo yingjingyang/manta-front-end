@@ -60,7 +60,7 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
-      await wasmWallet.sync();
+      await wasmWallet.recover();
       setWasm(wasm);
       setPrivateAddress(privateAddress);
       setWasmApi(wasmApi);
@@ -137,9 +137,11 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const txJson = `{ "PrivateTransfer": [{ "id": ${assetId}, "value": "${value}" }, ${addressJson} ]}`;
     const transaction = wasm.Transaction.from_string(txJson);
+    const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
+    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
-    const res = await wallet.post(transaction, null);
+    const res = await wallet.post(transaction, assetMetadata);
     return res;
   };
 
