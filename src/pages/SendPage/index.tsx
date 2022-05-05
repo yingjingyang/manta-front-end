@@ -9,13 +9,12 @@ import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 import { SendContextProvider } from './SendContext';
 
-
 const SendPage = () => {
   const { txStatus } = useTxStatus();
 
   useEffect(() => {
     if (txStatus?.isFinalized()) {
-      showSuccess('Transaction finalized');
+      showSuccess('Transaction finalized', txStatus?.extrinsic);
     } else if (txStatus?.isFailed()) {
       showError('Transaction failed');
     }

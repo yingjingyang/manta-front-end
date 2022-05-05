@@ -4,39 +4,40 @@ const FAILED = 'failed';
 const PROCESSING = 'processing';
 
 export default class TxStatus {
-  constructor (status, block = null, message = null) {
+  constructor(status, extrinsic = null, block = null, message = null) {
     this.status = status;
+    this.extrinsic = extrinsic;
     this.block = block;
     this.message = message;
     this.batchNum = null;
     this.totalBatches = null;
   }
 
-  static processing (message) {
+  static processing(message) {
     return new TxStatus(PROCESSING, null, message);
   }
 
-  static finalized (block) {
-    return new TxStatus(FINALIZED, block, null);
+  static finalized(extrinsic, block) {
+    return new TxStatus(FINALIZED, extrinsic, block, null);
   }
 
-  static failed (block, message) {
+  static failed(block, message) {
     return new TxStatus(FAILED, block, message);
   }
 
-  isProcessing () {
+  isProcessing() {
     return this.status === PROCESSING;
   }
 
-  isFinalized () {
+  isFinalized() {
     return this.status === FINALIZED;
   }
 
-  isFailed () {
+  isFailed() {
     return this.status === FAILED;
   }
 
-  toString () {
+  toString() {
     let message = this.status;
     if (this.block) {
       message += `;\n block hash: ${this.block}`;
