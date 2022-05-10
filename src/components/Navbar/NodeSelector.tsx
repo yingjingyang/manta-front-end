@@ -17,23 +17,30 @@ const NodeSelector = () => {
   const disabled = txStatus?.isProcessing();
   const [showPopup, setShowPopup] = useState(false);
 
-  const getNodeIsDisconnected = () => apiState === 'ERROR' || apiState === 'DISCONNECTED';
+  const getNodeIsDisconnected = () =>
+    apiState === 'ERROR' || apiState === 'DISCONNECTED';
 
-  const [selectedDefaultNodeOption, setSelectedDefaultNodeOption] = useState(null);
+  const [selectedDefaultNodeOption, setSelectedDefaultNodeOption] =
+    useState(null);
   const [customNodeInput, setCustomNodeInput] = useState('');
   const [nodeError, setNodeError] = useState('');
-  const [disconnectedIndicator, setDisconnectedIndicator] = useState(getNodeIsDisconnected());
-  const selectedNodeName = selectedDefaultNodeOption ? selectedDefaultNodeOption.name : 'Custom Node';
+  const [disconnectedIndicator, setDisconnectedIndicator] = useState(
+    getNodeIsDisconnected()
+  );
+  const selectedNodeName = selectedDefaultNodeOption
+    ? selectedDefaultNodeOption.name
+    : 'Custom Node';
 
   useEffect(() => {
-    const selectedDefaultNode = defaultNodeOptions.find((node) => node.url === socket);
+    const selectedDefaultNode = defaultNodeOptions.find(
+      (node) => node.url === socket
+    );
     if (selectedDefaultNode) {
       setSelectedDefaultNodeOption(selectedDefaultNode);
     } else {
       setCustomNodeInput(socket);
     }
   }, [socket]);
-
 
   const onClickNodeSelector = () => {
     if (!disabled) {
@@ -47,7 +54,6 @@ const NodeSelector = () => {
     }
     setShowPopup(false);
   };
-
 
   const handleChangeDefaultNodeOption = (defaultNodeOption) => {
     if (socket === defaultNodeOption.url) {
@@ -67,8 +73,7 @@ const NodeSelector = () => {
   const handleSetCustomNode = () => {
     if (socket === customNodeInput) {
       return;
-    }
-    else if (
+    } else if (
       customNodeInput.slice(0, 5) === 'ws://' ||
       customNodeInput.slice(0, 6) === 'wss://'
     ) {
@@ -96,10 +101,11 @@ const NodeSelector = () => {
   }, [apiState]);
 
   return (
-    <div className={classNames(
-      'relative mt-2 border border-primary dark:border-white py-1 px-2 rounded-lg',
-      {'disabled': disabled}
-    )}
+    <div
+      className={classNames(
+        'relative border border-primary dark:border-white py-1 px-2 rounded-lg',
+        { disabled: disabled }
+      )}
     >
       <div
         className="text-primary flex items-center gap-2 cursor-pointer capitalize"
@@ -122,9 +128,7 @@ const NodeSelector = () => {
         {selectedNodeName}
       </div>
       {showPopup && (
-        <OutsideClickHandler
-          onOutsideClick={onClickOutsideNodeSelector}
-        >
+        <OutsideClickHandler onOutsideClick={onClickOutsideNodeSelector}>
           <div className="absolute w-80 bg-overlay dark:bg-fourth px-6 py-4 top-full rounded-lg z-50 whitespace-nowrap mt-3">
             <h2 className="relative text-xl text-accent font-semibold mb-3">
               Available Nodes
@@ -135,7 +139,10 @@ const NodeSelector = () => {
               />
             </h2>
             {defaultNodeOptions.map((defaultNodeOption) => (
-              <div className="mb-2 overflow-hidden" key={defaultNodeOption.name}>
+              <div
+                className="mb-2 overflow-hidden"
+                key={defaultNodeOption.name}
+              >
                 <input
                   id={`node-${defaultNodeOption.name}`}
                   type="radio"
@@ -147,7 +154,9 @@ const NodeSelector = () => {
                 <label
                   htmlFor={`node-${defaultNodeOption.name}`}
                   className="flex items-center cursor-pointer text-lg text-primary capitalize"
-                  onClick={() => handleChangeDefaultNodeOption(defaultNodeOption)}
+                  onClick={() =>
+                    handleChangeDefaultNodeOption(defaultNodeOption)
+                  }
                 >
                   <span className="w-4 h-4 inline-block mr-2 rounded-full border border-grey flex-no-shrink flex-shrink-0"></span>
                   {defaultNodeOption.name}
@@ -174,11 +183,7 @@ const NodeSelector = () => {
   );
 };
 
-const NodeSelectorInput = ({
-  onChange,
-  value,
-  nodeError
-}) => {
+const NodeSelectorInput = ({ onChange, value, nodeError }) => {
   return (
     <div>
       <div
@@ -202,7 +207,6 @@ const NodeSelectorInput = ({
   );
 };
 
-
 NodeSelectorInput.propTypes = {
   children: PropTypes.any,
   onChange: PropTypes.func,
@@ -215,7 +219,6 @@ NodeSelectorInput.propTypes = {
   step: PropTypes.string,
   isDisabled: PropTypes.bool
 };
-
 
 NodeSelector.propTypes = {};
 

@@ -17,6 +17,7 @@ const INIT_STATE = {
   api: null,
   apiError: null,
   apiState: null,
+  blockNumber: 0
 };
 
 ///
@@ -24,31 +25,34 @@ const INIT_STATE = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-  case 'CONNECT_INIT':
-    return { ...state, apiState: 'CONNECT_INIT' };
+    case 'CONNECT_INIT':
+      return { ...state, apiState: 'CONNECT_INIT' };
 
-  case 'CONNECT':
-    return { ...state, api: action.payload, apiState: 'CONNECTING' };
+    case 'CONNECT':
+      return { ...state, api: action.payload, apiState: 'CONNECTING' };
 
-  case 'CONNECT_SUCCESS':
-    return { ...state, apiState: 'READY' };
+    case 'CONNECT_SUCCESS':
+      return { ...state, apiState: 'READY' };
 
-  case 'CONNECT_ERROR':
-    return { ...state, apiState: 'ERROR', apiError: action.payload };
+    case 'CONNECT_ERROR':
+      return { ...state, apiState: 'ERROR', apiError: action.payload };
 
-  case 'DISCONNECTED':
-    const provider = action.payload;
-    if (state.provider === provider) {
-      return { ...state, apiState: 'DISCONNECTED' };
-    }
-    return state;
+    case 'DISCONNECTED':
+      const provider = action.payload;
+      if (state.provider === provider) {
+        return { ...state, apiState: 'DISCONNECTED' };
+      }
+      return state;
 
-  case 'RESET_SOCKET':
-    state.api.disconnect();
-    return { ...INIT_STATE, socket: action.socket, apiState: 'CONNECTING' };
+    case 'UPDATE_BLOCK':
+      return { ...state, blockNumber: action.payload };
 
-  default:
-    throw new Error(`Unknown type: ${action.type}`);
+    case 'RESET_SOCKET':
+      state.api.disconnect();
+      return { ...INIT_STATE, socket: action.socket, apiState: 'CONNECTING' };
+
+    default:
+      throw new Error(`Unknown type: ${action.type}`);
   }
 };
 
@@ -57,7 +61,6 @@ const reducer = (state, action) => {
 
 const connect = async (state, dispatch) => {
   const { socket, types, jsonrpc } = state;
-
 
   dispatch({ type: 'CONNECT_INIT' });
 
@@ -70,11 +73,18 @@ const connect = async (state, dispatch) => {
     console.log('connected!!!!');
     dispatch({ type: 'CONNECT', payload: _api });
     // `ready` event is not emitted upon reconnection and is checked explicitly here.
-    _api.isReady.then(() => dispatch({ type: 'CONNECT_SUCCESS' }));
+    _api.isReady.then(async () => {
+      dispatch({ type: 'CONNECT_SUCCESS' });
+      await _api.rpc.chain.subscribeNewHeads((header) => {
+        dispatch({ type: 'UPDATE_BLOCK', payload: header.number.toHuman() });
+      });
+    });
   });
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
   _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
-  _api.on('disconnected', () => dispatch({ type: 'DISCONNECTED', payload: provider }));
+  _api.on('disconnected', () =>
+    dispatch({ type: 'DISCONNECTED', payload: provider })
+  );
 };
 
 const SubstrateContext = React.createContext();
