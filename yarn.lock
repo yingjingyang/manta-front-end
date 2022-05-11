@@ -1536,9 +1536,9 @@
   integrity sha512-GryiOJmNcWbovBxTfZSF71V/mXbgcV3MewDe3kIMCLyIh5e7SKAeUZs+rMnJ8jkMolZ/4/VsdBmMrw3l+VdZ3w==
 
 "@jridgewell/trace-mapping@^0.3.9":
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.11.tgz#eb2e124521f27673493030d02dffedf60e56553f"
-  integrity sha512-RllI476aSMsxzeI9TtlSMoNTgHDxEmnl6GkkHwhr0vdL8W+0WuesyI8Vd3rBOfrwtPXbPxdT9ADJdiOKgzxPQA==
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.12.tgz#ccd8cd83ad894bae98a79eecd6a885b211bfe217"
+  integrity sha512-6GMdw8fZlZjs9CJONrWeWyjl8zYqbyOMSxS9FABnEw3i+wz99SESjWMWRRIsbIp8HVsMeXggi5b7+a9qO6W1fQ==
   dependencies:
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
@@ -3564,9 +3564,9 @@ bindings@^1.3.0, bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"
@@ -8540,15 +8540,11 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-wasm-wallet-api@1.1.0-dev1:
-  version "1.1.0-dev1"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0-dev1.tgz#ca03214dc3e3e0c987cbafaf0a851535acdc004f"
-  integrity sha512-vwI11Vw5QQ62Dwbsiw1yoScUr8ZZW2E5kqA695J53UeRtTaPAkPy5jTFKy2J6yPissDgoOmMZlUp5T090LQhYw==
+"manta-wasm-wallet-api@file:../sdk/wallet/api":
+  version "1.0.0"
 
-manta-wasm-wallet@1.1.0-dev1:
-  version "1.1.0-dev1"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0-dev1.tgz#be4f286758193b3ac9fbab2b065919959d6cbafd"
-  integrity sha512-vahp/jqvJHB78117W45Gu+IQEWnDkXn/psso7y5NO5VsHPW411SE6NaZxNYyuo1fZKuCl51GsbEtVRuQ3nP5fA==
+"manta-wasm-wallet@file:../sdk/wallet/crate/pkg":
+  version "1.0.0"
 
 map-cache@^0.2.2:
   version "0.2.2"

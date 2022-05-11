@@ -53,7 +53,7 @@ export const PrivateWalletContextProvider = (props) => {
     };
 
     const initWallet = async () => {
-      console.log("INITIALIZING");
+      console.log('INITIALIZING');
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
@@ -99,7 +99,6 @@ export const PrivateWalletContextProvider = (props) => {
     }, 2000);
     return () => clearInterval(interval);
   }, [api, wallet]);
-
 
   const getSpendableBalance = async (assetType) => {
     if (!isReady) {
