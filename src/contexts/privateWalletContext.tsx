@@ -53,6 +53,7 @@ export const PrivateWalletContextProvider = (props) => {
     };
 
     const initWallet = async () => {
+      console.log("INITIALIZING");
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
@@ -96,7 +97,6 @@ export const PrivateWalletContextProvider = (props) => {
     const interval = setInterval(async () => {
       fetchSignerVersion();
     }, 2000);
-
     return () => clearInterval(interval);
   }, [api, wallet]);
 
@@ -117,6 +117,7 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, null);
+    console.log(res);
     return res;
   };
 
@@ -130,6 +131,7 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, assetMetadata);
+    console.log(res);
     return res;
   };
 
@@ -144,6 +146,7 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, assetMetadata);
+    console.log(res);
     return res;
   };
 
