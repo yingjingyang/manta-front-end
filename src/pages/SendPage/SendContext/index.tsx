@@ -365,6 +365,7 @@ export const SendContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
+    console.log('should see');
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
@@ -378,7 +379,6 @@ export const SendContextProvider = (props) => {
         const extrinsics = signedBlock.block.extrinsics;
         const extrinsic = extrinsics.find((extrinsic) => extrinsicWasSentByUser(extrinsic, externalAccount, api));
         const extrinsicHash = extrinsic.hash.toHex();
-        await privateWallet.sync();
         setTxStatus(TxStatus.finalized(extrinsicHash));
       } catch (err) {
         console.err(err);
@@ -396,6 +396,7 @@ export const SendContextProvider = (props) => {
       let res;
       if (isPrivateTransfer()) {
         res = await privateTransfer(state);
+        console.log('res2', res);
       } else if (isPublicTransfer()) {
         res = await publicTransfer(state);
       } else if (isToPrivate()) {
@@ -403,8 +404,8 @@ export const SendContextProvider = (props) => {
       } else if (isToPublic()) {
         res = await toPublic(state);
       }
-      if (res === WASM_WALLET_FAILURE || false) {
-        console.error(res);
+      if (res === WASM_WALLET_FAILURE || res === false) {
+        console.error('Transaction failed');
         setTxStatus(TxStatus.failed());
         return false;
       }

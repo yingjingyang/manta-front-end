@@ -3999,9 +3999,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001332:
-  version "1.0.30001339"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001339.tgz#f9aece4ea8156071613b27791547ba0b33f176cf"
-  integrity sha512-Es8PiVqCe+uXdms0Gu5xP5PF2bxLR7OBp3wUzUnuO7OHzhOfCyg3hdiGWVPVxhiuniOzng+hTc1u3fEQ0TlkSQ==
+  version "1.0.30001340"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001340.tgz#029a2f8bfc025d4820fafbfaa6259fd7778340c7"
+  integrity sha512-jUNz+a9blQTQVu4uFcn17uAD8IDizPzQkIKh3LCJfg9BkyIqExYYdyc/ZSlWUSKb8iYiXxKsxbv4zYSvkqjrxw==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -5834,9 +5834,9 @@ events@^3.0.0, events@^3.3.0:
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 eventsource@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-1.1.0.tgz#00e8ca7c92109e94b0ddf32dac677d841028cfaf"
-  integrity sha512-VSJjT5oCNrFvCS6igjzPAt5hBzQ2qPBFIbJ03zLI9SE0mxwZpMw6BfJrbFHm1a141AavMEB8JHmBhWAd66PfCg==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-1.1.1.tgz#4544a35a57d7120fba4fa4c86cb4023b2c09df2f"
+  integrity sha512-qV5ZC0h7jYIAOhArFJgSfdyz6rALJyb270714o7ZtNnw2WSJ+eexhKtE0O8LYPRsHZHf2osHKZBxGPvm3kPkCA==
   dependencies:
     original "^1.0.0"
 
@@ -8540,15 +8540,15 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-wasm-wallet-api@1.1.0-dev2:
-  version "1.1.0-dev2"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0-dev2.tgz#3d06ab616cb3588ec0110e0991ac87474c52d1d1"
-  integrity sha512-9tDFaDerD3I445MV3aeJ81UfUZfUDhbCl4A0A9QoGwCbVmxe87L6uGUgS68cLQQWscyWhnaKnAWc0y0EtXi7bQ==
+manta-wasm-wallet-api@1.1.0-dev1:
+  version "1.1.0-dev1"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0-dev1.tgz#ca03214dc3e3e0c987cbafaf0a851535acdc004f"
+  integrity sha512-vwI11Vw5QQ62Dwbsiw1yoScUr8ZZW2E5kqA695J53UeRtTaPAkPy5jTFKy2J6yPissDgoOmMZlUp5T090LQhYw==
 
-manta-wasm-wallet@1.1.0-dev2:
-  version "1.1.0-dev2"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0-dev2.tgz#9dc193224deee8efb4258fe16bd843c110f4e718"
-  integrity sha512-tnwoz2iyMVk1cZTg67gWGgXwa4jOxFad2Bvgq1Vs9rFXJD1LVxhul15vtVaIKnIajQyjE5KmK6KnElawl7a4Qw==
+manta-wasm-wallet@1.1.0-dev1:
+  version "1.1.0-dev1"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0-dev1.tgz#be4f286758193b3ac9fbab2b065919959d6cbafd"
+  integrity sha512-vahp/jqvJHB78117W45Gu+IQEWnDkXn/psso7y5NO5VsHPW411SE6NaZxNYyuo1fZKuCl51GsbEtVRuQ3nP5fA==
 
 map-cache@^0.2.2:
   version "0.2.2"
