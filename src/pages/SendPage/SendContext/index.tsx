@@ -311,6 +311,9 @@ export const SendContextProvider = (props) => {
     if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
       return null;
     }
+    if (senderAssetTargetBalance.assetType.assetId !== senderAssetCurrentBalance.assetType.assetId) {
+      return null;
+    }
     return senderAssetCurrentBalance
       .valueOverExistentialDeposit()
       .gte(senderAssetTargetBalance);
