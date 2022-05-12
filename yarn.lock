@@ -1536,9 +1536,9 @@
   integrity sha512-GryiOJmNcWbovBxTfZSF71V/mXbgcV3MewDe3kIMCLyIh5e7SKAeUZs+rMnJ8jkMolZ/4/VsdBmMrw3l+VdZ3w==
 
 "@jridgewell/trace-mapping@^0.3.9":
-  version "0.3.12"
-  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.12.tgz#ccd8cd83ad894bae98a79eecd6a885b211bfe217"
-  integrity sha512-6GMdw8fZlZjs9CJONrWeWyjl8zYqbyOMSxS9FABnEw3i+wz99SESjWMWRRIsbIp8HVsMeXggi5b7+a9qO6W1fQ==
+  version "0.3.13"
+  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.13.tgz#dcfe3e95f224c8fe97a87a5235defec999aa92ea"
+  integrity sha512-o1xbKhp9qnIAoHJSWd6KlCZfqslL4valSF81H8ImioOAxluWYWOpWkpyktY2vnt4tbrX9XYaxovq6cgowaJp2w==
   dependencies:
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
@@ -2336,9 +2336,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@^27.4.1":
-  version "27.5.0"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.5.0.tgz#e04ed1824ca6b1dd0438997ba60f99a7405d4c7b"
-  integrity sha512-9RBFx7r4k+msyj/arpfaa0WOOEcaAZNmN+j80KFbFCoSqCJGHTz7YMAMGQW9Xmqm5w6l5c25vbSjMwlikJi5+g==
+  version "27.5.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.5.1.tgz#2c8b6dc6ff85c33bcd07d0b62cb3d19ddfdb3ab9"
+  integrity sha512-fUy7YRpT+rHXto1YlL+J9rs0uLGyiqVt3ZOTQR+4ROc47yNl8WLdVLgUloBRhOxP1PZvguHl44T3H0wAWxahYQ==
   dependencies:
     jest-matcher-utils "^27.0.0"
     pretty-format "^27.0.0"
@@ -3564,9 +3564,9 @@ bindings@^1.3.0, bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
+"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
   version "0.0.4"
-  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
+  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"
@@ -8540,11 +8540,15 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-"manta-wasm-wallet-api@file:../sdk/wallet/api":
-  version "1.0.0"
+manta-wasm-wallet-api@1.1.0-dev2:
+  version "1.1.0-dev2"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0-dev2.tgz#3d06ab616cb3588ec0110e0991ac87474c52d1d1"
+  integrity sha512-9tDFaDerD3I445MV3aeJ81UfUZfUDhbCl4A0A9QoGwCbVmxe87L6uGUgS68cLQQWscyWhnaKnAWc0y0EtXi7bQ==
 
-"manta-wasm-wallet@file:../sdk/wallet/crate/pkg":
-  version "1.0.0"
+manta-wasm-wallet@1.1.0-dev2:
+  version "1.1.0-dev2"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0-dev2.tgz#9dc193224deee8efb4258fe16bd843c110f4e718"
+  integrity sha512-tnwoz2iyMVk1cZTg67gWGgXwa4jOxFad2Bvgq1Vs9rFXJD1LVxhul15vtVaIKnIajQyjE5KmK6KnElawl7a4Qw==
 
 map-cache@^0.2.2:
   version "0.2.2"
