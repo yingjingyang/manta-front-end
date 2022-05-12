@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useContext,
+  useRef
 } from 'react';
 import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
@@ -28,6 +29,7 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const walletIsBusy = useRef(false);
 
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
@@ -38,7 +40,6 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     setIsReady(false);
   }, [socket]);
-
 
   useEffect(() => {
     const getPrivateAddress = async (wasm, wallet) => {
@@ -74,10 +75,9 @@ export const PrivateWalletContextProvider = (props) => {
 
   }, [api, externalAccountSigner, signerIsConnected]);
 
-
   const fetchSignerVersion = async () => {
     try {
-      const res = await axios.get(`${config.SIGNER_URL}version`, { timeout: 200 });
+      const res = await axios.get(`${config.SIGNER_URL}version`, { timeout: 1000 });
       const signerVersion = res.data;
       const signerIsConnected = !!signerVersion;
       setSignerIsConnected(signerIsConnected);
@@ -100,15 +100,48 @@ export const PrivateWalletContextProvider = (props) => {
     return () => clearInterval(interval);
   }, [api, wallet]);
 
+  // WASM wallet doesn't allow you to call two methods at once, so before
+  // calling methods it is necessary to wait for a pending call to finish
+  const waitForWallet = async () => {
+    while (walletIsBusy.current === true) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  };
+
+  const sync = async () => {
+    if (walletIsBusy.current === true) {
+      return;
+    }
+    walletIsBusy.current = true;
+    try {
+      await wallet.sync();
+    } catch (e) {
+      console.error(e);
+    }
+    walletIsBusy.current = false;
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (isReady) {
+        sync();
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [isReady]);
+
   const getSpendableBalance = async (assetType) => {
     if (!isReady) {
       return null;
     }
+    await waitForWallet();
     const balanceRaw = wallet.balance(new wasm.AssetId(assetType.assetId));
     return new Balance(assetType, new BN(balanceRaw));
   };
 
   const toPrivate = async (balance, txResHandler) => {
+    await waitForWallet();
+    walletIsBusy.current = true;
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
@@ -116,11 +149,14 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, null);
+    walletIsBusy.current = false;
     console.log(res);
     return res;
   };
 
   const toPublic = async (balance, txResHandler) => {
+    await waitForWallet();
+    walletIsBusy.current = true;
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Reclaim": { "id": ${assetId}, "value": "${value}" }}`;
@@ -130,11 +166,14 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, assetMetadata);
+    walletIsBusy.current = false;
     console.log(res);
     return res;
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
+    await waitForWallet();
+    walletIsBusy.current = true;
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -145,6 +184,7 @@ export const PrivateWalletContextProvider = (props) => {
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     const res = await wallet.post(transaction, assetMetadata);
+    walletIsBusy.current = false;
     console.log(res);
     return res;
   };
@@ -155,10 +195,6 @@ export const PrivateWalletContextProvider = (props) => {
       spend: Array.from(bytes.slice(0, 32)),
       view: Array.from(bytes.slice(32))
     });
-  };
-
-  const sync = async () => {
-    await wallet.sync();
   };
 
   const value = {
