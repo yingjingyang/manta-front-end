@@ -365,7 +365,6 @@ export const SendContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
-    console.log('should see');
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {

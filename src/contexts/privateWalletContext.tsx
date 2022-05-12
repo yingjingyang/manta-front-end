@@ -116,15 +116,12 @@ export const PrivateWalletContextProvider = (props) => {
 
   const sync = async () => {
     if (walletIsBusy.current === true) {
-      console.log('sync attempt: busy');
       return;
     }
     walletIsBusy.current = true;
     try {
       await wallet.sync();
-      console.log('synced :)');
     } catch (e) {
-      console.log('sync error');
       console.error(e);
     }
     walletIsBusy.current = false;
@@ -135,7 +132,7 @@ export const PrivateWalletContextProvider = (props) => {
       if (isReady) {
         sync();
       }
-    }, 50000);
+    }, 10000);
     return () => clearInterval(interval);
   }, [isReady]);
 
@@ -164,7 +161,6 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const handleInternalTxRes = async ({ status, events }) => {
-    console.log('should not appear');
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
@@ -209,15 +205,25 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
+  async function buildExtrinsics(transaction, assetMetadata) {
+    const postsRaw = await wallet.sign(transaction, assetMetadata);
+    const posts = postsRaw.posts;
+    const transactions = [];
+    for (let i = 0; i < posts.length; i++) {
+      const transaction = await mapPostToTransaction(posts[i], api);
+      transactions.push(transaction);
+    }
+    return transactions;
+  }
+
   async function transactionsToBatches(transactions) {
-    const MAX_BATCH = 1;
+    const MAX_BATCH = 4;
     const batches = [];
     for(let i = 0; i < transactions.length; i += MAX_BATCH) {
       const transactionsInSameBatch = transactions.slice(i, i + MAX_BATCH);
       const batchTransaction = await api.tx.utility.batch(transactionsInSameBatch);
       batches.push(batchTransaction);
     }
-    console.log('batches', batches);
     return batches;
   }
 
@@ -249,20 +255,11 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
 
-    // generate signed transactions
-    const postsRaw = await wallet.sign(transaction, assetMetadata);
-    console.log('postsRaw', postsRaw);
-    const posts = postsRaw.posts;
-    const transactions = [];
-    for (let i = 0; i < posts.length; i++) {
-      const transaction = await mapPostToTransaction(posts[i], api);
-      transactions.push(transaction);
-    }
-
-    // publish transactions
+    const transactions = await buildExtrinsics(transaction, assetMetadata);
     const res = await publishBatchesSequentially(transactions, txResHandler);
 
     walletIsBusy.current = false;
+    console.log(res);
     return res;
   };
 
@@ -279,19 +276,11 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
 
-    // generate signed transactions
-    const postsRaw = await wallet.sign(transaction, assetMetadata);
-    const posts = postsRaw.posts;
-    const transactions = [];
-    for (let i = 0; i < posts.length; i++) {
-      const transaction = await mapPostToTransaction(posts[i], api);
-      transactions.push(transaction);
-    }
-
-    // publish transactions
+    const transactions = await buildExtrinsics(transaction, assetMetadata);
     const res = await publishBatchesSequentially(transactions, txResHandler);
-    walletIsBusy.current = false;
 
+    walletIsBusy.current = false;
+    console.log(res);
     return res;
   };
 
