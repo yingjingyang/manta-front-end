@@ -217,7 +217,7 @@ export const PrivateWalletContextProvider = (props) => {
   }
 
   async function transactionsToBatches(transactions) {
-    const MAX_BATCH = 4;
+    const MAX_BATCH = 2;
     const batches = [];
     for(let i = 0; i < transactions.length; i += MAX_BATCH) {
       const transactionsInSameBatch = transactions.slice(i, i + MAX_BATCH);
