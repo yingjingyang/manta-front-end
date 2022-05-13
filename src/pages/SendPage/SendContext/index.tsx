@@ -301,10 +301,40 @@ export const SendContextProvider = (props) => {
     privateWalletIsReady,
     txStatus
   ]);
+
   /**
    *
    * Transaction validation
    */
+
+  // Gets the highest amount the user is allowed to send for the currently
+  // selected asset
+  const getMaxSendableBalance = () => {
+    if (senderAssetType.isNativeToken && !senderAssetType.isPrivate) {
+      const reservedNativeTokenBalance = getReservedNativeTokenBalance();
+      return senderAssetCurrentBalance.sub(reservedNativeTokenBalance);
+
+    }
+    return senderAssetCurrentBalance.valueOverExistentialDeposit();
+  };
+
+  // Gets the amount of the native token the user is not allowed to go below
+  // If the user attempts a transaction with less than this amount of the
+  // native token, the transaction will fail
+  const getReservedNativeTokenBalance = () => {
+    if (!senderNativeTokenPublicBalance) {
+      return null;
+    }
+    const conservativeFeeEstimate = Balance.fromBaseUnits(
+      AssetType.Dolphin(false),
+      0.1
+    );
+    const existentialDeposit = new Balance(
+      AssetType.Dolphin(false),
+      AssetType.Dolphin(false).existentialDeposit,
+    );
+    return conservativeFeeEstimate.add(existentialDeposit);
+  };
 
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
@@ -314,9 +344,8 @@ export const SendContextProvider = (props) => {
     if (senderAssetTargetBalance.assetType.assetId !== senderAssetCurrentBalance.assetType.assetId) {
       return null;
     }
-    return senderAssetCurrentBalance
-      .valueOverExistentialDeposit()
-      .gte(senderAssetTargetBalance);
+    const maxSendableBalance = getMaxSendableBalance();
+    return maxSendableBalance.gte(senderAssetTargetBalance);
   };
 
   // Checks if the user has enough native token to pay fees & publish a transaction
@@ -324,14 +353,10 @@ export const SendContextProvider = (props) => {
     if (!senderNativeTokenPublicBalance) {
       return null;
     }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(
-      AssetType.Dolphin(false),
-      0.1
-    );
-    let requiredNativeTokenBalance = conservativeFeeEstimate;
-    if (senderAssetType.isNativeToken) {
+    let requiredNativeTokenBalance = getReservedNativeTokenBalance();
+    if (senderAssetType.isNativeToken && !senderAssetType.isPrivate) {
       requiredNativeTokenBalance = requiredNativeTokenBalance.add(
-        senderAssetTargetBalance.valueOverExistentialDeposit()
+        senderAssetTargetBalance
       );
     }
     return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
@@ -479,6 +504,7 @@ export const SendContextProvider = (props) => {
   const value = {
     userHasSufficientFunds,
     userCanPayFee,
+    getMaxSendableBalance,
     receiverAmountIsOverExistentialBalance,
     isValidToSend,
     setSenderAssetTargetBalance,

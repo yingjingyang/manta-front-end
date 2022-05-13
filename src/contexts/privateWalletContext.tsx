@@ -274,7 +274,6 @@ export const PrivateWalletContextProvider = (props) => {
   const privateTransfer = async (balance, recipient, txResHandler) => {
     await waitForWallet();
     walletIsBusy.current = true;
-
     // build wasm params
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();

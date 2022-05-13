@@ -11,7 +11,12 @@ import BN from 'bn.js';
 import { useSend } from '../SendContext';
 
 const SendAmountInput = () => {
-  const { senderAssetCurrentBalance, setSenderAssetTargetBalance, senderAssetType } = useSend();
+  const {
+    senderAssetCurrentBalance,
+    setSenderAssetTargetBalance,
+    senderAssetType,
+    getMaxSendableBalance
+  } = useSend();
   const balanceText = getBalanceString(senderAssetCurrentBalance);
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
@@ -35,10 +40,8 @@ const SendAmountInput = () => {
   };
 
   const onClickMax = () => {
-    if (senderAssetCurrentBalance) {
-      const maxAmount = senderAssetCurrentBalance.valueOverExistentialDeposit();
-      onChangeSendAmountInput(maxAmount.toString());
-    }
+    const maxAmount = getMaxSendableBalance();
+    onChangeSendAmountInput(maxAmount.toString());
   };
 
   return (
