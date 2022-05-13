@@ -379,6 +379,7 @@ export const SendContextProvider = (props) => {
   const isValidToSend = () => {
     return (
       (privateWallet.isReady || isPublicTransfer()) &&
+      api &&
       externalAccountSigner &&
       receiverAddress &&
       senderAssetTargetBalance &&
