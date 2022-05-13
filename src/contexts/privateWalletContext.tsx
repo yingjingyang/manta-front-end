@@ -60,7 +60,7 @@ export const PrivateWalletContextProvider = (props) => {
     };
 
     const initWallet = async () => {
-      console.log('INITIALIZING');
+      console.log('INITIALIZING WALLET');
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
@@ -129,8 +129,8 @@ export const PrivateWalletContextProvider = (props) => {
     walletIsBusy.current = true;
     try {
       await wallet.sync();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Sync failed', error);
     }
     walletIsBusy.current = false;
   };
@@ -151,21 +151,6 @@ export const PrivateWalletContextProvider = (props) => {
     await waitForWallet();
     const balanceRaw = wallet.balance(new wasm.AssetId(assetType.assetId));
     return new Balance(assetType, new BN(balanceRaw));
-  };
-
-  const toPrivate = async (balance, txResHandler) => {
-    await waitForWallet();
-    walletIsBusy.current = true;
-    const value = balance.valueAtomicUnits.toString();
-    const assetId = balance.assetType.assetId;
-    const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
-    const transaction = wasm.Transaction.from_string(txJson);
-    wasmApi.txResHandler = txResHandler;
-    wasmApi.externalAccountSigner = externalAccountSigner;
-    const res = await wallet.post(transaction, null);
-    walletIsBusy.current = false;
-    console.log(res);
-    return res;
   };
 
   const handleInternalTxRes = async ({ status, events }) => {
@@ -214,8 +199,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   async function buildExtrinsics(transaction, assetMetadata) {
-    const postsRaw = await wallet.sign(transaction, assetMetadata);
-    const posts = postsRaw.posts;
+    const posts = await wallet.sign(transaction, assetMetadata);
     const transactions = [];
     for (let i = 0; i < posts.length; i++) {
       const transaction = await mapPostToTransaction(posts[i], api);
@@ -236,7 +220,6 @@ export const PrivateWalletContextProvider = (props) => {
   }
 
   const publishBatchesSequentially = async (transactions, txResHandler) => {
-    // Sign batches offline
     const batches = await transactionsToBatches(transactions);
 
     txQueue.current = batches;
@@ -244,6 +227,7 @@ export const PrivateWalletContextProvider = (props) => {
 
     try {
       publishNextBatch();
+      return true;
     } catch (e) {
       console.error('Sequential baching failed', e);
       return false;
@@ -252,9 +236,6 @@ export const PrivateWalletContextProvider = (props) => {
 
 
   const toPublic = async (balance, txResHandler) => {
-    await waitForWallet();
-    walletIsBusy.current = true;
-
     // build wasm params
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -263,17 +244,21 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
 
-    const transactions = await buildExtrinsics(transaction, assetMetadata);
-    const res = await publishBatchesSequentially(transactions, txResHandler);
-
-    walletIsBusy.current = false;
-    console.log(res);
-    return res;
+    try {
+      await waitForWallet();
+      walletIsBusy.current = true;
+      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      walletIsBusy.current = false;
+      const res = await publishBatchesSequentially(transactions, txResHandler);
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      walletIsBusy.current = false;
+      return false;
+    }
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
-    await waitForWallet();
-    walletIsBusy.current = true;
     // build wasm params
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
@@ -283,12 +268,39 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
 
-    const transactions = await buildExtrinsics(transaction, assetMetadata);
-    const res = await publishBatchesSequentially(transactions, txResHandler);
+    try {
+      await waitForWallet();
+      walletIsBusy.current = true;
+      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      walletIsBusy.current = false;
+      const res = await publishBatchesSequentially(transactions, txResHandler);
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      walletIsBusy.current = false;
+      return false;
+    }
 
-    walletIsBusy.current = false;
-    console.log(res);
-    return res;
+  };
+
+  const toPrivate = async (balance, txResHandler) => {
+    await waitForWallet();
+    walletIsBusy.current = true;
+    const value = balance.valueAtomicUnits.toString();
+    const assetId = balance.assetType.assetId;
+    const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
+    const transaction = wasm.Transaction.from_string(txJson);
+    wasmApi.txResHandler = txResHandler;
+    wasmApi.externalAccountSigner = externalAccountSigner;
+    try {
+      const res = await wallet.post(transaction, null);
+      walletIsBusy.current = false;
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      walletIsBusy.current = false;
+      return false;
+    }
   };
 
   const privateAddressToJson = (privateAddress) => {

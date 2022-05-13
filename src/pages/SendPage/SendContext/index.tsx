@@ -310,6 +310,9 @@ export const SendContextProvider = (props) => {
   // Gets the highest amount the user is allowed to send for the currently
   // selected asset
   const getMaxSendableBalance = () => {
+    if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance) {
+      return null;
+    }
     if (senderAssetType.isNativeToken && !senderAssetType.isPrivate) {
       const reservedNativeTokenBalance = getReservedNativeTokenBalance();
       return senderAssetCurrentBalance.sub(reservedNativeTokenBalance);

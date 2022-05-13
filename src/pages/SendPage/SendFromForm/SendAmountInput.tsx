@@ -41,7 +41,9 @@ const SendAmountInput = () => {
 
   const onClickMax = () => {
     const maxAmount = getMaxSendableBalance();
-    onChangeSendAmountInput(maxAmount.toString());
+    if (maxAmount) {
+      onChangeSendAmountInput(maxAmount.toString());
+    }
   };
 
   return (

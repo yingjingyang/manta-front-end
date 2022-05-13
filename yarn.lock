@@ -3564,9 +3564,9 @@ bindings@^1.3.0, bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"
@@ -8540,15 +8540,15 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-wasm-wallet-api@1.1.0-dev3:
-  version "1.1.0-dev3"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0-dev3.tgz#361e680be2cffc80adfc6d6a84e38b97482931b1"
-  integrity sha512-CfJ+4s7vK6N2UCj738gYQGp73NvEst34zgIWqRwxnevzvsUteAhBSbS4+mMdcKH6MvqHiyb8W6EYy54oFs2rIA==
+manta-wasm-wallet-api@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.0.tgz#b5af58cfc21a59a9c437c4e989b16be666f85285"
+  integrity sha512-FoKssmQ4iNlDGPYBpxXpkX31dqJNLPgjLsgwA4u/oogS3MgH2xRqTpFSSTqhF30jYFjtWc0eog5PRZLQTME5Ug==
 
-manta-wasm-wallet@1.1.0-dev2:
-  version "1.1.0-dev2"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0-dev2.tgz#9dc193224deee8efb4258fe16bd843c110f4e718"
-  integrity sha512-tnwoz2iyMVk1cZTg67gWGgXwa4jOxFad2Bvgq1Vs9rFXJD1LVxhul15vtVaIKnIajQyjE5KmK6KnElawl7a4Qw==
+manta-wasm-wallet@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0.tgz#a87ff9ac467da385dfd3d53342e3df8e2c2dedd8"
+  integrity sha512-P3MWweFhUeh6fWgrD335yz4TklKUdvoXhmzKaP+CkWKj/0/QRPplYTNQN7FOJhp/tqInpg75gd0rVVRa65H28w==
 
 map-cache@^0.2.2:
   version "0.2.2"

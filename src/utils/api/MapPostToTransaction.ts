@@ -1,10 +1,16 @@
 // @ts-nocheck
 
+import BN from 'bn.js';
+
 const mapPostToTransaction = async (post, api) => {
+  post.sources = post.sources.map(source => new BN(source));
+  post.sinks = post.sinks.map(sink => new BN(sink));
+
   let sources = post.sources.length;
   let senders = post.sender_posts.length;
   let receivers = post.receiver_posts.length;
   let sinks = post.sinks.length;
+
   if (sources == 1 && senders == 0 && receivers == 1 && sinks == 0) {
     const mint_tx = await api.tx.mantaPay.toPrivate(post);
     return mint_tx;
