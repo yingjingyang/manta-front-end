@@ -11,8 +11,8 @@ import { useSend } from './SendContext';
 const SendButton = () => {
   const {
     isToPrivate, isToPublic, isPublicTransfer,
-    isPrivateTransfer, userCanPayFee, senderAssetType,
-    sendAmountIsOverExistentialBalance
+    isPrivateTransfer, userCanPayFee, receiverAssetType,
+    receiverAmountIsOverExistentialBalance
   } = useSend();
   const { signerIsConnected } = usePrivateWallet();
   const { txStatus } = useTxStatus();
@@ -22,9 +22,9 @@ const SendButton = () => {
   const onClick = () => {
     if (!signerIsConnected) {
       showError('Manta signer must be connected');
-    } else if (sendAmountIsOverExistentialBalance() === false) {
-      const existentialDeposit = new Balance(senderAssetType, senderAssetType.existentialDeposit);
-      showError(`Minimum ${senderAssetType.ticker} transaction is ${existentialDeposit.toString()}`);
+    } else if (receiverAmountIsOverExistentialBalance() === false) {
+      const existentialDeposit = new Balance(receiverAssetType, receiverAssetType.existentialDeposit);
+      showError(`Minimum ${receiverAssetType.ticker} transaction is ${existentialDeposit.toString()}`);
     } else if (userCanPayFee() === false) {
       showError('Cannot pay transaction fee; deposit DOL to transact');
     } else if (!disabled) {

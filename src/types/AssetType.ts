@@ -8,7 +8,7 @@ export default class AssetType {
     baseTicker,
     icon,
     numberOfDecimals,
-    existentialDeposit,
+    publicExistentialDeposit,
     isPrivate,
     isNativeToken = false
   ) {
@@ -19,7 +19,8 @@ export default class AssetType {
     this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
     this.icon = icon;
     this.numberOfDecimals = numberOfDecimals;
-    this.existentialDeposit = existentialDeposit;
+    this.publicExistentialDeposit = publicExistentialDeposit;
+    this.existentialDeposit = isPrivate ? new BN(0) : publicExistentialDeposit;
     this.isPrivate = isPrivate;
     this.isNativeToken = isNativeToken;
   }
@@ -136,7 +137,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.existentialDeposit,
+      this.publicExistentialDeposit,
       true,
       this.isNativeToken
     );
@@ -149,7 +150,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.existentialDeposit,
+      this.publicExistentialDeposit,
       false,
       this.isNativeToken
     );

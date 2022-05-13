@@ -338,12 +338,12 @@ export const SendContextProvider = (props) => {
   };
 
   // Checks the user is sending at least the existential deposit
-  const sendAmountIsOverExistentialBalance = () => {
+  const receiverAmountIsOverExistentialBalance = () => {
     if (!senderAssetTargetBalance) {
       return null;
     }
     return senderAssetTargetBalance.valueAtomicUnits.gte(
-      senderAssetType.existentialDeposit
+      receiverAssetType.existentialDeposit
     );
   };
 
@@ -357,7 +357,7 @@ export const SendContextProvider = (props) => {
       senderAssetCurrentBalance &&
       userHasSufficientFunds() &&
       userCanPayFee() &&
-      sendAmountIsOverExistentialBalance()
+      receiverAmountIsOverExistentialBalance()
     );
   };
 
@@ -480,7 +480,7 @@ export const SendContextProvider = (props) => {
   const value = {
     userHasSufficientFunds,
     userCanPayFee,
-    sendAmountIsOverExistentialBalance,
+    receiverAmountIsOverExistentialBalance,
     isValidToSend,
     setSenderAssetTargetBalance,
     setSenderPublicAccount,
