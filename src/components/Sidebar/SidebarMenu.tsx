@@ -43,7 +43,7 @@ const SidebarMenu = () => {
         onClick={onClickNavlink}
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active "
-        to="/send"
+        to="/transact"
       >
         <div
           className={classNames(
@@ -64,7 +64,7 @@ const SidebarMenu = () => {
             </svg>
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
-            Send
+            Transact
           </span>
         </div>
       </NavLink>
