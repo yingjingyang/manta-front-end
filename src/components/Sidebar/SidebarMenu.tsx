@@ -3,6 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
+import PopupIconSvg from 'resources/svgs/PopupIconSvg';
 
 const SidebarMenu = () => {
   const { txStatus } = useTxStatus();
@@ -126,6 +127,7 @@ const SidebarMenu = () => {
           <span className="lg:group-hover:text-primary font-semibold">
             Govern
           </span>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
         </div>
       </a>
       <a
@@ -156,6 +158,7 @@ const SidebarMenu = () => {
           <span className="lg:group-hover:text-primary font-semibold">
             Docs
           </span>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
         </div>
       </a>
       {/* <NavLink className="text-secondary block pl-4 pr-7" activeClassName="text-primary active bg-button" to="/swap">
