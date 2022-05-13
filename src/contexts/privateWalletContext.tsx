@@ -92,10 +92,18 @@ export const PrivateWalletContextProvider = (props) => {
       } else {
         setSignerIsConnected(signerIsConnected);
         setSignerVersion(null);
+        setWasm(null);
+        setPrivateAddress(null);
+        setWasmApi(null);
+        setWallet(null);
       }
     } catch (err) {
       setSignerIsConnected(false);
       setSignerVersion(null);
+      setWasm(null);
+      setPrivateAddress(null);
+      setWasmApi(null);
+      setWallet(null);
     }
   };
 

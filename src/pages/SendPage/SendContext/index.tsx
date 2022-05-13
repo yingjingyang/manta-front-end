@@ -398,7 +398,6 @@ export const SendContextProvider = (props) => {
       let res;
       if (isPrivateTransfer()) {
         res = await privateTransfer(state);
-        console.log('res2', res);
       } else if (isPublicTransfer()) {
         res = await publicTransfer(state);
       } else if (isToPrivate()) {
