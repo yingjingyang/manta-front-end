@@ -64,7 +64,7 @@ const getDefaultReceiver = (state, senderIsPrivate, receiverIsPrivate) => {
   } else if (!senderIsPrivate && receiverIsPrivate) {
     return state.senderPrivateAddress;
   } else {
-    return state.senderPublicAccount.address;
+    return state.senderPublicAccount?.address;
   }
 };
 
