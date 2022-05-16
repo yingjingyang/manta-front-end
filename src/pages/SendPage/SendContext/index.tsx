@@ -315,8 +315,10 @@ export const SendContextProvider = (props) => {
     }
     if (senderAssetType.isNativeToken && !senderAssetType.isPrivate) {
       const reservedNativeTokenBalance = getReservedNativeTokenBalance();
-      return senderAssetCurrentBalance.sub(reservedNativeTokenBalance);
-
+      const zeroBalance = new Balance(
+        senderAssetType, new BN(0)
+      );
+      return Balance.max(senderAssetCurrentBalance.sub(reservedNativeTokenBalance), zeroBalance);
     }
     return senderAssetCurrentBalance.valueOverExistentialDeposit();
   };
