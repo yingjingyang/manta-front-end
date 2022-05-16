@@ -341,6 +341,23 @@ export const SendContextProvider = (props) => {
     return conservativeFeeEstimate.add(existentialDeposit);
   };
 
+  // Returns true if the current tx would cause the user to go below a
+  // recommended min fee balance of 1. This helps prevent users from
+  // accidentally becoming unable to transact because they cannot pay fees
+  const txWouldDepleteSuggestedMinFeeBalance = () => {
+    if (
+      senderAssetCurrentBalance?.assetType.isNativeToken &&
+      !senderAssetCurrentBalance?.assetType.isPrivate &&
+      senderAssetTargetBalance?.assetType.isNativeToken &&
+      !senderAssetTargetBalance?.assetType.isPrivate
+    ) {
+      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Dolphin(false), 1);
+      const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);
+      return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
+    }
+    return false;
+  };
+
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
     if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
@@ -512,6 +529,7 @@ export const SendContextProvider = (props) => {
     userCanPayFee,
     getMaxSendableBalance,
     receiverAmountIsOverExistentialBalance,
+    txWouldDepleteSuggestedMinFeeBalance,
     isValidToSend,
     setSenderAssetTargetBalance,
     setSenderPublicAccount,

@@ -6,9 +6,25 @@ import { useSend } from '../SendContext';
 import SendAssetSelect from './SendAssetSelect';
 import PrivateFromAccountSelect from './PrivateFromAccountSelect';
 
+const WarningText = () => {
+  const {
+    userHasSufficientFunds,
+    txWouldDepleteSuggestedMinFeeBalance,
+    senderAssetType
+  } = useSend();
+
+  if (userHasSufficientFunds() === false) {
+    return <p className="text-xss text-red-500 ml-2">Insufficient balance</p>;
+  } else if (txWouldDepleteSuggestedMinFeeBalance()) {
+    const feeWarningText = `You need ${senderAssetType.ticker} to pay fees; consider retaining a small balance.`;
+    return <p className="text-xss text-yellow-500 ml-2">{feeWarningText}</p>;
+  } else {
+    return <p className="text-xss text-red-500 ml-2 invisible">Sufficient balance</p>;
+  }
+};
+
 const SendFromForm = () => {
-  const { toggleSenderIsPrivate, senderAssetType, userHasSufficientFunds } =
-    useSend();
+  const { toggleSenderIsPrivate, senderAssetType } = useSend();
 
   return (
     <div className="flex-y space-y-2">
@@ -26,13 +42,7 @@ const SendFromForm = () => {
         </div>
       </div>
       <SendAssetSelect />
-      {userHasSufficientFunds() === false ? (
-        <p className="text-xss text-red-500 ml-2">Insufficient balance</p>
-      ) : (
-        <p className="text-xss text-red-500 ml-2 invisible">
-          Sufficient balance
-        </p>
-      )}
+      <WarningText />
     </div>
   );
 };
