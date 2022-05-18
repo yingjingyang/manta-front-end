@@ -203,10 +203,7 @@ export const SendContextProvider = (props) => {
       const balance = await fetchNativeTokenPublicBalance(address);
       return balance;
     }
-    const account = await api.query.assets.account(
-      assetType.assetId,
-      address
-    );
+    const account = await api.query.assets.account(assetType.assetId, address);
     const balanceString = account.value.isEmpty
       ? '0'
       : account.value.balance.toString();
@@ -235,10 +232,7 @@ export const SendContextProvider = (props) => {
         senderPublicAccount?.address,
         senderAssetType
       );
-      setSenderAssetCurrentBalance(
-        publicBalance,
-        senderPublicAccount?.address
-      );
+      setSenderAssetCurrentBalance(publicBalance, senderPublicAccount?.address);
       // private balances cannot be queries while a transaction is processing
       // because web assambly wallet panics if asked to do two things at a time
     } else if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
@@ -256,7 +250,7 @@ export const SendContextProvider = (props) => {
   // if the user would be sending a payment internally i.e. if the user is sending a `To Private` or `To Public` transaction
   const fetchReceiverBalance = async () => {
     // Send pay doesn't display receiver balances if the receiver is external
-    if (isPrivateTransfer() || isPublicTransfer()) {
+    if (isPrivateTransfer()) {
       setReceiverCurrentBalance(null);
       // private balances cannot be queried while a transaction is processing
       // because the private web assambly wallet panics if asked to do two things at a time
@@ -265,7 +259,7 @@ export const SendContextProvider = (props) => {
         receiverAssetType
       );
       setReceiverCurrentBalance(privateBalance);
-    } else if (isToPublic()) {
+    } else if (isToPublic() || isPublicTransfer()) {
       const publicBalance = await fetchPublicBalance(
         receiverAddress,
         receiverAssetType
@@ -315,10 +309,11 @@ export const SendContextProvider = (props) => {
     }
     if (senderAssetType.isNativeToken && !senderAssetType.isPrivate) {
       const reservedNativeTokenBalance = getReservedNativeTokenBalance();
-      const zeroBalance = new Balance(
-        senderAssetType, new BN(0)
+      const zeroBalance = new Balance(senderAssetType, new BN(0));
+      return Balance.max(
+        senderAssetCurrentBalance.sub(reservedNativeTokenBalance),
+        zeroBalance
       );
-      return Balance.max(senderAssetCurrentBalance.sub(reservedNativeTokenBalance), zeroBalance);
     }
     return senderAssetCurrentBalance.valueOverExistentialDeposit();
   };
@@ -336,7 +331,7 @@ export const SendContextProvider = (props) => {
     );
     const existentialDeposit = new Balance(
       AssetType.Dolphin(false),
-      AssetType.Dolphin(false).existentialDeposit,
+      AssetType.Dolphin(false).existentialDeposit
     );
     return conservativeFeeEstimate.add(existentialDeposit);
   };
@@ -351,8 +346,13 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       !senderAssetTargetBalance?.assetType.isPrivate
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Dolphin(false), 1);
-      const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);
+      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
+        AssetType.Dolphin(false),
+        1
+      );
+      const balanceAfterTx = senderAssetCurrentBalance.sub(
+        senderAssetTargetBalance
+      );
       return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
     }
     return false;
@@ -363,7 +363,10 @@ export const SendContextProvider = (props) => {
     if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
       return null;
     }
-    if (senderAssetTargetBalance.assetType.assetId !== senderAssetCurrentBalance.assetType.assetId) {
+    if (
+      senderAssetTargetBalance.assetType.assetId !==
+      senderAssetCurrentBalance.assetType.assetId
+    ) {
       return null;
     }
     const maxSendableBalance = getMaxSendableBalance();
@@ -427,7 +430,9 @@ export const SendContextProvider = (props) => {
       try {
         const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
         const extrinsics = signedBlock.block.extrinsics;
-        const extrinsic = extrinsics.find((extrinsic) => extrinsicWasSentByUser(extrinsic, externalAccount, api));
+        const extrinsic = extrinsics.find((extrinsic) =>
+          extrinsicWasSentByUser(extrinsic, externalAccount, api)
+        );
         const extrinsicHash = extrinsic.hash.toHex();
         setTxStatus(TxStatus.finalized(extrinsicHash));
       } catch (err) {

@@ -67,7 +67,10 @@ const SendToAddressForm = ({
   };
 
   return isPrivateTransfer() || isPublicTransfer() ? (
-    <SendToAddressInput isPrivate={isPrivate} />
+    <div>
+      <SendToAddressInput isPrivate={isPrivate} />
+      {isPublicTransfer() && <ReceiverBalanceDisplay />}
+    </div>
   ) : (
     <>
       <Select
@@ -100,9 +103,16 @@ const SendToAddressForm = ({
 };
 
 const ReceiverBalanceDisplay = () => {
-  const { receiverAssetType, receiverCurrentBalance } = useSend();
+  const { receiverAssetType, receiverCurrentBalance, receiverAddress } = useSend();
 
-  const balanceString = receiverCurrentBalance?.toString() || '...';
+  let balanceString;
+  if (receiverAddress && receiverCurrentBalance) {
+    balanceString = receiverCurrentBalance.toString();
+  } else if (receiverAddress) {
+    balanceString = '...';
+  } else {
+    balanceString = '';
+  }
 
   return (
     <div className="flex justify-between items-center px-6 py-2">
@@ -191,7 +201,7 @@ const SendToAddressInput = ({ isPrivate }) => {
         />
       </div>
       <p
-        className={`text-xss text-red-500 ml-2 -mt-2 ${
+        className={`text-xss text-red-500 ml-2 ${
           errorMessage ? 'visible' : 'invisible'
         }`}
       >

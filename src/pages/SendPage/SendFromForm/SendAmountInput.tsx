@@ -28,7 +28,10 @@ const SendAmountInput = () => {
       setInputValue('');
     } else {
       try {
-        const targetBalance = Balance.fromBaseUnits(senderAssetType, new Decimal(value));
+        const targetBalance = Balance.fromBaseUnits(
+          senderAssetType,
+          new Decimal(value)
+        );
         setInputValue(value);
         if (targetBalance.valueAtomicUnits.gt(new BN(0))) {
           setSenderAssetTargetBalance(targetBalance);
@@ -87,11 +90,11 @@ const MaxButton = ({ onClickMax, isDisabled }) => {
       onClick={onClick}
       className={classNames(
         'cursor-pointer',
-        'text-center rounded-2xl unselectable-text absolute right-6 bottom-1 flex gap-1 items-center text-xss font-semibold manta-gray',
+        'text-center rounded-2xl unselectable-text absolute right-6 bottom-1 flex items-center text-xss font-semibold manta-gray',
         { disabled: isDisabled }
       )}
     >
-      Send <GradientText text="Max Amount" />
+      Send&nbsp; <GradientText text="Max Amount" />
     </span>
   );
 };
