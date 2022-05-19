@@ -155,7 +155,7 @@ const setSenderPublicAccountOptions = (state, action) => {
 };
 
 const setSenderAssetCurrentBalance = (state, action) => {
-  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetTargetBalance?.assetType)) {
+  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetCurrentBalance?.assetType)) {
     return state;
   }
   return {
