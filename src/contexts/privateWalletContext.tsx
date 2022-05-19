@@ -61,6 +61,7 @@ export const PrivateWalletContextProvider = (props) => {
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
+      walletIsBusy.current = false;
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
