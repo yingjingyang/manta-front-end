@@ -71,7 +71,7 @@ const NodeSelector = () => {
   };
 
   const handleSetCustomNode = () => {
-    if (socket === customNodeInput) {
+    if (socket === customNodeInput || disabled) {
       return;
     } else if (
       customNodeInput.slice(0, 5) === 'ws://' ||
