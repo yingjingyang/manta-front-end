@@ -14,7 +14,7 @@ const NodeSelector = () => {
   const defaultNodeOptions = config.NODES;
   const { apiState, socket, resetSocket } = useSubstrate();
   const { txStatus } = useTxStatus();
-  const disabled = txStatus?.isProcessing();
+  const disabled = txStatus?.isProcessing() || apiState === 'CONNECTING';
   const [showPopup, setShowPopup] = useState(false);
 
   const getNodeIsDisconnected = () =>
@@ -56,7 +56,7 @@ const NodeSelector = () => {
   };
 
   const handleChangeDefaultNodeOption = (defaultNodeOption) => {
-    if (socket === defaultNodeOption.url) {
+    if (socket === defaultNodeOption.url || disabled) {
       return;
     }
     resetSocket(defaultNodeOption.url);
