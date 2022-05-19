@@ -68,6 +68,18 @@ const getDefaultReceiver = (state, senderIsPrivate, receiverIsPrivate) => {
   }
 };
 
+const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
+  if (!updateAssetType) {
+    return false;
+  }
+  if (stateAssetType.assetId === updateAssetType.assetId
+    && stateAssetType.isPrivate === updateAssetType.isPrivate
+  ) {
+    return false;
+  }
+  return true;
+};
+
 
 const toggleSenderIsPrivate = (state) => {
   const senderAssetType = state.senderAssetType.toggleIsPrivate();
@@ -102,10 +114,11 @@ const setSelectedAssetType = (state, action) => {
       senderAssetType, state.senderAssetTargetBalance.valueBaseUnits()
     );
   }
+
   return {
     ...state,
     senderAssetCurrentBalance: null,
-    receiverAssetCurrentBalance: null,
+    receiverCurrentBalance: null,
     senderAssetTargetBalance,
     senderAssetType,
     receiverAssetType
@@ -142,6 +155,9 @@ const setSenderPublicAccountOptions = (state, action) => {
 };
 
 const setSenderAssetCurrentBalance = (state, action) => {
+  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetTargetBalance?.assetType)) {
+    return state;
+  }
   return {
     ...state,
     senderAssetCurrentBalance: action.senderAssetCurrentBalance
@@ -170,6 +186,9 @@ const setReceiver  = (state, action) => {
 };
 
 const setReceiverCurrentBalance = (state, action) => {
+  if (balanceUpdateIsStale(state?.receiverAssetType, action.receiverCurrentBalance?.assetType)) {
+    return state;
+  }
   return {
     ...state,
     receiverCurrentBalance: action.receiverCurrentBalance
