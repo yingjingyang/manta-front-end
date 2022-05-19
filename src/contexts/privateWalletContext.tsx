@@ -68,9 +68,9 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
+      setPrivateAddress(privateAddress);
       await wasmWallet.recover();
       setWasm(wasm);
-      setPrivateAddress(privateAddress);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
     };
