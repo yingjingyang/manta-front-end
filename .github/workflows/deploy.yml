@@ -1,27 +1,25 @@
 name: Deploy
-on: workflow_dispatch
+on: 
+  push:
+    branches:
+      - master
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Git repository
         uses: actions/checkout@v2
-
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 14
-
       - name: Install Node.js dependencies
         run: yarn install
-
       - name: Build
         run: yarn build
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.2
         with:
-          branch: gh-pages # The branch the action should deploy to.
+          branch: gh-pages
           folder: build
