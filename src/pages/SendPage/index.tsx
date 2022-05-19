@@ -24,11 +24,11 @@ const SendPage = () => {
     <SendContextProvider>
       <PageContent>
         <Navbar />
-        <div className="justify-center flex pt-4 pb-4">
-          <div className="px-3 py-2 sm:p-8 bg-secondary rounded-3xl">
+        <div className="justify-center flex pb-2">
+          <div className="px-3 sm:p-8 bg-secondary rounded-3xl">
             <SendFromForm />
             <img
-              className="mx-auto py-4"
+              className="mx-auto pt-1 pb-4"
               src={Svgs.ArrowDownIcon}
               alt="switch-icon"
             />

@@ -27,7 +27,7 @@ const SendFromForm = () => {
   const { toggleSenderIsPrivate, senderAssetType } = useSend();
 
   return (
-    <div className="flex-y space-y-2">
+    <div className="flex-y space-y-1">
       <div className="flex flex-col gap-4 items-stretch mb-4">
         <PublicPrivateToggle
           onToggle={toggleSenderIsPrivate}
