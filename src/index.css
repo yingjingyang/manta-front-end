@@ -9,9 +9,9 @@
 
 .dark {
   --color-bg-primary: #080d2a;
-  --color-bg-secondary: #202442;
+  --color-bg-secondary: #000011;
   --color-bg-thirdry: #23284e;
-  --color-bg-fourth: #33385f;
+  --color-bg-fourth: #61abb9;
   --color-bg-overlay: #101b30;
   --color-bg-table-row: #1b1f3e;
   --color-bg-success: #24a148;
@@ -21,6 +21,8 @@
   --color-text-thirdry: #ffffff;
   --color-text-accent: #ffffff;
   --color-fill-secondary: #ffffff;
+  --gradient-bg-primary: linear-gradient(to bottom right, #00182a, #000011);
+  --gradient-button-primary: linear-gradient(to right, #26c8bf, #1fa2f9);
 }
 
 .light {
@@ -37,12 +39,14 @@
   --color-text-thirdry: #070707;
   --color-text-accent: #33385f;
   --color-fill-secondary: #889ebc;
+  --gradient-bg-primary: linear-gradient(to bottom right, #b0d2eb, white);
+  --gradient-button-primary: linear-gradient(to bottom right, #26c8bf, #1fa2f9);
 }
 
 .custom-colors {
   --color-fill-primary: #4caaac;
   --color-fill-gray: #889ebc;
-  --color-text-gray: #e6edf4;
+  --color-text-gray: #7e7e7e;
 }
 
 .custom-width {

@@ -1,9 +1,14 @@
-import Logo from 'resources/images/dolphinLogo.svg';
+import Logo from 'resources/images/dolphin-logo.png';
 // coin icons
 import BitcoinIcon from 'resources/icons/coins/bitcoin-icon.svg';
 import EtheriumIcon from 'resources/icons/coins/etherium-icon.svg';
 import AcalaIcon from 'resources/icons/coins/acala-icon.svg';
 import KusamaIcon from 'resources/icons/coins/kusama-icon.svg';
+import AusdIcon from 'resources/icons/coins/ausd-icon.png';
+import KarIcon from 'resources/icons/coins/kar-icon.svg';
+import KbtcIcon from 'resources/icons/coins/kbtc-icon.svg';
+import RocIcon from 'resources/icons/coins/roc-icon.svg';
+import MovrIcon from 'resources/icons/coins/movr-icon.png';
 
 // sidebar icons
 import AuditIcon from 'resources/icons/sidebar/audit.svg';
@@ -22,6 +27,7 @@ import CoinIcon from 'resources/icons/coin-icon.svg';
 import WalletIcon from 'resources/icons/wallet-icon.svg';
 import ClockIcon from 'resources/icons/clock-icon.svg';
 import SunIcon from 'resources/icons/sun.svg';
+import ShieldIcon from 'resources/icons/shield-lock.svg';
 import MoonIcon from 'resources/icons/moon.svg';
 import SwitchIcon from 'resources/icons/switch.svg';
 import SettingIcon from 'resources/icons/setting.svg';
@@ -60,6 +66,11 @@ const Svgs = {
   EtheriumIcon,
   AcalaIcon,
   KusamaIcon,
+  AusdIcon,
+  KarIcon,
+  KbtcIcon,
+  RocIcon,
+  MovrIcon,
   Logo,
   AuditIcon,
   CloseIcon,
@@ -104,6 +115,7 @@ const Svgs = {
   CancelIcon,
   LeftIcon,
   RightIcon,
+  ShieldIcon
 };
 
 export default Svgs;

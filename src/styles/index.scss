@@ -7,8 +7,8 @@
 @import './components.scss';
 body,
 html {
-    font-family: 'Ubuntu Mono', monospace !important;
-    font-size: 16px !important;
+  font-family: 'IBM Plex Mono' !important;
+  font-size: 16px !important;
 }
 
 .ui,
@@ -18,18 +18,17 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Ubuntu Mono', monospace !important;
+  font-family: 'IBM Plex Mono' !important;
 }
 
 // diable input auto increment
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 @media only screen and (min-width: 1024px) {
-    .main-app {
-        padding-left: 250px;
-    }
+  .main-app {
+  }
 }
