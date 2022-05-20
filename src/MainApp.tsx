@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { network } from 'constants/NetworkConstants';
 import React from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { SendPage } from 'pages';
@@ -23,6 +24,8 @@ function MainApp() {
   } else {
     warningModal = <MissingRequiredSoftwareModal />;
   }
+
+  document.title = network.Title;
 
   return (
     <div className="main-app bg-primary flex">

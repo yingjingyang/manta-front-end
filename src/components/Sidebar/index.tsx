@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { network } from 'constants/NetworkConstants';
 import React, { useEffect, useState } from 'react';
 import { useSubstrate } from 'contexts/substrateContext';
 import Svgs from 'resources/icons';
@@ -19,7 +20,7 @@ const Sidebar = () => {
             </div>
             <div>
               <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
-                Dolphin
+                {network.Name}
               </h1>
               <h3 className="text-l mb-0 pl-3 font-semibold text-secondary">
                 V2: Spinner
@@ -33,7 +34,7 @@ const Sidebar = () => {
                 blockNumber ? 'text-green-500' : 'text-red-500'
               } text-xss flex items-center gap-2`}
             >
-              <a href="https://dolphin.subscan.io/block" target="_blank">
+              <a href={network.Url} target="_blank">
                 <span class="flex h-2 w-2 relative">
                   <span
                     class={`animate-ping absolute inline-flex h-full w-full rounded-full ${
