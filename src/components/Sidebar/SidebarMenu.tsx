@@ -157,7 +157,7 @@ const SidebarMenu = () => {
             </svg>
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
-            How To Guide
+            How to Guide
           </span>
           <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
         </div>
