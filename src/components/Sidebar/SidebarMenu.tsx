@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import PopupIconSvg from 'resources/svgs/PopupIconSvg';
+import FaucetSvg from 'resources/svgs/FaucetSvg';
 
 const SidebarMenu = () => {
   const { txStatus } = useTxStatus();
@@ -133,7 +134,7 @@ const SidebarMenu = () => {
       <a
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active bg-button"
-        href="https://docs.manta.network/"
+        href="https://docs.manta.network/docs/guides/DolphinPay"
         target="_blank" rel="noreferrer"
       >
         <div
@@ -156,7 +157,27 @@ const SidebarMenu = () => {
             </svg>
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
-            Docs
+            How to Guide
+          </span>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+        </div>
+      </a>
+      <a
+        className="text-secondary block pl-4 pr-7"
+        activeClassName="text-primary active bg-button"
+        href="https://docs.manta.network/docs/guides/DolphinPay#get-testnet-tokens"
+        target="_blank" rel="noreferrer"
+      >
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center'
+          )}
+        >
+          <div className="p-3 flex items-center justify-center">
+            <FaucetSvg className="fill-current lg:group-hover:fill-primary"/>
+          </div>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Faucet
           </span>
           <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
         </div>
