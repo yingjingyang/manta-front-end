@@ -1,0 +1,36 @@
+{
+  "NETWORK_NAME": "Calamari",
+  "NODES": [
+    {
+      "name": "ford",
+      "url": "wss://ford.rococo.calamari.engineering"
+    },
+    {
+      "name": "trillian",
+      "url": "wss://trillian.rococo.calamari.engineering"
+    },
+    {
+      "name": "eddie",
+      "url": "wss://eddie.rococo.calamari.engineering "
+    },
+    {
+      "name": "kwaltz",
+      "url": "wss://kwaltz.rococo.calamari.engineering "
+    },
+    {
+      "name": "prosser",
+      "url": "wss://prosser.rococo.calamari.engineering "
+    },
+    {
+      "name": "roosta",
+      "url": "wss://roosta.rococo.calamari.engineering "
+    },
+    {
+      "name": "zaphod",
+      "url": "wss://zaphod.rococo.calamari.engineering "
+    }
+  ],
+  "PAGE_TITLE": "Calamari Testnet App",
+  "PROVIDER_SOCKET": "wss://ford.rococo.calamari.engineering",
+  "SUBSCAN_URL": "https://calamari.subscan.io"
+}

@@ -1,0 +1,36 @@
+{
+  "NETWORK_NAME": "Manta",
+  "NODES": [
+    {
+      "name": "ford",
+      "url": "wss://ford.rococo.manta.engineering"
+    },
+    {
+      "name": "trillian",
+      "url": "wss://trillian.rococo.manta.engineering"
+    },
+    {
+      "name": "eddie",
+      "url": "wss://eddie.rococo.manta.engineering "
+    },
+    {
+      "name": "kwaltz",
+      "url": "wss://kwaltz.rococo.manta.engineering "
+    },
+    {
+      "name": "prosser",
+      "url": "wss://prosser.rococo.manta.engineering "
+    },
+    {
+      "name": "roosta",
+      "url": "wss://roosta.rococo.manta.engineering "
+    },
+    {
+      "name": "zaphod",
+      "url": "wss://zaphod.rococo.manta.engineering "
+    }
+  ],
+  "PAGE_TITLE": "Manta Testnet App",
+  "PROVIDER_SOCKET": "wss://ford.rococo.manta.engineering",
+  "SUBSCAN_URL": "https://polkadot.subscan.io"
+}
