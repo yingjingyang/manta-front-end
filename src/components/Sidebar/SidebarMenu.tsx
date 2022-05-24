@@ -5,6 +5,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import PopupIconSvg from 'resources/svgs/PopupIconSvg';
 import FaucetSvg from 'resources/svgs/FaucetSvg';
+import AirdropSvg from 'resources/svgs/AirdropSvg';
 
 const SidebarMenu = () => {
   const { txStatus } = useTxStatus();
@@ -178,6 +179,26 @@ const SidebarMenu = () => {
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
             Faucet
+          </span>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+        </div>
+      </a>
+      <a
+        className="text-secondary block pl-4 pr-7"
+        activeClassName="text-primary active bg-button"
+        href="https://gleam.io/ye0bg/dolphin-testnet-v2-airdrop"
+        target="_blank" rel="noreferrer"
+      >
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center'
+          )}
+        >
+          <div className="p-3 flex items-center justify-center">
+            <AirdropSvg className="fill-current lg:group-hover:fill-primary"/>
+          </div>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Airdrop
           </span>
           <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
         </div>
