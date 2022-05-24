@@ -73,7 +73,7 @@ function MissingRequiredSoftwareModal() {
           <p className={classNames('pl-16', {'pt-6': (keyring === false)})}>
             Install{' '}
             <a
-              href="https://github.com/Manta-Network/manta-signer/releases/"
+              href="https://signer.manta.network/"
               className="link-text"
               target="_blank"
               rel="noopener noreferrer"
