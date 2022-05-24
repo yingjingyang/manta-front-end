@@ -24,7 +24,7 @@ function NewerSignerVersionRequiredModal() {
         <p className="pl-16">
           You must uninstall Manta Signer and download{' '}
           <a
-            href="https://github.com/Manta-Network/manta-signer/releases/"
+            href="https://signer.manta.network/"
             className="link-text"
             target="_blank"
             rel="noopener noreferrer"
