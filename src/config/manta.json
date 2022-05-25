@@ -32,5 +32,5 @@
   ],
   "PAGE_TITLE": "Manta Testnet App",
   "PROVIDER_SOCKET": "wss://ford.rococo.manta.engineering",
-  "SUBSCAN_URL": "https://polkadot.subscan.io"
+  "SUBSCAN_URL": "https://manta.subscan.io"
 }

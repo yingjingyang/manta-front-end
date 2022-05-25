@@ -1,4 +1,6 @@
-import Logo from 'resources/images/dolphin-logo.png';
+import Dolphin from 'resources/images/dolphin.png';
+import Calamari from 'resources/images/calamari.png';
+import Manta from 'resources/images/manta.png';
 // coin icons
 import BitcoinIcon from 'resources/icons/coins/bitcoin-icon.svg';
 import EtheriumIcon from 'resources/icons/coins/etherium-icon.svg';
@@ -71,7 +73,9 @@ const Svgs = {
   KbtcIcon,
   RocIcon,
   MovrIcon,
-  Logo,
+  Dolphin,
+  Calamari,
+  Manta,
   AuditIcon,
   CloseIcon,
   GovernIcon,
