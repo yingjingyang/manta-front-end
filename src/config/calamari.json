@@ -2,35 +2,83 @@
   "NETWORK_NAME": "Calamari",
   "NODES": [
     {
-      "name": "ford",
-      "url": "wss://ford.rococo.calamari.engineering"
+      "name": "avocado",
+      "url": "wss://avocado.calamari.systems"
     },
     {
-      "name": "trillian",
-      "url": "wss://trillian.rococo.calamari.engineering"
+      "name": "bokkeum",
+      "url": "wss://bokkeum.calamari.systems"
     },
     {
-      "name": "eddie",
-      "url": "wss://eddie.rococo.calamari.engineering "
+      "name": "chilli",
+      "url": "wss://chilli.calamari.systems"
     },
     {
-      "name": "kwaltz",
-      "url": "wss://kwaltz.rococo.calamari.engineering "
+      "name": "crispy",
+      "url": "wss://crispy.calamari.systems"
     },
     {
-      "name": "prosser",
-      "url": "wss://prosser.rococo.calamari.engineering "
+      "name": "crunchy",
+      "url": "wss://crunchy.calamari.systems"
     },
     {
-      "name": "roosta",
-      "url": "wss://roosta.rococo.calamari.engineering "
+      "name": "deepfried",
+      "url": "wss://deepfried.calamari.systems"
     },
     {
-      "name": "zaphod",
-      "url": "wss://zaphod.rococo.calamari.engineering "
+      "name": "falafel",
+      "url": "wss://falafel.calamari.systems"
+    },
+    {
+      "name": "fritti",
+      "url": "wss://fritti.calamari.systems"
+    },
+    {
+      "name": "grilled",
+      "url": "wss://grilled.calamari.systems"
+    },
+    {
+      "name": "hotdog",
+      "url": "wss://hotdog.calamari.systems"
+    },
+    {
+      "name": "jalapeno",
+      "url": "wss://jalapeno.calamari.systems"
+    },
+    {
+      "name": "kebab",
+      "url": "wss://kebab.calamari.systems"
+    },
+    {
+      "name": "pasta",
+      "url": "wss://pasta.calamari.systems"
+    },
+    {
+      "name": "salad",
+      "url": "wss://salad.calamari.systems"
+    },
+    {
+      "name": "serrano",
+      "url": "wss://serrano.calamari.systems"
+    },
+    {
+      "name": "smoothie",
+      "url": "wss://smoothie.calamari.systems"
+    },
+    {
+      "name": "tasty",
+      "url": "wss://tasty.calamari.systems"
+    },
+    {
+      "name": "tempura",
+      "url": "wss://tempura.calamari.systems"
+    },
+    {
+      "name": "tender",
+      "url": "wss://tender.calamari.systems"
     }
   ],
-  "PAGE_TITLE": "Calamari Testnet App",
-  "PROVIDER_SOCKET": "wss://ford.rococo.calamari.engineering",
+  "PAGE_TITLE": "Calamari App",
+  "PROVIDER_SOCKET": "wss://avocado.calamari.systems",
   "SUBSCAN_URL": "https://calamari.subscan.io"
 }

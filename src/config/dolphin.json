@@ -11,23 +11,23 @@
     },
     {
       "name": "eddie",
-      "url": "wss://eddie.rococo.dolphin.engineering "
+      "url": "wss://eddie.rococo.dolphin.engineering"
     },
     {
       "name": "kwaltz",
-      "url": "wss://kwaltz.rococo.dolphin.engineering "
+      "url": "wss://kwaltz.rococo.dolphin.engineering"
     },
     {
       "name": "prosser",
-      "url": "wss://prosser.rococo.dolphin.engineering "
+      "url": "wss://prosser.rococo.dolphin.engineering"
     },
     {
       "name": "roosta",
-      "url": "wss://roosta.rococo.dolphin.engineering "
+      "url": "wss://roosta.rococo.dolphin.engineering"
     },
     {
       "name": "zaphod",
-      "url": "wss://zaphod.rococo.dolphin.engineering "
+      "url": "wss://zaphod.rococo.dolphin.engineering"
     }
   ],
   "PAGE_TITLE": "Dolphin Testnet App",
