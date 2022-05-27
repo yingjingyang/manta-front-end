@@ -1,37 +1,12 @@
 {
-    "PROVIDER_SOCKET": "wss://ford.rococo.dolphin.engineering",
+    "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": false,
     "BASE_STORAGE_KEY": "dolphinDev",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "NETWORK_NAME": "Local Testnet",
+    "NETWORK_NAME": "Dolphin",
     "NODES": [{
-            "name": "ford",
-            "url": "wss://ford.rococo.dolphin.engineering"
-        },
-        {
-            "name": "trillian",
-            "url": "wss://trillian.rococo.dolphin.engineering"
-        },
-        {
-            "name": "eddie",
-            "url": "wss://eddie.rococo.dolphin.engineering "
-        },
-        {
-            "name": "kwaltz",
-            "url": "wss://kwaltz.rococo.dolphin.engineering "
-        },
-        {
-            "name": "prosser",
-            "url": "wss://prosser.rococo.dolphin.engineering "
-        },
-        {
-            "name": "roosta",
-            "url": "wss://roosta.rococo.dolphin.engineering "
-        },
-        {
-            "name": "zaphod",
-            "url": "wss://zaphod.rococo.dolphin.engineering "
-        }
-    ]
+        "name": "Dolphin",
+        "url": "wss://ws.rococo.dolphin.engineering"
+    }]
 }
