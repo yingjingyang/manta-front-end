@@ -3,15 +3,13 @@ import React, { useReducer, useContext, useEffect } from 'react';
 import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import PropTypes from 'prop-types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 import config from '../config';
 
-const connectedSocket = getLastSelectedNodeUrl() || config.PROVIDER_SOCKET;
 ///
 // Initial state for `useReducer`
 
 const INIT_STATE = {
-  socket: connectedSocket,
+  socket: config.PROVIDER_SOCKET,
   jsonrpc: { ...jsonrpc, ...config.RPC },
   types: config.types,
   api: null,
@@ -25,34 +23,34 @@ const INIT_STATE = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'CONNECT_INIT':
-      return { ...state, apiState: 'CONNECT_INIT' };
+  case 'CONNECT_INIT':
+    return { ...state, apiState: 'CONNECT_INIT' };
 
-    case 'CONNECT':
-      return { ...state, api: action.payload, apiState: 'CONNECTING' };
+  case 'CONNECT':
+    return { ...state, api: action.payload, apiState: 'CONNECTING' };
 
-    case 'CONNECT_SUCCESS':
-      return { ...state, apiState: 'READY' };
+  case 'CONNECT_SUCCESS':
+    return { ...state, apiState: 'READY' };
 
-    case 'CONNECT_ERROR':
-      return { ...state, apiState: 'ERROR', apiError: action.payload };
+  case 'CONNECT_ERROR':
+    return { ...state, apiState: 'ERROR', apiError: action.payload };
 
-    case 'DISCONNECTED':
-      const provider = action.payload;
-      if (state.provider === provider) {
-        return { ...state, apiState: 'DISCONNECTED' };
-      }
-      return state;
+  case 'DISCONNECTED':
+    const provider = action.payload;
+    if (state.provider === provider) {
+      return { ...state, apiState: 'DISCONNECTED' };
+    }
+    return state;
 
-    case 'UPDATE_BLOCK':
-      return { ...state, blockNumber: action.payload };
+  case 'UPDATE_BLOCK':
+    return { ...state, blockNumber: action.payload };
 
-    case 'RESET_SOCKET':
-      state.api.disconnect();
-      return { ...INIT_STATE, socket: action.socket, apiState: 'CONNECTING' };
+  case 'RESET_SOCKET':
+    state.api.disconnect();
+    return { ...INIT_STATE, socket: action.socket, apiState: 'CONNECTING' };
 
-    default:
-      throw new Error(`Unknown type: ${action.type}`);
+  default:
+    throw new Error(`Unknown type: ${action.type}`);
   }
 };
 
