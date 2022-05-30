@@ -70,7 +70,11 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
       setPrivateAddress(privateAddress);
+      console.log('Beginning initial sync');
+      const startTime = performance.now();
       await wasmWallet.recover();
+      const endTime = performance.now();
+      console.log(`Initial sync finished in ${(endTime - startTime) / 1000} seconds`);
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
@@ -129,7 +133,11 @@ export const PrivateWalletContextProvider = (props) => {
     }
     walletIsBusy.current = true;
     try {
+      console.log('Beginning sync');
+      const startTime = performance.now();
       await wallet.sync();
+      const endTime = performance.now();
+      console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
     } catch (error) {
       console.error('Sync failed', error);
     }
