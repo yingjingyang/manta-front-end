@@ -1,12 +1,5 @@
 {
-    "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
-    "DEV_CONSOLE": false,
-    "DEVELOPMENT_KEYRING": false,
-    "BASE_STORAGE_KEY": "dolphinProd",
-    "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "NETWORK_NAME": "Dolphin",
-    "NODES": [{
-        "name": "Dolphin",
-        "url": "wss://ws.rococo.dolphin.engineering"
-    }]
+  "BASE_STORAGE_KEY": "dolphinProd",
+  "DEV_CONSOLE": false,
+  "DEVELOPMENT_KEYRING": false
 }

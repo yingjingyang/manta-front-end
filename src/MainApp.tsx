@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React from 'react';
+import config from 'config';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { SendPage } from 'pages';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
@@ -23,6 +24,8 @@ function MainApp() {
   } else {
     warningModal = <MissingRequiredSoftwareModal />;
   }
+
+  document.title = config.PAGE_TITLE;
 
   return (
     <div className="main-app bg-primary flex">

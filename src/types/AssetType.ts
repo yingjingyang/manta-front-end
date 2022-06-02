@@ -30,7 +30,7 @@ export default class AssetType {
       1,
       'Dolphin',
       'DOL',
-      Svgs.Logo,
+      Svgs.Dolphin,
       18,
       new BN('100000000000000000'),
       isPrivate,
