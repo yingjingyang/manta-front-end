@@ -1,19 +1,25 @@
 // @ts-nocheck
+import { localStorageKeys } from 'constants/LocalStorageConstants';
+import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import SEND_ACTIONS from './sendActions';
+
+const getInitialToken = (isPrivate) => {
+  return AssetType.AllCurrencies(isPrivate).find(currency => currency.baseTicker === store.get(localStorageKeys.CurrentToken)) ?? AssetType.AllCurrencies(isPrivate)[0];
+};
 
 export const SEND_INIT_STATE = {
   senderPublicAccount: null,
   senderPublicAccountOptions: [],
 
-  senderAssetType:  AssetType.AllCurrencies(false)[0],
-  senderAssetTypeOptions: AssetType.AllCurrencies(false),
+  senderAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateSender)),
+  senderAssetTypeOptions: AssetType.AllCurrencies(store.get(localStorageKeys.IsPrivateSender)),
   senderAssetCurrentBalance: null,
   senderAssetTargetBalance: null,
   senderNativeTokenPublicBalance: null,
 
-  receiverAssetType: AssetType.AllCurrencies(true)[0],
+  receiverAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateReceiver) || store.get(localStorageKeys.IsPrivateReceiver) === undefined),
   receiverCurrentBalance: null,
   receiverAddress: null,
 };
@@ -86,6 +92,9 @@ const toggleSenderIsPrivate = (state) => {
   const senderAssetTypeOptions = AssetType.AllCurrencies(senderAssetType.isPrivate);
   const receiverAddress = getDefaultReceiver(state, senderAssetType.isPrivate, state.receiverAssetType.isPrivate);
 
+  store.set(localStorageKeys.IsPrivateSender, senderAssetType.isPrivate);
+  store.set(localStorageKeys.CurrentToken, senderAssetType.baseTicker);
+
   return {
     ...state,
     senderAssetTypeOptions,
@@ -98,11 +107,15 @@ const toggleSenderIsPrivate = (state) => {
 const toggleReceiverIsPrivate = (state) => {
   const receiverAssetType = state.receiverAssetType.toggleIsPrivate();
   const receiverAddress = getDefaultReceiver(state, state.senderAssetType.isPrivate, receiverAssetType.isPrivate);
+  
+  store.set(localStorageKeys.IsPrivateReceiver, receiverAssetType.isPrivate);
+  store.set(localStorageKeys.CurrentToken, receiverAssetType.baseTicker);
 
   return { ...state, receiverAssetType, receiverAddress, receiverCurrentBalance: null };
 };
 
 const setSelectedAssetType = (state, action) => {
+  store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let receiverAssetType = senderAssetType;
   if (state.senderAssetType.isPrivate !== state.receiverAssetType.isPrivate) {

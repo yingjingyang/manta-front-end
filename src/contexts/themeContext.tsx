@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { themeType } from 'constants/ThemeConstants';
-import { themeColorType } from 'constants/LocalStorageConstants';
+import { localStorageKeys } from 'constants/LocalStorageConstants';
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 const getInitialTheme = () => {
   if (typeof window !== 'undefined' && window.localStorage) {
     const storedPrefs = window.localStorage.getItem(
-      themeColorType.CurrentTheme
+      localStorageKeys.CurrentTheme
     );
     if (typeof storedPrefs === 'string') {
       return storedPrefs;
@@ -34,7 +34,7 @@ export const ThemeProvider = ({ initialTheme, children }) => {
     root.classList.remove(isDark ? themeType.Light : themeType.Dark);
     root.classList.add(theme);
 
-    localStorage.setItem(themeColorType.CurrentTheme, theme);
+    localStorage.setItem(localStorageKeys.CurrentTheme, theme);
   };
 
   if (initialTheme) {
