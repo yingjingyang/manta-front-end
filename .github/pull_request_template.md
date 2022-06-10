@@ -7,10 +7,10 @@ closes: #XXXX
 Before we can merge this PR, please make sure that all the following items have been checked off. If any of the checklist items are not applicable, please leave them but write a little note why.
 
 - [ ] Linked to Github issue with discussion and accepted design OR have an explanation in the PR that describes this work
-- [ ] Updated relevant documentation in the code
 - [ ] Re-reviewed files changed in the Github PR explorer
 
 ## If PR to `staging`
+- [ ] Updated relevant documentation in the code
 - [ ] Test code changes manually, and describe your procedure in a comment on this PR
 - [ ] Mark this PR with the correct milestone
 
