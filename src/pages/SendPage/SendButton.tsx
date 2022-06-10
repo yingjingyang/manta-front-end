@@ -49,6 +49,7 @@ const SendButton = () => {
         <MantaLoading className="py-4" />
       ) : (
         <button
+          id="sendButton"
           onClick={onClick}
           className={classNames(
             'py-3 cursor-pointer text-xl btn-hover unselectable-text',

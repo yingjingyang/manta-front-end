@@ -15,6 +15,7 @@ const SendToForm = () => {
         <PublicPrivateToggle
           onToggle={toggleReceiverIsPrivate}
           isPrivate={receiverAssetType.isPrivate}
+          prefix="receiver"
         />
         {receiverAssetType.isPrivate ? (
           <SendToPrivateAddressForm />

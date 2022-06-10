@@ -194,6 +194,7 @@ const SendToAddressInput = ({ isPrivate }) => {
         } h-16 rounded-full p-0.5 py-3`}
       >
         <input
+          id="recipientAddress"
           className="w-full h-full rounded-full px-5 bg-secondary text-black dark:text-white outline-none"
           onChange={(e) => onChangeInput(e)}
           disabled={disabled}
