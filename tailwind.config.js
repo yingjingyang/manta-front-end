@@ -35,20 +35,25 @@ module.exports = {
         overlay: 'var(--color-bg-overlay)',
         'table-row': 'var(--color-bg-table-row)',
         success: 'var(--color-bg-success)',
-        danger: 'var(--color-bg-danger)'
+        danger: 'var(--color-bg-danger)',
+        'manta-gray': 'var(--color-bg-manta-gray)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
-        'gray-light': 'var(--color-text-gray)'
+        'gray-light': 'var(--color-text-gray)',
+        'manta-gray': 'var(--color-bg-manta-gray)'
       },
       fill: {
         current: 'var(--color-text-secondary)',
         primary: 'var(--color-fill-primary)',
         secondary: 'var(--color-fill-secondary)',
         gray: 'var(--color-fill-gray)'
+      },
+      borderColor: {
+        'manta-gray': 'var(--color-bg-manta-gray)'
       }
     }
   },

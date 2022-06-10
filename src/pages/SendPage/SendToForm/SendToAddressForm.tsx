@@ -12,6 +12,8 @@ import {
   validatePublicAddress
 } from 'utils/validation/validateAddress';
 import { useSend } from '../SendContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import BalanceComponent from 'components/Balance';
 
 const SendToAddressForm = ({
   internalAccountOptions,
@@ -103,22 +105,28 @@ const SendToAddressForm = ({
 };
 
 const ReceiverBalanceDisplay = () => {
-  const { receiverAssetType, receiverCurrentBalance, receiverAddress } = useSend();
+  const {
+    receiverAssetType,
+    receiverCurrentBalance,
+    receiverAddress,
+    isToPrivate,
+    isPrivateTransfer
+  } = useSend();
+  const { isInitialSync } = usePrivateWallet();
 
-  let balanceString;
-  if (receiverAddress && receiverCurrentBalance) {
-    balanceString = receiverCurrentBalance.toString();
-  } else if (receiverAddress) {
-    balanceString = '...';
-  } else {
-    balanceString = '';
-  }
+  const balanceString =
+    isInitialSync && (isToPrivate() || isPrivateTransfer())
+      ? 'Syncing to ledger'
+      : receiverCurrentBalance?.toString();
 
   return (
     <div className="flex justify-between items-center px-6 py-2">
-      <div className="text-black dark:text-white">
-        Balance: <strong>{balanceString}</strong>
-      </div>
+      <BalanceComponent
+        balance={balanceString}
+        className="text-black dark:text-white"
+        loaderClassName="bg-black dark:bg-white"
+        loader={receiverAddress && !receiverCurrentBalance}
+      />
       <div className="pl-2 border-0 flex items-center gap-3">
         <div>
           <img
