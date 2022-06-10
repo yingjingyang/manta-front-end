@@ -4,12 +4,13 @@ import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import PropTypes from 'prop-types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import config from '../config';
+import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 
 ///
 // Initial state for `useReducer`
 
 const INIT_STATE = {
-  socket: config.PROVIDER_SOCKET,
+  socket: getLastSelectedNodeUrl() || config.PROVIDER_SOCKET,
   jsonrpc: { ...jsonrpc, ...config.RPC },
   types: config.types,
   api: null,

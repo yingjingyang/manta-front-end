@@ -23,19 +23,24 @@ import { useTxStatus } from './txStatusContext';
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
+  // external contexts
   const { api, socket } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
-  const { setTxStatus } = useTxStatus();
+  const { setTxStatus, txStatusRef } = useTxStatus();
+  // wasm wallet
   const [privateAddress, setPrivateAddress] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [wasm, setWasm] = useState(null);
   const [wasmApi, setWasmApi] = useState(null);
+  const walletIsBusy = useRef(false);
+  const [isReady, setIsReady] = useState(false);
+  // signer connection
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
-  const [isReady, setIsReady] = useState(false);
-  const walletIsBusy = useRef(false);
+  // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
+  const balancesAreStale = useRef(false);
 
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
@@ -128,7 +133,10 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const sync = async () => {
-    if (walletIsBusy.current === true) {
+    // Don't refresh while wallet is busy to avoid panics in manta-wasm-wallet;
+    // Don't refresh during a transaction to prevent stale balance updates 
+    // from being applied after the transaction is finished
+    if (walletIsBusy.current === true ||  txStatusRef.current?.isProcessing()) {
       return;
     }
     walletIsBusy.current = true;
@@ -138,6 +146,7 @@ export const PrivateWalletContextProvider = (props) => {
       await wallet.sync();
       const endTime = performance.now();
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
+      balancesAreStale.current = false;
     } catch (error) {
       console.error('Sync failed', error);
     }
@@ -154,7 +163,7 @@ export const PrivateWalletContextProvider = (props) => {
   }, [isReady]);
 
   const getSpendableBalance = async (assetType) => {
-    if (!isReady) {
+    if (!isReady || balancesAreStale.current) {
       return null;
     }
     await waitForWallet();
@@ -330,6 +339,7 @@ export const PrivateWalletContextProvider = (props) => {
     sync,
     signerIsConnected,
     signerVersion,
+    balancesAreStale
   };
 
   return (
