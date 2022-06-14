@@ -79,6 +79,7 @@ const AccountSelectSingleValue = ({ data }) => {
       <div className="text-lg text-black dark:text-white">
         {data.value.meta.name}
       </div>
+      <data id="clipBoardCopy" value={data.value.address} />
       <div className="text-xs manta-gray">
         {data.value.address.slice(0, 10)}...{data.value.address.slice(-10)}
       </div>

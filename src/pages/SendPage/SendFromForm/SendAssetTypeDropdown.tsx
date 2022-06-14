@@ -29,6 +29,7 @@ const SendAssetTypeDropdown = () => {
 
   return (
     <Select
+      id="selectedAssetType"
       className={classNames(
         '!absolute right-2 top-2 gradient-border rounded-2xl text-black dark:text-white',
         { disabled: disabled }
