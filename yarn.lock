@@ -8659,15 +8659,15 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-wasm-wallet-api@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.1.2.tgz#44ad46a6ed1fd27a5a6eff6c84c9b412e4a2f150"
-  integrity sha512-xEdUKWZHMymSBz0wMDmh1XVeuR0iqma7q8M65Nu52bcbbIVuq77gdkQKPR+g/1wgnKi6xJfPoSI6eNUT5KgE5A==
+manta-wasm-wallet-api@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.2.0.tgz#5a503f2ac6d3a661af3cf81ce13f218b29c19097"
+  integrity sha512-4juAvwSOKueSb/hCIAIjdByzJhmGNlyYGy1Aj5wTM5FZv2KakHmBrE2pznGWKJmniYfu6LNMmk+pUK/7HKqSbA==
 
-manta-wasm-wallet@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.1.0.tgz#a87ff9ac467da385dfd3d53342e3df8e2c2dedd8"
-  integrity sha512-P3MWweFhUeh6fWgrD335yz4TklKUdvoXhmzKaP+CkWKj/0/QRPplYTNQN7FOJhp/tqInpg75gd0rVVRa65H28w==
+manta-wasm-wallet@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.2.0.tgz#e17062970696da745288a515494e829cad70dd5f"
+  integrity sha512-FbkYOSC1cYrVGPbc7Ef5ctr5F54Mw2VJHSaBcc4erTbzLYu9Za5eMHdFasqlvU3YmwIJ9lNCKVXYtwkpN02AMg==
 
 map-cache@^0.2.2:
   version "0.2.2"

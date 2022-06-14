@@ -87,7 +87,7 @@ export const PrivateWalletContextProvider = (props) => {
       setPrivateAddress(privateAddress);
       console.log('Beginning initial sync');
       const startTime = performance.now();
-      await wasmWallet.recover();
+      await wasmWallet.restart();
       const endTime = performance.now();
       console.log(
         `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
