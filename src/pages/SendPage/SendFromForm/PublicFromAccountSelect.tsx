@@ -82,6 +82,7 @@ const AccountSelectSingleValue = ({ data }) => {
       <div className="text-xs manta-gray">
         {data.value.address.slice(0, 10)}...{data.value.address.slice(-10)}
       </div>
+      <data id="clipBoardCopy" value={data.value.address}/>
       {addressCopied ? (
         <FontAwesomeIcon
           icon={faCheck}

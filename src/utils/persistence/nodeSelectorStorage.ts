@@ -2,7 +2,7 @@
 import store from 'store';
 import config from 'config';
 
-const NODE_SELECTOR_STORAGE_KEY = 'lastSelectedNodeUrl';
+const NODE_SELECTOR_STORAGE_KEY = 'lastSelectedNode';
 
 export const getLastSelectedNodeUrl = () => {
   return store.get(

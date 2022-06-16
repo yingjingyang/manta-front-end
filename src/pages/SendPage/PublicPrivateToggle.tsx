@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { ReactComponent as SunIcon } from 'resources/icons/sun.svg';
 import { ReactComponent as ShieldIcon } from 'resources/icons/shield-lock.svg';
 
-const PublicPrivateToggle = ({ isPrivate, onToggle, label }) => {
+const PublicPrivateToggle = ({ isPrivate, onToggle, label, prefix }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
@@ -14,10 +14,18 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, label }) => {
     !disabled && onToggle();
   };
 
+  let buttonId;
+  if (isPrivate) {
+      buttonId = `${prefix}PrivateTogglePublic`;
+  } else {
+      buttonId = `${prefix}PublicTogglePrivate`;
+  }
+
   return (
     <div className="flex justify-center items-center h-11">
       <label className="text-primary">{label}</label>
       <span
+        id={buttonId}
         onClick={onClick}
         className={classNames(
           'py-2 pr-1 cursor-pointer btn-hover unselectable-text',
@@ -44,7 +52,8 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, label }) => {
 PublicPrivateToggle.propTypes = {
   isPrivate: PropTypes.bool,
   onToggle: PropTypes.func,
-  label: PropTypes.string
+  label: PropTypes.string,
+  prefix: PropTypes.string
 };
 
 export default PublicPrivateToggle;

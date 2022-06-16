@@ -1,17 +1,18 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
-import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
 import PropTypes from 'prop-types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import config from '../config';
+import types from '../config/types.json';
+import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 
 ///
 // Initial state for `useReducer`
 
 const INIT_STATE = {
-  socket: config.PROVIDER_SOCKET,
-  jsonrpc: { ...jsonrpc, ...config.RPC },
-  types: config.types,
+  socket: getLastSelectedNodeUrl() || config.PROVIDER_SOCKET,
+  rpc: config.RPC,
+  types: types,
   api: null,
   apiError: null,
   apiState: null,
@@ -58,17 +59,21 @@ const reducer = (state, action) => {
 // Connecting to the Substrate node
 
 const connect = async (state, dispatch) => {
-  const { socket, types, jsonrpc } = state;
+  const { socket, types, rpc } = state;
 
   dispatch({ type: 'CONNECT_INIT' });
 
   const provider = new WsProvider(socket);
-  const _api = new ApiPromise({ provider, types, rpc: jsonrpc });
+  const _api = new ApiPromise({ 
+    provider,
+    types,
+    rpc
+  });
 
   dispatch({ type: 'CONNECT', payload: _api });
   // Set listeners for disconnection and reconnection event.
   _api.on('connected', () => {
-    console.log('connected!!!!');
+    console.log('polkadot.js api connected');
     dispatch({ type: 'CONNECT', payload: _api });
     // `ready` event is not emitted upon reconnection and is checked explicitly here.
     _api.isReady.then(async () => {

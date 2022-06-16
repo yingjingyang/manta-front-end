@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import PopupIconSvg from 'resources/svgs/PopupIconSvg';
 import FaucetSvg from 'resources/svgs/FaucetSvg';
 import AirdropSvg from 'resources/svgs/AirdropSvg';
+import BlockSvg from 'resources/svgs/BlockSvg';
 
 const SidebarMenu = () => {
   const { txStatus } = useTxStatus();
@@ -105,7 +106,8 @@ const SidebarMenu = () => {
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active bg-button"
         href="https://docs.manta.network/docs/calamari/Governance"
-        target="_blank" rel="noreferrer"
+        target="_blank"
+        rel="noreferrer"
       >
         <div
           className={classNames(
@@ -129,14 +131,15 @@ const SidebarMenu = () => {
           <span className="lg:group-hover:text-primary font-semibold">
             Govern
           </span>
-          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2" />
         </div>
       </a>
       <a
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active bg-button"
         href="https://docs.manta.network/docs/guides/DolphinPay"
-        target="_blank" rel="noreferrer"
+        target="_blank"
+        rel="noreferrer"
       >
         <div
           className={classNames(
@@ -160,14 +163,15 @@ const SidebarMenu = () => {
           <span className="lg:group-hover:text-primary font-semibold">
             How to Guide
           </span>
-          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2" />
         </div>
       </a>
       <a
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active bg-button"
         href="https://docs.manta.network/docs/guides/DolphinPay#get-testnet-tokens"
-        target="_blank" rel="noreferrer"
+        target="_blank"
+        rel="noreferrer"
       >
         <div
           className={classNames(
@@ -175,19 +179,20 @@ const SidebarMenu = () => {
           )}
         >
           <div className="p-3 flex items-center justify-center">
-            <FaucetSvg className="fill-current lg:group-hover:fill-primary"/>
+            <FaucetSvg className="fill-current lg:group-hover:fill-primary" />
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
             Faucet
           </span>
-          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2" />
         </div>
       </a>
       <a
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active bg-button"
         href="https://gleam.io/ye0bg/dolphin-testnet-v2-airdrop"
-        target="_blank" rel="noreferrer"
+        target="_blank"
+        rel="noreferrer"
       >
         <div
           className={classNames(
@@ -195,12 +200,33 @@ const SidebarMenu = () => {
           )}
         >
           <div className="p-3 flex items-center justify-center">
-            <AirdropSvg className="fill-current lg:group-hover:fill-primary"/>
+            <AirdropSvg className="fill-current lg:group-hover:fill-primary" />
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
             Airdrop
           </span>
-          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2"/>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2" />
+        </div>
+      </a>
+      <a
+        className="text-secondary block pl-4 pr-7"
+        activeClassName="text-primary active bg-button"
+        href="https://forms.gle/XP3ZsJHP6ZcG8CYA7"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <div
+          className={classNames(
+            'py-2 w-full menu-content__item group flex items-center'
+          )}
+        >
+          <div className="p-3 flex items-center justify-center">
+            <BlockSvg className="fill-current lg:group-hover:fill-primary" />
+          </div>
+          <span className="lg:group-hover:text-primary font-semibold">
+            Bug Report
+          </span>
+          <PopupIconSvg className="fill-current lg:group-hover:fill-primary m-2" />
         </div>
       </a>
       {/* <NavLink className="text-secondary block pl-4 pr-7" activeClassName="text-primary active bg-button" to="/swap">

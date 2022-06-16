@@ -9,6 +9,7 @@ import Sidebar from 'components/Sidebar';
 import ThemeToggle from 'components/ThemeToggle';
 import userIsMobile from 'utils/ui/userIsMobile';
 import NewerSignerVersionRequiredModal from 'components/Modal/newerSignerVersionRequiredModal';
+import DowntimeModal from 'components/Modal/downtimeModal';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 
@@ -17,7 +18,9 @@ function MainApp() {
   const onMobile = userIsMobile();
 
   let warningModal;
-  if (onMobile) {
+  if (config.DOWNTIME) {
+    warningModal = <DowntimeModal />;
+  } else if (onMobile) {
     warningModal = <MobileNotSupportedModal />;
   } else if (signerIsOutOfDate(signerVersion)) {
     warningModal = <NewerSignerVersionRequiredModal />;

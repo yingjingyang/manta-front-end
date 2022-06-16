@@ -1,14 +1,21 @@
 // @ts-nocheck
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 const TxStatusContext = createContext();
 
 export const TxStatusContextProvider = (props) => {
-  const [txStatus, setTxStatus] = useState(null);
+  const [txStatus, _setTxStatus] = useState(null);
+  const txStatusRef = useRef(null);
+
+  const setTxStatus = (status) => {
+    _setTxStatus(status);
+    txStatusRef.current = status;
+  }
 
   const value = {
     txStatus,
+    txStatusRef,
     setTxStatus,
   };
 

@@ -435,6 +435,13 @@ export const SendContextProvider = (props) => {
         );
         const extrinsicHash = extrinsic.hash.toHex();
         setTxStatus(TxStatus.finalized(extrinsicHash));
+
+        // Correct private balances will only appear after a sync has completed
+        // Until then, do not display stale balances
+        privateWallet.balancesAreStale.current = true;
+        senderAssetType.isPrivate && setSenderAssetCurrentBalance(null)
+        receiverAssetType.isPrivate && setReceiverCurrentBalance(null)
+
       } catch (err) {
         console.err(err);
       }

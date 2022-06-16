@@ -29,6 +29,7 @@ const PrivateFromAccountSelect = () => {
       <span className="manta-gray text-xs">
         {privateAddress?.slice(0, 10)}...{privateAddress?.slice(-10)}
       </span>
+      <data id="clipBoardCopy" value={privateAddress}/>
       <div className="text-black dark:text-white ml-auto cursor-pointer absolute right-6 top-1/2 transform -translate-y-1/2 text-base">
         {addressCopied ? (
           <FontAwesomeIcon icon={faCheck} />

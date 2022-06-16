@@ -32,6 +32,7 @@ const SendFromForm = () => {
         <PublicPrivateToggle
           onToggle={toggleSenderIsPrivate}
           isPrivate={senderAssetType.isPrivate}
+          prefix="sender"
         />
         <div className="w-100 items-center flex-grow">
           {senderAssetType.isPrivate ? (

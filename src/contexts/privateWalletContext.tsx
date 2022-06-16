@@ -23,19 +23,28 @@ import { useTxStatus } from './txStatusContext';
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
+  // external contexts
   const { api, socket } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
-  const { setTxStatus } = useTxStatus();
+  const { setTxStatus, txStatusRef } = useTxStatus();
+
+  // wasm wallet
   const [privateAddress, setPrivateAddress] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [wasm, setWasm] = useState(null);
   const [wasmApi, setWasmApi] = useState(null);
+
+  // signer connection
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [isInitialSync, setIsInitialSync] = useState(false);
   const walletIsBusy = useRef(false);
+
+  // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
+  const balancesAreStale = useRef(false);
 
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
@@ -49,9 +58,14 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const getPrivateAddress = async (wasm, wallet) => {
-      const keys = await wallet.receiving_keys(new wasm.ReceivingKeyRequest('GetAll'));
+      const keys = await wallet.receiving_keys(
+        new wasm.ReceivingKeyRequest('GetAll')
+      );
       const privateAddressRaw = keys[0];
-      const privateAddressBytes = [...privateAddressRaw.spend, ...privateAddressRaw.view];
+      const privateAddressBytes = [
+        ...privateAddressRaw.spend,
+        ...privateAddressRaw.view
+      ];
       return base58Encode(privateAddressBytes);
     };
 
@@ -61,6 +75,7 @@ export const PrivateWalletContextProvider = (props) => {
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
+      setIsInitialSync(true);
       walletIsBusy.current = false;
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
@@ -72,23 +87,27 @@ export const PrivateWalletContextProvider = (props) => {
       setPrivateAddress(privateAddress);
       console.log('Beginning initial sync');
       const startTime = performance.now();
-      await wasmWallet.recover();
+      await wasmWallet.restart();
       const endTime = performance.now();
-      console.log(`Initial sync finished in ${(endTime - startTime) / 1000} seconds`);
+      console.log(
+        `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
+      );
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
+      setIsInitialSync(false);
     };
 
     if (canInitWallet() && !isReady) {
       initWallet();
     }
-
   }, [api, externalAccountSigner, signerIsConnected]);
 
   const fetchSignerVersion = async () => {
     try {
-      const res = await axios.get(`${config.SIGNER_URL}version`, { timeout: 1500 });
+      const res = await axios.get(`${config.SIGNER_URL}version`, {
+        timeout: 1500
+      });
       const signerVersion = res.data;
       const signerIsConnected = !!signerVersion;
       setSignerIsConnected(signerIsConnected);
@@ -123,12 +142,15 @@ export const PrivateWalletContextProvider = (props) => {
   // calling methods it is necessary to wait for a pending call to finish
   const waitForWallet = async () => {
     while (walletIsBusy.current === true) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   };
 
   const sync = async () => {
-    if (walletIsBusy.current === true) {
+    // Don't refresh while wallet is busy to avoid panics in manta-wasm-wallet;
+    // Don't refresh during a transaction to prevent stale balance updates
+    // from being applied after the transaction is finished
+    if (walletIsBusy.current === true || txStatusRef.current?.isProcessing()) {
       return;
     }
     walletIsBusy.current = true;
@@ -138,6 +160,7 @@ export const PrivateWalletContextProvider = (props) => {
       await wallet.sync();
       const endTime = performance.now();
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
+      balancesAreStale.current = false;
     } catch (error) {
       console.error('Sync failed', error);
     }
@@ -154,7 +177,7 @@ export const PrivateWalletContextProvider = (props) => {
   }, [isReady]);
 
   const getSpendableBalance = async (assetType) => {
-    if (!isReady) {
+    if (!isReady || balancesAreStale.current) {
       return null;
     }
     await waitForWallet();
@@ -181,7 +204,10 @@ export const PrivateWalletContextProvider = (props) => {
     const sendExternal = async () => {
       try {
         const lastTx = txQueue.current.shift();
-        await lastTx.signAndSend(externalAccountSigner, finalTxResHandler.current);
+        await lastTx.signAndSend(
+          externalAccountSigner,
+          finalTxResHandler.current
+        );
       } catch (e) {
         setTxStatus(TxStatus.failed());
         txQueue.current = [];
@@ -191,7 +217,10 @@ export const PrivateWalletContextProvider = (props) => {
     const sendInternal = async () => {
       try {
         const internalTx = txQueue.current.shift();
-        await internalTx.signAndSend(externalAccountSigner, handleInternalTxRes);
+        await internalTx.signAndSend(
+          externalAccountSigner,
+          handleInternalTxRes
+        );
       } catch (e) {
         setTxStatus(TxStatus.failed());
         txQueue.current = [];
@@ -220,9 +249,11 @@ export const PrivateWalletContextProvider = (props) => {
   async function transactionsToBatches(transactions) {
     const MAX_BATCH = 2;
     const batches = [];
-    for(let i = 0; i < transactions.length; i += MAX_BATCH) {
+    for (let i = 0; i < transactions.length; i += MAX_BATCH) {
       const transactionsInSameBatch = transactions.slice(i, i + MAX_BATCH);
-      const batchTransaction = await api.tx.utility.batch(transactionsInSameBatch);
+      const batchTransaction = await api.tx.utility.batch(
+        transactionsInSameBatch
+      );
       batches.push(batchTransaction);
     }
     return batches;
@@ -242,7 +273,6 @@ export const PrivateWalletContextProvider = (props) => {
       return false;
     }
   };
-
 
   const toPublic = async (balance, txResHandler) => {
     // build wasm params
@@ -289,7 +319,6 @@ export const PrivateWalletContextProvider = (props) => {
       walletIsBusy.current = false;
       return false;
     }
-
   };
 
   const toPrivate = async (balance, txResHandler) => {
@@ -330,6 +359,9 @@ export const PrivateWalletContextProvider = (props) => {
     sync,
     signerIsConnected,
     signerVersion,
+    isInitialSync,
+    walletIsBusy,
+    balancesAreStale
   };
 
   return (

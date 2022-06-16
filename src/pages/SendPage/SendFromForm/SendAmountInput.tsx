@@ -3,21 +3,31 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
-import getBalanceString from 'utils/ui/getBalanceString';
 import GradientText from 'components/GradientText';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import { useSend } from '../SendContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import BalanceComponent from 'components/Balance';
 
 const SendAmountInput = () => {
   const {
     senderAssetCurrentBalance,
     setSenderAssetTargetBalance,
     senderAssetType,
-    getMaxSendableBalance
+    getMaxSendableBalance,
+    isToPublic,
+    isPrivateTransfer
   } = useSend();
-  const balanceText = getBalanceString(senderAssetCurrentBalance);
+  const { isInitialSync } = usePrivateWallet();
+  const balanceText =
+    isInitialSync && (isPrivateTransfer() || isToPublic())
+      ? 'Syncing to ledger'
+      : senderAssetCurrentBalance
+      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+      : '';
+
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const [inputValue, setInputValue] = useState('');
@@ -58,6 +68,7 @@ const SendAmountInput = () => {
     >
       <div className="flex justify-items-center">
         <input
+          id="amountInput"
           onChange={(e) => onChangeSendAmountInput(e.target.value)}
           className={classNames(
             'w-full pl-3 pt-1 text-4xl font-bold text-black dark:text-white manta-bg-gray outline-none rounded-2xl',
@@ -66,9 +77,14 @@ const SendAmountInput = () => {
           value={inputValue}
           disabled={disabled}
         />
-        <MaxButton isDisabled={disabled} onClickMax={onClickMax} />
+        <MaxButton id="maxAmount" isDisabled={disabled} onClickMax={onClickMax} />
       </div>
-      <div className="w-full text-xs manta-gray mt-2.5 pl-3">{balanceText}</div>
+      <BalanceComponent
+        balance={balanceText}
+        className="w-full text-xs manta-gray mt-2.5 pl-3"
+        loaderClassName="text-manta-gray border-manta-gray bg-manta-gray"
+        loader={!senderAssetCurrentBalance}
+      />
     </div>
   );
 };

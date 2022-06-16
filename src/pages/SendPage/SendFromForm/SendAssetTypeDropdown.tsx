@@ -15,6 +15,7 @@ const SendAssetTypeDropdown = () => {
     useSend();
   const dropdownOptions = senderAssetTypeOptions.map((assetType) => {
     return {
+      id: `assetType_${assetType.ticker}`,
       key: assetType.assetId,
       label: assetType.ticker,
       value: assetType
@@ -29,6 +30,7 @@ const SendAssetTypeDropdown = () => {
 
   return (
     <Select
+      id="selectedAssetType"
       className={classNames(
         '!absolute right-2 top-2 gradient-border rounded-2xl text-black dark:text-white',
         { disabled: disabled }
@@ -111,7 +113,7 @@ const SendAssetTypeOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps}>
-      <div className="flex items-center inline w-full hover:bg-blue-100">
+      <div id={value.ticker} className="flex items-center inline w-full hover:bg-blue-100">
         <div className="w-10 h-10 py-1 px-2 ml-3  manta-bg-secondary rounded-full flex items-center justify-center">
           <img className="w-8 rounded-full" src={value.icon} alt="icon" />
         </div>
