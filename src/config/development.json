@@ -9,5 +9,5 @@
         "name": "Dolphin",
         "url": "wss://ws.rococo.dolphin.engineering"
     }],
-    "DOWNTIME": true
+    "DOWNTIME": false
 }
