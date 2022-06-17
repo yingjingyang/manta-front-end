@@ -19,3 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#142](https://github.com/Manta-Network/manta-front-end/pull/142) Prevent stale balances from displaying after a transaction while waiting for wallet synchronization
 - [\#152](https://github.com/Manta-Network/manta-front-end/pull/152) Add staging branch to CI/CD pipeline
+
+
+## [2.1.1] - 2022-06-16
+### Fixed
+- [\#173](https://github.com/Manta-Network/manta-front-end/pull/173) The RPC on which [\#141](https://github.com/Manta-Network/manta-front-end/pull/141) depends is not ready yet, so this release uses the previous method of fetching on-chain data
