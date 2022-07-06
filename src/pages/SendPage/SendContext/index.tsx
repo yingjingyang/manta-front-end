@@ -439,8 +439,8 @@ export const SendContextProvider = (props) => {
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.balancesAreStale.current = true;
-        senderAssetType.isPrivate && setSenderAssetCurrentBalance(null)
-        receiverAssetType.isPrivate && setReceiverCurrentBalance(null)
+        senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
+        receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
 
       } catch (err) {
         console.err(err);

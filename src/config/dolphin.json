@@ -7,5 +7,5 @@
     "PAGE_TITLE": "Dolphin Testnet App",
     "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "DOWNTIME": true
+    "DOWNTIME": false
 }

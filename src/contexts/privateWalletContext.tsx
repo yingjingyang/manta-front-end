@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
-import Api from 'manta-wasm-wallet-api';
+import Api, { ApiConfig } from 'manta-wasm-wallet-api';
 import config from 'config';
 import * as axios from 'axios';
 import { base58Decode, base58Encode } from '@polkadot/util-crypto';
@@ -80,7 +80,11 @@ export const PrivateWalletContextProvider = (props) => {
       await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
-      const wasmApi = new Api(api, externalAccountSigner);
+      const DEFAULT_PULL_SIZE = 4096;
+      const wasmApiConfig = new ApiConfig(
+        api, externalAccountSigner, DEFAULT_PULL_SIZE, DEFAULT_PULL_SIZE
+      );
+      const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);

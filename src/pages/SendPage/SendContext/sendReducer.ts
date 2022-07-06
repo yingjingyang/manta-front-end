@@ -13,13 +13,13 @@ export const SEND_INIT_STATE = {
   senderPublicAccount: null,
   senderPublicAccountOptions: [],
 
-  senderAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateSender)),
-  senderAssetTypeOptions: AssetType.AllCurrencies(store.get(localStorageKeys.IsPrivateSender)),
+  senderAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateSender, false)),
+  senderAssetTypeOptions: AssetType.AllCurrencies(store.get(localStorageKeys.IsPrivateSender, false)),
   senderAssetCurrentBalance: null,
   senderAssetTargetBalance: null,
   senderNativeTokenPublicBalance: null,
 
-  receiverAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateReceiver) || store.get(localStorageKeys.IsPrivateReceiver) === undefined),
+  receiverAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateReceiver, true)),
   receiverCurrentBalance: null,
   receiverAddress: null,
 };
@@ -107,7 +107,7 @@ const toggleSenderIsPrivate = (state) => {
 const toggleReceiverIsPrivate = (state) => {
   const receiverAssetType = state.receiverAssetType.toggleIsPrivate();
   const receiverAddress = getDefaultReceiver(state, state.senderAssetType.isPrivate, receiverAssetType.isPrivate);
-  
+
   store.set(localStorageKeys.IsPrivateReceiver, receiverAssetType.isPrivate);
   store.set(localStorageKeys.CurrentToken, receiverAssetType.baseTicker);
 

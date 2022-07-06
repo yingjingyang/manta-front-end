@@ -19,3 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#142](https://github.com/Manta-Network/manta-front-end/pull/142) Prevent stale balances from displaying after a transaction while waiting for wallet synchronization
 - [\#152](https://github.com/Manta-Network/manta-front-end/pull/152) Add staging branch to CI/CD pipeline
+
+## [2.1.0] - 2022-07-1
+
+### Fixed
+- [\#187](https://github.com/Manta-Network/manta-front-end/pull/187) Updates the front end to use the new pull RPC interface, which makes the front end compatible with the current runtime, and reduces wallet sync times
+- [\#187](https://github.com/Manta-Network/manta-front-end/pull/187) Fixes a bug such that dolphin public balances won't load
