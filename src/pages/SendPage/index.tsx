@@ -24,8 +24,8 @@ const SendPage = () => {
     <SendContextProvider>
       <PageContent>
         <Navbar />
-        <div className="justify-center flex pb-2">
-          <div className="px-3 sm:p-8 bg-secondary rounded-3xl">
+        <div className="absolute inset-y-0 inset-x-0 lg:left-32 2xl:inset-x-0 justify-center flex items-center pb-2">
+          <div className="p-8 bg-secondary rounded-3xl">
             <SendFromForm />
             <img
               className="mx-auto pt-1 pb-4"

@@ -72,3 +72,59 @@
 .disabled {
   cursor: not-allowed !important;
 }
+
+input {
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover, 
+  &:-webkit-autofill:focus, 
+  &:-webkit-autofill:active{
+      -webkit-box-shadow: 0 0 0 1000px white inset !important;
+      -webkit-background-clip: text;
+  }
+}
+
+input {
+  &.manta-bg-gray {
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover, 
+    &:-webkit-autofill:focus, 
+    &:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 1000px $body-bgcolor inset !important;
+        -webkit-background-clip: text;
+    }
+  }
+
+  &.bg-secondary {
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover, 
+    &:-webkit-autofill:focus, 
+    &:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 1000px var(--color-bg-secondary) inset !important;
+        -webkit-background-clip: text;
+    }
+  }
+}
+
+.dark {
+  input {
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover, 
+    &:-webkit-autofill:focus, 
+    &:-webkit-autofill:active{
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: white !important;
+    }
+  }
+  
+  input {
+    &.manta-bg-gray {
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover, 
+      &:-webkit-autofill:focus, 
+      &:-webkit-autofill:active{
+          -webkit-box-shadow: 0 0 0 1000px $gray-primary-color inset !important;
+          -webkit-background-clip: text;
+      }
+    }
+  }
+}

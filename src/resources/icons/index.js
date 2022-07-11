@@ -1,4 +1,4 @@
-import Dolphin from 'resources/images/dolphin.png';
+import Dolphin from 'resources/images/dolphin.svg';
 import Calamari from 'resources/images/calamari.png';
 import Manta from 'resources/images/manta.png';
 // coin icons

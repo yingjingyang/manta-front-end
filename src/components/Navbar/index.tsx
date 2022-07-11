@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import Images from 'resources/icons';
-import Sidebar from 'components/Sidebar';
+import Logo from 'components/Logo';
+import SidebarMenu from 'components/Sidebar/SidebarMenu';
 import SocialMenu from 'components/Sidebar/SocialMenu';
 import ThemeToggle from 'components/ThemeToggle';
 import { MenuSvg, CloseMenuSvg } from 'resources/svgs';
@@ -18,7 +18,7 @@ const Navbar = ({ isVisible = false }) => {
     <div>
       <div
         className={classNames(
-          'navbar z-50 items-center fixed left-0  lg:top-4 right-0 lg:relative px-4 py-2 lg:py-0 lg:ml-6 md:pl-6 flex justify-between lg:justify-end',
+          'navbar z-50 items-center fixed left-0 lg:top-4 right-0 relative px-4 py-2 lg:py-0 lg:ml-6 md:pl-6 flex justify-between lg:justify-end',
           { 'lg:hidden': isVisible }
         )}
       >
@@ -36,11 +36,9 @@ const Navbar = ({ isVisible = false }) => {
               <CloseMenuSvg className="fill-current group-hover:fill-primary" />
             </div>
           )}
-          <img
-            className="logo w-8 h-8 ml-6 rounded-full"
-            src={Images.Logo}
-            alt="logo"
-          />
+          <div className="logo w-8 h-8 ml-6 rounded-full">
+            <Logo />
+          </div>
         </div>
         <span className="flex">
           <SignerConnectionStatusLabel />
@@ -51,9 +49,9 @@ const Navbar = ({ isVisible = false }) => {
         className="nav-menu-mobile lg:hidden bg-primary z-40"
       >
         <div className="h-full overflow-y-auto flex flex-col justify-between py-6 pb-14 px-5">
-          <Sidebar />
+          <SidebarMenu />
           <div>
-            <div className="pb-4 pl-2">
+            <div className="pb-4 pl-2 flex justify-center">
               <ThemeToggle isHidden={false} />
             </div>
             <SocialMenu />

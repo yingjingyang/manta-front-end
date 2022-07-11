@@ -1,6 +1,6 @@
 {
     "APP_NAME": "manta-web-app",
-    "VERSION": "2.2.0",
+    "VERSION": "2.3.0",
     "MIN_REQUIRED_SIGNER_VERSION": "0.7.0",
     "SIGNER_URL": "http://localhost:29987/",
     "RPC": {

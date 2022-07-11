@@ -25,8 +25,8 @@ const SendAmountInput = () => {
     isInitialSync && (isPrivateTransfer() || isToPublic())
       ? 'Syncing to ledger'
       : senderAssetCurrentBalance
-        ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-        : '';
+      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+      : '';
 
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
@@ -77,7 +77,11 @@ const SendAmountInput = () => {
           value={inputValue}
           disabled={disabled}
         />
-        <MaxButton id="maxAmount" isDisabled={disabled} onClickMax={onClickMax} />
+        <MaxButton
+          id="maxAmount"
+          isDisabled={disabled}
+          onClickMax={onClickMax}
+        />
       </div>
       <BalanceComponent
         balance={balanceText}

@@ -441,7 +441,6 @@ export const SendContextProvider = (props) => {
         privateWallet.balancesAreStale.current = true;
         senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
         receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
-
       } catch (err) {
         console.err(err);
       }
