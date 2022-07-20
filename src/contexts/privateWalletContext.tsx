@@ -39,6 +39,7 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [isInitialSync, setIsInitialSync] = useState(false);
+  const [error, setError] = useState(false);
   const walletIsBusy = useRef(false);
 
   // transaction state
@@ -82,7 +83,10 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
       const wasmApiConfig = new ApiConfig(
-        api, externalAccountSigner, DEFAULT_PULL_SIZE, DEFAULT_PULL_SIZE
+        api,
+        externalAccountSigner,
+        DEFAULT_PULL_SIZE,
+        DEFAULT_PULL_SIZE
       );
       const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
@@ -166,6 +170,7 @@ export const PrivateWalletContextProvider = (props) => {
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
       balancesAreStale.current = false;
     } catch (error) {
+      setError(true);
       console.error('Sync failed', error);
     }
     walletIsBusy.current = false;
