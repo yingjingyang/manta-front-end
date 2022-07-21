@@ -30,7 +30,7 @@ export const ExternalAccountContextProvider = (props) => {
         // or, as a fallback, the first account in their polkadot.js wallet
         const externalAccountOptions =  keyring.getPairs();
         let initialAccount = (
-          getLastAccessedExternalAccount(keyring) ||
+          // getLastAccessedExternalAccount(keyring) ||
           externalAccountOptions[0]
         );
         setExternalAccountOptions(externalAccountOptions);

@@ -11,5 +11,11 @@
         "should_continue": "bool",
         "receivers": "Vec<([u8; 32], EncryptedNote)>",
         "senders": "Vec<[u8; 32]>"
+    },
+    "AssetId": "u32",
+    "CurrencyId": {
+        "_enum": {
+            "MantaCurrency": "AssetId"
+        }
     }
 }

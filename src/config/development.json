@@ -1,13 +1,13 @@
 {
-    "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
+    "PROVIDER_SOCKET": "ws://127.0.0.1:9944",
     "DEV_CONSOLE": true,
-    "DEVELOPMENT_KEYRING": false,
+    "DEVELOPMENT_KEYRING": true,
     "BASE_STORAGE_KEY": "dolphinDev",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
     "NETWORK_NAME": "Dolphin",
     "NODES": [{
         "name": "Dolphin",
-        "url": "wss://ws.rococo.dolphin.engineering"
+        "url": "ws://127.0.0.1:9944"
     }],
     "DOWNTIME": false
 }
