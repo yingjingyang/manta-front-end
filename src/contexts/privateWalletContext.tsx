@@ -74,6 +74,8 @@ export const PrivateWalletContextProvider = (props) => {
       return api && externalAccountSigner && signerIsConnected;
     };
 
+    const updateSyncProgress = async (receivers) => {};
+
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
       setIsInitialSync(true);
@@ -86,7 +88,8 @@ export const PrivateWalletContextProvider = (props) => {
         api,
         externalAccountSigner,
         DEFAULT_PULL_SIZE,
-        DEFAULT_PULL_SIZE
+        DEFAULT_PULL_SIZE,
+        updateSyncProgress
       );
       const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
