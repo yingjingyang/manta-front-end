@@ -37,11 +37,11 @@ const SendFromForm = () => {
       <div className="flex flex-col gap-4 items-stretch mb-4">
         <PublicPrivateToggle
           onToggle={toggleSenderIsPrivate}
-          isPrivate={senderAssetType.isPrivate}
+          isPrivate={senderAssetType?.isPrivate}
           prefix="sender"
         />
         <div className="w-100 items-center flex-grow">
-          {senderAssetType.isPrivate ? (
+          {senderAssetType?.isPrivate ? (
             <PrivateFromAccountSelect />
           ) : (
             <PublicFromAccountSelect />

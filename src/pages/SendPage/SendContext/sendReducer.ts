@@ -5,21 +5,17 @@ import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import SEND_ACTIONS from './sendActions';
 
-const getInitialToken = (isPrivate) => {
-  return AssetType.AllCurrencies(isPrivate).find(currency => currency.baseTicker === store.get(localStorageKeys.CurrentToken)) ?? AssetType.AllCurrencies(isPrivate)[0];
-};
-
 export const SEND_INIT_STATE = {
   senderPublicAccount: null,
   senderPublicAccountOptions: [],
 
-  senderAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateSender, false)),
-  senderAssetTypeOptions: AssetType.AllCurrencies(store.get(localStorageKeys.IsPrivateSender, false)),
+  senderAssetType: null,
+  senderAssetTypeOptions: [],
   senderAssetCurrentBalance: null,
   senderAssetTargetBalance: null,
   senderNativeTokenPublicBalance: null,
 
-  receiverAssetType: getInitialToken(store.get(localStorageKeys.IsPrivateReceiver, true)),
+  receiverAssetType: null,
   receiverCurrentBalance: null,
   receiverAddress: null,
 };
@@ -59,6 +55,9 @@ const sendReducer = (state, action) => {
   case SEND_ACTIONS.SET_RECEIVER_CURRENT_BALANCE:
     return setReceiverCurrentBalance(state, action);
 
+  case SEND_ACTIONS.SET_ASSET_TYPES:
+    return setAssetTypes(state, action);
+
   default:
     throw new Error(`Unknown type: ${action.type}`);
   }
@@ -78,8 +77,8 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   if (!updateAssetType) {
     return false;
   }
-  if (stateAssetType.assetId === updateAssetType.assetId
-    && stateAssetType.isPrivate === updateAssetType.isPrivate
+  if (stateAssetType?.assetId === updateAssetType?.assetId
+    && stateAssetType?.isPrivate === updateAssetType?.isPrivate
   ) {
     return false;
   }
@@ -141,8 +140,8 @@ const setSelectedAssetType = (state, action) => {
 const setSenderPrivateAddress = (state, action) => {
   const receiverAddress = getDefaultReceiver(
     state,
-    state.senderAssetType.isPrivate,
-    state.receiverAssetType.isPrivate
+    state.senderAssetType?.isPrivate,
+    state.receiverAssetType?.isPrivate
   );
 
   return {
@@ -205,6 +204,29 @@ const setReceiverCurrentBalance = (state, action) => {
   return {
     ...state,
     receiverCurrentBalance: action.receiverCurrentBalance
+  };
+};
+
+const getInitialAssetType = (senderAssetTypeOptions) => {
+  const lastSelectedTicker = store.get(localStorageKeys.CurrentToken);
+  const lastSelectedAssetType = senderAssetTypeOptions.find(
+    assetType => assetType.baseTicker === lastSelectedTicker
+  );
+  return lastSelectedAssetType || senderAssetTypeOptions || null;
+};
+
+const setAssetTypes = (state, { assetTypes }) => {
+  const initialAssetType = getInitialAssetType(assetTypes);
+  const senderIsPrivate = store.get(localStorageKeys.IsPrivateSender);
+  const receiverIsPrivate = store.get(localStorageKeys.IsPrivateReceiver, true);
+  const senderAssetType = senderIsPrivate ? initialAssetType.toggleIsPrivate() : initialAssetType;
+  const receiverAssetType = receiverIsPrivate ? initialAssetType.toggleIsPrivate() : initialAssetType;
+
+  return {
+    ...state,
+    senderAssetTypeOptions: assetTypes,
+    senderAssetType,
+    receiverAssetType
   };
 };
 

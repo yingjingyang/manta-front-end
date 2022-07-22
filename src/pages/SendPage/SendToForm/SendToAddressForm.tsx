@@ -11,9 +11,9 @@ import {
   validatePrivateAddress,
   validatePublicAddress
 } from 'utils/validation/validateAddress';
-import { useSend } from '../SendContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
+import { useSend } from '../SendContext';
 
 const SendToAddressForm = ({
   internalAccountOptions,
@@ -45,13 +45,13 @@ const SendToAddressForm = ({
   const optionGroups = [
     {
       label: `External ${
-        senderAssetType.isPrivate ? 'Private' : 'Public'
+        senderAssetType?.isPrivate ? 'Private' : 'Public'
       } Account`,
       options: reactSelectExternalOptions
     },
     {
       label: `My ${
-        receiverAssetType.isPrivate ? 'Private' : 'Public'
+        receiverAssetType?.isPrivate ? 'Private' : 'Public'
       } Accounts`,
       options: reactSelectInternalOptions
     }
@@ -131,13 +131,13 @@ const ReceiverBalanceDisplay = () => {
         <div>
           <img
             className="w-8 h-8 rounded-full"
-            src={receiverAssetType.icon}
+            src={receiverAssetType?.icon}
             alt="icon"
           />
         </div>
         <GradientText
           className="text-2xl font-bold"
-          text={receiverAssetType.ticker}
+          text={receiverAssetType?.ticker}
         />
       </div>
     </div>

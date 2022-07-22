@@ -7,5 +7,6 @@
     "PAGE_TITLE": "Dolphin Testnet App",
     "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "DOWNTIME": false
+    "DOWNTIME": false,
+    "ALLOWED_ASSET_IDS": [1, 8, 9, 10, 11, 12, 13]
 }

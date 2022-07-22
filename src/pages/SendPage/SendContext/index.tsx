@@ -12,6 +12,7 @@ import AssetType from 'types/AssetType';
 import { FAILURE as WASM_WALLET_FAILURE } from 'manta-wasm-wallet-api';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
+import { useAssetTypes } from 'contexts/assetTypesContext';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { SEND_INIT_STATE } from './sendReducer';
 
@@ -27,6 +28,7 @@ export const SendContextProvider = (props) => {
     changeExternalAccount
   } = useExternalAccount();
   const privateWallet = usePrivateWallet();
+  const { assetTypes } = useAssetTypes();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
 
   const initState = { ...SEND_INIT_STATE };
@@ -70,6 +72,22 @@ export const SendContextProvider = (props) => {
       setReceiver(privateAddress);
     }
   }, [privateAddress]);
+
+  // Adds available and selected asset types to state on pageload
+  useEffect(() => {
+    const initAssetTypes = async () => {
+      if (assetTypes) {
+        dispatch({
+          type: SEND_ACTIONS.SET_ASSET_TYPES,
+          assetTypes: assetTypes
+        });
+      }
+    };
+    initAssetTypes();
+    if (privateAddress && isToPrivate()) {
+      setReceiver(privateAddress);
+    }
+  }, [assetTypes]);
 
   /**
    * External state
@@ -279,12 +297,14 @@ export const SendContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchSenderBalance();
-      fetchReceiverBalance();
-      fetchFeeBalance();
-    }, 200);
-    return () => clearInterval(interval);
+    if (senderAssetType) {
+      const interval = setInterval(() => {
+        fetchSenderBalance();
+        fetchReceiverBalance();
+        fetchFeeBalance();
+      }, 200);
+      return () => clearInterval(interval);
+    }
   }, [
     senderAssetType,
     externalAccount,
@@ -520,19 +540,19 @@ export const SendContextProvider = (props) => {
   };
 
   const isToPrivate = () => {
-    return !senderAssetType.isPrivate && receiverAssetType.isPrivate;
+    return !senderAssetType?.isPrivate && receiverAssetType?.isPrivate;
   };
 
   const isToPublic = () => {
-    return senderAssetType.isPrivate && !receiverAssetType.isPrivate;
+    return senderAssetType?.isPrivate && !receiverAssetType?.isPrivate;
   };
 
   const isPrivateTransfer = () => {
-    return senderAssetType.isPrivate && receiverAssetType.isPrivate;
+    return senderAssetType?.isPrivate && receiverAssetType?.isPrivate;
   };
 
   const isPublicTransfer = () => {
-    return !senderAssetType.isPrivate && !receiverAssetType.isPrivate;
+    return !senderAssetType?.isPrivate && !receiverAssetType?.isPrivate;
   };
 
   const value = {

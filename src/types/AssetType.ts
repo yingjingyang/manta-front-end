@@ -25,6 +25,20 @@ export default class AssetType {
     this.isNativeToken = isNativeToken;
   }
 
+  static FromMetadata(metadata, isPrivate) {
+    return new AssetType(
+      metadata.assetId,
+      'todo',
+      //metadata.name,
+      metadata.symbol,
+      AssetType._mapNameToIcon(metadata.name),
+      metadata.decimals,
+      metadata.minBalance,
+      isPrivate,
+      metadata.assetId === 1
+    );
+  }
+
   static Dolphin(isPrivate) {
     return new AssetType(
       1,
@@ -120,6 +134,11 @@ export default class AssetType {
       AssetType.Moonriver(isPrivate),
       AssetType.Dolphin(isPrivate)
     ];
+  }
+
+  static _mapNameToIcon(name) {
+    return Svgs.Dolphin;
+    //switch name
   }
 
   static _getFullName(baseName, isPrivate) {
