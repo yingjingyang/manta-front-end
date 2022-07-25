@@ -116,7 +116,7 @@ const ReceiverBalanceDisplay = () => {
 
   const balanceString =
     isInitialSync && (isToPrivate() || isPrivateTransfer())
-      ? 'Syncing to ledger'
+      ? ''
       : receiverCurrentBalance?.toString();
 
   return (

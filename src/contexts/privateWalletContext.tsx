@@ -20,6 +20,8 @@ import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 
+const TOTAL_RECEIVERS = 49188;
+
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
@@ -42,10 +44,42 @@ export const PrivateWalletContextProvider = (props) => {
   const [error, setError] = useState(false);
   const walletIsBusy = useRef(false);
 
+  // sync state
+  const initialSyncReceivers = useRef(0);
+  const currentSyncReceivers = useRef(0);
+  const syncPercentage = useRef(0);
+
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
   const balancesAreStale = useRef(false);
+
+  const updateSyncProgress = async (receivers, senders, sender_index) => {
+    console.log({
+      receivers,
+      senders,
+      sender_index
+    });
+    if (currentSyncReceivers.current === 0) {
+      currentSyncReceivers.current = sender_index;
+    }
+    currentSyncReceivers.current += receivers.length;
+
+    if (currentSyncReceivers.current > 0) {
+      const initialRemainingReceivers =
+        TOTAL_RECEIVERS - initialSyncReceivers.current;
+      const currentSyncedReceivers = TOTAL_RECEIVERS - sender_index;
+      const newSyncedReceivers =
+        initialRemainingReceivers - currentSyncedReceivers;
+      console.log({ newSyncedReceivers });
+      syncPercentage.current = (
+        (newSyncedReceivers / initialRemainingReceivers) *
+        100
+      ).toFixed(0);
+    } else {
+      syncPercentage.current = 0;
+    }
+  };
 
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
@@ -73,8 +107,6 @@ export const PrivateWalletContextProvider = (props) => {
     const canInitWallet = () => {
       return api && externalAccountSigner && signerIsConnected;
     };
-
-    const updateSyncProgress = async (receivers) => {};
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
@@ -373,7 +405,8 @@ export const PrivateWalletContextProvider = (props) => {
     signerVersion,
     isInitialSync,
     walletIsBusy,
-    balancesAreStale
+    balancesAreStale,
+    syncPercentage
   };
 
   return (

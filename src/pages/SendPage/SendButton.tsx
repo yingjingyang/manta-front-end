@@ -7,14 +7,20 @@ import { showError } from 'utils/ui/Notifications';
 import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useSend } from './SendContext';
+import SyncPercentage from 'components/SyncPercentage';
 
 const SendButton = () => {
   const {
-    isToPrivate, isToPublic, isPublicTransfer,
-    isPrivateTransfer, userCanPayFee, receiverAssetType,
+    isToPrivate,
+    isToPublic,
+    isPublicTransfer,
+    isPrivateTransfer,
+    userCanPayFee,
+    receiverAssetType,
     receiverAmountIsOverExistentialBalance
   } = useSend();
-  const { signerIsConnected } = usePrivateWallet();
+  const { signerIsConnected, isReady, syncPercentage, isInitialSync } =
+    usePrivateWallet();
   const { txStatus } = useTxStatus();
   const { send } = useSend();
   const disabled = txStatus?.isProcessing();
@@ -23,8 +29,15 @@ const SendButton = () => {
     if (!signerIsConnected) {
       showError('Manta signer must be connected');
     } else if (receiverAmountIsOverExistentialBalance() === false) {
-      const existentialDeposit = new Balance(receiverAssetType, receiverAssetType.existentialDeposit);
-      showError(`Minimum ${receiverAssetType.ticker} transaction is ${existentialDeposit.toString()}`);
+      const existentialDeposit = new Balance(
+        receiverAssetType,
+        receiverAssetType.existentialDeposit
+      );
+      showError(
+        `Minimum ${
+          receiverAssetType.ticker
+        } transaction is ${existentialDeposit.toString()}`
+      );
     } else if (userCanPayFee() === false) {
       showError('Cannot pay transaction fee; deposit DOL to transact');
     } else if (!disabled) {
@@ -35,11 +48,11 @@ const SendButton = () => {
   let buttonLabel;
   if (isToPrivate()) {
     buttonLabel = 'To Private';
-  } else if (isToPublic())  {
+  } else if (isToPublic()) {
     buttonLabel = 'To Public';
-  } else if (isPublicTransfer())  {
+  } else if (isPublicTransfer()) {
     buttonLabel = 'Public Transfer';
-  } else if (isPrivateTransfer())  {
+  } else if (isPrivateTransfer()) {
     buttonLabel = 'Private Transfer';
   }
 
@@ -47,6 +60,10 @@ const SendButton = () => {
     <div>
       {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />
+      ) : !isReady &&
+        isInitialSync &&
+        (isPrivateTransfer() || isToPublic() || isToPrivate()) ? (
+        <SyncPercentage percentage={syncPercentage.current} />
       ) : (
         <button
           id="sendButton"
