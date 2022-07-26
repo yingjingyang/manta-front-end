@@ -47,10 +47,10 @@ const SidebarMenu = () => {
         </div>
       </NavLink>
       <NavLink
-        onClick={(e) => e.preventDefault()}
+        onClick={onClickNavlink}
         className="text-secondary block pl-4 pr-7"
         activeClassName="text-primary active"
-        to="/swap"
+        to="/bridge"
       >
         <div
           className={classNames(
@@ -62,7 +62,7 @@ const SidebarMenu = () => {
             <SwapSvg className="fill-current lg:group-hover:fill-primary" />
           </div>
           <span className="lg:group-hover:text-primary font-semibold">
-            Swap (coming soon)
+            Bridge
           </span>
         </div>
       </NavLink>

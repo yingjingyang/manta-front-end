@@ -6,14 +6,15 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
 import GradientText from 'components/GradientText';
 import classNames from 'classnames';
-import { useSend } from '../SendContext';
 
-const SendAssetTypeDropdown = () => {
+const SendAssetTypeDropdown = ({
+  senderAssetType, 
+  senderAssetTypeOptions, 
+  setSelectedAssetType
+}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { senderAssetType, senderAssetTypeOptions, setSelectedAssetType } =
-    useSend();
-  const dropdownOptions = senderAssetTypeOptions.map((assetType) => {
+  const dropdownOptions = senderAssetTypeOptions?.map((assetType) => {
     return {
       id: `assetType_${assetType.ticker}`,
       key: assetType.assetId,

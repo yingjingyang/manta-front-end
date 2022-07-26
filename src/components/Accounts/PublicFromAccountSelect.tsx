@@ -5,15 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
-import { useSend } from '../SendContext';
 
-const PublicFromAccountSelect = () => {
-  const {
+const PublicFromAccountSelect = ({
     senderPublicAccount,
     senderPublicAccountOptions,
     setSenderPublicAccount
-  } = useSend();
-
+  }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 

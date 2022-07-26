@@ -1,10 +1,10 @@
 // @ts-nocheck
 import React from 'react';
-import PublicFromAccountSelect from 'pages/SendPage/SendFromForm/PublicFromAccountSelect';
 import PublicPrivateToggle from 'pages/SendPage/PublicPrivateToggle';
 import { useSend } from '../SendContext';
 import SendAssetSelect from './SendAssetSelect';
 import PrivateFromAccountSelect from './PrivateFromAccountSelect';
+import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 
 const WarningText = () => {
   const {
@@ -30,7 +30,13 @@ const WarningText = () => {
 };
 
 const SendFromForm = () => {
-  const { toggleSenderIsPrivate, senderAssetType } = useSend();
+  const { 
+    toggleSenderIsPrivate, 
+    senderAssetType,
+    senderPublicAccount,
+    senderPublicAccountOptions,
+    setSenderPublicAccount
+  } = useSend();
 
   return (
     <div className="flex-y space-y-1">
@@ -44,7 +50,11 @@ const SendFromForm = () => {
           {senderAssetType.isPrivate ? (
             <PrivateFromAccountSelect />
           ) : (
-            <PublicFromAccountSelect />
+            <PublicFromAccountSelect 
+              senderPublicAccount={senderPublicAccount}
+              senderPublicAccountOptions={senderPublicAccountOptions}
+              setSenderPublicAccount={setSenderPublicAccount}
+            />
           )}
         </div>
       </div>

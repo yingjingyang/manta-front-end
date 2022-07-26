@@ -7,27 +7,15 @@ import GradientText from 'components/GradientText';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
-import { useSend } from '../SendContext';
 
-const SendAmountInput = () => {
-  const {
-    senderAssetCurrentBalance,
-    setSenderAssetTargetBalance,
-    senderAssetType,
-    getMaxSendableBalance,
-    isToPublic,
-    isPrivateTransfer
-  } = useSend();
-  const { isInitialSync } = usePrivateWallet();
-  const balanceText =
-    isInitialSync && (isPrivateTransfer() || isToPublic())
-      ? 'Syncing to ledger'
-      : senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
-
+const SendAmountInput = ({
+  balanceText,
+  senderAssetCurrentBalance,
+  setSenderAssetTargetBalance,
+  senderAssetType,
+  getMaxSendableBalance,
+}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const [inputValue, setInputValue] = useState('');

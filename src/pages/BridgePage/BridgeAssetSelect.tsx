@@ -4,26 +4,21 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useSend } from '../SendContext';
 import SendAmountInput from 'components/AmountInput/SendAmountInput';
 import SendAssetTypeDropdown from 'components/AssetTypeDropdown/SendAssetTypeDropdown';
+import { useBridge } from './BridgeContext';
 
-const SendAssetSelect = () => {
-  const { isInitialSync } = usePrivateWallet();
+const BridgeAssetSelect = () => {
   const {
-    isPrivateTransfer, 
-    isToPublic,
     senderAssetCurrentBalance,
     senderAssetType,
     setSenderAssetTargetBalance,
     getMaxSendableBalance,
     senderAssetTypeOptions,
     setSelectedAssetType
-  } = useSend();
+  } = useBridge();
 
-  const balanceText =
-  isInitialSync && (isPrivateTransfer() || isToPublic())
-    ? 'Syncing to ledger'
-    : senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
+  const balanceText = senderAssetCurrentBalance
+    ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+    : '';
 
   return (
     <div className="w-100 relative">
@@ -43,4 +38,4 @@ const SendAssetSelect = () => {
   );
 };
 
-export default SendAssetSelect;
+export default BridgeAssetSelect;
