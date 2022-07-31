@@ -2,19 +2,22 @@
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import React from 'react';
+import { useBridge } from './BridgeContext';
 
 const SendButton = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
+  const { send } = useBridge();
 
   const onClick = () => {
-    console.log('Sent :)');
+    console.log('sending :)');
+    send()
   };
 
   return (
     <div >
       <button
-        // onClick={!disabled && onClick}
+        onClick={!disabled && onClick}
         className={
           classNames(
             'py-3 cursor-pointer text-xl btn-hover unselectable-text',

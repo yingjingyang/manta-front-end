@@ -12,11 +12,14 @@ import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externa
 // import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
+import Chain from 'types/Chain';
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { transferKarFromCalamariToKarura, transferKarFromKaruraToCalamari, transferRocFromCalamariToRococo, transferRocFromRococoToCalamari } from 'utils/api/XCM';
+import { add } from 'husky';
 
 const BridgeContext = React.createContext();
 
 export const BridgeContextProvider = (props) => {
-  const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
   const {
     externalAccount,
@@ -32,6 +35,10 @@ export const BridgeContextProvider = (props) => {
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance,
     senderPublicAccount,
+    originChain,
+    originChainOptions,
+    destinationChain,
+    chainApis
   } = state;
 
   /**
@@ -50,6 +57,35 @@ export const BridgeContextProvider = (props) => {
     initPublicAccountOptions();
   }, [externalAccountOptions]);
 
+  useEffect(() => {
+    const initChainApis = async () => {
+      const chainApis = {};
+      for (let i = 0; i < originChainOptions.length; i++) {
+        const chain = originChainOptions[i];
+        const socket = new WsProvider(chain.socket);
+        const api = await ApiPromise.create({provider: socket});
+        chainApis[chain.name] = api;
+      }
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_CHAIN_APIS,
+        chainApis: chainApis
+      });
+    };
+    if (!chainApis) {
+      initChainApis()
+    }
+
+  }, [originChainOptions]);
+
+
+
+  const getChainApi = () => {
+    if (!originChain || !chainApis) {
+      return null;
+    }
+    return chainApis[originChain.name]
+  }
+  const api = getChainApi();
 
   /**
    * External state
@@ -107,6 +143,23 @@ export const BridgeContextProvider = (props) => {
     });
   };
 
+  // Sets the origin chain
+  const setOriginChain = (originChain) => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_ORIGIN_CHAIN,
+      originChain
+    });
+  };
+
+  // Sets the destination chain
+  const setDestinationChain = (destinationChain) => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_DESTINATION_CHAIN,
+      destinationChain
+    });
+  };
+
+
   /**
    *
    * Balance refresh logic
@@ -125,7 +178,7 @@ export const BridgeContextProvider = (props) => {
   };
 
   // Dispatches the user's available public balance for the currently selected fee-paying account to local state
-  const setSenderNativeTokenPublicBalance = (
+  const setSenderNativeTokenBalance = (
     senderNativeTokenPublicBalance
   ) => {
     dispatch({
@@ -135,57 +188,76 @@ export const BridgeContextProvider = (props) => {
   };
 
   // Gets available public balance for some public address and asset type
-  const fetchPublicBalance = async (address, assetType) => {
-    if (!api || !address) {
+  const fetchBalance = async () => {
+    const address = senderPublicAccount?.address;
+    if (!address || !senderAssetType || !api) {
+      console.log('cant fetch', address, senderAssetType, api)
       return null;
     }
     await api.isReady;
+    let balance;
+    switch(originChain.name) {
+      case "Calamari":
+        balance = await fetchBalanceMantaChain(address, senderAssetType);
+        break;
+      case "Dolphin":
+        balance = await fetchBalanceMantaChain(address, senderAssetType);
+        break;
+      case "Rococo":
+        console.log('fetch balance Roc')
+        balance = await fetchBalanceRococoChain(address, senderAssetType);
+        break;
+      case "Karura":
+        balance = await fetchBalanceKaruraChain(address, senderAssetType);
+        break;
+      default:
+        throw new Error("Unrecognized chain");
+    };
+    setSenderAssetCurrentBalance(balance)
+  };
+
+  const fetchBalanceRococoChain = async (address, assetType) => {
+    if (assetType.baseTicker !== 'ROC') {
+      console.log('wrong name', assetType.name)
+      return null
+    }
+    const balance = await fetchNativeTokenBalance(address, assetType)
+    return balance;
+
+  }
+
+  const fetchBalanceKaruraChain = async (address, assetType) => {
+    if (assetType.baseTicker !== 'KAR') {
+      return null
+    }
+    const balance = await fetchNativeTokenBalance(address, assetType);
+    return balance;
+  }
+
+  const fetchBalanceMantaChain = async (address, assetType) => {
     if (assetType.isNativeToken) {
-      const balance = await fetchNativeTokenPublicBalance(address);
+      const balance = await fetchNativeTokenBalance(address, assetType);
       return balance;
     }
     const account = await api.query.assets.account(assetType.assetId, address);
     const balanceString = account.value.isEmpty
       ? '0'
       : account.value.balance.toString();
-    return new Balance(assetType, new BN(balanceString));
-  };
+    return new Balance(assetType, new BN(balanceString)); 
+  }
 
-  // Gets available native public balance for some public address;
-  // This is currently a special case because querying native token balnces
-  // requires a different api call
-  const fetchNativeTokenPublicBalance = async (address) => {
-    if (!api || !address) {
+  const fetchNativeTokenBalance = async (address, assetType) => {
+    if (!api || !address || !assetType) {
       return null;
     }
     await api.isReady;
-    const balances = await api.derive.balances.account(address);
+    const balances = await api.query.system.account(address);
     return new Balance(
-      AssetType.Dolphin(false),
-      new BN(balances.freeBalance.toString())
+      assetType,
+      new BN(balances.data.free.toString())
     );
   };
 
-  // Gets the available balance for the currently selected sender account, whether public or private
-  const fetchSenderBalance = async () => {
-    if (!senderAssetType.isPrivate) {
-      const publicBalance = await fetchPublicBalance(
-        senderPublicAccount?.address,
-        senderAssetType
-      );
-      setSenderAssetCurrentBalance(publicBalance, senderPublicAccount?.address);
-      // private balances cannot be queries while a transaction is processing
-      // because web assambly wallet panics if asked to do two things at a time
-    } else if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
-      const privateBalance = await privateWallet.getSpendableBalance(
-        senderAssetType
-      );
-      setSenderAssetCurrentBalance(
-        privateBalance,
-        senderPublicAccount?.address
-      );
-    }
-  };
 
 
   // Gets the available public balance for the user's public account set to pay transaction fee
@@ -194,17 +266,18 @@ export const BridgeContextProvider = (props) => {
       return;
     }
     const address = externalAccount.address;
-    const balance = await fetchNativeTokenPublicBalance(address);
-    setSenderNativeTokenPublicBalance(balance, address);
+    const balance = await fetchNativeTokenBalance(address, originChain.nativeAsset);
+    setSenderNativeTokenBalance(balance, address);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchSenderBalance();
+      fetchBalance();
       fetchFeeBalance();
     }, 200);
     return () => clearInterval(interval);
   }, [
+    originChain,
     senderAssetType,
     externalAccount,
     senderPublicAccount,
@@ -220,7 +293,7 @@ export const BridgeContextProvider = (props) => {
   // Gets the highest amount the user is allowed to send for the currently
   // selected asset
   const getMaxSendableBalance = () => {
-    if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance) {
+    if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance || !senderAssetType) {
       return null;
     }
     if (senderAssetType.isNativeToken) {
@@ -242,12 +315,12 @@ export const BridgeContextProvider = (props) => {
       return null;
     }
     const conservativeFeeEstimate = Balance.fromBaseUnits(
-      AssetType.Dolphin(false),
+      originChain.nativeAsset,
       0.1
     );
     const existentialDeposit = new Balance(
-      AssetType.Dolphin(false),
-      AssetType.Dolphin(false).existentialDeposit
+      originChain.nativeAsset,
+      originChain.nativeAsset.existentialDeposit
     );
     return conservativeFeeEstimate.add(existentialDeposit);
   };
@@ -261,7 +334,7 @@ export const BridgeContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken
     ) {
       const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
-        AssetType.Dolphin(false),
+        originChain.nativeAsset,
         1
       );
       const balanceAfterTx = senderAssetCurrentBalance.sub(
@@ -274,7 +347,7 @@ export const BridgeContextProvider = (props) => {
 
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
-    if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
+    if (!senderAssetTargetBalance || !senderAssetCurrentBalance || !senderAssetType) {
       return null;
     }
     if (
@@ -293,11 +366,12 @@ export const BridgeContextProvider = (props) => {
       return null;
     }
     let requiredNativeTokenBalance = getReservedNativeTokenBalance();
-    if (senderAssetType.isNativeToken) {
+    if (senderAssetType?.isNativeToken) {
       requiredNativeTokenBalance = requiredNativeTokenBalance.add(
         senderAssetTargetBalance
       );
     }
+    console.log('hmm', senderNativeTokenPublicBalance, requiredNativeTokenBalance)
     return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
   };
 
@@ -307,7 +381,7 @@ export const BridgeContextProvider = (props) => {
       return null;
     }
     return senderAssetTargetBalance.valueAtomicUnits.gte(
-      receiverAssetType.existentialDeposit
+      senderAssetType.existentialDeposit // revisit
     );
   };
 
@@ -331,6 +405,7 @@ export const BridgeContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
+    console.log('handleTxRes')
     // if (status.isInBlock) {
     //   for (const event of events) {
     //     if (api.events.utility.BatchInterrupted.is(event.event)) {
@@ -359,13 +434,38 @@ export const BridgeContextProvider = (props) => {
     // }
   };
 
+  const mapChainsToXcmFunction = () => {
+    console.log(originChain, destinationChain)
+    if (originChain.name === "Dolphin") {
+      if (destinationChain.baseTicker === "Rococo") {
+        return transferRocFromCalamariToRococo
+      } else if (destinationChain.name === "Karura") {
+        return transferKarFromCalamariToKarura
+      }
+    } else if (originChain.name === "Rococo" && destinationChain.name === "Dolphin") {
+      return transferRocFromRococoToCalamari
+    } else if (originChain.name === "Karura" && destinationChain.name === "Dolphin") {
+      return transferKarFromKaruraToCalamari
+    } else {
+      throw new Error("Invalid XCM transfer")
+    }
+  }
+
   // Attempts to build and send a transaction
   const send = async () => {
     if (!isValidToSend()) {
       return;
     }
     setTxStatus(TxStatus.processing());
+    const xcmFunction = mapChainsToXcmFunction();
     try {
+        await xcmFunction(
+          api, 
+          externalAccountSigner, 
+          handleTxRes, 
+          senderAssetCurrentBalance.address, 
+          senderAssetTargetBalance
+        );
         setTxStatus(TxStatus.success());
         console.log('success :)')
     } catch (error) {
@@ -385,6 +485,8 @@ export const BridgeContextProvider = (props) => {
     setSenderAssetTargetBalance,
     setSenderPublicAccount,
     setSelectedAssetType,
+    setOriginChain,
+    setDestinationChain,
     send,
     ...state
   };

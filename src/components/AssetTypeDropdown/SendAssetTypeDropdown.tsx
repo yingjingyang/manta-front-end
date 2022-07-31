@@ -41,7 +41,7 @@ const SendAssetTypeDropdown = ({
       onChange={onChangeAssetType}
       options={dropdownOptions}
       isDisabled={disabled}
-      placeholder=""
+      placeholder="--"
       styles={dropdownStyles(disabled)}
       components={{
         SingleValue: SendAssetTypeSingleValue,

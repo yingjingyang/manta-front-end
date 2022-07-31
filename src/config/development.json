@@ -9,5 +9,8 @@
         "name": "Dolphin",
         "url": "ws://127.0.0.1:9944"
     }],
+    "ROCOCO_SOCKET": "ws://127.0.0.1:9977",
+    "DOLPHIN_SOCKET": "ws://127.0.0.1:9801",
+    "KARURA_SOCKET": "ws://127.0.0.1:9803",
     "DOWNTIME": false
 }

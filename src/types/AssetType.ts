@@ -9,7 +9,7 @@ export default class AssetType {
     icon,
     numberOfDecimals,
     publicExistentialDeposit,
-    isPrivate,
+    isPrivate = false,
     isNativeToken = false
   ) {
     this.assetId = assetId;
@@ -34,7 +34,7 @@ export default class AssetType {
       18,
       new BN('100000000000000000'),
       isPrivate,
-      true
+      true,
     );
   }
 
@@ -46,13 +46,14 @@ export default class AssetType {
       Svgs.KarIcon,
       12,
       new BN('100000000000'),
-      isPrivate
+      isPrivate,
+      false,
     );
   }
 
   static AcalaDollar(isPrivate) {
     return new AssetType(
-      9,
+      99,
       'Acala Dollar',
       'aUSD',
       Svgs.AusdIcon,
@@ -64,19 +65,20 @@ export default class AssetType {
 
   static Kusama(isPrivate) {
     return new AssetType(
-      10,
+      100,
       'Kusama',
       'KSM',
       Svgs.KusamaIcon,
       12,
       new BN('500000000'),
-      isPrivate
+      isPrivate,
+      false,
     );
   }
 
   static Rococo(isPrivate) {
     return new AssetType(
-      11,
+      9,
       'Rococo',
       'ROC',
       Svgs.RocIcon,
@@ -162,5 +164,14 @@ export default class AssetType {
     } else {
       return this.toPrivate();
     }
+  }
+
+  canTransferXcm = (originChain, destinationChain) => {
+    const res = (
+      originChain.xcmAssets.find(asset => asset.name === this.name)
+      && destinationChain.xcmAssets.find(asset => asset.name === this.name)
+    )
+    console.log('res', res)
+    return res
   }
 }

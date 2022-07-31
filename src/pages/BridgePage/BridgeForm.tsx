@@ -1,12 +1,7 @@
 // @ts-nocheck
 import React from 'react';
-import classNames from 'classnames';
-import PageContent from 'components/PageContent';
-import Navbar from 'components/Navbar';
 import ChainDropdown from 'pages/BridgePage/ChainDropdown';
 import SendButton from 'pages/BridgePage/SendButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SendAssetSelect from 'pages/SendPage/SendFromForm/SendAssetSelect';
 import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 import Svgs from 'resources/icons';
 import { useBridge } from './BridgeContext';
@@ -16,9 +11,15 @@ const BridgeForm = () => {
     const { 
         senderPublicAccount,
         senderPublicAccountOptions,
-        setSenderPublicAccount
+        setSenderPublicAccount,
+        originChain,
+        originChainOptions,
+        setOriginChain,
+        destinationChain,
+        destinationChainOptions,
+        setDestinationChain
     } = useBridge()
-
+    
     return (
         <div className="justify-center flex pt-4 pb-4 m-auto">
           <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
@@ -31,7 +32,11 @@ const BridgeForm = () => {
             <div className="flex gap-8 flex-y items-end">
               <div className="">
                 <h2 className="text-primary text-white mb-2">Origin chain</h2>
-                <ChainDropdown />
+                <ChainDropdown 
+                  chain={originChain}
+                  chainOptions={originChainOptions}
+                  setChain={setOriginChain}
+                />
               </div>
                 <img
                 className="mx-auto pb-7"
@@ -40,7 +45,11 @@ const BridgeForm = () => {
                 />
               <div className="">
                 <h2 className="text-primary text-white mb-2">Destination chain</h2>
-                <ChainDropdown />
+                <ChainDropdown 
+                  chain={destinationChain}
+                  chainOptions={destinationChainOptions}
+                  setChain={setDestinationChain}
+                />
               </div>
             </div>
             <div className="flex flex-col gap-4 flex-y mt-4">

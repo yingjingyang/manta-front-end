@@ -1,41 +1,24 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import Select, { components } from 'react-select';
-import Svgs from 'resources/icons';
 
-const chains = [
-  {
-    value: {
-      logo: Svgs.Calamari,
-      label: 'Calamari'
-    },
-    label: 'Calamari'
-  },
-  {
-    label: 'Karura',
-    value: {
-      logo: Svgs.KarIcon,
-      label: 'Karura'
-    }
-  },
-  {
-    label: 'Kusama',
-    value: {
-      logo: Svgs.KusamaIcon,
-      label: 'Kusama'
-    }
-  }
-];
+const ChainDropdown = ({chain, chainOptions, setChain}) => {
+  const dropdownOptions = chainOptions?.map((chain) => {
+    return {
+      id: `chain_${chain.name}`,
+      key: chain.name,
+      label: chain.name,
+      value: chain
+    };
+  });
 
-const ChainDropdown = () => {
-  const [chain, setChain] = useState(chains[0].value);
   return (
     <Select
       className="w-full btn-primary rounded-md"
       isSearchable={false}
       value={chain}
       onChange={(option) => setChain(option.value)}
-      options={chains}
+      options={dropdownOptions}
       placeholder=""
       styles={dropdownStyles}
       components={{
@@ -57,25 +40,24 @@ const ChainSingleValue = ({ data }) => {
       <div className="pl-3">
         <img
           className="w-10 h-10 left-2 absolute manta-bg-secondary rounded-full"
-          src={data.logo}
+          src={data?.icon}
           alt="icon"
         />
       </div>
-      <div className="text-xl pl-8 pt-1 text-white">{data.label}</div>
+      <div className="text-xl pl-8 pt-1 text-white">{data?.name}</div>
     </div>
   );
 };
 
 const ChainOption = (props) => {
   const { value, innerProps } = props;
-  console.log({ value, innerProps });
   return (
     <div {...innerProps} className="w-full cursor-pointer">
       <div className="flex items-center inline hover:bg-blue-100">
         <div>
           <img
             className="w-10 h-10 ml-3 my-2 manta-bg-secondary rounded-full"
-            src={value.logo}
+            src={value?.icon}
             alt="icon"
           />
         </div>

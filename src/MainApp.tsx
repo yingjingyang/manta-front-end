@@ -21,255 +21,9 @@ import BN from 'bn.js';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { ApiBase } from '@polkadot/api/base';
 import BridgePage from 'pages/BridgePage';
-
-
-const getCalamariDestinationFee = (assetId, tx) => {
-  // const unitsPerSecond = await api.query.assetManager(assetId);
-  // need to get weight on destination chain
-  // const weight =
-  // Dolphin / Calamari ---> 4000000000 weight
-  // Rococo / Kusama,
-  // Karura
-
-  // KSM cost on Calamari = 666,666,666.668 KSM
-  // KSM cost on Kusama = ?? KSM (check by transfering)
-
-  // KAR cost on Calamari = 100000000000 KAR
-  // KAR cost on Karura = ?? KAR (check by transfering)
-
-  // let amount = unitsPerSecond * (weight as u128) / (WEIGHT_PER_SECOND as u128);
-  // let amount = query_chain_state * (4000000000 const) / (1000000000000 const)
-};
-
-// for xcmPallet.limitedReserveTransferAsset
-const assets_XcmPallet = (value) => {
-  return api.createType('XcmVersionedMultiAssets', {
-    v1: [api.createType('XcmV1MultiAsset', {
-      id: api.createType('XcmV1MultiassetAssetId', {
-        concrete: api.createType('XcmV1MultiLocation', {
-          parents: 0,
-          interior: api.createType('XcmV1MultilocationJunctions', 'Here')
-        })
-      }),
-      fun: api.createType('XcmV1MultiassetFungibility', {
-        fungible: value
-      })
-    })]}
-  );
-};
-
-// for xcmPallet.limitedReserveTransferAsset
-const relayChainToParachainDest_XcmPallet = (parachainId) => {
-  return api.createType('XcmVersionedMultiLocation', {
-    v1: api.createType('XcmV1MultiLocation', {
-      parents: 0,
-      interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', {
-          parachain: parachainId
-        })
-      })
-    })
-  });
-};
-
-const beneficiary_XcmPallet = (accountId) => {
-  return api.createType('XcmVersionedMultiLocation', {
-    v1: api.createType('XcmV1MultiLocation', {
-      parents: 0,
-      interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', {
-          accountId32: {
-            network: api.createType('XcmV0JunctionNetworkId', { any: true }),
-            id: accountId
-          }
-        })
-      })
-    })
-  });
-};
-
-const parachainToRelayChainDest_Xtokens = (accountId) => {
-  return api.createType('XcmVersionedMultiLocation', {
-    v1: api.createType('XcmV1MultiLocation', {
-      parents: 1,
-      interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', {
-          accountId32: {
-            network: api.createType('XcmV0JunctionNetworkId', { any: true }),
-            id: accountId
-          }
-        })
-      })
-    })
-  });
-};
-
-const parachainToParachainDest_XTokens = (parachainId, accountId) => {
-  return api.createType('XcmVersionedMultiLocation', {
-    v1: api.createType('XcmV1MultiLocation', {
-      parents: 1,
-      interior: api.createType('XcmV1MultilocationJunctions', {
-        x2: [
-          api.createType('XcmV1Junction', {
-            parachain: parachainId
-          }),
-          api.createType('XcmV1Junction', {
-            accountId32: {
-              network: api.createType('XcmV0JunctionNetworkId', { any: true }),
-              id: accountId
-            }
-          })
-        ]})
-    })
-  });
-};
-
-const karuraAssetId_Xtoken = (symbol = 'KAR') => {
-  return api.createType('AcalaPrimitivesCurrencyCurrencyId', {
-    Token: api.createType('AcalaPrimitivesCurrencyTokenSymbol',  symbol)
-  });
-};
-
-const calamariAssetIdXtoken = (assetId) => {
-  return api.createType('CurrencyId', {
-    MantaCurrency: api.createType('AssetId',  assetId)
-  });
-};
-
-
-const assetId_Xtoken = (sourceParachainId, assetIdentifier) => {
-  switch(sourceParachainId) {
-  case 2084:
-    return calamariAssetIdXtoken(assetIdentifier); // assetId
-  case 2000:
-    return karuraAssetId_Xtoken(assetIdentifier); // asset symbol (like "KAR")
-  default:
-    throw new Error('Unrecognized parachain');
-  }
-};
-
-
-
-const getParachainWeightLimit = (parachainId) => {
-  switch(parachainId) {
-  case 2084:
-    return 4 * 1000000000;
-  case 2000:
-    return 4 * 200000000;
-  default:
-    throw new Error('Unrecognized parachain');
-  }
-};
-
-const getRelayChainWeightLimit = () => {
-  return 4 * 1000000000;
-};
-
-
-
-const transferRelayChainToParachain_XcmPallet = async (config, valueAtomicUnits, parachainId, accountId) => {
-  const { api, externalAccountSigner, txResHandler } = config;
-  const dest = relayChainToParachainDest_XcmPallet(parachainId);
-  const assets = assets_XcmPallet(valueAtomicUnits);
-  const beneficiary = beneficiary_XcmPallet(accountId);
-  const feeAssetItem = 0; // index of asset that pays xcm fee
-  const weightLimit = getParachainWeightLimit(parachainId);
-  const tx = api.tx.xcmPallet.limitedReserveTransferAssets(
-    dest, beneficiary, assets, feeAssetItem, weightLimit
-  );
-  try {
-    console.log(externalAccountSigner, 'externalAccountSigner');
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-    console.log('tx sent');
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
-};
-
-const transferParachainToRelayChain_Xtokens = async (config, sourceParachainId, assetIdentifier, accountId, valueAtomicUnits) => {
-  const { api, externalAccountSigner, txResHandler } = config;
-  const assetId = assetId_Xtoken(sourceParachainId, assetIdentifier);
-  const dest = parachainToRelayChainDest_XTokens(accountId);
-  const weightLimit = getRelayChainWeightLimit();
-  const tx = api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
-  try {
-    console.log(externalAccountSigner, 'externalAccountSigner');
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-    console.log('tx sent');
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
-};
-
-const transferParachainToParachain_Xtokens = async (config, sourceParachainId, assetIdentifier, parachainId, accountId, valueAtomicUnits) => {
-  const { api, externalAccountSigner, txResHandler } = config;
-  const assetId = assetId_Xtoken(sourceParachainId, assetIdentifier);
-  const dest = parachainToParachainDest_XTokens(parachainId, accountId);
-  const weightLimit = getParachainWeightLimit();
-  const tx = api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
-  try {
-    console.log(externalAccountSigner, 'externalAccountSigner');
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-    console.log('tx sent');
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
-};
-
-const transferKarFromCalamariToKarura = async (config, accountId, valueAtomicUnits) => {
-  await transferParachainToParachain_Xtokens(
-    config, CALAMARI_PARACHAIN_ID, KAR_ASSET_ID, KARURA_PARACHAIN_ID, accountId, valueAtomicUnits
-  );
-};
-const transferKarFromKaruraToCalamari = async (config, accountId, valueAtomicUnits) => {
-  await transferParachainToParachain_Xtokens(
-    config, KARURA_PARACHAIN_ID, KAR_ASSET_SYMBOL, CALAMARI_PARACHAIN_ID, accountId, valueAtomicUnits
-  );
-};
-const transferRocFromCalamariToRococo = async (config, accountId, valueAtomicUnits) => {
-  await transferParachainToRelayChain_Xtokens(
-    config, CALAMARI_PARACHAIN_ID, ROC_ASSET_ID, accountId, valueAtomicUnits
-  );
-};
-const transferRocFromRococoToCalamari = async (config, accountId, valueAtomicUnits) => {
-  await transferRelayChainToParachain_XcmPallet(
-    config, valueAtomicUnits, CALAMARI_PARACHAIN_ID, accountId
-  );
-};
-
-const KARURA_PARACHAIN_ID = 2000;
-const CALAMARI_PARACHAIN_ID = 2084;
-const KAR_ASSET_ID = 8;
-const ROC_ASSET_ID = 9;
-const KAR_ASSET_SYMBOL = 'KAR';
-
-
-
-
-const transferRocFromDolphinToRococo = async () => {
-  const dest = generateRococoDest();
-
-  const tx = api.tx.xTokens.transfer(assetId, new BN(10000000000000), dest, 4000000000);
-  try {
-    console.log(externalAccountSigner, 'externalAccountSigner');
-    await tx.signAndSend(externalAccountSigner, () => null);
-    console.log('tx sent');
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
-  console.log('dest', dest);
-};
-
-
-
-
-
-
-
-
-
-
-
+import { decodeAddress } from '@polkadot/util-crypto';
+import { hexAddPrefix, u8aToHex } from '@polkadot/util';
+import { transferKarFromKaruraToCalamari, transferRocFromCalamariToRococo, transferRocFromRococoToCalamari } from 'utils/api/XCM';
 
 
 
@@ -441,6 +195,55 @@ function MainApp() {
 
     tryXCMInbound();
     // tryXCMOutbound()
+  }, [api, externalAccountSigner]);
+
+  useEffect(() => {
+    const xcm = async () => {
+      console.log('api?', api);
+
+      if (!api || !externalAccountSigner) return;
+      await api.isReady;
+
+      const address = 't6X8qpY26nsi6WDMkhbyaTz6cLtNBt7xfs4H9k94D3kM1Lm';
+      const address2 = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+      const hex = hexAddPrefix(u8aToHex(decodeAddress(address)));
+      const hex1 = hexAddPrefix(u8aToHex(decodeAddress(address2)));
+
+      const txResHandler = () => {
+        console.log('tx sent');
+      };
+
+      console.log('doing transfer');
+
+      // transferRocFromRococoToCalamari(
+      //   api,
+      //   externalAccountSigner,
+      //   txResHandler,
+      //   'dmyjURuBeJwFo4Nvf2GZ8f5E2Asz98JY2d7UcaDykqYm1zpoi',
+      //   new BN(100000000000000)
+      // )
+
+      // transferRocFromCalamariToRococo(
+      //   api,
+      //   externalAccountSigner,
+      //   txResHandler,
+      //   'dmyjURuBeJwFo4Nvf2GZ8f5E2Asz98JY2d7UcaDykqYm1zpoi',
+      //   new BN(50000000000000)
+      // )
+
+      transferKarFromKaruraToCalamari(
+        api,
+        externalAccountSigner,
+        txResHandler,
+        'dmyjURuBeJwFo4Nvf2GZ8f5E2Asz98JY2d7UcaDykqYm1zpoi',
+        new BN(1000000000000000)
+      );
+
+
+
+
+    };
+    // xcm()
   }, [api, externalAccountSigner]);
 
 
