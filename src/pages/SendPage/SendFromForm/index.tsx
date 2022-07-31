@@ -1,10 +1,10 @@
 // @ts-nocheck
 import React from 'react';
 import PublicPrivateToggle from 'pages/SendPage/PublicPrivateToggle';
+import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 import { useSend } from '../SendContext';
 import SendAssetSelect from './SendAssetSelect';
 import PrivateFromAccountSelect from './PrivateFromAccountSelect';
-import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 
 const WarningText = () => {
   const {

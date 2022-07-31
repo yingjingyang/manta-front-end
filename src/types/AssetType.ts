@@ -40,7 +40,7 @@ export default class AssetType {
 
   static Karura(isPrivate) {
     return new AssetType(
-      8,
+      9,
       'Karura',
       'KAR',
       Svgs.KarIcon,
@@ -78,7 +78,7 @@ export default class AssetType {
 
   static Rococo(isPrivate) {
     return new AssetType(
-      9,
+      8,
       'Rococo',
       'ROC',
       Svgs.RocIcon,
@@ -170,8 +170,7 @@ export default class AssetType {
     const res = (
       originChain.xcmAssets.find(asset => asset.name === this.name)
       && destinationChain.xcmAssets.find(asset => asset.name === this.name)
-    )
-    console.log('res', res)
-    return res
-  }
+    );
+    return res;
+  };
 }

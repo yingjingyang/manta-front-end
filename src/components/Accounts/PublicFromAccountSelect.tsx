@@ -7,10 +7,10 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 
 const PublicFromAccountSelect = ({
-    senderPublicAccount,
-    senderPublicAccountOptions,
-    setSenderPublicAccount
-  }) => {
+  senderPublicAccount,
+  senderPublicAccountOptions,
+  setSenderPublicAccount
+}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 

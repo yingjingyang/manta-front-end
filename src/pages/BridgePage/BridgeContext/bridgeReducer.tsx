@@ -1,31 +1,27 @@
 // @ts-nocheck
-import { ApiPromise, WsProvider } from '@polkadot/api';
 import { localStorageKeys } from 'constants/LocalStorageConstants';
-import { stat } from 'fs';
 import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Chain from 'types/Chain';
 import BRIDGE_ACTIONS from './bridgeActions';
 
-
 const getDestinationChainOptions = (originChain, originChainOptions) => {
-  return originChainOptions.filter(chain => chain.name !== originChain.name)
+  return originChainOptions.filter(chain => chain.name !== originChain.name);
 
-}
+};
 
 const getSenderAssetTypeOptions = (originChain, destinationChain) => {
   return AssetType.AllCurrencies(false).filter(
-    assetType => assetType.canTransferXcm(originChain, destinationChain))
-}
+    assetType => assetType.canTransferXcm(originChain, destinationChain));
+};
 
 const getNewSenderAssetType = (prevSenderAssetType, senderAssetTypeOptions) => {
   return (
     senderAssetTypeOptions.find(assetType => assetType.name === prevSenderAssetType?.name) 
     || senderAssetTypeOptions[0] || null
-  )
-}
-
+  );
+};
 
 const initOriginChainOptions = Chain.All();
 const initOriginChain = initOriginChainOptions[0];
@@ -33,18 +29,6 @@ const initDestinationChainOptions = getDestinationChainOptions(initOriginChain, 
 const initDestinationChain = initDestinationChainOptions[0];
 const initSenderAssetTypeOptions = getSenderAssetTypeOptions(initOriginChain, initDestinationChain);
 const initSenderAssetType = initSenderAssetTypeOptions[0];
-
-console.log('lol', initSenderAssetTypeOptions, initSenderAssetType)
-// const chainApis = {};
-// for (let i = 0; i < initOriginChainOptions.length; i++) {
-//   const chain = initOriginChainOptions[i];
-//   const socket = new WsProvider(chain.socket);
-//   const api = ApiPromise.create({socket});
-//   chainApis[chain.name] = api;
-// }
-
-console.log('initSenderAssetTypeOptions', initSenderAssetType)
-
 
 export const BRIDGE_INIT_STATE = {
   senderPublicAccount: null,
@@ -105,7 +89,7 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   if (!updateAssetType) {
     return false;
   }
-  return stateAssetType?.assetId !== updateAssetType.assetId
+  return stateAssetType?.assetId !== updateAssetType.assetId;
 };
 
 const setSelectedAssetType = (state, action) => {
@@ -168,7 +152,7 @@ const setOriginChain = (state, { originChain }) => {
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (destinationChain.name === originChain.name) {
-    destinationChain = destinationChainOptions[0]
+    destinationChain = destinationChainOptions[0];
   }
   
   const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
@@ -203,7 +187,7 @@ const setDestinationChain = (state, { destinationChain }) => {
 const setChainOptions = (state, { chainOptions }) => {
   const defaultOriginChain = chainOptions[0];
   const defaultDestinationChain = chainOptions[1];
-  const destinationChainOptions = getDestinationChainOptions(defaultOriginChain, chainOptions)
+  const destinationChainOptions = getDestinationChainOptions(defaultOriginChain, chainOptions);
 
   return {
     ...state,
@@ -212,17 +196,14 @@ const setChainOptions = (state, { chainOptions }) => {
     destinationChain: defaultDestinationChain,
     destinationChainOptions: destinationChainOptions,
     chainApis: []
-  }
-}
+  };
+};
 
 const setChainApis = (state, {chainApis}) => {
-  console.log(
-    'setChainApis', chainApis
-  )
   return {
     ...state,
     chainApis
-  }
-}
+  };
+};
 
 export default bridgeReducer;

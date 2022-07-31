@@ -1,21 +1,17 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
-import AssetType from 'types/AssetType';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
-// import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
-import BRIDGE_ACTIONS from './bridgeActions';
-import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
-import Chain from 'types/Chain';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { transferKarFromCalamariToKarura, transferKarFromKaruraToCalamari, transferRocFromCalamariToRococo, transferRocFromRococoToCalamari } from 'utils/api/XCM';
-import { add } from 'husky';
+import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
+import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
+import BRIDGE_ACTIONS from './bridgeActions';
 
 const BridgeContext = React.createContext();
 
@@ -63,7 +59,7 @@ export const BridgeContextProvider = (props) => {
       for (let i = 0; i < originChainOptions.length; i++) {
         const chain = originChainOptions[i];
         const socket = new WsProvider(chain.socket);
-        const api = await ApiPromise.create({provider: socket});
+        const api = await ApiPromise.create({provider: socket, types: chain.apiTypes});
         chainApis[chain.name] = api;
       }
       dispatch({
@@ -72,7 +68,7 @@ export const BridgeContextProvider = (props) => {
       });
     };
     if (!chainApis) {
-      initChainApis()
+      initChainApis();
     }
 
   }, [originChainOptions]);
@@ -83,8 +79,8 @@ export const BridgeContextProvider = (props) => {
     if (!originChain || !chainApis) {
       return null;
     }
-    return chainApis[originChain.name]
-  }
+    return chainApis[originChain.name];
+  };
   const api = getChainApi();
 
   /**
@@ -109,7 +105,7 @@ export const BridgeContextProvider = (props) => {
   // to match the user's public account as set in the send form
   useEffect(() => {
     const syncExternalAccountToPublicAccount = () => {
-        senderPublicAccount && changeExternalAccount(senderPublicAccount);
+      senderPublicAccount && changeExternalAccount(senderPublicAccount);
     };
     syncExternalAccountToPublicAccount();
   }, [
@@ -191,48 +187,45 @@ export const BridgeContextProvider = (props) => {
   const fetchBalance = async () => {
     const address = senderPublicAccount?.address;
     if (!address || !senderAssetType || !api) {
-      console.log('cant fetch', address, senderAssetType, api)
       return null;
     }
     await api.isReady;
     let balance;
     switch(originChain.name) {
-      case "Calamari":
-        balance = await fetchBalanceMantaChain(address, senderAssetType);
-        break;
-      case "Dolphin":
-        balance = await fetchBalanceMantaChain(address, senderAssetType);
-        break;
-      case "Rococo":
-        console.log('fetch balance Roc')
-        balance = await fetchBalanceRococoChain(address, senderAssetType);
-        break;
-      case "Karura":
-        balance = await fetchBalanceKaruraChain(address, senderAssetType);
-        break;
-      default:
-        throw new Error("Unrecognized chain");
-    };
-    setSenderAssetCurrentBalance(balance)
+    case 'Calamari':
+      balance = await fetchBalanceMantaChain(address, senderAssetType);
+      break;
+    case 'Dolphin':
+      balance = await fetchBalanceMantaChain(address, senderAssetType);
+      break;
+    case 'Rococo':
+      balance = await fetchBalanceRococoChain(address, senderAssetType);
+      break;
+    case 'Karura':
+      balance = await fetchBalanceKaruraChain(address, senderAssetType);
+      break;
+    default:
+      throw new Error('Unrecognized chain');
+    }
+    setSenderAssetCurrentBalance(balance);
   };
 
   const fetchBalanceRococoChain = async (address, assetType) => {
     if (assetType.baseTicker !== 'ROC') {
-      console.log('wrong name', assetType.name)
-      return null
-    }
-    const balance = await fetchNativeTokenBalance(address, assetType)
-    return balance;
-
-  }
-
-  const fetchBalanceKaruraChain = async (address, assetType) => {
-    if (assetType.baseTicker !== 'KAR') {
-      return null
+      return null;
     }
     const balance = await fetchNativeTokenBalance(address, assetType);
     return balance;
-  }
+
+  };
+
+  const fetchBalanceKaruraChain = async (address, assetType) => {
+    if (assetType.baseTicker !== 'KAR') {
+      return null;
+    }
+    const balance = await fetchNativeTokenBalance(address, assetType);
+    return balance;
+  };
 
   const fetchBalanceMantaChain = async (address, assetType) => {
     if (assetType.isNativeToken) {
@@ -244,7 +237,7 @@ export const BridgeContextProvider = (props) => {
       ? '0'
       : account.value.balance.toString();
     return new Balance(assetType, new BN(balanceString)); 
-  }
+  };
 
   const fetchNativeTokenBalance = async (address, assetType) => {
     if (!api || !address || !assetType) {
@@ -257,8 +250,6 @@ export const BridgeContextProvider = (props) => {
       new BN(balances.data.free.toString())
     );
   };
-
-
 
   // Gets the available public balance for the user's public account set to pay transaction fee
   const fetchFeeBalance = async () => {
@@ -371,7 +362,6 @@ export const BridgeContextProvider = (props) => {
         senderAssetTargetBalance
       );
     }
-    console.log('hmm', senderNativeTokenPublicBalance, requiredNativeTokenBalance)
     return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
   };
 
@@ -405,51 +395,43 @@ export const BridgeContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
-    console.log('handleTxRes')
-    // if (status.isInBlock) {
-    //   for (const event of events) {
-    //     if (api.events.utility.BatchInterrupted.is(event.event)) {
-    //       setTxStatus(TxStatus.failed());
-    //       console.error('Transaction failed', event);
-    //     }
-    //   }
-    // } else if (status.isFinalized) {
-    //   try {
-    //     const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
-    //     const extrinsics = signedBlock.block.extrinsics;
-    //     const extrinsic = extrinsics.find((extrinsic) =>
-    //       extrinsicWasSentByUser(extrinsic, externalAccount, api)
-    //     );
-    //     const extrinsicHash = extrinsic.hash.toHex();
-    //     setTxStatus(TxStatus.finalized(extrinsicHash));
-
-    //     // Correct private balances will only appear after a sync has completed
-    //     // Until then, do not display stale balances
-    //     privateWallet.balancesAreStale.current = true;
-    //     senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
-    //     receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
-    //   } catch (err) {
-    //     console.err(err);
-    //   }
-    // }
+    if (status.isInBlock) {
+      for (const event of events) {
+        if (api.events.system.ExtrinsicFailed.is(event.event)) {
+          setTxStatus(TxStatus.failed());
+          console.error('Transaction failed', event);
+        } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
+          try {
+            const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
+            const extrinsics = signedBlock.block.extrinsics;
+            const extrinsic = extrinsics.find((extrinsic) =>
+              extrinsicWasSentByUser(extrinsic, externalAccount, api)
+            );
+            const extrinsicHash = extrinsic.hash.toHex();
+            setTxStatus(TxStatus.finalized(extrinsicHash));
+          } catch(error) {
+            console.error(error);
+          }
+        }
+      }
+    }
   };
 
   const mapChainsToXcmFunction = () => {
-    console.log(originChain, destinationChain)
-    if (originChain.name === "Dolphin") {
-      if (destinationChain.baseTicker === "Rococo") {
-        return transferRocFromCalamariToRococo
-      } else if (destinationChain.name === "Karura") {
-        return transferKarFromCalamariToKarura
+    if (originChain.name === 'Dolphin') {
+      if (destinationChain.name === 'Rococo') {
+        return transferRocFromCalamariToRococo;
+      } else if (destinationChain.name === 'Karura') {
+        return transferKarFromCalamariToKarura;
       }
-    } else if (originChain.name === "Rococo" && destinationChain.name === "Dolphin") {
-      return transferRocFromRococoToCalamari
-    } else if (originChain.name === "Karura" && destinationChain.name === "Dolphin") {
-      return transferKarFromKaruraToCalamari
+    } else if (originChain.name === 'Rococo' && destinationChain.name === 'Dolphin') {
+      return transferRocFromRococoToCalamari;
+    } else if (originChain.name === 'Karura' && destinationChain.name === 'Dolphin') {
+      return transferKarFromKaruraToCalamari;
     } else {
-      throw new Error("Invalid XCM transfer")
+      throw new Error('Invalid XCM transfer');
     }
-  }
+  };
 
   // Attempts to build and send a transaction
   const send = async () => {
@@ -459,15 +441,13 @@ export const BridgeContextProvider = (props) => {
     setTxStatus(TxStatus.processing());
     const xcmFunction = mapChainsToXcmFunction();
     try {
-        await xcmFunction(
-          api, 
-          externalAccountSigner, 
-          handleTxRes, 
-          senderAssetCurrentBalance.address, 
-          senderAssetTargetBalance
-        );
-        setTxStatus(TxStatus.success());
-        console.log('success :)')
+      await xcmFunction(
+        api, 
+        externalAccountSigner, 
+        handleTxRes, 
+        senderPublicAccount.address, 
+        senderAssetTargetBalance.valueAtomicUnits
+      );
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed());

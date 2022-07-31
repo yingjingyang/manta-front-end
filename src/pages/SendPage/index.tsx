@@ -15,8 +15,10 @@ const SendPage = () => {
   useEffect(() => {
     if (txStatus?.isFinalized()) {
       showSuccess('Transaction finalized', txStatus?.extrinsic);
+      setTxStatus(null);
     } else if (txStatus?.isFailed()) {
       showError('Transaction failed');
+      setTxStatus(null);
     }
   }, [txStatus]);
 

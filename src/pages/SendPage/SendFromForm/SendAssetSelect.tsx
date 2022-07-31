@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import { useSend } from '../SendContext';
 import SendAmountInput from 'components/AmountInput/SendAmountInput';
 import SendAssetTypeDropdown from 'components/AssetTypeDropdown/SendAssetTypeDropdown';
+import { useSend } from '../SendContext';
 
 const SendAssetSelect = () => {
   const { isInitialSync } = usePrivateWallet();

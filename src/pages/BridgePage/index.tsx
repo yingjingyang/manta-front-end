@@ -1,19 +1,26 @@
 // @ts-nocheck
-import React from 'react';
-import classNames from 'classnames';
+import React, { useEffect } from 'react';
 import PageContent from 'components/PageContent';
 import Navbar from 'components/Navbar';
-import ChainDropdown from 'pages/BridgePage/ChainDropdown';
-import SendButton from 'pages/BridgePage/SendButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SendAssetSelect from 'pages/SendPage/SendFromForm/SendAssetSelect';
-import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
-import Svgs from 'resources/icons';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { showError, showSuccess } from 'utils/ui/Notifications';
 import { BridgeContextProvider } from './BridgeContext';
 import BridgeForm from './BridgeForm';
 
 const BridgePage = () => {
-    return (
+  const { txStatus, setTxStatus } = useTxStatus();
+
+  useEffect(() => {
+    if (txStatus?.isFinalized()) {
+      showSuccess('Transaction finalized', txStatus?.extrinsic);
+      setTxStatus(null);
+    } else if (txStatus?.isFailed()) {
+      showError('Transaction failed');
+      setTxStatus(null);
+    }
+  }, [txStatus]);
+
+  return (
     <BridgeContextProvider>
       <PageContent>
         <Navbar />

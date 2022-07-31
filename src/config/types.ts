@@ -34,7 +34,7 @@ async function main () {
   const recordOpt = await api.query.voting.voteRecords(123);
 
   // the types match with what we expect here
-  let firstRecord: VoteRecord | null = recordOpt.unwrapOr(null);
+  const firstRecord: VoteRecord | null = recordOpt.unwrapOr(null);
   console.log(firstRecord?.toHuman());
 
   // it even does work for arrays & subscriptions

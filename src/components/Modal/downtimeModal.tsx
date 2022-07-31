@@ -1,6 +1,6 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import { Header, Icon, Modal } from 'semantic-ui-react';
+import React from 'react';
+import { Header, Modal } from 'semantic-ui-react';
 import config from 'config';
 import { ReactComponent as DowntimeImage } from 'resources/images/maintenance.svg';
 

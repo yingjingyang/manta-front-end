@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
 
@@ -29,7 +28,7 @@ export const ExternalAccountContextProvider = (props) => {
         // The user's default account is either their last accessed polkadot.js account,
         // or, as a fallback, the first account in their polkadot.js wallet
         const externalAccountOptions =  keyring.getPairs();
-        let initialAccount = (
+        const initialAccount = (
           // getLastAccessedExternalAccount(keyring) ||
           externalAccountOptions[0]
         );

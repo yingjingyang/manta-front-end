@@ -2,9 +2,9 @@
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 import config from '../config';
 import types from '../config/types.json';
-import { getLastSelectedNodeUrl } from 'utils/persistence/nodeSelectorStorage';
 
 ///
 // Initial state for `useReducer`

@@ -1,7 +1,8 @@
 // @ts-nocheck
+import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
-import React from 'react';
+import MantaLoading from 'components/Loading';
 import { useBridge } from './BridgeContext';
 
 const SendButton = () => {
@@ -10,23 +11,26 @@ const SendButton = () => {
   const { send } = useBridge();
 
   const onClick = () => {
-    console.log('sending :)');
-    send()
+    send();
   };
 
   return (
+    
     <div >
-      <button
-        onClick={!disabled && onClick}
-        className={
-          classNames(
-            'py-3 cursor-pointer text-xl btn-hover unselectable-text',
-            'text-center rounded-lg btn-primary w-full',
-            {'disabled': disabled}
-          )}
-      >
+      {txStatus?.isProcessing() ? (
+        <MantaLoading className="py-4" />
+      ) : (
+        <button
+          onClick={!disabled && onClick}
+          className={
+            classNames(
+              'py-3 cursor-pointer text-xl btn-hover unselectable-text',
+              'text-center rounded-lg btn-primary w-full',
+              {'disabled': disabled}
+            )}
+        >
         Submit
-      </button>
+        </button>)}
     </div>
   );
 };
