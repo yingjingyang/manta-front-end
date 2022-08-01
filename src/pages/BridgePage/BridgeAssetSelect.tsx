@@ -22,10 +22,10 @@ const BridgeAssetSelect = () => {
     <div className="w-100 relative">
       <SendAssetTypeDropdown
         senderAssetType={senderAssetType}
-        senderAssetTypeOptions={senderAssetTypeOptions} 
+        senderAssetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}
       />
-      <SendAmountInput 
+      <SendAmountInput
         balanceText={balanceText}
         senderAssetCurrentBalance={senderAssetCurrentBalance}
         setSenderAssetTargetBalance={setSenderAssetTargetBalance}

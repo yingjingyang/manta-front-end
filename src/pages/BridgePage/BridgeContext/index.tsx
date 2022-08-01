@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect } from 'react';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
@@ -16,6 +16,8 @@ import BRIDGE_ACTIONS from './bridgeActions';
 const BridgeContext = React.createContext();
 
 export const BridgeContextProvider = (props) => {
+  const [originFee, setOriginFee] = useState(null);
+
   const { setTxStatus, txStatus } = useTxStatus();
   const {
     externalAccount,
@@ -36,6 +38,38 @@ export const BridgeContextProvider = (props) => {
     destinationChain,
     chainApis
   } = state;
+
+  const mapChainsToExtrinsic = (valueAtomicUnits, address) => {
+    if (originChain.name === 'Dolphin') {
+      if (destinationChain.name === 'Rococo') {
+        return transferRocFromCalamariToRococo(
+          api,
+          address,
+          valueAtomicUnits
+        );
+      } else if (destinationChain.name === 'Karura') {
+        return transferKarFromCalamariToKarura(
+          api,
+          address,
+          valueAtomicUnits
+        );
+      }
+    } else if (originChain.name === 'Rococo' && destinationChain.name === 'Dolphin') {
+      return transferRocFromRococoToCalamari(
+        api,
+        address,
+        valueAtomicUnits
+      );
+    } else if (originChain.name === 'Karura' && destinationChain.name === 'Dolphin') {
+      return transferKarFromKaruraToCalamari(
+        api,
+        address,
+        valueAtomicUnits
+      );
+    } else {
+      throw new Error('Invalid XCM transfer');
+    }
+  };
 
   /**
    * Initialization logic
@@ -397,21 +431,25 @@ export const BridgeContextProvider = (props) => {
     );
   };
 
-  const getOriginFee = () => {
-    return new Balance(
-      originChain.nativeAsset, new BN(0)
-    );
+  const getOriginFee = async () => {
+    console.log('api', api);
+    if (!api) {
+      return null;
+    }
     const valueAtomicUnits = senderAssetTargetBalance?.valueAtomicUnits || new BN(0);
     const address = senderPublicAccount?.address || '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
-    const tx = mapChainsToExtrinsic(new BN(0));
-    const partialFee = tx.paymentInfo.partialFee;
-    return partialFee;
-    return new Balance(
-      senderAssetType, partialFee
+    const tx = mapChainsToExtrinsic(valueAtomicUnits, address);
+    console.log('tx.paymentInfo', tx.paymentInfo(address));
+    const pasymentInfo = await tx.paymentInfo(address);
+    const originFee = new Balance(
+      originChain.nativeAsset, pasymentInfo.partialFee
     );
+    setOriginFee(originFee);
   };
+  if (!originFee) {
+    getOriginFee();
+  }
 
-  const originFee = getOriginFee();
   const destinationFee = getDestinationFee();
 
   // Checks that it is valid to attempt a transaction
@@ -453,38 +491,6 @@ export const BridgeContextProvider = (props) => {
           }
         }
       }
-    }
-  };
-
-  const mapChainsToExtrinsic = (valueAtomicUnits, address) => {
-    if (originChain.name === 'Dolphin') {
-      if (destinationChain.name === 'Rococo') {
-        return transferRocFromCalamariToRococo(
-          api,
-          address,
-          valueAtomicUnits
-        );
-      } else if (destinationChain.name === 'Karura') {
-        return transferKarFromCalamariToKarura(
-          api,
-          address,
-          valueAtomicUnits
-        );
-      }
-    } else if (originChain.name === 'Rococo' && destinationChain.name === 'Dolphin') {
-      return transferRocFromRococoToCalamari(
-        api,
-        address,
-        valueAtomicUnits
-      );
-    } else if (originChain.name === 'Karura' && destinationChain.name === 'Dolphin') {
-      return transferKarFromKaruraToCalamari(
-        api,
-        address,
-        valueAtomicUnits
-      );
-    } else {
-      throw new Error('Invalid XCM transfer');
     }
   };
 

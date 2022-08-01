@@ -13,9 +13,9 @@ const BridgeFeeDisplay = () => {
 
 
   return (
-    <div className="pt-3">
-      <div>{`Origin fee: ${originFeeText}`}</div>
-      <div>{`Destination fee: ${destinationFeeText}`}</div>
+    <div className="pt-5">
+      <div className="text-primary">{`Origin fee: ${originFeeText}`}</div>
+      <div className="text-primary">{`Destination fee: ${destinationFeeText}`}</div>
     </div>
   );
 };

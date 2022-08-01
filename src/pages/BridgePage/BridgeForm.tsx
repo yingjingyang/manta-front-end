@@ -9,7 +9,7 @@ import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 
 const BridgeForm = () => {
-  const { 
+  const {
     senderPublicAccount,
     senderPublicAccountOptions,
     setSenderPublicAccount,
@@ -20,7 +20,7 @@ const BridgeForm = () => {
     destinationChainOptions,
     setDestinationChain
   } = useBridge();
-    
+
   return (
     <div className="justify-center flex pt-4 pb-4 m-auto">
       <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
@@ -30,10 +30,10 @@ const BridgeForm = () => {
           senderPublicAccountOptions={senderPublicAccountOptions}
           setSenderPublicAccount={setSenderPublicAccount}
         />
-        <div className="flex gap-8 flex-y items-end">
+        <div className="flex gap-10 flex-y mt-4 items-end">
           <div className="">
             <h2 className="text-primary text-white mb-2">Origin chain</h2>
-            <ChainDropdown 
+            <ChainDropdown
               chain={originChain}
               chainOptions={originChainOptions}
               setChain={setOriginChain}
@@ -46,7 +46,7 @@ const BridgeForm = () => {
           />
           <div className="">
             <h2 className="text-primary text-white mb-2">Destination chain</h2>
-            <ChainDropdown 
+            <ChainDropdown
               chain={destinationChain}
               chainOptions={destinationChainOptions}
               setChain={setDestinationChain}
