@@ -7,8 +7,9 @@ import Chain from 'types/Chain';
 import BRIDGE_ACTIONS from './bridgeActions';
 
 const getDestinationChainOptions = (originChain, originChainOptions) => {
-  return originChainOptions.filter(chain => chain.name !== originChain.name);
-
+  return originChainOptions
+    .filter(chain => chain.name !== originChain.name)
+    .filter(chain => originChain.canTransferXcm(chain));
 };
 
 const getSenderAssetTypeOptions = (originChain, destinationChain) => {
@@ -18,7 +19,7 @@ const getSenderAssetTypeOptions = (originChain, destinationChain) => {
 
 const getNewSenderAssetType = (prevSenderAssetType, senderAssetTypeOptions) => {
   return (
-    senderAssetTypeOptions.find(assetType => assetType.name === prevSenderAssetType?.name) 
+    senderAssetTypeOptions.find(assetType => assetType.name === prevSenderAssetType?.name)
     || senderAssetTypeOptions[0] || null
   );
 };
@@ -70,7 +71,7 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_ORIGIN_CHAIN:
     return setOriginChain(state, action);
-  
+
   case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
     return setDestinationChain(state, action);
 
@@ -154,10 +155,10 @@ const setOriginChain = (state, { originChain }) => {
   if (destinationChain.name === originChain.name) {
     destinationChain = destinationChainOptions[0];
   }
-  
+
   const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
-  
+
   return {
     ...state,
     originChain,

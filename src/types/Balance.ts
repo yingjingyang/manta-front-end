@@ -39,6 +39,7 @@ export default class Balance {
     const valueBaseUnits = balanceAtomicUnitsDecimal.div(
       new Decimal(atomicUnitsPerBaseUnit)
     );
+    console.log('valueBaseUnits', valueBaseUnits.toString());
     return valueBaseUnits;
   }
 
@@ -52,6 +53,16 @@ export default class Balance {
           maximumFractionDigits: 3,
           minimumFractionDigits: 0,
         })} ${this.assetType.ticker}`;
+  }
+
+  toFeeString() {
+    return `${this.valueBaseUnits()
+      .toDecimalPlaces(6, Decimal.ROUND_UP)
+      .toNumber()
+      .toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+        minimumFractionDigits: 0,
+      })} ${this.assetType.ticker}`;
   }
 
   gt(other) {

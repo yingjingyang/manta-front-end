@@ -73,8 +73,6 @@ export const BridgeContextProvider = (props) => {
 
   }, [originChainOptions]);
 
-
-
   const getChainApi = () => {
     if (!originChain || !chainApis) {
       return null;
@@ -236,7 +234,7 @@ export const BridgeContextProvider = (props) => {
     const balanceString = account.value.isEmpty
       ? '0'
       : account.value.balance.toString();
-    return new Balance(assetType, new BN(balanceString)); 
+    return new Balance(assetType, new BN(balanceString));
   };
 
   const fetchNativeTokenBalance = async (address, assetType) => {
@@ -375,6 +373,47 @@ export const BridgeContextProvider = (props) => {
     );
   };
 
+  const getDestinationFee = () => {
+    let valueAtomicUnits;
+    if (originChain.name === 'Dolphin') {
+      if (destinationChain.name === 'Rococo') {
+        valueAtomicUnits = new BN('11523248');
+      } else if (destinationChain.name === 'Karura') {
+        valueAtomicUnits = new BN('9324000000');
+      }
+    } else if (originChain.name === 'Rococo') {
+      if (destinationChain.name === 'Dolphin') {
+        valueAtomicUnits = new BN('666666667');
+      }
+    } else if (originChain.name === 'Karura') {
+      if (destinationChain.name === 'Dolphin') {
+        valueAtomicUnits = new BN('100000000000');
+      }
+    } else {
+      return null;
+    }
+    return new Balance(
+      senderAssetType, valueAtomicUnits
+    );
+  };
+
+  const getOriginFee = () => {
+    return new Balance(
+      originChain.nativeAsset, new BN(0)
+    );
+    const valueAtomicUnits = senderAssetTargetBalance?.valueAtomicUnits || new BN(0);
+    const address = senderPublicAccount?.address || '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
+    const tx = mapChainsToExtrinsic(new BN(0));
+    const partialFee = tx.paymentInfo.partialFee;
+    return partialFee;
+    return new Balance(
+      senderAssetType, partialFee
+    );
+  };
+
+  const originFee = getOriginFee();
+  const destinationFee = getDestinationFee();
+
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
     return (
@@ -417,17 +456,33 @@ export const BridgeContextProvider = (props) => {
     }
   };
 
-  const mapChainsToXcmFunction = () => {
+  const mapChainsToExtrinsic = (valueAtomicUnits, address) => {
     if (originChain.name === 'Dolphin') {
       if (destinationChain.name === 'Rococo') {
-        return transferRocFromCalamariToRococo;
+        return transferRocFromCalamariToRococo(
+          api,
+          address,
+          valueAtomicUnits
+        );
       } else if (destinationChain.name === 'Karura') {
-        return transferKarFromCalamariToKarura;
+        return transferKarFromCalamariToKarura(
+          api,
+          address,
+          valueAtomicUnits
+        );
       }
     } else if (originChain.name === 'Rococo' && destinationChain.name === 'Dolphin') {
-      return transferRocFromRococoToCalamari;
+      return transferRocFromRococoToCalamari(
+        api,
+        address,
+        valueAtomicUnits
+      );
     } else if (originChain.name === 'Karura' && destinationChain.name === 'Dolphin') {
-      return transferKarFromKaruraToCalamari;
+      return transferKarFromKaruraToCalamari(
+        api,
+        address,
+        valueAtomicUnits
+      );
     } else {
       throw new Error('Invalid XCM transfer');
     }
@@ -439,15 +494,12 @@ export const BridgeContextProvider = (props) => {
       return;
     }
     setTxStatus(TxStatus.processing());
-    const xcmFunction = mapChainsToXcmFunction();
+    const tx = mapChainsToExtrinsic(
+      senderAssetTargetBalance.valueAtomicUnits,
+      senderPublicAccount.address
+    );
     try {
-      await xcmFunction(
-        api, 
-        externalAccountSigner, 
-        handleTxRes, 
-        senderPublicAccount.address, 
-        senderAssetTargetBalance.valueAtomicUnits
-      );
+      await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed());
@@ -467,6 +519,8 @@ export const BridgeContextProvider = (props) => {
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,
+    originFee,
+    destinationFee,
     send,
     ...state
   };

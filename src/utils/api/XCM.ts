@@ -2,42 +2,6 @@
 import AssetType from 'types/AssetType';
 import { hexAddPrefix, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import BN from 'bn.js';
-
-const getDestinationFee = (sourceChain, destinationChain) => {
-  if (sourceChain.name === 'Dolphin') {
-    if (destinationChain === 'Rococo') {
-      return new BN('11523248')
-    } else if (destinationChain === 'Karura') {
-      return new BN('9324000000')
-    }
-  } else if (sourceChain.name === 'Rococo') {
-    if (destinationChain === 'Dolphin') {
-      return new BN('666666667')
-    }
-  } else if (sourceChain.name === 'Karura') {
-    if (destinationChain === 'Dolphin') {
-      return new BN('100000000000')
-    }
-  } else {
-    return null
-  }
-  // const unitsPerSecond = await api.query.assetManager(assetId);
-  // need to get weight on destination chain
-  // const weight =
-  // Dolphin / Calamari ---> 4000000000 weight 
-  // Rococo / Kusama, 
-  // Karura
-
-  // KSM cost on Calamari = 666,666,666.668 KSM
-  // KSM cost on Kusama = ?? KSM (check by transfering)
-
-  // KAR cost on Calamari = 100000000000 KAR
-  // KAR cost on Karura = ?? KAR (check by transfering)
-
-  // let amount = unitsPerSecond * (weight as u128) / (WEIGHT_PER_SECOND as u128);
-  // let amount = query_chain_state * (4000000000 const) / (1000000000000 const)
-};
 
 // for xcmPallet.limitedReserveTransferAsset
 const assets_XcmPallet = (api, value) => {
@@ -62,7 +26,7 @@ const relayChainToParachainDest_XcmPallet = (api, parachainId) => {
     v1: api.createType('XcmV1MultiLocation', {
       parents: 0,
       interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', { 
+        x1: api.createType('XcmV1Junction', {
           parachain: parachainId
         })
       })
@@ -75,7 +39,7 @@ const beneficiary_XcmPallet = (api, accountId) => {
     v1: api.createType('XcmV1MultiLocation', {
       parents: 0,
       interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', { 
+        x1: api.createType('XcmV1Junction', {
           accountId32: {
             network: api.createType('XcmV0JunctionNetworkId', { any: true }),
             id: accountId
@@ -83,10 +47,8 @@ const beneficiary_XcmPallet = (api, accountId) => {
         })
       })
     })
-  });  
+  });
 };
-
-
 
 const parachainToParachainDest_Xtokens = (api, parachainId, accountId) => {
   return api.createType('XcmVersionedMultiLocation', {
@@ -94,10 +56,10 @@ const parachainToParachainDest_Xtokens = (api, parachainId, accountId) => {
       parents: 1,
       interior: api.createType('XcmV1MultilocationJunctions', {
         x2: [
-          api.createType('XcmV1Junction', { 
+          api.createType('XcmV1Junction', {
             parachain: parachainId
           }),
-          api.createType('XcmV1Junction', { 
+          api.createType('XcmV1Junction', {
             accountId32: {
               network: api.createType('XcmV0JunctionNetworkId', { any: true }),
               id: accountId
@@ -111,7 +73,7 @@ const parachainToParachainDest_Xtokens = (api, parachainId, accountId) => {
 const karuraAssetId_Xtoken = (api, assetType) => {
   return api.createType('AcalaPrimitivesCurrencyCurrencyId', {
     Token: api.createType('AcalaPrimitivesCurrencyTokenSymbol',  assetType.baseTicker)
-  }); 
+  });
 };
 
 const calamariAssetIdXtoken = (api, assetType) => {
@@ -120,7 +82,6 @@ const calamariAssetIdXtoken = (api, assetType) => {
   });
 
 };
-
 
 const assetId_Xtoken = (api, sourceParachainId, assetType) => {
   switch(sourceParachainId) {
@@ -132,8 +93,6 @@ const assetId_Xtoken = (api, sourceParachainId, assetType) => {
     throw new Error('Unrecognized parachain');
   }
 };
-
-
 
 const getParachainWeightLimit = (parachainId) => {
   switch(parachainId) {
@@ -158,12 +117,10 @@ const getParachainWeightLimit_XcmPallet = (api) => {
 
 
 
-const transferRelayChainToParachain_XcmPallet = async (
+const transferRelayChainToParachain_XcmPallet = (
   api,
-  externalAccountSigner, 
-  txResHandler,    
-  valueAtomicUnits, 
-  parachainId, 
+  valueAtomicUnits,
+  parachainId,
   accountId
 ) => {
   const dest = relayChainToParachainDest_XcmPallet(api, parachainId);
@@ -171,14 +128,9 @@ const transferRelayChainToParachain_XcmPallet = async (
   const beneficiary = beneficiary_XcmPallet(api, accountId);
   const feeAssetItem = 0; // index of asset that pays xcm fee
   const weightLimit = getParachainWeightLimit_XcmPallet(api);
-  const tx = api.tx.xcmPallet.limitedReserveTransferAssets(
+  return api.tx.xcmPallet.limitedReserveTransferAssets(
     dest, beneficiary, assets, feeAssetItem, weightLimit
   );
-  try {
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
 };
 
 const parachainToRelayChainDest_Xtokens = (api, accountId) => {
@@ -186,7 +138,7 @@ const parachainToRelayChainDest_Xtokens = (api, accountId) => {
     v1: api.createType('XcmV1MultiLocation', {
       parents: 1,
       interior: api.createType('XcmV1MultilocationJunctions', {
-        x1: api.createType('XcmV1Junction', { 
+        x1: api.createType('XcmV1Junction', {
           accountId32: {
             network: api.createType('XcmV0JunctionNetworkId', { any: true }),
             id: accountId
@@ -197,118 +149,81 @@ const parachainToRelayChainDest_Xtokens = (api, accountId) => {
   });
 };
 
-const transferParachainToRelayChain_Xtokens = async (
+const transferParachainToRelayChain_Xtokens = (
   api,
-  externalAccountSigner, 
-  txResHandler,
-  sourceParachainId, 
-  assetType, 
-  accountId, 
+  sourceParachainId,
+  assetType,
+  accountId,
   valueAtomicUnits
 ) => {
   const assetId = assetId_Xtoken(api, sourceParachainId, assetType);
   const dest = parachainToRelayChainDest_Xtokens(api, accountId);
   const weightLimit = getRelayChainWeightLimit();
-  const tx = api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
-  try {
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
+  return api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
 };
 
-const transferParachainToParachain_Xtokens = async (
+const transferParachainToParachain_Xtokens = (
   api,
-  externalAccountSigner, 
-  txResHandler,
-  sourceParachainId, 
-  assetType, 
-  parachainId, 
-  accountId, 
+  sourceParachainId,
+  assetType,
+  parachainId,
+  accountId,
   valueAtomicUnits
 ) => {
   const assetId = assetId_Xtoken(api, sourceParachainId, assetType);
   const dest = parachainToParachainDest_Xtokens(api, parachainId, accountId);
   const weightLimit = getParachainWeightLimit(sourceParachainId);
-  const tx = api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
-  try {
-    await tx.signAndSend(externalAccountSigner, txResHandler);
-  } catch (error) {
-    console.error(error, 'tx failed to send');
-  }
+  return api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
 };
 
 const addressToAccountId = (address) => {
   return hexAddPrefix(u8aToHex(decodeAddress(address)));
 };
 
-export const transferKarFromCalamariToKarura = async (
-  api, externalAccountSigner, txResHandler, address, valueAtomicUnits
+export const transferKarFromCalamariToKarura = (
+  api, address, valueAtomicUnits
 ) => {
-  await transferParachainToParachain_Xtokens(
+  return transferParachainToParachain_Xtokens(
     api,
-    externalAccountSigner, 
-    txResHandler,    
-    CALAMARI_PARACHAIN_ID, 
-    AssetType.Karura(false), 
-    KARURA_PARACHAIN_ID, 
-    addressToAccountId(address), 
+    CALAMARI_PARACHAIN_ID,
+    AssetType.Karura(false),
+    KARURA_PARACHAIN_ID,
+    addressToAccountId(address),
     valueAtomicUnits
   );
 };
 
 
 
-export const transferKarFromKaruraToCalamari = async (api, externalAccountSigner, txResHandler, address, valueAtomicUnits) => {
-  await transferParachainToParachain_Xtokens(
+export const transferKarFromKaruraToCalamari = (api, address, valueAtomicUnits) => {
+  return transferParachainToParachain_Xtokens(
     api,
-    externalAccountSigner, 
-    txResHandler,  
-    KARURA_PARACHAIN_ID, 
-    AssetType.Karura(false), 
-    CALAMARI_PARACHAIN_ID, 
-    addressToAccountId(address), 
+    KARURA_PARACHAIN_ID,
+    AssetType.Karura(false),
+    CALAMARI_PARACHAIN_ID,
+    addressToAccountId(address),
     valueAtomicUnits
   );
 };
 
-export const transferRocFromCalamariToRococo = async (api, externalAccountSigner, txResHandler, address, valueAtomicUnits) => {
-  await transferParachainToRelayChain_Xtokens(
+export const transferRocFromCalamariToRococo = (api, address, valueAtomicUnits) => {
+  return transferParachainToRelayChain_Xtokens(
     api,
-    externalAccountSigner, 
-    txResHandler,
-    CALAMARI_PARACHAIN_ID, 
-    AssetType.Rococo(false), 
-    addressToAccountId(address), 
+    CALAMARI_PARACHAIN_ID,
+    AssetType.Rococo(false),
+    addressToAccountId(address),
     valueAtomicUnits
   );
 };
 
-export const transferRocFromRococoToCalamari = async (api, externalAccountSigner, txResHandler, address, valueAtomicUnits) => {
-  await transferRelayChainToParachain_XcmPallet(
+export const transferRocFromRococoToCalamari = (api, address, valueAtomicUnits) => {
+  return transferRelayChainToParachain_XcmPallet(
     api,
-    externalAccountSigner, 
-    txResHandler,
-    valueAtomicUnits, 
-    CALAMARI_PARACHAIN_ID, 
+    valueAtomicUnits,
+    CALAMARI_PARACHAIN_ID,
     addressToAccountId(address)
   );
 };
 
 const KARURA_PARACHAIN_ID = 2000;
 const CALAMARI_PARACHAIN_ID = 2084;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

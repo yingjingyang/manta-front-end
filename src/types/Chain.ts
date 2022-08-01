@@ -15,11 +15,21 @@ export default class Chain {
     this.apiTypes = apiTypes || {};
   }
 
+  canTransferXcm(otherChain) {
+    for (let i = 0; i < this.xcmAssets.length; i++) {
+      const asset = this.xcmAssets[i];
+      if (otherChain.xcmAssets.find(otherAsset => asset.assetId === otherAsset.assetId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static Dolphin() {
     return new Chain(
-      'Dolphin', 
-      Svgs.Dolphin, 
-      config.DOLPHIN_SOCKET, 
+      'Dolphin',
+      Svgs.Dolphin,
+      config.DOLPHIN_SOCKET,
       [AssetType.Rococo(), AssetType.Karura()],
       AssetType.Dolphin(),
       types
@@ -28,8 +38,8 @@ export default class Chain {
 
   static Calamari() {
     return new Chain(
-      'Calamari', 
-      Svgs.Calamari, 
+      'Calamari',
+      Svgs.Calamari,
       config.CALAMARI_SOCKET,
       [AssetType.Kusama(), AssetType.Karura()],
       AssetType.Calamari(),
@@ -39,18 +49,18 @@ export default class Chain {
 
   static Rococo() {
     return new Chain(
-      'Rococo', 
-      Svgs.RocIcon, 
+      'Rococo',
+      Svgs.RocIcon,
       config.ROCOCO_SOCKET,
       [AssetType.Rococo()],
       AssetType.Rococo()
     );
   }
-    
+
   static Kusama() {
     return new Chain(
-      'Kusama', 
-      Svgs.KusamaIcon, 
+      'Kusama',
+      Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
       [AssetType.Kusama()],
       AssetType.Kusama()
@@ -59,9 +69,9 @@ export default class Chain {
 
   static Karura() {
     return new Chain(
-      'Karura', 
-      Svgs.KarIcon, 
-      config.KARURA_SOCKET, 
+      'Karura',
+      Svgs.KarIcon,
+      config.KARURA_SOCKET,
       [AssetType.Karura()],
       AssetType.Karura()
     );
@@ -69,5 +79,5 @@ export default class Chain {
 
   static All() {
     return [Chain.Dolphin(), Chain.Rococo(), Chain.Karura()];
-  }   
+  }
 }
