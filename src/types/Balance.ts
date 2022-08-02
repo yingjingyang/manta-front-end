@@ -39,7 +39,6 @@ export default class Balance {
     const valueBaseUnits = balanceAtomicUnitsDecimal.div(
       new Decimal(atomicUnitsPerBaseUnit)
     );
-    console.log('valueBaseUnits', valueBaseUnits.toString());
     return valueBaseUnits;
   }
 

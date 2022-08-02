@@ -193,8 +193,6 @@ export const transferKarFromCalamariToKarura = (
   );
 };
 
-
-
 export const transferKarFromKaruraToCalamari = (api, address, valueAtomicUnits) => {
   return transferParachainToParachain_Xtokens(
     api,

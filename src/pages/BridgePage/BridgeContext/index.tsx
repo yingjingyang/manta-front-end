@@ -18,6 +18,7 @@ const BridgeContext = React.createContext();
 export const BridgeContextProvider = (props) => {
   const [originFee, setOriginFee] = useState(null);
 
+
   const { setTxStatus, txStatus } = useTxStatus();
   const {
     externalAccount,

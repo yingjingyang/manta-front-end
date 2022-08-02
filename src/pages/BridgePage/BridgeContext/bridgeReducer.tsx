@@ -43,8 +43,12 @@ export const BRIDGE_INIT_STATE = {
 
   originChain: initOriginChain,
   originChainOptions: initOriginChainOptions,
+  originFee: null,
+
   destinationChain: initDestinationChain,
   destinationChainOptions: initDestinationChainOptions,
+  destinationFee: null,
+
   chainApis: null
 };
 
@@ -80,6 +84,12 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_CHAIN_APIS:
     return setChainApis(state, action);
+
+  case BRIDGE_ACTIONS.SET_ORIGIN_FEE:
+    return setOriginFee(state, action);
+
+  case BRIDGE_ACTIONS.SET_DESTINATION_FEE:
+    return setDestinationFee(state, action);
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -204,6 +214,20 @@ const setChainApis = (state, {chainApis}) => {
   return {
     ...state,
     chainApis
+  };
+};
+
+const setOriginFee= (state, {originFee}) => {
+  return {
+    ...state,
+    originFee
+  };
+};
+
+const setDestinationFee = (state, {destinationFee}) => {
+  return {
+    ...state,
+    destinationFee
   };
 };
 
