@@ -16,6 +16,9 @@ export default class Chain {
   }
 
   canTransferXcm(otherChain) {
+    if (this.name === otherChain.name) {
+      return false;
+    }
     for (let i = 0; i < this.xcmAssets.length; i++) {
       const asset = this.xcmAssets[i];
       if (otherChain.xcmAssets.find(otherAsset => asset.assetId === otherAsset.assetId)) {
@@ -30,7 +33,7 @@ export default class Chain {
       'Dolphin',
       Svgs.Dolphin,
       config.DOLPHIN_SOCKET,
-      [AssetType.Rococo(), AssetType.Karura()],
+      [AssetType.Rococo(), AssetType.Karura(), AssetType.Moonriver()],
       AssetType.Dolphin(),
       types
     );
@@ -77,7 +80,22 @@ export default class Chain {
     );
   }
 
+  static Moonriver() {
+    return new Chain(
+      'Moonriver',
+      Svgs.MovrIcon,
+      config.MOONRIVER_SOCKET,
+      [AssetType.Moonriver()],
+      AssetType.Moonriver()
+    );
+  }
+
   static All() {
-    return [Chain.Dolphin(), Chain.Rococo(), Chain.Karura()];
+    return [
+      Chain.Dolphin(),
+      Chain.Rococo(),
+      Chain.Karura(),
+      Chain.Moonriver()
+    ];
   }
 }

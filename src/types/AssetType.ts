@@ -102,11 +102,11 @@ export default class AssetType {
 
   static Moonriver(isPrivate) {
     return new AssetType(
-      13,
+      10,
       'Moonriver',
       'MOVR',
       Svgs.MovrIcon,
-      18,
+      12, // todo: really 18
       new BN('10000000000000000'),
       isPrivate
     );

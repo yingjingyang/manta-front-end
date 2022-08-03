@@ -162,14 +162,13 @@ const setSenderNativeTokenPublicBalance = (state, action) => {
 const setOriginChain = (state, { originChain }) => {
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
-  if (destinationChain.name === originChain.name) {
+  if (!originChain.canTransferXcm(destinationChain)) {
     destinationChain = destinationChainOptions[0];
   }
-
   const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
 
-  return {
+  const res = {
     ...state,
     originChain,
     destinationChain,
@@ -179,13 +178,19 @@ const setOriginChain = (state, { originChain }) => {
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };
+
+  console.log('setOriginChain final state', res);
+  return res;
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
+  console.log('setDestinationChain prev state', state);
+
+
   const senderAssetTypeOptions = getSenderAssetTypeOptions(state.originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
 
-  return {
+  const res = {
     ...state,
     senderAssetTypeOptions,
     senderAssetType,
@@ -193,6 +198,8 @@ const setDestinationChain = (state, { destinationChain }) => {
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };
+  console.log('setDestinationChain final state', res);
+  return res;
 };
 
 const setChainOptions = (state, { chainOptions }) => {

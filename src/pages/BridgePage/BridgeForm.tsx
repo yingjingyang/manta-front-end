@@ -4,6 +4,7 @@ import ChainDropdown from 'pages/BridgePage/ChainDropdown';
 import SendButton from 'pages/BridgePage/SendButton';
 import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 import Svgs from 'resources/icons';
+import ConnectMetamaskButton from 'components/Accounts/ConnectMetamaskButton';
 import { useBridge } from './BridgeContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
@@ -24,6 +25,7 @@ const BridgeForm = () => {
   return (
     <div className="justify-center flex pt-4 pb-4 m-auto">
       <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
+        <ConnectMetamaskButton />
         <h2 className="text-primary text-white mb-2">Account</h2>
         <PublicFromAccountSelect
           senderPublicAccount={senderPublicAccount}

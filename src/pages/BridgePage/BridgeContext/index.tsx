@@ -237,6 +237,9 @@ export const BridgeContextProvider = (props) => {
     case 'Karura':
       balance = await fetchBalanceKaruraChain(address, senderAssetType);
       break;
+    case 'Moonriver':
+      balance = await fetchBalanceMoonriverChain(address, senderAssetType);
+      break;
     default:
       throw new Error('Unrecognized chain');
     }
@@ -252,8 +255,17 @@ export const BridgeContextProvider = (props) => {
 
   };
 
+  // todo: all these functions do not need to exist
   const fetchBalanceKaruraChain = async (address, assetType) => {
     if (assetType.baseTicker !== 'KAR') {
+      return null;
+    }
+    const balance = await fetchNativeTokenBalance(address, assetType);
+    return balance;
+  };
+
+  const fetchBalanceMoonriverChain = async (address, assetType) => {
+    if (assetType.baseTicker !== 'MOVR') {
       return null;
     }
     const balance = await fetchNativeTokenBalance(address, assetType);
@@ -415,6 +427,8 @@ export const BridgeContextProvider = (props) => {
         valueAtomicUnits = new BN('11523248');
       } else if (destinationChain.name === 'Karura') {
         valueAtomicUnits = new BN('9324000000');
+      } else if (destinationChain.name === 'Moonriver') {
+        valueAtomicUnits = new BN('0'); // todo
       }
     } else if (originChain.name === 'Rococo') {
       if (destinationChain.name === 'Dolphin') {
@@ -423,6 +437,10 @@ export const BridgeContextProvider = (props) => {
     } else if (originChain.name === 'Karura') {
       if (destinationChain.name === 'Dolphin') {
         valueAtomicUnits = new BN('100000000000');
+      }
+    } else if (originChain.name === 'Moonriver') {
+      if (destinationChain.name === 'Dolphin') {
+        valueAtomicUnits = new BN('0'); // todo
       }
     } else {
       return null;
@@ -433,7 +451,7 @@ export const BridgeContextProvider = (props) => {
   };
 
   const getOriginFee = async () => {
-    console.log('api', api);
+    return null;
     if (!api) {
       return null;
     }
