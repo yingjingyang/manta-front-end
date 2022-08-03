@@ -1,4 +1,5 @@
 const { addBeforeLoader, loaderByName } = require('@craco/craco');
+const webpack = require('webpack');
 
 module.exports = {
   style: {
@@ -9,6 +10,13 @@ module.exports = {
     },
   },
   webpack: {
+    //
+    plugins: {add: [
+      new webpack.NormalModuleReplacementPlugin(
+        /@ledgerhq\/devices\/hid-framing/,
+        '@ledgerhq/devices/lib/hid-framing'
+      )
+    ]},
     configure: (webpackConfig) => {
       webpackConfig.module.rules.push(
         {
