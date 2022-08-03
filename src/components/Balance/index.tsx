@@ -14,7 +14,7 @@ const Balance: React.FC<IBalanceProps> = ({
   loader
 }) => {
   return (
-    <div className={className}>
+    <div id="balanceText" className={className}>
       Balance:&nbsp;<strong>{balance}</strong>
       {loader ? (
         <div className="inline-flex items-center">
