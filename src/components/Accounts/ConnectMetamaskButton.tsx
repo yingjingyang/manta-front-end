@@ -3,24 +3,28 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import detectEthereumProvider from '@metamask/detect-provider';
-import ethers from 'ethers';
-
+import { ethers } from 'ethers';
+// import Xtokens from 'eth/Xtokens.json';
 
 const ConnectMetamaskButton = () => {
+  console.log('Xtokens', Xtokens);
   const { txStatus } = useTxStatus();
-  const [metamask, setMetamask] = useState(null);
-  const [metamaskIsConnected, setMetamaskIsConnected] = useState(false);
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [metamaskIsConnected, setProviderIsConnected] = useState(false);
 
   const disabled = txStatus?.isProcessing();
 
   useEffect(() => {
     const detectMetamask = async () => {
-      if (!metamask) {
+      if (!provider) {
         const metamask = await detectEthereumProvider({ mustBeMetaMask: true });
         if (metamask) {
-          setMetamask(metamask);
+          const provider = new ethers.providers.Web3Provider(metamask);
+          setProvider(provider);
+          setSigner(provider.getSigner());
         } else {
-          setMetamask(false);
+          setProvider(false);
         }
       }
     };
@@ -29,27 +33,14 @@ const ConnectMetamaskButton = () => {
 
   const tryXcm = async () => {
     // 2. Define network configurations
-    const providerRPC = {
-      dev: {
-        name: 'moonbeam-development',
-        rpc: 'http://127.0.0.1:9972',
-        chainId: 1281, // 0x501 in hex,
-      },
-    };
-    // 3. Create ethers provider
-    const provider = new ethers.providers.StaticJsonRpcProvider(
-      providerRPC.dev.rpc,
-      {
-        chainId: providerRPC.dev.chainId,
-        name: providerRPC.dev.name,
-      }
-    );
+
+
   };
 
   const configureMoonRiver = async () => {
     try {
-      await metamask.request({ method: 'eth_requestAccounts'});
-      await metamask.request({
+      await provider.request({ method: 'eth_requestAccounts'});
+      await provider.request({
         method: 'wallet_addEthereumChain',
         params: [
           {
@@ -64,7 +55,7 @@ const ConnectMetamaskButton = () => {
           },
         ]
       });
-      setMetamaskIsConnected(true);
+      setProviderIsConnected(true);
       await tryXcm();
     } catch(e) {
       console.error(e);
@@ -80,10 +71,10 @@ const ConnectMetamaskButton = () => {
   return (
     <div>
       {
-        metamask === false && <div>Please install metamask</div>
+        provider === false && <div>Please install provider</div>
       }
       {
-        (metamask && !metamaskIsConnected) &&
+        (provider && !metamaskIsConnected) &&
         <button
           onClick={onClick}
           className={
@@ -97,7 +88,7 @@ const ConnectMetamaskButton = () => {
         </button>
       }
       {
-        metamaskIsConnected && metamask.selectedAddress
+        metamaskIsConnected && provider.selectedAddress
       }
     </div>
   );
