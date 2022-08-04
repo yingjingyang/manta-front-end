@@ -6,6 +6,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { showError } from 'utils/ui/Notifications';
 import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useSubstrate } from 'contexts/substrateContext';
 import { useSend } from './SendContext';
 import SyncPercentage from 'components/SyncPercentage';
 
@@ -19,8 +20,15 @@ const SendButton = () => {
     receiverAssetType,
     receiverAmountIsOverExistentialBalance
   } = useSend();
-  const { signerIsConnected, isReady, syncPercentage, isInitialSync } =
-    usePrivateWallet();
+  const { apiState } = useSubstrate();
+  const {
+    signerIsConnected,
+    isReady,
+    isInitialSync,
+    syncPercentage,
+    signerVersion,
+    syncError
+  } = usePrivateWallet();
   const { txStatus } = useTxStatus();
   const { send } = useSend();
   const disabled = txStatus?.isProcessing();
@@ -60,10 +68,24 @@ const SendButton = () => {
     <div>
       {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />
-      ) : !isReady &&
+      ) : syncError.current ? (
+        <div className="text-center">
+          <p className="text-red-500">Failed to sync to the node</p>
+        </div>
+      ) : apiState !== 'ERROR' &&
+        signerIsConnected &&
+        !isReady &&
         isInitialSync &&
         (isPrivateTransfer() || isToPublic() || isToPrivate()) ? (
         <SyncPercentage percentage={syncPercentage.current} />
+      ) : apiState === 'ERROR' ? (
+        <div className="text-center">
+          <p className="text-red-500">Failed to connect to the node</p>
+        </div>
+      ) : !isReady && !signerIsConnected ? (
+        <div className="text-center">
+          <p className="text-red-500">Failed to connect to the signer</p>
+        </div>
       ) : (
         <button
           id="sendButton"

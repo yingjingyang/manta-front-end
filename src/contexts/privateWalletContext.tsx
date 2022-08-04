@@ -20,13 +20,13 @@ import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 
-const TOTAL_RECEIVERS = 62867;
+const TOTAL_RECEIVERS = 98304;
 
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
-  const { api, socket } = useSubstrate();
+  const { api, socket, apiState } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
@@ -53,62 +53,84 @@ export const PrivateWalletContextProvider = (props) => {
   const pullBatchEndTime = useRef(0);
   const percentagePerBatch = useRef(0);
   const timePerPercentage = useRef(0);
+  const syncTotalReceivers = useRef(0);
+  const syncError = useRef(false);
 
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
   const balancesAreStale = useRef(false);
 
-  const updateSyncProgress = async (receivers, senders, sender_index) => {
-    console.log({
-      receivers,
-      senders,
-      sender_index
-    });
-    pullBatchEndTime.current = performance.now();
-    const pullBatchTime = pullBatchEndTime.current - pullBatchStartTime.current;
-    pullBatchStartTime.current = performance.now();
-    if (currentSyncReceivers.current === 0) {
-      currentSyncReceivers.current = sender_index;
-    }
-    currentSyncReceivers.current += receivers.length;
+  const updateSyncProgress = async (
+    receivers,
+    senders,
+    sender_index,
+    senders_receivers_total
+  ) => {
+    try {
+      console.log({
+        receivers,
+        senders,
+        sender_index
+      });
+      syncTotalReceivers.current = senders_receivers_total;
+      pullBatchEndTime.current = performance.now();
+      const pullBatchTime =
+        pullBatchEndTime.current - pullBatchStartTime.current;
 
-    if (currentSyncReceivers.current > 0) {
-      const initialRemainingReceivers =
-        TOTAL_RECEIVERS - initialSyncReceivers.current;
-      const currentSyncedReceivers = TOTAL_RECEIVERS - sender_index;
-      const newSyncedReceivers =
-        initialRemainingReceivers - currentSyncedReceivers;
+      console.log('pullBatchTime - ', pullBatchTime);
 
-      percentagePerBatch.current = (100 * receivers.length) / TOTAL_RECEIVERS;
-      timePerPercentage.current =
-        (pullBatchTime * receivers.length) / TOTAL_RECEIVERS;
-      syncPercentage.current = (
-        (newSyncedReceivers / initialRemainingReceivers) *
-        100
-      ).toFixed(0);
-
-      if (syncPercentage.current > 100) {
-        syncPercentage.current = 100;
+      if (currentSyncReceivers.current === 0) {
+        currentSyncReceivers.current = sender_index;
       }
+      currentSyncReceivers.current += receivers.length;
 
-      nextSyncPercentage.current =
-        parseInt(syncPercentage.current) +
-          parseInt(percentagePerBatch.current) >=
-        100
-          ? 100
-          : parseInt(syncPercentage.current) +
-            parseInt(percentagePerBatch.current);
-    } else {
-      syncPercentage.current = 0;
+      if (currentSyncReceivers.current > 0) {
+        const initialRemainingReceivers =
+          TOTAL_RECEIVERS - initialSyncReceivers.current;
+        const currentSyncedReceivers = TOTAL_RECEIVERS - sender_index;
+        const newSyncedReceivers =
+          initialRemainingReceivers - currentSyncedReceivers;
+
+        percentagePerBatch.current = (100 * receivers.length) / TOTAL_RECEIVERS;
+        timePerPercentage.current =
+          pullBatchTime / parseInt(percentagePerBatch.current);
+        syncPercentage.current = (
+          (newSyncedReceivers / initialRemainingReceivers) *
+          100
+        ).toFixed(0);
+
+        if (syncPercentage.current > 100) {
+          syncPercentage.current = 100;
+        }
+
+        nextSyncPercentage.current =
+          parseInt(syncPercentage.current) +
+            parseInt(percentagePerBatch.current) >=
+          100
+            ? 100
+            : parseInt(syncPercentage.current) +
+              parseInt(percentagePerBatch.current);
+      } else {
+        syncPercentage.current = 0;
+      }
+      pullBatchStartTime.current = performance.now();
+    } catch (err) {
+      console.log({ err });
     }
   };
 
-  console.log('timePerPercentage - ', timePerPercentage.current);
-  console.log('syncPercentage - ', syncPercentage.current);
-  console.log('nextSyncPercentage - ', nextSyncPercentage.current);
+  const syncErrorCallback = async () => {
+    syncError.current = true;
+  };
+
+  // console.log('timePerPercentage - ', timePerPercentage.current);
+  // console.log('syncPercentage - ', syncPercentage.current);
+  // console.log('nextSyncPercentage - ', nextSyncPercentage.current);
   console.log('percentagePerBatch - ', percentagePerBatch.current);
-  console.log('currentSyncReceivers - ', currentSyncReceivers.current);
+  // console.log('currentSyncReceivers - ', currentSyncReceivers.current);
+  // console.log('pullBatchStartTime - ', pullBatchStartTime.current);
+  // console.log('pullBatchEndTime - ', pullBatchEndTime.current);
   useEffect(() => {
     let interval;
     if (timePerPercentage.current > 0) {
@@ -119,7 +141,7 @@ export const PrivateWalletContextProvider = (props) => {
         ) {
           syncPercentage.current = parseInt(syncPercentage.current) + 1;
         }
-      }, [timePerPercentage.current]);
+      }, [parseInt(timePerPercentage.current) + 1]);
     }
     return () => {
       if (interval) {
@@ -172,7 +194,8 @@ export const PrivateWalletContextProvider = (props) => {
         externalAccountSigner,
         DEFAULT_PULL_SIZE,
         DEFAULT_PULL_SIZE,
-        updateSyncProgress
+        updateSyncProgress,
+        syncErrorCallback
       );
       const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
@@ -460,7 +483,8 @@ export const PrivateWalletContextProvider = (props) => {
     isInitialSync,
     walletIsBusy,
     balancesAreStale,
-    syncPercentage
+    syncPercentage,
+    syncError
   };
 
   return (
