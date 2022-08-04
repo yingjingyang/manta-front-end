@@ -35,3 +35,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#183](https://github.com/Manta-Network/manta-front-end/pull/183) Fixed Dolphin icon missing piece
 - [\#188](https://github.com/Manta-Network/manta-front-end/pull/188) Fixed sidebar menu disappearing on smaller screens
 - [\#182](https://github.com/Manta-Network/manta-front-end/pull/182) Fixed autocomplete getting discolored under some conditions
+
+## [2.3.1] - 2022-08-4
+### Changed
+- [\#208](https://github.com/Manta-Network/manta-front-end/pull/208) Display transaction success modal when transaction is in block instead of finalized
+- [\#210](https://github.com/Manta-Network/manta-front-end/pull/210) Add ids for e2e automation
+
+### Removed
+- [\#227](https://github.com/Manta-Network/manta-front-end/pull/227) Remove gh-pages dependency target
+
+### Fixed
+- [\#183](https://github.com/Manta-Network/manta-front-end/pull/228) Prevent loader and initial sync text from displaying if polkadot.js api becomes disconnected
+
+### Security
+- [\#198](https://github.com/Manta-Network/manta-front-end/pull/198) Bump react-router-dom from 5.3.3 to 6.3.0 (required refactoring of breaking API changes)
+- [\#201](https://github.com/Manta-Network/manta-front-end/pull/201) Bump @craco/craco from 6.4.3 to 6.4.5
+- [\#117](https://github.com/Manta-Network/manta-front-end/pull/117) Bump node-sass from 6.0.1 to 7.0.1
