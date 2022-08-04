@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react';
 import PublicPrivateToggle from 'pages/SendPage/PublicPrivateToggle';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendButton from '../SendButton';
 import { useSend } from '../SendContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendToPrivateAddressForm from './SendToPrivateAddressForm';
 import SendToPublicAddressForm from './SendToPublicAddressForm';
 

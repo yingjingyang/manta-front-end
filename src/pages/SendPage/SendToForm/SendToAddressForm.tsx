@@ -11,9 +11,10 @@ import {
   validatePrivateAddress,
   validatePublicAddress
 } from 'utils/validation/validateAddress';
-import { useSend } from '../SendContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
+import { useSubstrate } from 'contexts/substrateContext';
+import { useSend } from '../SendContext';
 
 const SendToAddressForm = ({
   internalAccountOptions,
@@ -109,15 +110,15 @@ const ReceiverBalanceDisplay = () => {
     receiverAssetType,
     receiverCurrentBalance,
     receiverAddress,
-    isToPrivate,
-    isPrivateTransfer
+    receiverIsPrivate
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
+  const { api } = useSubstrate();
 
-  const balanceString =
-    isInitialSync && (isToPrivate() || isPrivateTransfer())
-      ? 'Syncing to ledger'
-      : receiverCurrentBalance?.toString();
+  const shouldShowLoader = receiverAddress && !receiverCurrentBalance && api?.isConnected;
+  const shouldShowInitialSync = shouldShowLoader && isInitialSync && receiverIsPrivate();
+  const balanceString = shouldShowInitialSync
+    ? 'Syncing to ledger' : receiverCurrentBalance?.toString(true);
 
   return (
     <div className="flex justify-between items-center px-6 py-2">
@@ -125,7 +126,7 @@ const ReceiverBalanceDisplay = () => {
         balance={balanceString}
         className="text-black dark:text-white"
         loaderClassName="bg-black dark:bg-white"
-        loader={receiverAddress && !receiverCurrentBalance}
+        loader={shouldShowLoader}
       />
       <div className="pl-2 border-0 flex items-center gap-3">
         <div>

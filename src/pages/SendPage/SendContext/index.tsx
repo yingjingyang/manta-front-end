@@ -98,7 +98,7 @@ export const SendContextProvider = (props) => {
           (account) => account.address === receiverAddress
         );
         externalAccount && changeExternalAccount(externalAccount);
-      } else if (isPublicTransfer() || isToPrivate()) {
+      } else if (senderIsPublic()) {
         senderPublicAccount && changeExternalAccount(senderPublicAccount);
       }
     };
@@ -195,7 +195,7 @@ export const SendContextProvider = (props) => {
 
   // Gets available public balance for some public address and asset type
   const fetchPublicBalance = async (address, assetType) => {
-    if (!api || !address) {
+    if (!api?.isConnected || !address) {
       return null;
     }
     await api.isReady;
@@ -214,7 +214,7 @@ export const SendContextProvider = (props) => {
   // This is currently a special case because querying native token balnces
   // requires a different api call
   const fetchNativeTokenPublicBalance = async (address) => {
-    if (!api || !address) {
+    if (!api?.isConnected || !address) {
       return null;
     }
     await api.isReady;
@@ -259,7 +259,7 @@ export const SendContextProvider = (props) => {
         receiverAssetType
       );
       setReceiverCurrentBalance(privateBalance);
-    } else if (isToPublic() || isPublicTransfer()) {
+    } else if (receiverIsPublic()) {
       const publicBalance = await fetchPublicBalance(
         receiverAddress,
         receiverAssetType
@@ -270,7 +270,7 @@ export const SendContextProvider = (props) => {
 
   // Gets the available public balance for the user's public account set to pay transaction fee
   const fetchFeeBalance = async () => {
-    if (!api || !externalAccount) {
+    if (!api?.isConnected || !externalAccount) {
       return;
     }
     const address = externalAccount.address;
@@ -535,6 +535,22 @@ export const SendContextProvider = (props) => {
     return !senderAssetType.isPrivate && !receiverAssetType.isPrivate;
   };
 
+  const senderIsPrivate = () => {
+    return isPrivateTransfer() || isToPublic();
+  };
+
+  const senderIsPublic = () => {
+    return isPublicTransfer() || isToPrivate();
+  };
+
+  const receiverIsPrivate = () => {
+    return isPrivateTransfer() || isToPrivate();
+  };
+
+  const receiverIsPublic = () => {
+    return isPublicTransfer() || isToPublic();
+  };
+
   const value = {
     userHasSufficientFunds,
     userCanPayFee,
@@ -554,6 +570,10 @@ export const SendContextProvider = (props) => {
     isPublicTransfer,
     isToPrivate,
     isToPublic,
+    senderIsPrivate,
+    receiverIsPrivate,
+    senderIsPublic,
+    receiverIsPrivate,
     ...state
   };
 
