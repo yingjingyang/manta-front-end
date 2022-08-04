@@ -29,7 +29,7 @@ const SendAmountInput = () => {
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
   const shouldShowInitialSync = shouldShowLoader && isInitialSync && senderIsPrivate();
   const balanceText = shouldShowInitialSync
-    ? 'Syncing to ledger' : senderAssetCurrentBalance?.toString(true);
+    ? 'Syncing to network' : senderAssetCurrentBalance?.toString(true);
   const disabled = txStatus?.isProcessing();
 
   const onChangeSendAmountInput = (value) => {
