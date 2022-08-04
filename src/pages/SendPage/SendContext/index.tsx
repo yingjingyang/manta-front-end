@@ -424,25 +424,25 @@ export const SendContextProvider = (props) => {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
           console.error('Transaction failed', event);
-        }
-      }
-    } else if (status.isFinalized) {
-      try {
-        const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
-        const extrinsics = signedBlock.block.extrinsics;
-        const extrinsic = extrinsics.find((extrinsic) =>
-          extrinsicWasSentByUser(extrinsic, externalAccount, api)
-        );
-        const extrinsicHash = extrinsic.hash.toHex();
-        setTxStatus(TxStatus.finalized(extrinsicHash));
+        } else if (api.events.utility.BatchCompleted.is(event.event)) {
+          try {
+            const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
+            const extrinsics = signedBlock.block.extrinsics;
+            const extrinsic = extrinsics.find((extrinsic) =>
+              extrinsicWasSentByUser(extrinsic, externalAccount, api)
+            );
+            const extrinsicHash = extrinsic.hash.toHex();
+            setTxStatus(TxStatus.finalized(extrinsicHash));
 
-        // Correct private balances will only appear after a sync has completed
-        // Until then, do not display stale balances
-        privateWallet.balancesAreStale.current = true;
-        senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
-        receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
-      } catch (err) {
-        console.err(err);
+            // Correct private balances will only appear after a sync has completed
+            // Until then, do not display stale balances
+            privateWallet.balancesAreStale.current = true;
+            senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
+            receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
+          } catch(error) {
+            console.error(error);
+          }
+        }
       }
     }
   };
