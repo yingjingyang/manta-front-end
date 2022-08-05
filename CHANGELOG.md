@@ -36,7 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#188](https://github.com/Manta-Network/manta-front-end/pull/188) Fixed sidebar menu disappearing on smaller screens
 - [\#182](https://github.com/Manta-Network/manta-front-end/pull/182) Fixed autocomplete getting discolored under some conditions
 
-## [2.3.1] - 2022-08-4
+## [2.4.0] - 2022-08-08
 ### Changed
 - [\#208](https://github.com/Manta-Network/manta-front-end/pull/208) Display transaction success modal when transaction is in block instead of finalized
 - [\#210](https://github.com/Manta-Network/manta-front-end/pull/210) Add ids for e2e automation
