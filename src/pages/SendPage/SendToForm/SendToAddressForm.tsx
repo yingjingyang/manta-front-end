@@ -118,7 +118,7 @@ const ReceiverBalanceDisplay = () => {
   const shouldShowLoader = receiverAddress && !receiverCurrentBalance && api?.isConnected;
   const shouldShowInitialSync = shouldShowLoader && isInitialSync && receiverIsPrivate();
   const balanceString = shouldShowInitialSync
-    ? 'Syncing to ledger' : receiverCurrentBalance?.toString(true);
+    ? 'Syncing to network' : receiverCurrentBalance?.toString(true);
 
   return (
     <div className="flex justify-between items-center px-6 py-2">
