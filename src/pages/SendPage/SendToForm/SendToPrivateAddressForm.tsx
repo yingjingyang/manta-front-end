@@ -3,31 +3,22 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import React from 'react';
 import SendToAddressForm from './SendToAddressForm';
 
-const EXTERNAL_ACCOUNT_LABEL = 'External Private Account';
-
 const INTERNAL_ACCOUNT_LABEL = 'Private';
 
 const toReactSelectOption = (address) => {
-  if (address) {
-    return {
-      value: address,
-      label: INTERNAL_ACCOUNT_LABEL,
-    };
-  } else {
-    return {
-      value: address,
-      label: EXTERNAL_ACCOUNT_LABEL,
-    };
-  }
+  return {
+    value: { address },
+    label: INTERNAL_ACCOUNT_LABEL,
+  };
 };
 
 const SendToPrivateAddressForm = () => {
   const { privateAddress } = usePrivateWallet();
-  const internalAccountOptions = privateAddress ? [privateAddress] : [];
+  const options = privateAddress ? [privateAddress] : [];
+
   return (
     <SendToAddressForm
-      receiverAddress={privateAddress}
-      internalAccountOptions={internalAccountOptions}
+      options={options}
       toReactSelectOption={toReactSelectOption}
       isPrivate={true}
     />

@@ -2,6 +2,7 @@
 import AssetType from 'types/AssetType';
 import { hexAddPrefix, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
+import Chain from 'types/Chain';
 
 // for xcmPallet.limitedReserveTransferAsset
 const assets_XcmPallet = (api, value) => {
@@ -85,9 +86,9 @@ const calamariAssetIdXtoken = (api, assetType) => {
 
 const assetId_Xtoken = (api, sourceParachainId, assetType) => {
   switch(sourceParachainId) {
-  case 2084:
+  case Chain.Calamari().parachainId:
     return calamariAssetIdXtoken(api, assetType); // assetId
-  case 2000:
+  case Chain.Karura().parachainId:
     return karuraAssetId_Xtoken(api, assetType); // asset symbol (like "KAR")
   default:
     throw new Error('Unrecognized parachain');
@@ -96,9 +97,9 @@ const assetId_Xtoken = (api, sourceParachainId, assetType) => {
 
 const getParachainWeightLimit = (parachainId) => {
   switch(parachainId) {
-  case 2084:
+  case Chain.Calamari().parachainId:
     return 4 * 1000000000;
-  case 2000:
+  case Chain.Karura().parachainId:
     return 4 * 2000000000;
   default:
     throw new Error('Unrecognized parachain');
@@ -185,9 +186,9 @@ export const transferKarFromCalamariToKarura = (
 ) => {
   return transferParachainToParachain_Xtokens(
     api,
-    CALAMARI_PARACHAIN_ID,
+    Chain.Calamari().parachainId,
     AssetType.Karura(false),
-    KARURA_PARACHAIN_ID,
+    Chain.Karura().parachainId,
     addressToAccountId(address),
     valueAtomicUnits
   );
@@ -196,9 +197,9 @@ export const transferKarFromCalamariToKarura = (
 export const transferKarFromKaruraToCalamari = (api, address, valueAtomicUnits) => {
   return transferParachainToParachain_Xtokens(
     api,
-    KARURA_PARACHAIN_ID,
+    Chain.Karura().parachainId,
     AssetType.Karura(false),
-    CALAMARI_PARACHAIN_ID,
+    Chain.Calamari().parachainId,
     addressToAccountId(address),
     valueAtomicUnits
   );
@@ -207,7 +208,7 @@ export const transferKarFromKaruraToCalamari = (api, address, valueAtomicUnits) 
 export const transferRocFromCalamariToRococo = (api, address, valueAtomicUnits) => {
   return transferParachainToRelayChain_Xtokens(
     api,
-    CALAMARI_PARACHAIN_ID,
+    Chain.Calamari().parachainId,
     AssetType.Rococo(false),
     addressToAccountId(address),
     valueAtomicUnits
@@ -218,10 +219,17 @@ export const transferRocFromRococoToCalamari = (api, address, valueAtomicUnits) 
   return transferRelayChainToParachain_XcmPallet(
     api,
     valueAtomicUnits,
-    CALAMARI_PARACHAIN_ID,
+    Chain.Calamari().parachainId,
     addressToAccountId(address)
   );
 };
 
-const KARURA_PARACHAIN_ID = 2000;
-const CALAMARI_PARACHAIN_ID = 2084;
+export const transferMovrFromCalamariToMoonriver = (api, address, valueAtomicUnits) => {
+  return transferParachainToRelayChain_Xtokens(
+    api,
+    Chain.Calamari().parachainId,
+    AssetType.Moonriver(false),
+    addressToAccountId(address),
+    valueAtomicUnits
+  );
+};

@@ -6,8 +6,9 @@ import AssetType from './AssetType';
 
 
 export default class Chain {
-  constructor(name, icon, socket, xcmAssets, nativeAsset, apiTypes = null) {
+  constructor(name, parachainId, icon, socket, xcmAssets, nativeAsset, apiTypes = null) {
     this.name = name;
+    this.parachainId = parachainId;
     this.icon = icon;
     this.socket = socket;
     this.xcmAssets = xcmAssets;
@@ -31,6 +32,7 @@ export default class Chain {
   static Dolphin() {
     return new Chain(
       'Dolphin',
+      2084,
       Svgs.Dolphin,
       config.DOLPHIN_SOCKET,
       [AssetType.Rococo(), AssetType.Karura(), AssetType.Moonriver()],
@@ -42,6 +44,7 @@ export default class Chain {
   static Calamari() {
     return new Chain(
       'Calamari',
+      2084,
       Svgs.Calamari,
       config.CALAMARI_SOCKET,
       [AssetType.Kusama(), AssetType.Karura()],
@@ -53,6 +56,7 @@ export default class Chain {
   static Rococo() {
     return new Chain(
       'Rococo',
+      null,
       Svgs.RocIcon,
       config.ROCOCO_SOCKET,
       [AssetType.Rococo()],
@@ -63,6 +67,7 @@ export default class Chain {
   static Kusama() {
     return new Chain(
       'Kusama',
+      null,
       Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
       [AssetType.Kusama()],
@@ -73,6 +78,7 @@ export default class Chain {
   static Karura() {
     return new Chain(
       'Karura',
+      2000,
       Svgs.KarIcon,
       config.KARURA_SOCKET,
       [AssetType.Karura()],
@@ -83,6 +89,7 @@ export default class Chain {
   static Moonriver() {
     return new Chain(
       'Moonriver',
+      1000,
       Svgs.MovrIcon,
       config.MOONRIVER_SOCKET,
       [AssetType.Moonriver()],

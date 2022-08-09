@@ -32,6 +32,7 @@ export const SendContextProvider = (props) => {
   const initState = { ...SEND_INIT_STATE };
   const [state, dispatch] = useReducer(sendReducer, initState);
   const {
+    senderPublicAccountOptions,
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
@@ -70,6 +71,20 @@ export const SendContextProvider = (props) => {
       setReceiver(privateAddress);
     }
   }, [privateAddress]);
+
+  useEffect(() => {
+    const initReceiver = (receiverAddress) => {
+      dispatch({
+        type: SEND_ACTIONS.SET_RECEIVER,
+        receiverAddress
+      });
+    };
+    if (!receiverAddress && isToPublic() && senderPublicAccount) {
+      initReceiver(senderPublicAccount.address);
+    } else if (!receiverAddress && isToPrivate() && privateAddress) {
+      initReceiver(privateAddress);
+    }
+  }, [privateAddress, senderPublicAccount]);
 
   /**
    * External state
@@ -534,6 +549,8 @@ export const SendContextProvider = (props) => {
   const isPublicTransfer = () => {
     return !senderAssetType.isPrivate && !receiverAssetType.isPrivate;
   };
+
+  console.log('state', state);
 
   const value = {
     userHasSufficientFunds,

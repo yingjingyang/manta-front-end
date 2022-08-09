@@ -6,28 +6,13 @@ import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 
-const PublicFromAccountSelect = ({
-  senderPublicAccount,
-  senderPublicAccountOptions,
-  setSenderPublicAccount
+const AccountSelect = ({
+  options,
+  selectedOption,
+  onChangeOption
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-
-  const options = senderPublicAccountOptions?.map((account) => {
-    return { value: account, label: account.meta.name };
-  });
-
-  const selectedOption = senderPublicAccount && {
-    value: senderPublicAccount,
-    label: senderPublicAccount.meta.name
-  };
-
-  const onChangeOption = (option) => {
-    if (option.value.address !== senderPublicAccount.address) {
-      setSenderPublicAccount(option.value);
-    }
-  };
 
   return (
     <Select
@@ -57,7 +42,7 @@ const AccountSelectSingleValue = ({ data }) => {
   const [addressCopied, setAddressCopied] = useState(false);
 
   const copyToClipboard = (e) => {
-    navigator.clipboard.writeText(data.value.address);
+    navigator.clipboard.writeText(data.value);
     setAddressCopied(true);
     e.stopPropagation();
     return false;
@@ -74,7 +59,7 @@ const AccountSelectSingleValue = ({ data }) => {
   return (
     <div className="pl-4 pr-6 border-0 flex flex-grow items-end gap-2 relative">
       <div className="text-lg text-black dark:text-white">
-        {data.value.meta.name}
+        {data.label}
       </div>
       <div className="text-xs manta-gray">
         {data.value.address.slice(0, 10)}...{data.value.address.slice(-10)}
@@ -101,6 +86,7 @@ const AccountSelectOption = (props) => {
   const onClick = () => {
     return;
   };
+  console.log('value?', props);
   return (
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">
@@ -152,4 +138,4 @@ const dropdownStyles = (disabled) => {
   };
 };
 
-export default PublicFromAccountSelect;
+export default AccountSelect;

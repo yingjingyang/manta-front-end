@@ -2,18 +2,14 @@
 import React from 'react';
 import ChainDropdown from 'pages/BridgePage/ChainDropdown';
 import SendButton from 'pages/BridgePage/SendButton';
-import PublicFromAccountSelect from 'components/Accounts/PublicFromAccountSelect';
 import Svgs from 'resources/icons';
-import ConnectMetamaskButton from 'components/Accounts/ConnectMetamaskButton';
 import { useBridge } from './BridgeContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
+import BridgeOriginAccountSelect from './BridgeOriginAccountSelect';
 
 const BridgeForm = () => {
   const {
-    senderPublicAccount,
-    senderPublicAccountOptions,
-    setSenderPublicAccount,
     originChain,
     originChainOptions,
     setOriginChain,
@@ -25,15 +21,10 @@ const BridgeForm = () => {
   return (
     <div className="justify-center flex pt-4 pb-4 m-auto">
       <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
-        <ConnectMetamaskButton />
-        <h2 className="text-primary text-white mb-2">Account</h2>
-        <PublicFromAccountSelect
-          senderPublicAccount={senderPublicAccount}
-          senderPublicAccountOptions={senderPublicAccountOptions}
-          setSenderPublicAccount={setSenderPublicAccount}
-        />
+        <h2 className="text-primary text-white mb-2">Origin Account</h2>
+        <BridgeOriginAccountSelect/>
         <div className="flex gap-10 flex-y mt-4 items-end">
-          <div className="">
+          <div>
             <h2 className="text-primary text-white mb-2">Origin chain</h2>
             <ChainDropdown
               chain={originChain}
@@ -46,7 +37,7 @@ const BridgeForm = () => {
             src={Svgs.ArrowRightIcon}
             alt="switch-icon"
           />
-          <div className="">
+          <div>
             <h2 className="text-primary text-white mb-2">Destination chain</h2>
             <ChainDropdown
               chain={destinationChain}
@@ -55,6 +46,8 @@ const BridgeForm = () => {
             />
           </div>
         </div>
+        <h2 className="text-primary text-white mb-2 mt-4">Destination Account</h2>
+        <BridgeOriginAccountSelect/>
         <div className="flex flex-col gap-4 flex-y mt-4">
           <div>
             <h2 className="text-primary text-white mb-2">Amount</h2>

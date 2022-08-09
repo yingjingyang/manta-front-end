@@ -4,6 +4,7 @@ import PageContent from 'components/PageContent';
 import Navbar from 'components/Navbar';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { showError, showSuccess } from 'utils/ui/Notifications';
+import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { BridgeContextProvider } from './BridgeContext';
 import BridgeForm from './BridgeForm';
 
@@ -21,12 +22,14 @@ const BridgePage = () => {
   }, [txStatus]);
 
   return (
-    <BridgeContextProvider>
-      <PageContent>
-        <Navbar />
-        <BridgeForm />
-      </PageContent>
-    </BridgeContextProvider>
+    <MetamaskContextProvider>
+      <BridgeContextProvider>
+        <PageContent>
+          <Navbar />
+          <BridgeForm />
+        </PageContent>
+      </BridgeContextProvider>
+    </MetamaskContextProvider>
   );
 };
 

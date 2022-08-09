@@ -15,7 +15,7 @@ const SendButton = () => {
   };
 
   return (
-    
+
     <div >
       {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />

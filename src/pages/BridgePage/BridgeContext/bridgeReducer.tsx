@@ -32,8 +32,9 @@ const initSenderAssetTypeOptions = getSenderAssetTypeOptions(initOriginChain, in
 const initSenderAssetType = initSenderAssetTypeOptions[0];
 
 export const BRIDGE_INIT_STATE = {
-  senderPublicAccount: null,
-  senderPublicAccountOptions: [],
+  senderEthAccount: null,
+  senderSubstrateAccount: null,
+  senderSubstrateAccountOptions: [],
 
   senderAssetType: initSenderAssetType,
   senderAssetTypeOptions: initSenderAssetTypeOptions,
@@ -58,11 +59,11 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_PUBLIC_ACCOUNT:
-    return setSenderPublicAccount(state, action);
+  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT:
+    return setSenderSubstrateAccount(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_PUBLIC_ACCOUNT_OPTIONS:
-    return setSenderPublicAccountOptions(state, action);
+  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT_OPTIONS:
+    return setSenderSubstrateAccountOptions(state, action);
 
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
     return setSenderAssetCurrentBalance(state, action);
@@ -120,18 +121,18 @@ const setSelectedAssetType = (state, action) => {
   };
 };
 
-const setSenderPublicAccount = (state, action) => {
+const setSenderSubstrateAccount = (state, action) => {
   return {
     ...state,
     senderAssetCurrentBalance: null,
-    senderPublicAccount: action.senderPublicAccount
+    senderSubstrateAccount: action.senderSubstrateAccount
   };
 };
 
-const setSenderPublicAccountOptions = (state, action) => {
+const setSenderSubstrateAccountOptions = (state, action) => {
   return {
     ...state,
-    senderPublicAccountOptions: action.senderPublicAccountOptions
+    senderSubstrateAccountOptions: action.senderSubstrateAccountOptions
   };
 };
 
@@ -168,7 +169,7 @@ const setOriginChain = (state, { originChain }) => {
   const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
 
-  const res = {
+  return {
     ...state,
     originChain,
     destinationChain,
@@ -178,19 +179,13 @@ const setOriginChain = (state, { originChain }) => {
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };
-
-  console.log('setOriginChain final state', res);
-  return res;
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
-  console.log('setDestinationChain prev state', state);
-
-
   const senderAssetTypeOptions = getSenderAssetTypeOptions(state.originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
 
-  const res = {
+  return {
     ...state,
     senderAssetTypeOptions,
     senderAssetType,
@@ -198,8 +193,6 @@ const setDestinationChain = (state, { destinationChain }) => {
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };
-  console.log('setDestinationChain final state', res);
-  return res;
 };
 
 const setChainOptions = (state, { chainOptions }) => {

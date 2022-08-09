@@ -64,13 +64,14 @@ const sendReducer = (state, action) => {
   }
 };
 
-const getDefaultReceiver = (state, senderIsPrivate, receiverIsPrivate) => {
+const getDefaultReceiver = (
+  senderPrivateAddress, senderPublicAccount, senderIsPrivate, receiverIsPrivate) => {
   if (senderIsPrivate === receiverIsPrivate) {
     return null;
   } else if (!senderIsPrivate && receiverIsPrivate) {
-    return state.senderPrivateAddress;
+    return senderPrivateAddress;
   } else {
-    return state.senderPublicAccount?.address;
+    return senderPublicAccount?.address;
   }
 };
 
@@ -90,7 +91,12 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
 const toggleSenderIsPrivate = (state) => {
   const senderAssetType = state.senderAssetType.toggleIsPrivate();
   const senderAssetTypeOptions = AssetType.AllCurrencies(senderAssetType.isPrivate);
-  const receiverAddress = getDefaultReceiver(state, senderAssetType.isPrivate, state.receiverAssetType.isPrivate);
+  const receiverAddress = getDefaultReceiver(
+    state.senderPrivateAddress,
+    state.senderPublicAccount,
+    senderAssetType.isPrivate,
+    state.receiverAssetType.isPrivate
+  );
 
   store.set(localStorageKeys.IsPrivateSender, senderAssetType.isPrivate);
   store.set(localStorageKeys.CurrentToken, senderAssetType.baseTicker);
@@ -106,12 +112,22 @@ const toggleSenderIsPrivate = (state) => {
 
 const toggleReceiverIsPrivate = (state) => {
   const receiverAssetType = state.receiverAssetType.toggleIsPrivate();
-  const receiverAddress = getDefaultReceiver(state, state.senderAssetType.isPrivate, receiverAssetType.isPrivate);
+  const receiverAddress = getDefaultReceiver(
+    state.senderPrivateAddress,
+    state.senderPublicAccount,
+    state.senderAssetType.isPrivate,
+    receiverAssetType.isPrivate
+  );
 
   store.set(localStorageKeys.IsPrivateReceiver, receiverAssetType.isPrivate);
   store.set(localStorageKeys.CurrentToken, receiverAssetType.baseTicker);
 
-  return { ...state, receiverAssetType, receiverAddress, receiverCurrentBalance: null };
+  return {
+    ...state,
+    receiverAssetType,
+    receiverAddress,
+    receiverCurrentBalance: null
+  };
 };
 
 const setSelectedAssetType = (state, action) => {
@@ -140,7 +156,8 @@ const setSelectedAssetType = (state, action) => {
 
 const setSenderPrivateAddress = (state, action) => {
   const receiverAddress = getDefaultReceiver(
-    state,
+    state.senderPrivateAddress,
+    state.senderPublicAccount,
     state.senderAssetType.isPrivate,
     state.receiverAssetType.isPrivate
   );
@@ -153,10 +170,18 @@ const setSenderPrivateAddress = (state, action) => {
 };
 
 const setSenderPublicAccount = (state, action) => {
+  const receiverAddress = getDefaultReceiver(
+    state.senderPrivateAddress,
+    action.senderPublicAccount,
+    state.senderAssetType.isPrivate,
+    state.receiverAssetType.isPrivate
+  );
+
   return {
     ...state,
     senderAssetCurrentBalance: null,
-    senderPublicAccount: action.senderPublicAccount
+    senderPublicAccount: action.senderPublicAccount,
+    receiverAddress
   };
 };
 
@@ -194,7 +219,7 @@ const setSenderNativeTokenPublicBalance = (state, action) => {
 const setReceiver  = (state, action) => {
   return {
     ...state,
-    receiverAddress: action.receiverAddress,
+    receiverAddress: action.receiverAddress
   };
 };
 
