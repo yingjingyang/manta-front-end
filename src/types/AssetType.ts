@@ -106,7 +106,7 @@ export default class AssetType {
       'Moonriver',
       'MOVR',
       Svgs.MovrIcon,
-      12, // todo: really 18
+      18,
       new BN('10000000000000000'),
       isPrivate
     );

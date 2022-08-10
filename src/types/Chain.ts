@@ -1,4 +1,5 @@
 // @ts-nocheck
+import BN from 'bn.js';
 import config from 'config';
 import Svgs from 'resources/icons';
 import types from '../config/types.json';
@@ -6,13 +7,14 @@ import AssetType from './AssetType';
 
 
 export default class Chain {
-  constructor(name, parachainId, icon, socket, xcmAssets, nativeAsset, apiTypes = null) {
+  constructor(name, parachainId, icon, socket, xcmAssets, nativeAsset, destinationWeight, apiTypes = null) {
     this.name = name;
     this.parachainId = parachainId;
     this.icon = icon;
     this.socket = socket;
     this.xcmAssets = xcmAssets;
     this.nativeAsset = nativeAsset;
+    this.destinationWeight = destinationWeight;
     this.apiTypes = apiTypes || {};
   }
 
@@ -37,6 +39,7 @@ export default class Chain {
       config.DOLPHIN_SOCKET,
       [AssetType.Rococo(), AssetType.Karura(), AssetType.Moonriver()],
       AssetType.Dolphin(),
+      new BN(4000000000),
       types
     );
   }
@@ -49,6 +52,7 @@ export default class Chain {
       config.CALAMARI_SOCKET,
       [AssetType.Kusama(), AssetType.Karura()],
       AssetType.Calamari(),
+      new BN(4000000000),
       types
     );
   }
@@ -60,7 +64,8 @@ export default class Chain {
       Svgs.RocIcon,
       config.ROCOCO_SOCKET,
       [AssetType.Rococo()],
-      AssetType.Rococo()
+      AssetType.Rococo(),
+      new BN(4000000000),
     );
   }
 
@@ -71,7 +76,8 @@ export default class Chain {
       Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
       [AssetType.Kusama()],
-      AssetType.Kusama()
+      AssetType.Kusama(),
+      new BN(4000000000)
     );
   }
 
@@ -82,7 +88,8 @@ export default class Chain {
       Svgs.KarIcon,
       config.KARURA_SOCKET,
       [AssetType.Karura()],
-      AssetType.Karura()
+      AssetType.Karura(),
+      new BN(800000000)
     );
   }
 
@@ -93,7 +100,8 @@ export default class Chain {
       Svgs.MovrIcon,
       config.MOONRIVER_SOCKET,
       [AssetType.Moonriver()],
-      AssetType.Moonriver()
+      AssetType.Moonriver(),
+      new BN(4000000000) // fixme: probably wrong!
     );
   }
 

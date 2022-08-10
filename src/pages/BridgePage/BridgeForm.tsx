@@ -7,6 +7,7 @@ import { useBridge } from './BridgeContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 import BridgeOriginAccountSelect from './BridgeOriginAccountSelect';
+import BridgeDestinationAccountSelect from './BridgeDestinationAccountSelect';
 
 const BridgeForm = () => {
   const {
@@ -47,7 +48,7 @@ const BridgeForm = () => {
           </div>
         </div>
         <h2 className="text-primary text-white mb-2 mt-4">Destination Account</h2>
-        <BridgeOriginAccountSelect/>
+        <BridgeDestinationAccountSelect/>
         <div className="flex flex-col gap-4 flex-y mt-4">
           <div>
             <h2 className="text-primary text-white mb-2">Amount</h2>

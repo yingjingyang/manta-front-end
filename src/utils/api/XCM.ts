@@ -177,7 +177,7 @@ const transferParachainToParachain_Xtokens = (
   return api.tx.xTokens.transfer(assetId, valueAtomicUnits, dest, weightLimit);
 };
 
-const addressToAccountId = (address) => {
+export const addressToAccountId = (address) => {
   return hexAddPrefix(u8aToHex(decodeAddress(address)));
 };
 

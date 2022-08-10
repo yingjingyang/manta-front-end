@@ -550,8 +550,6 @@ export const SendContextProvider = (props) => {
     return !senderAssetType.isPrivate && !receiverAssetType.isPrivate;
   };
 
-  console.log('state', state);
-
   const value = {
     userHasSufficientFunds,
     userCanPayFee,

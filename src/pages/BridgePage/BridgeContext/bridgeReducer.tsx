@@ -33,7 +33,6 @@ const initSenderAssetType = initSenderAssetTypeOptions[0];
 
 export const BRIDGE_INIT_STATE = {
   senderEthAccount: null,
-  senderSubstrateAccount: null,
   senderSubstrateAccountOptions: [],
 
   senderAssetType: initSenderAssetType,
@@ -42,10 +41,12 @@ export const BRIDGE_INIT_STATE = {
   senderAssetTargetBalance: null,
   senderNativeTokenPublicBalance: null,
 
+  senderOriginSubstrateAccount: null,
   originChain: initOriginChain,
   originChainOptions: initOriginChainOptions,
   originFee: null,
 
+  senderDestinationSubstrateAccount: null,
   destinationChain: initDestinationChain,
   destinationChainOptions: initDestinationChainOptions,
   destinationFee: null,
@@ -59,8 +60,11 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT:
-    return setSenderSubstrateAccount(state, action);
+  case BRIDGE_ACTIONS.SET_SENDER_DESTINATION_SUBSTRATE_ACCOUNT:
+    return setSenderDestinationSubstrateAccount(state, action);
+
+  case BRIDGE_ACTIONS.SET_SENDER_ORIGIN_SUBSTRATE_ACCOUNT:
+    return setSenderOriginSubstrateAccount(state, action);
 
   case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT_OPTIONS:
     return setSenderSubstrateAccountOptions(state, action);
@@ -121,11 +125,25 @@ const setSelectedAssetType = (state, action) => {
   };
 };
 
-const setSenderSubstrateAccount = (state, action) => {
+const setSenderOriginSubstrateAccount = (state, action) => {
+  // if no destination account, initialize it to same as origin account
+  const senderDestinationSubstrateAccount = (
+    state.senderDestinationSubstrateAccount
+    || action.senderOriginSubstrateAccount
+  );
+
   return {
     ...state,
     senderAssetCurrentBalance: null,
-    senderSubstrateAccount: action.senderSubstrateAccount
+    senderOriginSubstrateAccount: action.senderOriginSubstrateAccount,
+    senderDestinationSubstrateAccount
+  };
+};
+
+const setSenderDestinationSubstrateAccount = (state, action) => {
+  return {
+    ...state,
+    senderDestinationSubstrateAccount: action.senderDestinationSubstrateAccount
   };
 };
 
@@ -217,7 +235,7 @@ const setChainApis = (state, {chainApis}) => {
   };
 };
 
-const setOriginFee= (state, {originFee}) => {
+const setOriginFee = (state, {originFee}) => {
   return {
     ...state,
     originFee

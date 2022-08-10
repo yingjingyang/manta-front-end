@@ -6,6 +6,21 @@ import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 
+export const substrateAccountToReactSelectOption = (account) => {
+  if (!account) {
+    return null;
+  }
+  const label =  account?.meta.name;
+  return {
+    value: { account, address: account.address },
+    label,
+  };
+};
+
+export const substrateAccountsToReactSelectOptions = (accounts) => {
+  return accounts.map(account => substrateAccountToReactSelectOption(account));
+};
+
 const AccountSelect = ({
   options,
   selectedOption,
@@ -86,7 +101,6 @@ const AccountSelectOption = (props) => {
   const onClick = () => {
     return;
   };
-  console.log('value?', props);
   return (
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">

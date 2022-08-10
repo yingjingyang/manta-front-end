@@ -1,31 +1,38 @@
 // @ts-nocheck
-import PublicFromAccountSelect from 'pages/SendPage/SendFromForm/FromAccountSelect';
 import React from 'react';
-import AssetType from 'types/AssetType';
+import
+AccountSelect,
+{ substrateAccountToReactSelectOption, substrateAccountsToReactSelectOptions }
+  from 'components/Accounts/AccountSelect';
+import Chain from 'types/Chain';
 import { useBridge } from './BridgeContext';
 import MetamaskAccountDisplay from './MetamaskAccountDisplay';
 
 const BridgeOriginAccountSelect = () => {
   const {
-    senderSubstrateAccount,
     senderSubstrateAccountOptions,
-    setSenderSubstrateAccount,
-    senderAssetType
+    setSenderOriginSubstrateAccount,
+    senderOriginSubstrateAccount,
+    originChain
   } = useBridge();
 
-  console.log('lol', AssetType.Moonriver(false), AssetType.Moonriver(false).assetId);
+  const options = substrateAccountsToReactSelectOptions(senderSubstrateAccountOptions);
+  const selectedOption = substrateAccountToReactSelectOption(senderOriginSubstrateAccount);
+  const onChangeOption = (option) => {
+    const { value: { account } } = option;
+    setSenderOriginSubstrateAccount(account);
+  };
 
   return (
     <>
       {
-        (senderAssetType?.assetId === AssetType.Moonriver(false).assetId)
+        (originChain.parachainId === Chain.Moonriver().parachainId)
           ? <MetamaskAccountDisplay />
-          : <div>todo</div>
-          // <PublicFromAccountSelect
-          //   senderPublicAccount={senderSubstrateAccount}
-          //   senderPublicAccountOptions={senderSubstrateAccountOptions}
-          //   setSenderPublicAccount={setSenderSubstrateAccount}
-          // />
+          : <AccountSelect
+            options={options}
+            selectedOption={selectedOption}
+            onChangeOption={onChangeOption}
+          />
       }
     </>
   );

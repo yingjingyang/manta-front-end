@@ -17,9 +17,7 @@ const ConnectMetamaskButton = () => {
     const detectMetamask = async () => {
       if (!provider) {
         const metamask = await detectEthereumProvider({ mustBeMetaMask: true });
-        console.log('metamask', metamask);
         if (metamask) {
-          console.log('provider setting', provider);
           setProvider(metamask);
         } else {
           setProvider(false);
@@ -30,7 +28,6 @@ const ConnectMetamaskButton = () => {
   });
 
   const tryXcm = async () => {
-    console.log('Xokens', Xtokens);
     const abi = Xtokens.abi;
 
     const ethersProvider = new ethers.providers.Web3Provider(provider);

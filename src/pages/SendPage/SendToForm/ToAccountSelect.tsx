@@ -2,7 +2,10 @@
 import React from 'react';
 import { useSend } from 'pages/SendPage/SendContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
-import AccountSelect from '../../../components/Accounts/AccountSelect';
+import
+AccountSelect,
+{ substrateAccountToReactSelectOption, substrateAccountsToReactSelectOptions }
+  from 'components/Accounts/AccountSelect';
 
 const PublicToAccountSelect = () => {
   const {
@@ -13,22 +16,11 @@ const PublicToAccountSelect = () => {
     externalAccountOptions
   } = useExternalAccount();
 
-  const toReactSelectOption = (account) => {
-    const label =  account?.meta.name;
-    return {
-      value: { account, address: account.address },
-      label,
-    };
-  };
-  const options = externalAccountOptions?.map(
-    account => toReactSelectOption(account));
-
+  const options = substrateAccountsToReactSelectOptions(externalAccountOptions);
   const receiverAccount = externalAccountOptions.find(option => option.address === receiverAddress);
   const selectedOption = receiverAccount
-    ? toReactSelectOption(receiverAccount)
+    ? substrateAccountToReactSelectOption(receiverAccount)
     : null;
-
-  console.log('selectedOption', selectedOption, options, receiverAddress);
 
   const onChangeOption = (option) => {
     const { value: { address } } = option;
@@ -49,7 +41,6 @@ const PrivateToAccountSelect = () => {
   const {
     receiverAddress,
     setReceiver,
-    accountOptions,
   } = useSend();
 
   const toReactSelectOption = (address) => {
@@ -59,7 +50,9 @@ const PrivateToAccountSelect = () => {
     };
   };
 
-  const reactSelectOptions = accountOptions?.map((address) => {
+  const options = receiverAddress ? [receiverAddress] : [];
+
+  const reactSelectOptions = options?.map((address) => {
     return toReactSelectOption(address);
   });
 
