@@ -87,12 +87,13 @@ export const PrivateWalletContextProvider = (props) => {
 
       if (currentSyncReceivers.current > 0) {
         const initialRemainingReceivers =
-          TOTAL_RECEIVERS - initialSyncReceivers.current;
-        const currentSyncedReceivers = TOTAL_RECEIVERS - sender_index;
+          senders_receivers_total - initialSyncReceivers.current;
+        const currentSyncedReceivers = senders_receivers_total - sender_index;
         const newSyncedReceivers =
           initialRemainingReceivers - currentSyncedReceivers;
 
-        percentagePerBatch.current = (100 * receivers.length) / TOTAL_RECEIVERS;
+        percentagePerBatch.current =
+          (100 * receivers.length) / senders_receivers_total;
         timePerPercentage.current =
           pullBatchTime / parseInt(percentagePerBatch.current);
         syncPercentage.current = (
