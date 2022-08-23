@@ -7,13 +7,6 @@ import BN from 'bn.js';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import {
-  transferKarFromCalamariToKarura,
-  transferKarFromKaruraToCalamari,
-  transferRocFromCalamariToRococo,
-  transferRocFromRococoToCalamari
-} from 'utils/api/XCM';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import AssetType from 'types/AssetType';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -21,12 +14,16 @@ import Chain from 'types/Chain';
 import { transferMovrFromMoonriverToDolphin } from 'utils/api/EthXCM';
 import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
 import BRIDGE_ACTIONS from './bridgeActions';
+import { FixedPointNumber } from '@acala-network/sdk-core';
+import { Bridge } from '@polkawallet/bridge/build';
+
+// todo: fixed precision >>> decimal
 
 const BridgeContext = React.createContext();
 
 export const BridgeContextProvider = (props) => {
-  const { provider } = useMetamask();
-  const { setTxStatus, txStatus } = useTxStatus();
+  const { provider, ethAddress } = useMetamask();
+  const { setTxStatus } = useTxStatus();
   const {
     externalAccount,
     externalAccountSigner,
@@ -35,6 +32,7 @@ export const BridgeContextProvider = (props) => {
   } = useExternalAccount();
   const initState = { ...BRIDGE_INIT_STATE };
   const [state, dispatch] = useReducer(bridgeReducer, initState);
+
   const {
     senderAssetType,
     senderAssetCurrentBalance,
@@ -42,45 +40,131 @@ export const BridgeContextProvider = (props) => {
     senderNativeTokenPublicBalance,
     senderOriginSubstrateAccount,
     senderDestinationSubstrateAccount,
-    originChain,
     originChainOptions,
+    originChain,
     destinationChain,
-    chainApis
+    bridge,
+    maxInput,
   } = state;
 
-  const [originFee, setOriginFee] = useState(null);
+  const originAddress = (originChain.name === "moonriver")
+    ? ethAddress
+    : senderOriginSubstrateAccount?.address;
 
-  const mapChainsToExtrinsic = (valueAtomicUnits, address) => {
-    if (originChain.name === 'Dolphin') {
-      if (destinationChain.name === 'Rococo') {
-        return transferRocFromCalamariToRococo(
-          api,
-          address,
-          valueAtomicUnits
-        );
-      } else if (destinationChain.name === 'Karura') {
-        return transferKarFromCalamariToKarura(
-          api,
-          address,
-          valueAtomicUnits
-        );
-      }
-    } else if (originChain.name === 'Rococo' && destinationChain.name === 'Dolphin') {
-      return transferRocFromRococoToCalamari(
-        api,
-        address,
-        valueAtomicUnits
+  useEffect(() => {
+    const initBridge = async () => {
+      if (!externalAccount || !externalAccountSigner || !originChainOptions) {
+        return
+      };
+      const adapters = originChainOptions.map(chain => chain.xcmAdapter);
+      const bridge = new Bridge({ adapters });
+      for await (const chain of originChainOptions) {
+        await chain.initXcmAdapter();
+      };
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_BRIDGE,
+        bridge,
+      });
+    };
+    initBridge();
+  }, [externalAccountSigner, externalAccount, originChainOptions]);
+
+
+  useEffect(() => {
+    const handleBalanceChange = (balanceData) => {
+      const senderAssetCurrentBalance = Balance.fromBaseUnits(
+        senderAssetType,
+        balanceData.free
       );
-    } else if (originChain.name === 'Karura' && destinationChain.name === 'Dolphin') {
-      return transferKarFromKaruraToCalamari(
-        api,
-        address,
-        valueAtomicUnits
-      );
-    } else {
-      throw new Error('Invalid XCM transfer');
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+        senderAssetCurrentBalance
+      })
     }
-  };
+
+    const subscribeBalanceChanges = async () => {
+      if (!senderAssetType || !originAddress || !bridge || !originChain) {
+        return
+      }
+      const senderBalanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
+        senderAssetType.baseTicker, originAddress
+      );
+      const senderBalanceSubscription = senderBalanceObserveable.subscribe(handleBalanceChange);
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_BALANCE_SUBSCRIPTION,
+        senderBalanceSubscription,
+      });
+    }
+    subscribeBalanceChanges()
+  }, [senderAssetType, originAddress, originChain, bridge])
+
+  useEffect(() => {
+    const getDestinationFee = (inputConfig) => {
+      return Balance.fromBaseUnits(
+        senderAssetType,
+        inputConfig.destFee.balance
+      )
+    }
+    const getOriginFee = (inputConfig) => {
+      return new Balance(
+        originChain.nativeAsset,
+        new BN(inputConfig.estimateFee)
+      )
+    }
+    const getMaxInput = (inputConfig) => {
+      return Balance.fromBaseUnits(
+        senderAssetType,
+        inputConfig.maxInput
+      )
+    }
+    const getMinInput = (inputConfig) => {
+      return Balance.fromBaseUnits(
+        senderAssetType,
+        inputConfig.minInput
+      )
+    }
+
+    const handleInputConfigChange = (inputConfig) => {
+      console.log('inputConfig', inputConfig);
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+        originFee: getOriginFee(inputConfig),
+        destinationFee: getDestinationFee(inputConfig),
+        maxInput: getMaxInput(inputConfig),
+        minInput: getMinInput(inputConfig)
+      });
+    }
+
+    const getInputConfigParams = () => {
+      return {
+        signer: originAddress,
+        address: senderDestinationSubstrateAccount.address, // todo: should generalize
+        amount: new FixedPointNumber(senderAssetTargetBalance.valueBaseUnits.toString()),
+        to: destinationChain.name,
+        token: senderAssetType.baseTicker
+      };
+    }
+
+    const subscribeInputConfig= () => {
+      if (
+        !senderAssetType
+        || !senderAssetTargetBalance
+        || !originAddress
+        || !bridge
+        || !originChain
+      ) {
+        return
+      };
+      const inputConfigParams = getInputConfigParams()
+      const inputConfigObservable = originChain.xcmAdapter.subscribeInputConfigs(inputConfigParams);
+      const inputConfigSubscription = inputConfigObservable.subscribe(handleInputConfigChange)
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_INPUT_CONFIG_SUBSCRIPTION,
+        inputConfigSubscription,
+      });
+    }
+    subscribeInputConfig()
+  },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, bridge])
 
   /**
    * Initialization logic
@@ -98,34 +182,6 @@ export const BridgeContextProvider = (props) => {
     initPublicAccountOptions();
   }, [externalAccountOptions]);
 
-  useEffect(() => {
-    const initChainApis = async () => {
-      const chainApis = {};
-      for (let i = 0; i < originChainOptions.length; i++) {
-        const chain = originChainOptions[i];
-        const socket = new WsProvider(chain.socket);
-        const api = await ApiPromise.create({provider: socket, types: chain.apiTypes});
-        chainApis[chain.name] = api;
-      }
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_CHAIN_APIS,
-        chainApis: chainApis
-      });
-    };
-    if (!chainApis) {
-      initChainApis();
-    }
-
-  }, [originChainOptions]);
-
-  const getChainApi = () => {
-    if (!originChain || !chainApis) {
-      return null;
-    }
-    return chainApis[originChain.name];
-  };
-  const api = getChainApi();
-
   /**
    * External state
    */
@@ -136,7 +192,7 @@ export const BridgeContextProvider = (props) => {
   // substrate-based payments
   useEffect(() => {
     const syncSenderOriginSubstrateAccountToExternalAccount = () => {
-      if (senderAssetType.assetId === AssetType.Moonriver().assetId) {
+      if (senderAssetType?.assetId === AssetType.Moonriver().assetId) {
         dispatch({
           type: BRIDGE_ACTIONS.SET_SENDER_ORIGIN_SUBSTRATE_ACCOUNT,
           senderOriginSubstrateAccount: null
@@ -220,132 +276,6 @@ export const BridgeContextProvider = (props) => {
    * Balance refresh logic
    */
 
-  // Dispatches the user's available balance to local state for the currently selected account and asset
-  const setSenderAssetCurrentBalance = (
-    senderAssetCurrentBalance,
-    senderPublicAddress
-  ) => {
-    dispatch({
-      type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-      senderAssetCurrentBalance,
-      senderPublicAddress
-    });
-  };
-
-  // Dispatches the user's available public balance for the currently selected fee-paying account to local state
-  const setSenderNativeTokenBalance = (
-    senderNativeTokenPublicBalance
-  ) => {
-    dispatch({
-      type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_TOKEN_PUBLIC_BALANCE,
-      senderNativeTokenPublicBalance
-    });
-  };
-
-  // Gets available public balance for some public address and asset type
-  const fetchBalance = async () => {
-    const address = senderOriginSubstrateAccount?.address;
-    if (!address || !senderAssetType || !api) {
-      return null;
-    }
-    await api.isReady;
-    let balance;
-    switch(originChain.name) {
-    case 'Calamari':
-      balance = await fetchBalanceMantaChain(address, senderAssetType);
-      break;
-    case 'Dolphin':
-      balance = await fetchBalanceMantaChain(address, senderAssetType);
-      break;
-    case 'Rococo':
-      balance = await fetchBalanceRococoChain(address, senderAssetType);
-      break;
-    case 'Karura':
-      balance = await fetchBalanceKaruraChain(address, senderAssetType);
-      break;
-    case 'Moonriver':
-      balance = await fetchBalanceMoonriverChain(address, senderAssetType);
-      break;
-    default:
-      throw new Error('Unrecognized chain');
-    }
-    setSenderAssetCurrentBalance(balance);
-  };
-
-  const fetchBalanceRococoChain = async (address, assetType) => {
-    if (assetType.baseTicker !== 'ROC') {
-      return null;
-    }
-    const balance = await fetchNativeTokenBalance(address, assetType);
-    return balance;
-
-  };
-
-  // todo: all these functions do not need to exist
-  const fetchBalanceKaruraChain = async (address, assetType) => {
-    if (assetType.baseTicker !== 'KAR') {
-      return null;
-    }
-    const balance = await fetchNativeTokenBalance(address, assetType);
-    return balance;
-  };
-
-  const fetchBalanceMoonriverChain = async (address, assetType) => {
-    if (assetType.baseTicker !== 'MOVR') {
-      return null;
-    }
-    const balance = await fetchNativeTokenBalance(address, assetType);
-    return balance;
-  };
-
-  const fetchBalanceMantaChain = async (address, assetType) => {
-    if (assetType.isNativeToken) {
-      const balance = await fetchNativeTokenBalance(address, assetType);
-      return balance;
-    }
-    const account = await api.query.assets.account(assetType.assetId, address);
-    const balanceString = account.value.isEmpty
-      ? '0'
-      : account.value.balance.toString();
-    return new Balance(assetType, new BN(balanceString));
-  };
-
-  const fetchNativeTokenBalance = async (address, assetType) => {
-    if (!api || !address || !assetType) {
-      return null;
-    }
-    await api.isReady;
-    const balances = await api.query.system.account(address);
-    return new Balance(
-      assetType,
-      new BN(balances.data.free.toString())
-    );
-  };
-
-  // Gets the available public balance for the user's public account set to pay transaction fee
-  const fetchFeeBalance = async () => {
-    if (!api || !externalAccount) {
-      return;
-    }
-    const address = externalAccount.address;
-    const balance = await fetchNativeTokenBalance(address, originChain.nativeAsset);
-    setSenderNativeTokenBalance(balance, address);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchBalance();
-      fetchFeeBalance();
-    }, 200);
-    return () => clearInterval(interval);
-  }, [
-    originChain,
-    senderAssetType,
-    externalAccount,
-    senderOriginSubstrateAccount,
-    api,
-    txStatus
-  ]);
 
   /**
    *
@@ -355,18 +285,18 @@ export const BridgeContextProvider = (props) => {
   // Gets the highest amount the user is allowed to send for the currently
   // selected asset
   const getMaxSendableBalance = () => {
-    if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance || !senderAssetType) {
-      return null;
-    }
-    if (senderAssetType.isNativeToken) {
-      const reservedNativeTokenBalance = getReservedNativeTokenBalance();
-      const zeroBalance = new Balance(senderAssetType, new BN(0));
-      return Balance.max(
-        senderAssetCurrentBalance.sub(reservedNativeTokenBalance),
-        zeroBalance
-      );
-    }
-    return senderAssetCurrentBalance.valueOverExistentialDeposit();
+    // if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance || !senderAssetType) {
+    //   return null;
+    // }
+    // if (senderAssetType.isNativeToken) {
+    //   const reservedNativeTokenBalance = getReservedNativeTokenBalance();
+    //   const zeroBalance = new Balance(senderAssetType, new BN(0));
+    //   return Balance.max(
+    //     senderAssetCurrentBalance.sub(reservedNativeTokenBalance),
+    //     zeroBalance
+    //   );
+    // }
+    // return senderAssetCurrentBalance.valueOverExistentialDeposit();
   };
 
   // Gets the amount of the native token the user is not allowed to go below
@@ -418,26 +348,27 @@ export const BridgeContextProvider = (props) => {
     ) {
       return null;
     }
-    const maxSendableBalance = getMaxSendableBalance();
-    return maxSendableBalance.gte(senderAssetTargetBalance);
+    console.log('maxInput', maxInput.toString());
+    return maxInput.gte(senderAssetTargetBalance);
   };
 
   // Checks if the user has enough native token to pay fees & publish a transaction
   const userCanPayFee = () => {
-    if (!senderNativeTokenPublicBalance) {
-      return null;
-    }
-    let requiredNativeTokenBalance = getReservedNativeTokenBalance();
-    if (senderAssetType?.isNativeToken) {
-      requiredNativeTokenBalance = requiredNativeTokenBalance.add(
-        senderAssetTargetBalance
-      );
-    }
-    return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
+    return true;
+    // if (!senderNativeTokenPublicBalance) {
+    //   return null;
+    // }
+    // let requiredNativeTokenBalance = getReservedNativeTokenBalance();
+    // if (senderAssetType?.isNativeToken) {
+    //   requiredNativeTokenBalance = requiredNativeTokenBalance.add(
+    //     senderAssetTargetBalance
+    //   );
+    // }
+    // return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
   };
 
   const userCanSign = () => {
-    if (senderAssetType.assetId === AssetType.Moonriver().assetId) {
+    if (senderAssetType?.assetId === AssetType.Moonriver().assetId) {
       return provider !== null;
     } else {
       return externalAccountSigner !== null;
@@ -454,66 +385,24 @@ export const BridgeContextProvider = (props) => {
     );
   };
 
-  // todo: calculate
-  const getDestinationFee = () => {
-    let valueAtomicUnits;
-    if (originChain.name === 'Dolphin') {
-      if (destinationChain.name === 'Rococo') {
-        valueAtomicUnits = new BN('11523248');
-      } else if (destinationChain.name === 'Karura') {
-        valueAtomicUnits = new BN('9324000000');
-      } else if (destinationChain.name === 'Moonriver') {
-        valueAtomicUnits = new BN('0'); // fixme: wrong
-      }
-    } else if (originChain.name === 'Rococo') {
-      if (destinationChain.name === 'Dolphin') {
-        valueAtomicUnits = new BN('666666667');
-      }
-    } else if (originChain.name === 'Karura') {
-      if (destinationChain.name === 'Dolphin') {
-        valueAtomicUnits = new BN('100000000000');
-      }
-    } else if (originChain.name === 'Moonriver') {
-      if (destinationChain.name === 'Dolphin') {
-        valueAtomicUnits = new BN('0'); // fixme: wrong
-      }
-    } else {
-      return null;
-    }
-    return new Balance(
-      senderAssetType, valueAtomicUnits
-    );
-  };
-
-  const getOriginFee = async () => {
-    return null;
-    if (!api) {
-      return null;
-    }
-    const valueAtomicUnits = senderAssetTargetBalance?.valueAtomicUnits || new BN(0);
-    const address = senderOriginSubstrateAccount?.address || '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
-    const tx = mapChainsToExtrinsic(valueAtomicUnits, address);
-    const pasymentInfo = await tx.paymentInfo(address);
-    const originFee = new Balance(
-      originChain.nativeAsset, pasymentInfo.partialFee
-    );
-    setOriginFee(originFee);
-  };
-  if (!originFee) {
-    getOriginFee();
-  }
-
-  const destinationFee = getDestinationFee();
-
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
+    console.log (
+      api,
+      senderAssetTargetBalance,
+      senderAssetCurrentBalance,
+      userCanSign(),
+      userHasSufficientFunds(),
+      userCanPayFee(),
+      receiverAmountIsOverExistentialBalance()
+    );
     return (
       api &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
       userCanSign() &&
       userHasSufficientFunds() &&
-      userCanPayFee() &&
+      // userCanPayFee() &&
       receiverAmountIsOverExistentialBalance()
     );
   };
@@ -532,6 +421,7 @@ export const BridgeContextProvider = (props) => {
           console.error('Transaction failed', event);
         } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
           try {
+            console.log('status.asInBlock', status.asInBlock)
             const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
             const extrinsics = signedBlock.block.extrinsics;
             const extrinsic = extrinsics.find((extrinsic) =>
@@ -549,27 +439,44 @@ export const BridgeContextProvider = (props) => {
 
   // Attempts to build and send a transaction
   const send = async () => {
-    // if (!isValidToSend()) {
-    //   return;
-    // }
-    if (originChain.parachainId === Chain.Moonriver().parachainId) {
-      return transferMovrFromMoonriverToDolphin(
-        provider, senderAssetTargetBalance, senderDestinationSubstrateAccount.address
-      );
+    if (!isValidToSend()) {
+      return;
     }
     setTxStatus(TxStatus.processing());
-    const tx = mapChainsToExtrinsic(
-      senderAssetTargetBalance.valueAtomicUnits,
-      senderOriginSubstrateAccount.address
-    );
+    if (originChain.xcmAdapter.chain.type === "ethereum") {
+      await sendEth();
+    } else {
+      await sendSubstrate();
+    }
+  };
+
+  const sendSubstrate = async () => {
+    const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
+    const tx = originChain.xcmAdapter.createTx({
+      amount: FixedPointNumber.fromInner(value, 10),
+      to: destinationChain.name,
+      token: senderAssetTargetBalance.assetType.baseTicker,
+      address: senderDestinationSubstrateAccount.address,
+    });
     try {
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed());
-      return false;
     }
   };
+
+  const sendEth = async () => {
+    const success = await transferMovrFromMoonriverToDolphin(
+      provider, senderAssetTargetBalance, senderDestinationSubstrateAccount.address
+    );
+    if (success) {
+      setTxStatus(TxStatus.finalized());
+    } else {
+      setTxStatus(TxStatus.failed());
+    }
+  };
+
 
   const value = {
     userHasSufficientFunds,
@@ -584,8 +491,6 @@ export const BridgeContextProvider = (props) => {
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,
-    originFee,
-    destinationFee,
     send,
     ...state
   };

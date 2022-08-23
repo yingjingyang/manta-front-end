@@ -32,6 +32,8 @@ const initSenderAssetTypeOptions = getSenderAssetTypeOptions(initOriginChain, in
 const initSenderAssetType = initSenderAssetTypeOptions[0];
 
 export const BRIDGE_INIT_STATE = {
+  bridge: null,
+
   senderEthAccount: null,
   senderSubstrateAccountOptions: [],
 
@@ -39,7 +41,11 @@ export const BRIDGE_INIT_STATE = {
   senderAssetTypeOptions: initSenderAssetTypeOptions,
   senderAssetCurrentBalance: null,
   senderAssetTargetBalance: null,
+  maxInput: null,
+  minInput: null,
   senderNativeTokenPublicBalance: null,
+  senderBalanceSubscription: null,
+  senderInputConfigSubscription: null,
 
   senderOriginSubstrateAccount: null,
   originChain: initOriginChain,
@@ -50,12 +56,12 @@ export const BRIDGE_INIT_STATE = {
   destinationChain: initDestinationChain,
   destinationChainOptions: initDestinationChainOptions,
   destinationFee: null,
-
-  chainApis: null
 };
 
 const bridgeReducer = (state, action) => {
   switch (action.type) {
+  case BRIDGE_ACTIONS.SET_BRIDGE:
+    return setBridge(state, action);
 
   case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
@@ -72,11 +78,20 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
     return setSenderAssetCurrentBalance(state, action);
 
+  case BRIDGE_ACTIONS.SET_SENDER_BALANCE_SUBSCRIPTION:
+    return setSenderBalanceSubscription(state, action)
+
+  case BRIDGE_ACTIONS.SET_INPUT_CONFIG_SUBSCRIPTION:
+    return setInputConfigSubscription(state, action)
+
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
     return setSenderAssetTargetBalance(state, action);
 
   case BRIDGE_ACTIONS.SET_SENDER_NATIVE_TOKEN_PUBLIC_BALANCE:
     return setSenderNativeTokenPublicBalance(state, action);
+
+  case BRIDGE_ACTIONS.SET_FEE_ESTIMATES:
+    return setFeeEstimates(state, action)
 
   case BRIDGE_ACTIONS.SET_ORIGIN_CHAIN:
     return setOriginChain(state, action);
@@ -86,15 +101,6 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_CHAIN_OPTIONS:
     return setChainOptions(state, action);
-
-  case BRIDGE_ACTIONS.SET_CHAIN_APIS:
-    return setChainApis(state, action);
-
-  case BRIDGE_ACTIONS.SET_ORIGIN_FEE:
-    return setOriginFee(state, action);
-
-  case BRIDGE_ACTIONS.SET_DESTINATION_FEE:
-    return setDestinationFee(state, action);
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -108,7 +114,24 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   return stateAssetType?.assetId !== updateAssetType.assetId;
 };
 
+const unsubscribe = (state) => {
+  if (state.senderBalanceSubscription) {
+    state.senderBalanceSubscription.unsubscribe();
+  }
+  if (state.senderInputConfigSubscription) {
+    state.senderInputConfigSubscription.unsubscribe();
+  }
+}
+
+const setBridge = (state, { bridge }) => {
+  return {
+    ...state,
+    bridge
+  }
+}
+
 const setSelectedAssetType = (state, action) => {
+  unsubscribe(state);
   store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let senderAssetTargetBalance = null;
@@ -126,6 +149,7 @@ const setSelectedAssetType = (state, action) => {
 };
 
 const setSenderOriginSubstrateAccount = (state, action) => {
+  unsubscribe(state);
   // if no destination account, initialize it to same as origin account
   const senderDestinationSubstrateAccount = (
     state.senderDestinationSubstrateAccount
@@ -164,6 +188,20 @@ const setSenderAssetCurrentBalance = (state, action) => {
   };
 };
 
+const setSenderBalanceSubscription = (state, action) => {
+  return {
+    ...state,
+    senderBalanceSubscription: action.senderBalanceSubscription
+  };
+}
+
+const setInputConfigSubscription = (state, action) => {
+  return {
+    ...state,
+    inputConfigSubscription: action.inputConfigSubscription
+  };
+}
+
 const setSenderAssetTargetBalance = (state, action) => {
   return {
     ...state,
@@ -178,7 +216,19 @@ const setSenderNativeTokenPublicBalance = (state, action) => {
   };
 };
 
+const setFeeEstimates = (state, action) => {
+  const { originFee, destinationFee, maxInput, minInput  } = action;
+  return {
+    ...state,
+    originFee,
+    destinationFee,
+    maxInput,
+    minInput
+  };
+}
+
 const setOriginChain = (state, { originChain }) => {
+  unsubscribe(state);
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (!originChain.canTransferXcm(destinationChain)) {
@@ -200,6 +250,7 @@ const setOriginChain = (state, { originChain }) => {
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
+  unsubscribe(state);
   const senderAssetTypeOptions = getSenderAssetTypeOptions(state.originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
 
@@ -225,27 +276,6 @@ const setChainOptions = (state, { chainOptions }) => {
     destinationChain: defaultDestinationChain,
     destinationChainOptions: destinationChainOptions,
     chainApis: []
-  };
-};
-
-const setChainApis = (state, {chainApis}) => {
-  return {
-    ...state,
-    chainApis
-  };
-};
-
-const setOriginFee = (state, {originFee}) => {
-  return {
-    ...state,
-    originFee
-  };
-};
-
-const setDestinationFee = (state, {destinationFee}) => {
-  return {
-    ...state,
-    destinationFee
   };
 };
 

@@ -20,7 +20,7 @@ const BridgeForm = () => {
   } = useBridge();
 
   return (
-    <div className="justify-center flex pt-4 pb-4 m-auto">
+    <div className="absolute inset-y-0 inset-x-0 lg:left-32 2xl:inset-x-0 justify-center flex items-center pb-2">
       <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[26rem]">
         <h2 className="text-primary text-white mb-2">Origin Account</h2>
         <BridgeOriginAccountSelect/>

@@ -39,9 +39,9 @@ function MainApp() {
       <Sidebar />
       {/* {warningModal} */}
       <Switch>
-        <Route path="/" render={() => <Redirect to="/transact" />} exact />
-        <Route path="/send" render={() => <Redirect to="/transact" />} exact />
-        <Route path="/transact" component={SendPage} exact />
+        <Route path="/" render={() => <Redirect to="/bridge" />} exact />
+        {/* <Route path="/send" render={() => <Redirect to="/transact" />} exact /> */}
+        {/* <Route path="/transact" component={SendPage} exact /> */}
         <Route path="/bridge" component={BridgePage} exact />
       </Switch>
       <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">

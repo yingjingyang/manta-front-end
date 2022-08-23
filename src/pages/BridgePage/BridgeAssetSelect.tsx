@@ -9,7 +9,7 @@ const BridgeAssetSelect = () => {
     senderAssetCurrentBalance,
     senderAssetType,
     setSenderAssetTargetBalance,
-    getMaxSendableBalance,
+    maxInput,
     senderAssetTypeOptions,
     setSelectedAssetType
   } = useBridge();
@@ -30,7 +30,7 @@ const BridgeAssetSelect = () => {
         senderAssetCurrentBalance={senderAssetCurrentBalance}
         setSenderAssetTargetBalance={setSenderAssetTargetBalance}
         senderAssetType={senderAssetType}
-        getMaxSendableBalance={getMaxSendableBalance}
+        getMaxSendableBalance={() => maxInput}
       />
     </div>
   );

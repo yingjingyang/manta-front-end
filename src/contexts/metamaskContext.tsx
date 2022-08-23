@@ -10,6 +10,37 @@ export const MetamaskContextProvider = (props) => {
   const [provider, setProvider] = useState(null);
   const ethAddress = provider?.selectedAddress;
 
+  // useEffect(() => {
+  //   const configureMoonRiver = async () => {
+  //     try {
+  //       console.log('provider', provider);
+  //       await provider.request({ method: 'eth_requestAccounts'});
+  //       await provider.request({
+  //         method: 'wallet_addEthereumChain',
+  //         params: [
+  //           {
+  //             chainId: '0x500',
+  //             chainName: 'Moonriver Development Testnet',
+  //             nativeCurrency: {
+  //               name: 'MOVR',
+  //               symbol: 'MOVR',
+  //               decimals: 18
+  //             },
+  //             rpcUrls: ['http://127.0.0.1:9972']
+  //           }
+  //         ]
+  //       });
+  //       setProviderIsConnected(true);
+  //       await tryXcm();
+  //     } catch(e) {
+  //       console.error(e);
+  //     }
+  //   };
+  //   if (provider) {
+  //     configureMoonRiver()
+  //   }
+  // }, )
+
   useEffect(() => {
     const detectMetamask = async () => {
       if (!provider) {

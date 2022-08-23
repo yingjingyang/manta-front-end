@@ -2,18 +2,18 @@
     "PROVIDER_SOCKET": "ws://127.0.0.1:9944",
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": true,
-    "BASE_STORAGE_KEY": "dolphinDev",
-    "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "NETWORK_NAME": "Dolphin",
+    "BASE_STORAGE_KEY": "calamariDev",
+    "SUBSCAN_URL": "https://calamari.subscan.io",
+    "NETWORK_NAME": "Calamari",
     "NODES": [{
-        "name": "Dolphin",
+        "name": "Calamari",
         "url": "ws://127.0.0.1:9944"
     }],
 
-    "ROCOCO_SOCKET": "ws://127.0.0.1:9977",
-    "DOLPHIN_SOCKET": "ws://127.0.0.1:9800",
+    "KUSAMA_SOCKET": "ws://127.0.0.1:9977",
+    "CALAMARI_SOCKET": "ws://127.0.0.1:9800",
     "KARURA_SOCKET": "ws://127.0.0.1:9804",
-    "MOONRIVER_SOCKER": "ws://127.0.0.1:9803",
+    "MOONRIVER_SOCKET": "ws://127.0.0.1:9802",
 
     "DOWNTIME": false
 }
