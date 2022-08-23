@@ -8,12 +8,15 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
+import * as axios from 'axios';
+import Api, { ApiConfig } from 'manta-wasm-wallet-api';
+import { base58Decode, base58Encode } from '@polkadot/util-crypto';
+
+import store from 'store';
+import { localStorageKeys } from 'constants/LocalStorageConstants';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
-import Api, { ApiConfig } from 'manta-wasm-wallet-api';
 import config from 'config';
-import * as axios from 'axios';
-import { base58Decode, base58Encode } from '@polkadot/util-crypto';
 import TxStatus from 'types/TxStatus';
 import mapPostToTransaction from 'utils/api/MapPostToTransaction';
 import { useExternalAccount } from './externalAccountContext';
@@ -71,37 +74,47 @@ export const PrivateWalletContextProvider = (props) => {
       console.log({
         receivers,
         senders,
-        sender_index
+        sender_index,
+        senders_receivers_total: senders_receivers_total.toString(),
+        currentSyncReceivers: currentSyncReceivers.current
       });
-      syncTotalReceivers.current = senders_receivers_total;
+      
+      if (parseInt(currentSyncReceivers.current) === 0) {
+        if (sender_index > 0)
+          currentSyncReceivers.current = sender_index;
+        else
+          currentSyncReceivers.current = receivers.length;
+      } else {
+        if (parseInt(currentSyncReceivers.current) + receivers.length < parseInt(senders_receivers_total.toString()))
+          currentSyncReceivers.current = parseInt(currentSyncReceivers.current) + receivers.length;
+      }
       pullBatchEndTime.current = performance.now();
       const pullBatchTime =
         pullBatchEndTime.current - pullBatchStartTime.current;
 
       console.log('pullBatchTime - ', pullBatchTime);
 
-      if (currentSyncReceivers.current === 0) {
-        currentSyncReceivers.current = sender_index;
-      }
-      currentSyncReceivers.current += receivers.length;
+      console.log({currentSyncReceivers: currentSyncReceivers.current})
 
-      if (currentSyncReceivers.current > 0) {
+      store.set(localStorageKeys.CurrentSyncReceiversCount, currentSyncReceivers.current);
+
+      if (parseInt(currentSyncReceivers.current) > 0) {
         const initialRemainingReceivers =
-          senders_receivers_total - initialSyncReceivers.current;
-        const currentSyncedReceivers = senders_receivers_total - sender_index;
-        const newSyncedReceivers =
-          initialRemainingReceivers - currentSyncedReceivers;
+          parseInt(senders_receivers_total.toString()) - parseInt(initialSyncReceivers.current);
+        const currentSyncedReceivers = parseInt(currentSyncReceivers.current) - parseInt(initialSyncReceivers.current);
 
         percentagePerBatch.current =
-          (100 * receivers.length) / senders_receivers_total;
+          (100 * receivers.length) / parseInt(senders_receivers_total.toString());
         timePerPercentage.current =
           pullBatchTime / parseInt(percentagePerBatch.current);
         syncPercentage.current = (
-          (newSyncedReceivers / initialRemainingReceivers) *
+          (currentSyncedReceivers / initialRemainingReceivers) *
           100
         ).toFixed(0);
 
-        if (syncPercentage.current > 100) {
+        console.log({currentSyncedReceivers, initialRemainingReceivers})
+
+        if (syncPercentage.current >= 100) {
           syncPercentage.current = 100;
         }
 
@@ -183,6 +196,7 @@ export const PrivateWalletContextProvider = (props) => {
     };
 
     const initWallet = async () => {
+      try {
       console.log('INITIALIZING WALLET');
       setIsInitialSync(true);
       walletIsBusy.current = false;
@@ -203,6 +217,7 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
 
       pullBatchStartTime.current = performance.now();
+      currentSyncReceivers.current = store.get(localStorageKeys.CurrentSyncReceiversCount, 0);
 
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
       setPrivateAddress(privateAddress);
@@ -217,6 +232,9 @@ export const PrivateWalletContextProvider = (props) => {
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
       setIsInitialSync(false);
+      } catch(err) {
+        console.log('init wallet error - ', err);
+      }
     };
 
     if (canInitWallet() && !isReady) {
