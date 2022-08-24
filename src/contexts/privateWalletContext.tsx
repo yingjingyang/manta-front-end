@@ -50,13 +50,13 @@ export const PrivateWalletContextProvider = (props) => {
   // sync state
   const initialSyncReceivers = useRef(0);
   const currentSyncReceivers = useRef(0);
+  const syncSenderIndex = useRef(0);
   const syncPercentage = useRef(0);
   const nextSyncPercentage = useRef(0);
   const pullBatchStartTime = useRef(0);
   const pullBatchEndTime = useRef(0);
   const percentagePerBatch = useRef(0);
   const timePerPercentage = useRef(0);
-  const syncTotalReceivers = useRef(0);
   const syncError = useRef(false);
 
   // transaction state
@@ -70,33 +70,28 @@ export const PrivateWalletContextProvider = (props) => {
     sender_index,
     senders_receivers_total
   ) => {
-    try {
-      console.log({
-        receivers,
-        senders,
-        sender_index,
-        senders_receivers_total: senders_receivers_total.toString(),
-        currentSyncReceivers: currentSyncReceivers.current
-      });
-      
-      if (parseInt(currentSyncReceivers.current) === 0) {
-        if (sender_index > 0)
-          currentSyncReceivers.current = sender_index;
-        else
+    try {      
+      if (parseInt(currentSyncReceivers.current) === 0 || sender_index === 0) {
           currentSyncReceivers.current = receivers.length;
       } else {
         if (parseInt(currentSyncReceivers.current) + receivers.length < parseInt(senders_receivers_total.toString()))
           currentSyncReceivers.current = parseInt(currentSyncReceivers.current) + receivers.length;
       }
+
       pullBatchEndTime.current = performance.now();
       const pullBatchTime =
         pullBatchEndTime.current - pullBatchStartTime.current;
 
       console.log('pullBatchTime - ', pullBatchTime);
 
-      console.log({currentSyncReceivers: currentSyncReceivers.current})
-
-      store.set(localStorageKeys.CurrentSyncReceiversCount, currentSyncReceivers.current);
+      if (sender_index === 0) {
+        syncPercentage.current = 0;
+        store.set(localStorageKeys.CurrentSyncReceiversCount, receivers.length);
+        store.set(localStorageKeys.CurrentSyncSenderIndex, 0);
+      } else {
+        store.set(localStorageKeys.CurrentSyncReceiversCount, currentSyncReceivers.current);
+        store.set(localStorageKeys.CurrentSyncSenderIndex, sender_index);
+      }
 
       if (parseInt(currentSyncReceivers.current) > 0) {
         const initialRemainingReceivers =
@@ -104,15 +99,16 @@ export const PrivateWalletContextProvider = (props) => {
         const currentSyncedReceivers = parseInt(currentSyncReceivers.current) - parseInt(initialSyncReceivers.current);
 
         percentagePerBatch.current =
-          (100 * receivers.length) / parseInt(senders_receivers_total.toString());
+        (
+          ((receivers.length - parseInt(syncSenderIndex.current) + sender_index) / initialRemainingReceivers) *
+          100
+        ).toFixed(0);
         timePerPercentage.current =
           pullBatchTime / parseInt(percentagePerBatch.current);
         syncPercentage.current = (
-          (currentSyncedReceivers / initialRemainingReceivers) *
+          ((currentSyncedReceivers + sender_index) / initialRemainingReceivers) *
           100
         ).toFixed(0);
-
-        console.log({currentSyncedReceivers, initialRemainingReceivers})
 
         if (syncPercentage.current >= 100) {
           syncPercentage.current = 100;
@@ -129,8 +125,9 @@ export const PrivateWalletContextProvider = (props) => {
         syncPercentage.current = 0;
       }
       pullBatchStartTime.current = performance.now();
+      syncSenderIndex.current = sender_index;
     } catch (err) {
-      console.log({ err });
+      console.log('sync callback error - ', err);
     }
   };
 
@@ -138,13 +135,6 @@ export const PrivateWalletContextProvider = (props) => {
     syncError.current = true;
   };
 
-  // console.log('timePerPercentage - ', timePerPercentage.current);
-  // console.log('syncPercentage - ', syncPercentage.current);
-  // console.log('nextSyncPercentage - ', nextSyncPercentage.current);
-  console.log('percentagePerBatch - ', percentagePerBatch.current);
-  // console.log('currentSyncReceivers - ', currentSyncReceivers.current);
-  // console.log('pullBatchStartTime - ', pullBatchStartTime.current);
-  // console.log('pullBatchEndTime - ', pullBatchEndTime.current);
   useEffect(() => {
     let interval;
     if (timePerPercentage.current > 0) {
@@ -218,6 +208,7 @@ export const PrivateWalletContextProvider = (props) => {
 
       pullBatchStartTime.current = performance.now();
       currentSyncReceivers.current = store.get(localStorageKeys.CurrentSyncReceiversCount, 0);
+      syncSenderIndex.current = store.get(localStorageKeys.CurrentSyncSenderIndex, 0);
 
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
       setPrivateAddress(privateAddress);
@@ -232,6 +223,8 @@ export const PrivateWalletContextProvider = (props) => {
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
       setIsInitialSync(false);
+      store.remove(localStorageKeys.CurrentSyncReceiversCount);
+      store.remove(localStorageKeys.CurrentSyncSenderIndex);
       } catch(err) {
         console.log('init wallet error - ', err);
       }

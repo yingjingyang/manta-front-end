@@ -5,4 +5,5 @@ export const localStorageKeys = {
   IsPrivateReceiver: 'is-private-receiver',
   IsPrivateSender: 'is-private-sender',
   CurrentSyncReceiversCount: 'current-sync-receivers-count',
+  CurrentSyncSenderIndex: 'current-sync-sender-index'
 };
