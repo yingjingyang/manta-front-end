@@ -50,9 +50,6 @@ module.exports = {
         current: 'var(--color-text-secondary)',
         primary: 'var(--color-fill-primary)',
         secondary: 'var(--color-fill-secondary)',
-        gray: 'var(--color-fill-gray)',
-        black: '#000',
-        white: '#fff'
       },
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)'

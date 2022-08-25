@@ -1,4 +1,5 @@
 import React from 'react';
+import DotLoader from '../DotLoader';
 
 type IBalanceProps = {
   balance: string;
@@ -17,11 +18,7 @@ const Balance: React.FC<IBalanceProps> = ({
     <div className={className}>
       Balance:&nbsp;<strong>{balance}</strong>
       {loader ? (
-        <div className="inline-flex items-center">
-          <div className={`loader-dot1 ${loaderClassName}`} />
-          <div className={`loader-dot2 ${loaderClassName}`} />
-          <div className={`loader-dot3 ${loaderClassName}`} />
-        </div>
+        <DotLoader />
       ) : null}
     </div>
   );

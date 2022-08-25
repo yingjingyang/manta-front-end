@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -22,12 +22,12 @@ const SendAmountInput = () => {
     isToPrivate
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
-  const balanceText =
-    isInitialSync && (isPrivateTransfer() || isToPublic())
-      ? ''
-      : senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
+  const balanceText = useMemo(() => {
+    if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
+      return '';
+    }
+    return senderAssetCurrentBalance ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}` : '';
+  }, [isInitialSync, isPrivateTransfer, isToPublic, senderAssetCurrentBalance, senderAssetType]);
 
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();

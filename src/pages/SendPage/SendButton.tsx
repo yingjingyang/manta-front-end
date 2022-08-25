@@ -1,11 +1,12 @@
 // @ts-nocheck
-import React from 'react';
+import React, {useMemo} from 'react';
 import classNames from 'classnames';
 import MantaLoading from 'components/Loading';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { showError } from 'utils/ui/Notifications';
 import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { usePrivateWalletSync } from 'contexts/privateWalletSyncContext';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useSend } from './SendContext';
 import SyncPercentage from 'components/SyncPercentage';
@@ -25,10 +26,9 @@ const SendButton = () => {
     signerIsConnected,
     isReady,
     isInitialSync,
-    syncPercentage,
     signerVersion,
-    syncError
   } = usePrivateWallet();
+  const {syncPercentage, syncError} = usePrivateWalletSync();
   const { txStatus } = useTxStatus();
   const { send } = useSend();
   const disabled = txStatus?.isProcessing();
@@ -64,27 +64,32 @@ const SendButton = () => {
     buttonLabel = 'Private Transfer';
   }
 
+  const shouldShowSyncPercentage = !syncError.current && 
+    apiState !== 'ERROR' &&
+    signerIsConnected &&
+    !isReady &&
+    isInitialSync &&
+    (isPrivateTransfer() || isToPublic() || isToPrivate());
+
+  const errorLabel = useMemo(() => {
+    if (syncError.current)
+      return 'Failed to sync to the node'; 
+    else if (apiState === 'ERROR')
+      return 'Failed to connect to the node'  
+    else if (!isReady && !signerIsConnected && (isPrivateTransfer() || isToPublic() || isToPrivate())) 
+      return 'Failed to connect to the signer';
+    return '';
+  }, [syncError.current, apiState, signerIsConnected, isReady, isPrivateTransfer, isToPrivate, isToPublic]);
+
   return (
     <div>
       {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />
-      ) : syncError.current ? (
-        <div className="text-center">
-          <p className="text-red-500">Failed to sync to the node</p>
-        </div>
-      ) : apiState !== 'ERROR' &&
-        signerIsConnected &&
-        !isReady &&
-        isInitialSync &&
-        (isPrivateTransfer() || isToPublic() || isToPrivate()) ? (
+      ) : shouldShowSyncPercentage ? (
         <SyncPercentage percentage={syncPercentage.current} />
-      ) : apiState === 'ERROR' ? (
+      ) : errorLabel ? (
         <div className="text-center">
-          <p className="text-red-500">Failed to connect to the node</p>
-        </div>
-      ) : !isReady && !signerIsConnected ? (
-        <div className="text-center">
-          <p className="text-red-500">Failed to connect to the signer</p>
+          <p className="text-red-500">{errorLabel}</p>
         </div>
       ) : (
         <button

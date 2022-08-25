@@ -110,3 +110,82 @@
     border: 0.25em solid;
     border-right-color: transparent;
 }
+
+.flex-wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+}
+  
+.single-chart {
+  width: 54px;
+  justify-content: space-around;
+}
+
+.circular-chart {
+  display: block;
+  max-height: 54px;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 2;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.circular-chart.orange .circle {
+  stroke: #ff9f00;
+}
+
+.circular-chart.green .circle {
+  stroke: #4cc790;
+}
+
+.circular-chart.blue .circle {
+  stroke: #3c9ee5;
+}
+
+
+.loader-dot1,
+.loader-dot2,
+.loader-dot3 {
+  width: 2px;
+  height: 2px;
+  border: double;
+  border-radius: 50%;
+  margin: 3px;
+}
+.loader-dot1 {
+  animation: jump 1.6s -0.32s linear infinite;
+}
+.loader-dot2 {
+  animation: jump 1.6s -0.16s linear infinite;
+}
+.loader-dot3 {
+  animation: jump 1.6s linear infinite;
+}
+
+@keyframes jump {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+}
