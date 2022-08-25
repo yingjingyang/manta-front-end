@@ -2,19 +2,19 @@
 import React from 'react';
 import Select, { components } from 'react-select';
 
-const ChainDropdown = ({chain, chainOptions, setChain}) => {
+const ChainSelect = ({chain, chainOptions, setChain}) => {
   const dropdownOptions = chainOptions?.map((chain) => {
     return {
       id: `chain_${chain.name}`,
       key: chain.name,
-      label: chain.name,
+      label: chain.displayName,
       value: chain
     };
   });
 
   return (
     <Select
-      className="w-full btn-primary rounded-md"
+      className="w-52 rounded-2xl gradient-border text-black dark:text-white"
       isSearchable={false}
       value={chain}
       onChange={(option) => setChain(option.value)}
@@ -36,15 +36,19 @@ const EmptyIndicatorSeparator = () => {
 
 const ChainSingleValue = ({ data }) => {
   return (
-    <div className="pl-2 border-0 flex">
-      <div className="pl-3">
-        <img
-          className="w-10 h-10 left-2 absolute manta-bg-secondary rounded-full"
-          src={data?.icon}
-          alt="icon"
-        />
+    <div  className="w-full cursor-pointer">
+      <div className="flex items-center inline">
+        <div>
+          <img
+            className="w-9 h-9 ml-2 my-2 rounded-full"
+            src={data?.icon}
+            alt="icon"
+          />
+        </div>
+        <div className="p-2 pl-3">
+        <div className="text-lg text-black dark:text-white">{data?.displayName}</div>
+        </div>
       </div>
-      <div className="text-xl pl-8 pt-1 text-white">{data?.name}</div>
     </div>
   );
 };
@@ -56,12 +60,12 @@ const ChainOption = (props) => {
       <div className="flex items-center inline hover:bg-blue-100">
         <div>
           <img
-            className="w-10 h-10 ml-3 my-2 manta-bg-secondary rounded-full"
+            className="w-9 h-9 ml-3 my-2 manta-bg-secondary rounded-full"
             src={value?.icon}
             alt="icon"
           />
         </div>
-        <div className="pl-4 p-2">
+        <div className="pl-4 p-2 text-black">
           <components.Option {...props} />
         </div>
       </div>
@@ -70,33 +74,30 @@ const ChainOption = (props) => {
 };
 
 const dropdownStyles = {
-  dropdownIndicator: () => ({ paddingRight: '1rem', color: 'white' }),
+  dropdownIndicator: () => ({ paddingRight: '1rem'}),
   control: (provided) => ({
     ...provided,
     backgroundColor: 'transparent',
     borderStyle: 'none',
     borderWidth: '0px',
-    borderRadius: '0.5rem',
-    paddingBottom: '0.5rem',
-    paddingTop: '0.3rem',
+    borderRadius: '1rem',
     minHeight: '4.2rem',
     boxShadow: '0 0 #0000',
     cursor: 'pointer'
   }),
   option: () => ({
     fontSize: '12pt',
-    color: 'black'
   }),
   valueContainer: () => ({
     minHeight: '2rem',
-    minWidth: '75%',
+    minWidth: '80%',
     textAlign: 'center',
     display: 'flex',
-    justifyContent: 'flex-start'
+    justifyContent: 'space-between'
   }),
   menu: (provided) => ({
     ...provided
   })
 };
 
-export default ChainDropdown;
+export default ChainSelect;

@@ -85,6 +85,13 @@ export default class Balance {
     return this.valueAtomicUnits.lt(other.valueAtomicUnits);
   }
 
+  lte(other) {
+    if (this.assetType.assetId !== other.assetType.assetId) {
+      throw new Error('Cannot compare different asset types');
+    }
+    return this.valueAtomicUnits.lte(other.valueAtomicUnits);
+  }
+
   sub(other) {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot subtract different asset types');

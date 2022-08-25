@@ -14,6 +14,13 @@ const Logo = () => {
     logo = Svgs.Manta;
   }
 
+  // todo: get transparent svg for calamari
+  if (config.NETWORK_NAME === network.calamari) {
+    return (
+      <img className='w-12 h-12 rounded-full' src={logo} alt="logo" />
+    )
+  }
+
   return (
     <img src={logo} alt="logo" />
   );

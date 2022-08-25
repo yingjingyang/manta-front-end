@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import React from 'react';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendToAddressForm from './SendToAddressForm';
 
 const INTERNAL_ACCOUNT_LABEL = 'Private';

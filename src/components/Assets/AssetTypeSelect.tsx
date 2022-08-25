@@ -7,14 +7,14 @@ import AssetType from 'types/AssetType';
 import GradientText from 'components/GradientText';
 import classNames from 'classnames';
 
-const SendAssetTypeDropdown = ({
-  senderAssetType, 
-  senderAssetTypeOptions, 
+const AssetTypeSelect = ({
+  assetType,
+  assetTypeOptions,
   setSelectedAssetType
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const dropdownOptions = senderAssetTypeOptions?.map((assetType) => {
+  const dropdownOptions = assetTypeOptions?.map((assetType) => {
     return {
       id: `assetType_${assetType.ticker}`,
       key: assetType.assetId,
@@ -24,7 +24,7 @@ const SendAssetTypeDropdown = ({
   });
 
   const onChangeAssetType = (option) => {
-    if (option.value.assetId !== senderAssetType.assetId) {
+    if (option.value.assetId !== assetType.assetId) {
       setSelectedAssetType(option.value);
     }
   };
@@ -37,22 +37,22 @@ const SendAssetTypeDropdown = ({
         { disabled: disabled }
       )}
       isSearchable={false}
-      value={senderAssetType}
+      value={assetType}
       onChange={onChangeAssetType}
       options={dropdownOptions}
       isDisabled={disabled}
       placeholder="--"
       styles={dropdownStyles(disabled)}
       components={{
-        SingleValue: SendAssetTypeSingleValue,
-        Option: SendAssetTypeOption,
+        SingleValue: AssetTypeSingleValue,
+        Option: AssetTypeOption,
         IndicatorSeparator: EmptyIndicatorSeparator
       }}
     />
   );
 };
 
-SendAssetTypeDropdown.propTypes = {
+AssetTypeSelect.propTypes = {
   selectedOption: PropTypes.instanceOf(AssetType),
   setSelectedOption: PropTypes.func,
   optionsArePrivate: PropTypes.bool
@@ -89,7 +89,7 @@ const dropdownStyles = (disabled) => {
     }),
     menu: (provided) => ({
       ...provided,
-      width: '250%'
+      width: '150%'
     }),
     container: () => ({
       position: 'absolute'
@@ -101,7 +101,7 @@ const EmptyIndicatorSeparator = () => {
   return <div />;
 };
 
-const SendAssetTypeSingleValue = ({ data }) => {
+const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="pl-2 border-0 flex items-center gap-3">
       <img className="w-8 h-8 rounded-full" src={data.icon} alt="icon" />
@@ -110,7 +110,7 @@ const SendAssetTypeSingleValue = ({ data }) => {
   );
 };
 
-const SendAssetTypeOption = (props) => {
+const AssetTypeOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps}>
@@ -127,4 +127,4 @@ const SendAssetTypeOption = (props) => {
   );
 };
 
-export default SendAssetTypeDropdown;
+export default AssetTypeSelect;

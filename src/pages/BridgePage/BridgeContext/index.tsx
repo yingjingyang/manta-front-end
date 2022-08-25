@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
+import Decimal from 'decimal.js';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
@@ -11,18 +12,16 @@ import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import AssetType from 'types/AssetType';
 import { useMetamask } from 'contexts/metamaskContext';
 import Chain from 'types/Chain';
-import { transferMovrFromMoonriverToDolphin } from 'utils/api/EthXCM';
+import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
 import BRIDGE_ACTIONS from './bridgeActions';
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { Bridge } from '@polkawallet/bridge/build';
 
-// todo: fixed precision >>> decimal
-
 const BridgeContext = React.createContext();
 
 export const BridgeContextProvider = (props) => {
-  const { provider, ethAddress } = useMetamask();
+  const { provider, ethAddress, configureMoonRiver } = useMetamask();
   const { setTxStatus } = useTxStatus();
   const {
     externalAccount,
@@ -37,7 +36,6 @@ export const BridgeContextProvider = (props) => {
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
-    senderNativeTokenPublicBalance,
     senderOriginSubstrateAccount,
     senderDestinationSubstrateAccount,
     originChainOptions,
@@ -45,11 +43,16 @@ export const BridgeContextProvider = (props) => {
     destinationChain,
     bridge,
     maxInput,
+    minInput
   } = state;
 
-  const originAddress = (originChain.name === "moonriver")
+  const originAddress = originChain.ethMetadata
     ? ethAddress
     : senderOriginSubstrateAccount?.address;
+
+  const destinationAddress = destinationChain.ethMetadata
+    ? ethAddress
+    : senderDestinationSubstrateAccount?.address;
 
   useEffect(() => {
     const initBridge = async () => {
@@ -114,18 +117,17 @@ export const BridgeContextProvider = (props) => {
     const getMaxInput = (inputConfig) => {
       return Balance.fromBaseUnits(
         senderAssetType,
-        inputConfig.maxInput
+        Decimal.max(new Decimal(inputConfig.maxInput.toString()), new Decimal(0))
       )
     }
     const getMinInput = (inputConfig) => {
       return Balance.fromBaseUnits(
         senderAssetType,
-        inputConfig.minInput
+        new Decimal(inputConfig.minInput.toString())
       )
     }
 
     const handleInputConfigChange = (inputConfig) => {
-      console.log('inputConfig', inputConfig);
       dispatch({
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
         originFee: getOriginFee(inputConfig),
@@ -136,10 +138,21 @@ export const BridgeContextProvider = (props) => {
     }
 
     const getInputConfigParams = () => {
+      const amount = senderAssetTargetBalance
+        ? senderAssetTargetBalance.valueBaseUnits.toString()
+        : "0";
+
+      let address = destinationAddress;
+      // Can't estimate fees for eth addresses like on Moonriver; use any substrate address instead
+      if (destinationAddress === ethAddress) {
+        const ARBITRARY_ADDRESS = '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
+        address = ARBITRARY_ADDRESS;
+      };
+
       return {
         signer: originAddress,
-        address: senderDestinationSubstrateAccount.address, // todo: should generalize
-        amount: new FixedPointNumber(senderAssetTargetBalance.valueBaseUnits.toString()),
+        address: address,
+        amount: amount,
         to: destinationChain.name,
         token: senderAssetType.baseTicker
       };
@@ -148,7 +161,6 @@ export const BridgeContextProvider = (props) => {
     const subscribeInputConfig= () => {
       if (
         !senderAssetType
-        || !senderAssetTargetBalance
         || !originAddress
         || !bridge
         || !originChain
@@ -256,6 +268,9 @@ export const BridgeContextProvider = (props) => {
 
   // Sets the origin chain
   const setOriginChain = (originChain) => {
+    if (originChain.name === Chain.Moonriver().name) {
+      configureMoonRiver()
+    }
     dispatch({
       type: BRIDGE_ACTIONS.SET_ORIGIN_CHAIN,
       originChain
@@ -264,6 +279,9 @@ export const BridgeContextProvider = (props) => {
 
   // Sets the destination chain
   const setDestinationChain = (destinationChain) => {
+    if (destinationChain.name === Chain.Moonriver().name) {
+      configureMoonRiver()
+    }
     dispatch({
       type: BRIDGE_ACTIONS.SET_DESTINATION_CHAIN,
       destinationChain
@@ -273,137 +291,51 @@ export const BridgeContextProvider = (props) => {
 
   /**
    *
-   * Balance refresh logic
-   */
-
-
-  /**
-   *
    * Transaction validation
    */
 
-  // Gets the highest amount the user is allowed to send for the currently
-  // selected asset
-  const getMaxSendableBalance = () => {
-    // if (!senderAssetCurrentBalance || !senderNativeTokenPublicBalance || !senderAssetType) {
-    //   return null;
-    // }
-    // if (senderAssetType.isNativeToken) {
-    //   const reservedNativeTokenBalance = getReservedNativeTokenBalance();
-    //   const zeroBalance = new Balance(senderAssetType, new BN(0));
-    //   return Balance.max(
-    //     senderAssetCurrentBalance.sub(reservedNativeTokenBalance),
-    //     zeroBalance
-    //   );
-    // }
-    // return senderAssetCurrentBalance.valueOverExistentialDeposit();
-  };
-
-  // Gets the amount of the native token the user is not allowed to go below
-  // If the user attempts a transaction with less than this amount of the
-  // native token, the transaction will fail
-  const getReservedNativeTokenBalance = () => {
-    if (!senderNativeTokenPublicBalance) {
-      return null;
-    }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(
-      originChain.nativeAsset,
-      0.1
-    );
-    const existentialDeposit = new Balance(
-      originChain.nativeAsset,
-      originChain.nativeAsset.existentialDeposit
-    );
-    return conservativeFeeEstimate.add(existentialDeposit);
-  };
-
-  // Returns true if the current tx would cause the user to go below a
-  // recommended min fee balance of 1. This helps prevent users from
-  // accidentally becoming unable to transact because they cannot pay fees
-  const txWouldDepleteSuggestedMinFeeBalance = () => {
-    if (
-      senderAssetCurrentBalance?.assetType.isNativeToken &&
-      senderAssetTargetBalance?.assetType.isNativeToken
-    ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
-        originChain.nativeAsset,
-        1
-      );
-      const balanceAfterTx = senderAssetCurrentBalance.sub(
-        senderAssetTargetBalance
-      );
-      return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
-    }
-    return false;
-  };
-
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
-    if (!senderAssetTargetBalance || !senderAssetCurrentBalance || !senderAssetType) {
+    if (!maxInput || !senderAssetTargetBalance) {
       return null;
-    }
-    if (
-      senderAssetTargetBalance.assetType.assetId !==
-      senderAssetCurrentBalance.assetType.assetId
+    } else if (
+      senderAssetTargetBalance?.assetType.assetId !==
+      maxInput?.assetType.assetId
     ) {
       return null;
     }
-    console.log('maxInput', maxInput.toString());
-    return maxInput.gte(senderAssetTargetBalance);
+    return senderAssetTargetBalance.lte(maxInput);
   };
 
-  // Checks if the user has enough native token to pay fees & publish a transaction
-  const userCanPayFee = () => {
-    return true;
-    // if (!senderNativeTokenPublicBalance) {
-    //   return null;
-    // }
-    // let requiredNativeTokenBalance = getReservedNativeTokenBalance();
-    // if (senderAssetType?.isNativeToken) {
-    //   requiredNativeTokenBalance = requiredNativeTokenBalance.add(
-    //     senderAssetTargetBalance
-    //   );
-    // }
-    // return senderNativeTokenPublicBalance.gte(requiredNativeTokenBalance);
-  };
+  const txIsOverMinAmount = () => {
+    if (!minInput || !senderAssetTargetBalance) {
+      return null;
+    } else if (
+      senderAssetTargetBalance?.assetType.assetId !==
+      minInput?.assetType.assetId
+    ) {
+      return null;
+    }
+    return senderAssetTargetBalance.gte(minInput);
+  }
 
   const userCanSign = () => {
-    if (senderAssetType?.assetId === AssetType.Moonriver().assetId) {
+    if (senderAssetType?.ethMetadata) {
       return provider !== null;
     } else {
       return externalAccountSigner !== null;
     }
   };
 
-  // Checks the user is sending at least the existential deposit
-  const receiverAmountIsOverExistentialBalance = () => {
-    if (!senderAssetTargetBalance) {
-      return null;
-    }
-    return senderAssetTargetBalance.valueAtomicUnits.gte(
-      senderAssetType.existentialDeposit // revisit
-    );
-  };
-
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
-    console.log (
-      api,
-      senderAssetTargetBalance,
-      senderAssetCurrentBalance,
-      userCanSign(),
-      userHasSufficientFunds(),
-      userCanPayFee(),
-      receiverAmountIsOverExistentialBalance()
-    );
     return (
       api &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
       userCanSign() &&
       userHasSufficientFunds() &&
-      // userCanPayFee() &&
-      receiverAmountIsOverExistentialBalance()
+      txIsOverMinAmount()
     );
   };
 
@@ -467,7 +399,7 @@ export const BridgeContextProvider = (props) => {
   };
 
   const sendEth = async () => {
-    const success = await transferMovrFromMoonriverToDolphin(
+    const success = await transferMovrFromMoonriverToCalamari(
       provider, senderAssetTargetBalance, senderDestinationSubstrateAccount.address
     );
     if (success) {
@@ -477,13 +409,9 @@ export const BridgeContextProvider = (props) => {
     }
   };
 
-
   const value = {
     userHasSufficientFunds,
-    userCanPayFee,
-    getMaxSendableBalance,
-    receiverAmountIsOverExistentialBalance,
-    txWouldDepleteSuggestedMinFeeBalance,
+    txIsOverMinAmount,
     isValidToSend,
     setSenderAssetTargetBalance,
     setSenderOriginSubstrateAccount,

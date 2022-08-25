@@ -14,7 +14,7 @@ const SendAmountInput = ({
   senderAssetCurrentBalance,
   setSenderAssetTargetBalance,
   senderAssetType,
-  getMaxSendableBalance,
+  maxSendableBalance,
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
@@ -41,9 +41,8 @@ const SendAmountInput = ({
   };
 
   const onClickMax = () => {
-    const maxAmount = getMaxSendableBalance();
-    if (maxAmount) {
-      onChangeSendAmountInput(maxAmount.toString());
+    if (maxSendableBalance) {
+      onChangeSendAmountInput(maxSendableBalance.toString());
     }
   };
 

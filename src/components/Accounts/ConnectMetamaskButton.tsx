@@ -69,7 +69,6 @@ const ConnectMetamaskButton = () => {
 
   const configureMoonRiver = async () => {
     try {
-      console.log('provider', provider);
       await provider.request({ method: 'eth_requestAccounts'});
       await provider.request({
         method: 'wallet_addEthereumChain',
@@ -86,8 +85,6 @@ const ConnectMetamaskButton = () => {
           }
         ]
       });
-      setProviderIsConnected(true);
-      await tryXcm();
     } catch(e) {
       console.error(e);
     }

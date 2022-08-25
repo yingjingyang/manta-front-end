@@ -1,5 +1,4 @@
 // @ts-nocheck
-import BN from 'bn.js';
 import config from 'config';
 import Svgs from 'resources/icons';
 import { KaruraAdapter } from '@polkawallet/bridge/build/adapters/acala';
@@ -12,6 +11,21 @@ import AssetType from './AssetType';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
+// export type ApiConfig = {
+//   socket: string
+//   apiTypes: bool,
+//   apiOptions: bool,
+//   apiTypesBundle: bool
+// }
+
+// export type XcmConfig = {
+//   xcmAssets: string
+//   nativeAsset: string
+//   xcmAdapter: string
+//   parachainId: number
+// }
+
+
 export default class Chain {
   constructor(
     name,
@@ -21,11 +35,11 @@ export default class Chain {
     socket,
     xcmAssets,
     nativeAsset,
-    destinationWeight,
     xcmAdapter,
     apiTypes = null,
     apiOptions = null,
     apiTypesBundle = null,
+    ethMetadata = null
   ) {
     this.name = name;
     this.displayName = displayName;
@@ -34,12 +48,11 @@ export default class Chain {
     this.socket = socket;
     this.xcmAssets = xcmAssets;
     this.nativeAsset = nativeAsset;
-    this.destinationWeight = destinationWeight;
     this.xcmAdapter = xcmAdapter;
     this.apiTypes = apiTypes || {};
     this.apiOptions = apiOptions;
-    this.apiTypesBundle = apiTypesBundle || null;
-    this.balanceSubscription = null;
+    this.apiTypesBundle = apiTypesBundle;
+    this.ethMetadata = ethMetadata;
   }
 
   static Dolphin() {
@@ -51,7 +64,6 @@ export default class Chain {
       config.DOLPHIN_SOCKET,
       [AssetType.Rococo(), AssetType.Karura(), AssetType.Moonriver()],
       AssetType.Dolphin(),
-      new BN('4000000000'),
       new CalamariAdapter(),
       types
     );
@@ -66,7 +78,6 @@ export default class Chain {
       config.CALAMARI_SOCKET,
       [AssetType.Kusama(), AssetType.Karura(), AssetType.Moonriver()],
       AssetType.Calamari(),
-      new BN('4000000000'),
       new CalamariAdapter(),
       types
     );
@@ -81,7 +92,6 @@ export default class Chain {
       config.ROCOCO_SOCKET,
       [AssetType.Rococo()],
       AssetType.Rococo(),
-      new BN('4000000000'),
       new KusamaAdapter()
     );
   }
@@ -95,7 +105,6 @@ export default class Chain {
       config.KUSAMA_SOCKET,
       [AssetType.Kusama()],
       AssetType.Kusama(),
-      new BN('4000000000'),
       new KusamaAdapter()
     );
   }
@@ -109,7 +118,6 @@ export default class Chain {
       config.KARURA_SOCKET,
       [AssetType.Karura()],
       AssetType.Karura(),
-      new BN('800000000'),
       new KaruraAdapter(),
       null,
       options
@@ -117,6 +125,17 @@ export default class Chain {
   }
 
   static Moonriver() {
+    const moonriverEthMetadata = {
+      chainId: '0x500',
+      chainName: 'Moonriver Development Testnet',
+      nativeCurrency: {
+        name: 'MOVR',
+        symbol: 'MOVR',
+        decimals: 18
+      },
+      rpcUrls: [config.MOONRIVER_RPC]
+    };
+
     return new Chain(
       'moonriver',
       'Moonriver',
@@ -125,9 +144,11 @@ export default class Chain {
       config.MOONRIVER_SOCKET,
       [AssetType.Moonriver()],
       AssetType.Moonriver(),
-      new BN('4000000000'), // todo fixme: probably wrong!
       new MoonriverAdapter(),
-      typesBundlePre900
+      typesBundlePre900,
+      null,
+      null,
+      moonriverEthMetadata
     );
   }
 
@@ -151,7 +172,6 @@ export default class Chain {
     } else {
       this.api = await ApiPromise.create({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});
     }
-    console.log('this.api', this.api, this.apiTypesBundle)
   }
 
   async initXcmAdapter() {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import SendAmountInput from 'components/AmountInput/SendAmountInput';
-import SendAssetTypeDropdown from 'components/AssetTypeDropdown/SendAssetTypeDropdown';
+import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useBridge } from './BridgeContext';
 
 const BridgeAssetSelect = () => {
@@ -11,18 +11,27 @@ const BridgeAssetSelect = () => {
     setSenderAssetTargetBalance,
     maxInput,
     senderAssetTypeOptions,
-    setSelectedAssetType
+    setSelectedAssetType,
+    txIsOverMinAmount,
+    userHasSufficientFunds,
   } = useBridge();
 
   const balanceText = senderAssetCurrentBalance
     ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-    : '';
+    : null;
+
+  let errorText = null;
+  if (txIsOverMinAmount() === false) {
+    errorText = 'Tx amount too low'
+  } else if (userHasSufficientFunds() === false) {
+    errorText = 'Tx amount is too high'
+  }
 
   return (
     <div className="w-100 relative">
-      <SendAssetTypeDropdown
-        senderAssetType={senderAssetType}
-        senderAssetTypeOptions={senderAssetTypeOptions}
+      <AssetTypeSelect
+        assetType={senderAssetType}
+        assetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}
       />
       <SendAmountInput
@@ -30,7 +39,7 @@ const BridgeAssetSelect = () => {
         senderAssetCurrentBalance={senderAssetCurrentBalance}
         setSenderAssetTargetBalance={setSenderAssetTargetBalance}
         senderAssetType={senderAssetType}
-        getMaxSendableBalance={() => maxInput}
+        maxSendableBalance={maxInput}
       />
     </div>
   );

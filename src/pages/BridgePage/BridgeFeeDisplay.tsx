@@ -13,7 +13,7 @@ const BridgeFeeDisplay = () => {
 
 
   return (
-    <div className="pt-5">
+    <div className="py-1">
       <div className="text-primary">{`Origin fee: ${originFeeText}`}</div>
       <div className="text-primary">{`Destination fee: ${destinationFeeText}`}</div>
     </div>

@@ -4,13 +4,26 @@ import PublicPrivateToggle from 'pages/SendPage/PublicPrivateToggle';
 import { useSend } from '../SendContext';
 import FromAccountSelect from './FromAccountSelect';
 import SendAssetSelect from './SendAssetSelect';
-import WarningText from './WarningText';
+import FormErrorText from 'components/Error/FormErrorText';
 
 const SendFromForm = () => {
   const {
     toggleSenderIsPrivate,
     senderAssetType,
+    userHasSufficientFunds,
+    txWouldDepleteSuggestedMinFeeBalance,
+    senderAssetType
   } = useSend();
+
+  let errorText = null;
+  if (userHasSufficientFunds() === false) {
+    errorText = 'Insufficient balance';
+  }
+
+  let warningText = null;
+  if (txWouldDepleteSuggestedMinFeeBalance()) {
+    warningText = `You need ${senderAssetType.ticker} to pay fees; consider retaining a small balance.`
+  }
 
   return (
     <div className="flex-y space-y-1">
@@ -25,7 +38,10 @@ const SendFromForm = () => {
         </div>
       </div>
       <SendAssetSelect />
-      <WarningText />
+      <FormErrorText
+        errorText={errorText}
+        warningText={warningText}
+      />
     </div>
   );
 };

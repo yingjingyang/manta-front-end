@@ -2,13 +2,13 @@
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendAmountInput from 'components/AmountInput/SendAmountInput';
-import SendAssetTypeDropdown from 'components/AssetTypeDropdown/SendAssetTypeDropdown';
+import SendAssetTypeDropdown from 'components/Assets/AssetTypeSelect';
 import { useSend } from '../SendContext';
 
 const SendAssetSelect = () => {
   const { isInitialSync } = usePrivateWallet();
   const {
-    isPrivateTransfer, 
+    isPrivateTransfer,
     isToPublic,
     senderAssetCurrentBalance,
     senderAssetType,
@@ -17,6 +17,8 @@ const SendAssetSelect = () => {
     senderAssetTypeOptions,
     setSelectedAssetType
   } = useSend();
+
+  const maxSendableBalance = getMaxSendableBalance();
 
   const balanceText =
   isInitialSync && (isPrivateTransfer() || isToPublic())
@@ -27,17 +29,17 @@ const SendAssetSelect = () => {
 
   return (
     <div className="w-100 relative">
-      <SendAssetTypeDropdown
-        senderAssetType={senderAssetType}
-        senderAssetTypeOptions={senderAssetTypeOptions} 
+      <AssetTypeSelect
+        assetType={senderAssetType}
+        assetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}
       />
-      <SendAmountInput 
+      <SendAmountInput
         balanceText={balanceText}
         senderAssetCurrentBalance={senderAssetCurrentBalance}
         setSenderAssetTargetBalance={setSenderAssetTargetBalance}
         senderAssetType={senderAssetType}
-        getMaxSendableBalance={getMaxSendableBalance}
+        maxSendableBalance={maxSendableBalance}
       />
     </div>
   );
