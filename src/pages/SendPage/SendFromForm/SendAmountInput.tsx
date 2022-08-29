@@ -26,16 +26,8 @@ const SendAmountInput = () => {
     if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
       return '';
     }
-    return senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
-  }, [
-    isInitialSync,
-    isPrivateTransfer,
-    isToPublic,
-    senderAssetCurrentBalance,
-    senderAssetType
-  ]);
+    return senderAssetCurrentBalance ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}` : '';
+  }, [isInitialSync, isPrivateTransfer, isToPublic, senderAssetCurrentBalance, senderAssetType]);
 
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();

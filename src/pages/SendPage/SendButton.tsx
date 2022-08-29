@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useMemo } from 'react';
+import React, {useMemo} from 'react';
 import classNames from 'classnames';
 import MantaLoading from 'components/Loading';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -22,9 +22,13 @@ const SendButton = () => {
     receiverAmountIsOverExistentialBalance
   } = useSend();
   const { apiState } = useSubstrate();
-  const { signerIsConnected, isReady, isInitialSync, signerVersion } =
-    usePrivateWallet();
-  const { syncPercentage, syncError } = usePrivateWalletSync();
+  const {
+    signerIsConnected,
+    isReady,
+    isInitialSync,
+    signerVersion,
+  } = usePrivateWallet();
+  const {syncPercentage, syncError} = usePrivateWalletSync();
   const { txStatus } = useTxStatus();
   const { send } = useSend();
   const disabled = txStatus?.isProcessing();
@@ -60,8 +64,7 @@ const SendButton = () => {
     buttonLabel = 'Private Transfer';
   }
 
-  const shouldShowSyncPercentage =
-    !syncError.current &&
+  const shouldShowSyncPercentage = !syncError.current && 
     apiState !== 'ERROR' &&
     signerIsConnected &&
     !isReady &&
@@ -69,31 +72,21 @@ const SendButton = () => {
     (isPrivateTransfer() || isToPublic() || isToPrivate());
 
   const errorLabel = useMemo(() => {
-    if (syncError.current) return 'Failed to sync to the node';
-    else if (apiState === 'ERROR') return 'Failed to connect to the node';
-    else if (
-      !isReady &&
-      !signerIsConnected &&
-      (isPrivateTransfer() || isToPublic() || isToPrivate())
-    )
+    if (syncError.current)
+      return 'Failed to sync to the node'; 
+    else if (apiState === 'ERROR')
+      return 'Failed to connect to the node'  
+    else if (!isReady && !signerIsConnected && (isPrivateTransfer() || isToPublic() || isToPrivate())) 
       return 'Failed to connect to the signer';
     return '';
-  }, [
-    syncError.current,
-    apiState,
-    signerIsConnected,
-    isReady,
-    isPrivateTransfer,
-    isToPrivate,
-    isToPublic
-  ]);
+  }, [syncError.current, apiState, signerIsConnected, isReady, isPrivateTransfer, isToPrivate, isToPublic]);
 
   return (
     <div>
       {txStatus?.isProcessing() ? (
         <MantaLoading className="py-4" />
       ) : shouldShowSyncPercentage ? (
-        <SyncPercentage percentage={syncPercentage} />
+        <SyncPercentage percentage={syncPercentage.current} />
       ) : errorLabel ? (
         <div className="text-center">
           <p className="text-red-500">{errorLabel}</p>

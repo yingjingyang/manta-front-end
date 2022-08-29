@@ -30,16 +30,7 @@ export const PrivateWalletContextProvider = (props) => {
   const { api, socket, apiState } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
-  const {
-    updateSyncProgress,
-    syncErrorCallback,
-    syncError,
-    syncPercentage,
-    pullBatchStartTime,
-    pullBatchEndTime,
-    currentSyncReceivers,
-    syncSenderIndex
-  } = usePrivateWalletSync();
+  const {updateSyncProgress, syncErrorCallback, syncError, syncPercentage, pullBatchStartTime, pullBatchEndTime, currentSyncReceivers, syncSenderIndex} = usePrivateWalletSync();
 
   // wasm wallet
   const [privateAddress, setPrivateAddress] = useState(null);
@@ -88,51 +79,45 @@ export const PrivateWalletContextProvider = (props) => {
 
     const initWallet = async () => {
       try {
-        console.log('INITIALIZING WALLET');
-        setIsInitialSync(true);
-        walletIsBusy.current = false;
-        await api.isReady;
-        const wasm = await import('manta-wasm-wallet');
-        const wasmSigner = new wasm.Signer(config.SIGNER_URL);
-        const DEFAULT_PULL_SIZE = 4096;
-        const wasmApiConfig = new ApiConfig(
-          api,
-          externalAccountSigner,
-          DEFAULT_PULL_SIZE,
-          DEFAULT_PULL_SIZE,
-          updateSyncProgress,
-          syncErrorCallback
-        );
-        const wasmApi = new Api(wasmApiConfig);
-        const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
-        const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
+      console.log('INITIALIZING WALLET');
+      setIsInitialSync(true);
+      walletIsBusy.current = false;
+      await api.isReady;
+      const wasm = await import('manta-wasm-wallet');
+      const wasmSigner = new wasm.Signer(config.SIGNER_URL);
+      const DEFAULT_PULL_SIZE = 4096;
+      const wasmApiConfig = new ApiConfig(
+        api,
+        externalAccountSigner,
+        DEFAULT_PULL_SIZE,
+        DEFAULT_PULL_SIZE,
+        updateSyncProgress,
+        syncErrorCallback
+      );
+      const wasmApi = new Api(wasmApiConfig);
+      const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
+      const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
 
-        pullBatchStartTime.current = performance.now();
-        currentSyncReceivers.current = store.get(
-          localStorageKeys.CurrentSyncReceiversCount,
-          0
-        );
-        syncSenderIndex.current = store.get(
-          localStorageKeys.CurrentSyncSenderIndex,
-          0
-        );
+      pullBatchStartTime.current = performance.now();
+      currentSyncReceivers.current = store.get(localStorageKeys.CurrentSyncReceiversCount, 0);
+      syncSenderIndex.current = store.get(localStorageKeys.CurrentSyncSenderIndex, 0);
 
-        const privateAddress = await getPrivateAddress(wasm, wasmWallet);
-        setPrivateAddress(privateAddress);
-        console.log('Beginning initial sync');
-        const startTime = performance.now();
-        await wasmWallet.restart();
-        const endTime = performance.now();
-        console.log(
-          `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
-        );
-        setWasm(wasm);
-        setWasmApi(wasmApi);
-        setWallet(wasmWallet);
-        setIsInitialSync(false);
-        store.remove(localStorageKeys.CurrentSyncReceiversCount);
-        store.remove(localStorageKeys.CurrentSyncSenderIndex);
-      } catch (err) {
+      const privateAddress = await getPrivateAddress(wasm, wasmWallet);
+      setPrivateAddress(privateAddress);
+      console.log('Beginning initial sync');
+      const startTime = performance.now();
+      await wasmWallet.restart();
+      const endTime = performance.now();
+      console.log(
+        `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
+      );
+      setWasm(wasm);
+      setWasmApi(wasmApi);
+      setWallet(wasmWallet);
+      setIsInitialSync(false);
+      store.remove(localStorageKeys.CurrentSyncReceiversCount);
+      store.remove(localStorageKeys.CurrentSyncSenderIndex);
+      } catch(err) {
         console.log('init wallet error - ', err);
       }
     };
@@ -400,7 +385,7 @@ export const PrivateWalletContextProvider = (props) => {
     signerVersion,
     isInitialSync,
     walletIsBusy,
-    balancesAreStale
+    balancesAreStale,
   };
 
   return (
