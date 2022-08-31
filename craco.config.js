@@ -1,4 +1,5 @@
 const { addBeforeLoader, loaderByName } = require('@craco/craco');
+const webpack = require('webpack');
 
 module.exports = {
   style: {
@@ -8,7 +9,15 @@ module.exports = {
       ],
     },
   },
+  // Required while we are on webpack v4;
+  // see https://github.com/LedgerHQ/ledger-live/issues/763
   webpack: {
+    plugins: {add: [
+      new webpack.NormalModuleReplacementPlugin(
+        /@ledgerhq\/devices\/hid-framing/,
+        '@ledgerhq/devices/lib/hid-framing'
+      )
+    ]},
     configure: (webpackConfig) => {
       webpackConfig.module.rules.push(
         {

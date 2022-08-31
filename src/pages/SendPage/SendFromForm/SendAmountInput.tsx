@@ -9,9 +9,12 @@ import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
+import { useSubstrate } from 'contexts/substrateContext';
 import { useSend } from '../SendContext';
+import { usePrivateWalletSync } from 'contexts/privateWalletSyncContext';
 
 const SendAmountInput = () => {
+  const { api } = useSubstrate();
   const {
     senderAssetCurrentBalance,
     setSenderAssetTargetBalance,
@@ -19,27 +22,25 @@ const SendAmountInput = () => {
     getMaxSendableBalance,
     isToPublic,
     isPrivateTransfer,
-    isToPrivate
+    isToPrivate,
+    senderIsPrivate
   } = useSend();
+  const { syncError } = usePrivateWalletSync();
   const { isInitialSync } = usePrivateWallet();
-  const balanceText = useMemo(() => {
-    if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
-      return '';
-    }
-    return senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
-  }, [
-    isInitialSync,
-    isPrivateTransfer,
-    isToPublic,
-    senderAssetCurrentBalance,
-    senderAssetType
-  ]);
-
   const { txStatus } = useTxStatus();
-  const disabled = txStatus?.isProcessing();
+
   const [inputValue, setInputValue] = useState('');
+
+  const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
+  const shouldShowInitialSync =
+    !syncError.current &&
+    shouldShowLoader &&
+    isInitialSync &&
+    senderIsPrivate();
+  const balanceText = shouldShowInitialSync
+    ? 'Syncing to network'
+    : senderAssetCurrentBalance?.toString(true);
+  const disabled = txStatus?.isProcessing();
 
   const onChangeSendAmountInput = (value) => {
     if (value === '') {
@@ -96,7 +97,7 @@ const SendAmountInput = () => {
         balance={balanceText}
         className="w-full text-xs manta-gray mt-2.5 pl-3"
         loaderClassName="text-manta-gray border-manta-gray bg-manta-gray"
-        loader={!senderAssetCurrentBalance}
+        loader={shouldShowLoader}
       />
     </div>
   );

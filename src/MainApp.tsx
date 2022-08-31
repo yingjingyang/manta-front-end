@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import config from 'config';
-import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { SendPage } from 'pages';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
@@ -34,11 +34,11 @@ function MainApp() {
     <div className="main-app bg-primary flex">
       <Sidebar />
       {warningModal}
-      <Switch>
-        <Route path="/" render={() => <Redirect to="/transact" />} exact />
-        <Route path="/send" render={() => <Redirect to="/transact" />} exact />
-        <Route path="/transact" component={SendPage} exact />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<Navigate to="/transact" replace />} />
+        <Route path="/send" element={<Navigate to="/transact" replace />} />
+        <Route path="/transact" element={<SendPage />} />
+      </Routes>
       <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
         <ThemeToggle />
       </div>
@@ -46,4 +46,4 @@ function MainApp() {
   );
 }
 
-export default withRouter(MainApp);
+export default MainApp;
