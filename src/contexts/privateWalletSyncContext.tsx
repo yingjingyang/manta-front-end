@@ -14,10 +14,10 @@ const PrivateWalletSyncContext = createContext();
 
 export const PrivateWalletSyncContextProvider = (props) => {
   // sync state
-  const currentSyncReceivers = useRef(0);
-  const syncSenderIndex = useRef(0);
-  const pullBatchStartTime = useRef(0);
-  const pullBatchEndTime = useRef(0);
+  const currentSyncReceivers = useRef(null);
+  const syncSenderIndex = useRef(null);
+  const pullBatchStartTime = useRef(null);
+  const pullBatchEndTime = useRef(null);
   const [syncPercentage, setSyncPercentage] = useState(0);
   const [nextSyncPercentage, setNextSyncPercentage] = useState(0);
   const [timePerPercentage, setTimePerPercentage] = useState(0);

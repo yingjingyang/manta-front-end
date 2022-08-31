@@ -1,6 +1,6 @@
 import React from 'react';
 import PercentageCircleSvg from 'resources/svgs/PercentageCircle';
-import DotLoader from 'components/DotLoader';
+import DotLoader from './DotLoader';
 
 const SyncPercentage: React.FC<{ percentage?: number }> = ({
   percentage = 0
@@ -11,7 +11,7 @@ const SyncPercentage: React.FC<{ percentage?: number }> = ({
         <div className="relative">
           <PercentageCircleSvg percentage={percentage} />
           <p className="text-base text-black dark:text-white absolute transform left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            {percentage}%
+            {percentage ?? 0}%
           </p>
         </div>
       </div>

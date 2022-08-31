@@ -9,7 +9,7 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePrivateWalletSync } from 'contexts/privateWalletSyncContext';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useSend } from './SendContext';
-import SyncPercentage from 'components/SyncPercentage';
+import SyncPercentage from 'components/Loaders/SyncPercentage';
 
 const SendButton = () => {
   const {
