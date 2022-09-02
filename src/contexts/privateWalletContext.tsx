@@ -36,7 +36,6 @@ export const PrivateWalletContextProvider = (props) => {
     syncError,
     syncPercentage,
     pullBatchStartTime,
-    pullBatchEndTime,
     currentSyncReceivers,
     syncSenderIndex
   } = usePrivateWalletSync();
