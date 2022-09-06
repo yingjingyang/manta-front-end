@@ -1,8 +1,14 @@
 // @ts-nocheck
+import classNames from 'classnames';
+import { useTxStatus } from 'contexts/txStatusContext';
 import React from 'react';
 import Select, { components } from 'react-select';
 
 const ChainSelect = ({chain, chainOptions, setChain}) => {
+  const { txStatus } = useTxStatus();
+  const disabled = txStatus?.isProcessing();
+
+
   const dropdownOptions = chainOptions?.map((chain) => {
     return {
       id: `chain_${chain.name}`,
@@ -14,13 +20,16 @@ const ChainSelect = ({chain, chainOptions, setChain}) => {
 
   return (
     <Select
-      className="w-52 rounded-2xl gradient-border text-black dark:text-white"
+      className={classNames(
+        "w-52 rounded-2xl gradient-border text-black dark:text-white",  {"disabled": disabled}
+      )}
       isSearchable={false}
       value={chain}
       onChange={(option) => setChain(option.value)}
       options={dropdownOptions}
       placeholder=""
       styles={dropdownStyles}
+      isDisabled={disabled}
       components={{
         SingleValue: ChainSingleValue,
         Option: ChainOption,

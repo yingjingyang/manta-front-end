@@ -57,7 +57,7 @@ const AccountSelectSingleValue = ({ data }) => {
   const [addressCopied, setAddressCopied] = useState(false);
 
   const copyToClipboard = (e) => {
-    navigator.clipboard.writeText(data.value);
+    navigator.clipboard.writeText(data.value.address);
     setAddressCopied(true);
     e.stopPropagation();
     return false;

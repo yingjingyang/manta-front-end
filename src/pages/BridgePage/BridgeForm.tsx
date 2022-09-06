@@ -7,7 +7,7 @@ import { useBridge } from './BridgeContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 import BridgeOriginAccountSelect from './BridgeOriginAccountSelect';
-import BridgeDestinationAccountSelect from './BridgeDestinationAccountSelect';
+import BridgeDestinationAccountDisplay from './BridgeDestinationAccountDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText'
 
 const BridgeForm = () => {
@@ -23,7 +23,7 @@ const BridgeForm = () => {
   return (
     <div className="absolute inset-y-0 inset-x-0 lg:left-32 2xl:inset-x-0 justify-center flex items-center pb-2">
       <div className="px-3 py-2 sm:p-8 bg-secondary rounded-lg w-[32rem]">
-        <h2 className="text-primary text-white mb-2">Origin Account</h2>
+        <h2 className="text-primary text-white mb-2">Account</h2>
         <BridgeOriginAccountSelect/>
         <div className="flex gap-10 flex-y mt-4 items-end">
           <div>
@@ -48,8 +48,7 @@ const BridgeForm = () => {
             />
           </div>
         </div>
-        <h2 className="text-primary text-white mb-2 mt-4">Destination Account</h2>
-        <BridgeDestinationAccountSelect/>
+        <BridgeDestinationAccountDisplay/>
         <div className="flex flex-col gap-4 flex-y mt-4">
           <div>
             <h2 className="text-primary text-white mb-2">Amount</h2>

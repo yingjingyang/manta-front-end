@@ -2,7 +2,7 @@
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendAmountInput from 'components/AmountInput/SendAmountInput';
-import SendAssetTypeDropdown from 'components/Assets/AssetTypeSelect';
+import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useSend } from '../SendContext';
 
 const SendAssetSelect = () => {

@@ -16,7 +16,7 @@ import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
 import BRIDGE_ACTIONS from './bridgeActions';
 import { FixedPointNumber } from '@acala-network/sdk-core';
-import { Bridge } from '@polkawallet/bridge/build';
+import { Bridge } from 'manta-polkawallet-bridge-dev/build';
 
 const BridgeContext = React.createContext();
 
@@ -36,8 +36,7 @@ export const BridgeContextProvider = (props) => {
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
-    senderOriginSubstrateAccount,
-    senderDestinationSubstrateAccount,
+    senderSubstrateAccount,
     originChainOptions,
     originChain,
     destinationChain,
@@ -46,13 +45,8 @@ export const BridgeContextProvider = (props) => {
     minInput
   } = state;
 
-  const originAddress = originChain.ethMetadata
-    ? ethAddress
-    : senderOriginSubstrateAccount?.address;
-
-  const destinationAddress = destinationChain.ethMetadata
-    ? ethAddress
-    : senderDestinationSubstrateAccount?.address;
+  const originAddress = originChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
+  const destinationAddress = destinationChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
 
   useEffect(() => {
     const initBridge = async () => {
@@ -103,18 +97,21 @@ export const BridgeContextProvider = (props) => {
 
   useEffect(() => {
     const getDestinationFee = (inputConfig) => {
+      console.log('getDestinationFee', senderAssetType, inputConfig);
       return Balance.fromBaseUnits(
         senderAssetType,
         inputConfig.destFee.balance
       )
     }
     const getOriginFee = (inputConfig) => {
+      console.log('getOriginFee', originChain.nativeAsset, inputConfig);
       return new Balance(
         originChain.nativeAsset,
         new BN(inputConfig.estimateFee)
       )
     }
     const getMaxInput = (inputConfig) => {
+      console.log('getMaxInput', senderAssetType, inputConfig);
       return Balance.fromBaseUnits(
         senderAssetType,
         Decimal.max(new Decimal(inputConfig.maxInput.toString()), new Decimal(0))
@@ -128,6 +125,16 @@ export const BridgeContextProvider = (props) => {
     }
 
     const handleInputConfigChange = (inputConfig) => {
+      console.log('handleInputConfigChange', inputConfig);
+      const res = {
+        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+        originFee: getOriginFee(inputConfig),
+        destinationFee: getDestinationFee(inputConfig),
+        maxInput: getMaxInput(inputConfig),
+        minInput: getMinInput(inputConfig)
+      };
+      console.log('fee info', res)
+
       dispatch({
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
         originFee: getOriginFee(inputConfig),
@@ -158,7 +165,7 @@ export const BridgeContextProvider = (props) => {
       };
     }
 
-    const subscribeInputConfig= () => {
+    const subscribeInputConfig = () => {
       if (
         !senderAssetType
         || !originAddress
@@ -176,7 +183,7 @@ export const BridgeContextProvider = (props) => {
       });
     }
     subscribeInputConfig()
-  },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, bridge])
+  },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, destinationChain, bridge])
 
   /**
    * Initialization logic
@@ -200,30 +207,30 @@ export const BridgeContextProvider = (props) => {
 
   // Synchronizes the user's current 'active' public account in local state
   // to match its upstream source of truth in `externalAccountContext`
-  // The active `senderOriginSubstrateAccount` sends and covers fees for all
+  // The active `senderSubstrateAccount` sends and covers fees for all
   // substrate-based payments
   useEffect(() => {
-    const syncSenderOriginSubstrateAccountToExternalAccount = () => {
+    const syncSenderSubstrateAccountToExternalAccount = () => {
       if (senderAssetType?.assetId === AssetType.Moonriver().assetId) {
         dispatch({
-          type: BRIDGE_ACTIONS.SET_SENDER_ORIGIN_SUBSTRATE_ACCOUNT,
-          senderOriginSubstrateAccount: null
+          type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
+          senderSubstrateAccount: null
         });
       } else {
         dispatch({
-          type: BRIDGE_ACTIONS.SET_SENDER_ORIGIN_SUBSTRATE_ACCOUNT,
-          senderOriginSubstrateAccount: externalAccount
+          type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
+          senderSubstrateAccount: externalAccount
         });
       }
     };
-    syncSenderOriginSubstrateAccountToExternalAccount();
+    syncSenderSubstrateAccountToExternalAccount();
   }, [externalAccount]);
 
   // Sets the polkadot.js signing and fee-paying account in 'externalAccountContext'
   // to match the user's public account as set in the send form
   useEffect(() => {
     const syncExternalAccountToSubstrateAccount = () => {
-      senderOriginSubstrateAccount && changeExternalAccount(senderOriginSubstrateAccount);
+      senderSubstrateAccount && changeExternalAccount(senderSubstrateAccount);
     };
     syncExternalAccountToSubstrateAccount();
   }, [
@@ -239,18 +246,9 @@ export const BridgeContextProvider = (props) => {
   // Sets the sender's public account, exposed in the `To Public` and `Public transfer` form;
   // State is set upstream in `externalAccountContext`, and propagates downstream here
   // (see `syncPublicAccountToExternalAccount` above)
-  const setSenderOriginSubstrateAccount = async (senderOriginSubstrateAccount) => {
-    setLastAccessedExternalAccountAddress(senderOriginSubstrateAccount.address);
-    await changeExternalAccount(senderOriginSubstrateAccount);
-  };
-
-  const setSenderDestinationSubstrateAccount = async (senderDestinationSubstrateAccount) => {
-    dispatch(
-      {
-        type: BRIDGE_ACTIONS.SET_SENDER_DESTINATION_SUBSTRATE_ACCOUNT,
-        senderDestinationSubstrateAccount
-      }
-    );
+  const setSenderSubstrateAccount = async (senderSubstrateAccount) => {
+    setLastAccessedExternalAccountAddress(senderSubstrateAccount.address);
+    await changeExternalAccount(senderSubstrateAccount);
   };
 
   // Sets the asset type to be transacted
@@ -287,7 +285,6 @@ export const BridgeContextProvider = (props) => {
       destinationChain
     });
   };
-
 
   /**
    *
@@ -344,8 +341,10 @@ export const BridgeContextProvider = (props) => {
    * Transaction logic
    */
 
+
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
+    const api = originChain.api;
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.system.ExtrinsicFailed.is(event.event)) {
@@ -354,6 +353,7 @@ export const BridgeContextProvider = (props) => {
         } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
           try {
             console.log('status.asInBlock', status.asInBlock)
+            console.log('api', api)
             const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
             const extrinsics = signedBlock.block.extrinsics;
             const extrinsic = extrinsics.find((extrinsic) =>
@@ -361,6 +361,7 @@ export const BridgeContextProvider = (props) => {
             );
             const extrinsicHash = extrinsic.hash.toHex();
             setTxStatus(TxStatus.finalized(extrinsicHash));
+            setTxStatus(TxStatus.finalized())
           } catch(error) {
             console.error(error);
           }
@@ -388,7 +389,7 @@ export const BridgeContextProvider = (props) => {
       amount: FixedPointNumber.fromInner(value, 10),
       to: destinationChain.name,
       token: senderAssetTargetBalance.assetType.baseTicker,
-      address: senderDestinationSubstrateAccount.address,
+      address: senderSubstrateAccount.address,
     });
     try {
       await tx.signAndSend(externalAccountSigner, handleTxRes);
@@ -400,7 +401,7 @@ export const BridgeContextProvider = (props) => {
 
   const sendEth = async () => {
     const success = await transferMovrFromMoonriverToCalamari(
-      provider, senderAssetTargetBalance, senderDestinationSubstrateAccount.address
+      provider, senderAssetTargetBalance, senderSubstrateAccount.address
     );
     if (success) {
       setTxStatus(TxStatus.finalized());
@@ -414,8 +415,7 @@ export const BridgeContextProvider = (props) => {
     txIsOverMinAmount,
     isValidToSend,
     setSenderAssetTargetBalance,
-    setSenderOriginSubstrateAccount,
-    setSenderDestinationSubstrateAccount,
+    setSenderSubstrateAccount,
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,

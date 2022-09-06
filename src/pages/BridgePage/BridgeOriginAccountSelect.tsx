@@ -11,16 +11,16 @@ import MetamaskAccountDisplay from './MetamaskAccountDisplay';
 const BridgeOriginAccountSelect = () => {
   const {
     senderSubstrateAccountOptions,
-    setSenderOriginSubstrateAccount,
-    senderOriginSubstrateAccount,
+    setSenderSubstrateAccount,
+    senderSubstrateAccount,
     originChain
   } = useBridge();
 
   const options = substrateAccountsToReactSelectOptions(senderSubstrateAccountOptions);
-  const selectedOption = substrateAccountToReactSelectOption(senderOriginSubstrateAccount);
+  const selectedOption = substrateAccountToReactSelectOption(senderSubstrateAccount);
   const onChangeOption = (option) => {
     const { value: { account } } = option;
-    setSenderOriginSubstrateAccount(account);
+    setSenderSubstrateAccount(account);
   };
 
   return (

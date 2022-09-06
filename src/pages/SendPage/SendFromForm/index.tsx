@@ -11,8 +11,7 @@ const SendFromForm = () => {
     toggleSenderIsPrivate,
     senderAssetType,
     userHasSufficientFunds,
-    txWouldDepleteSuggestedMinFeeBalance,
-    senderAssetType
+    txWouldDepleteSuggestedMinFeeBalance
   } = useSend();
 
   let errorText = null;

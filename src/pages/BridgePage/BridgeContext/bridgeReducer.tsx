@@ -24,6 +24,16 @@ const getNewSenderAssetType = (prevSenderAssetType, senderAssetTypeOptions) => {
   );
 };
 
+const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) => {
+  let targetBalance = null;
+  if (prevTargetBalance && newSenderAssetType) {
+    targetBalance = Balance.fromBaseUnits(
+      newSenderAssetType, prevTargetBalance.valueBaseUnits()
+    );
+  }
+  return targetBalance;
+}
+
 const initOriginChainOptions = Chain.All();
 const initOriginChain = initOriginChainOptions[0];
 const initDestinationChainOptions = getDestinationChainOptions(initOriginChain, initOriginChainOptions);
@@ -35,6 +45,7 @@ export const BRIDGE_INIT_STATE = {
   bridge: null,
 
   senderEthAccount: null,
+  senderSubstrateAccount: null,
   senderSubstrateAccountOptions: [],
 
   senderAssetType: initSenderAssetType,
@@ -47,12 +58,10 @@ export const BRIDGE_INIT_STATE = {
   senderBalanceSubscription: null,
   senderInputConfigSubscription: null,
 
-  senderOriginSubstrateAccount: null,
   originChain: initOriginChain,
   originChainOptions: initOriginChainOptions,
   originFee: null,
 
-  senderDestinationSubstrateAccount: null,
   destinationChain: initDestinationChain,
   destinationChainOptions: initDestinationChainOptions,
   destinationFee: null,
@@ -66,11 +75,8 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_DESTINATION_SUBSTRATE_ACCOUNT:
-    return setSenderDestinationSubstrateAccount(state, action);
-
-  case BRIDGE_ACTIONS.SET_SENDER_ORIGIN_SUBSTRATE_ACCOUNT:
-    return setSenderOriginSubstrateAccount(state, action);
+  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT:
+    return setSenderSubstrateAccount(state, action);
 
   case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT_OPTIONS:
     return setSenderSubstrateAccountOptions(state, action);
@@ -114,12 +120,15 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   return stateAssetType?.assetId !== updateAssetType.assetId;
 };
 
-const unsubscribe = (state) => {
-  if (state.senderBalanceSubscription) {
-    state.senderBalanceSubscription.unsubscribe();
-  }
+const unsubscribeInputConfig = (state) => {
   if (state.senderInputConfigSubscription) {
     state.senderInputConfigSubscription.unsubscribe();
+  }
+}
+
+const unsubscribeBalances = (state) => {
+  if (state.senderBalanceSubscription) {
+    state.senderBalanceSubscription.unsubscribe();
   }
 }
 
@@ -148,26 +157,11 @@ const setSelectedAssetType = (state, action) => {
   };
 };
 
-const setSenderOriginSubstrateAccount = (state, action) => {
-  unsubscribe(state);
-  // if no destination account, initialize it to same as origin account
-  const senderDestinationSubstrateAccount = (
-    state.senderDestinationSubstrateAccount
-    || action.senderOriginSubstrateAccount
-  );
-
+const setSenderSubstrateAccount = (state, { senderSubstrateAccount }) => {
   return {
     ...state,
+    senderSubstrateAccount,
     senderAssetCurrentBalance: null,
-    senderOriginSubstrateAccount: action.senderOriginSubstrateAccount,
-    senderDestinationSubstrateAccount
-  };
-};
-
-const setSenderDestinationSubstrateAccount = (state, action) => {
-  return {
-    ...state,
-    senderDestinationSubstrateAccount: action.senderDestinationSubstrateAccount
   };
 };
 
@@ -189,6 +183,7 @@ const setSenderAssetCurrentBalance = (state, action) => {
 };
 
 const setSenderBalanceSubscription = (state, action) => {
+  unsubscribeBalances(state);
   return {
     ...state,
     senderBalanceSubscription: action.senderBalanceSubscription
@@ -196,6 +191,7 @@ const setSenderBalanceSubscription = (state, action) => {
 }
 
 const setInputConfigSubscription = (state, action) => {
+  unsubscribeInputConfig(state);
   return {
     ...state,
     inputConfigSubscription: action.inputConfigSubscription
@@ -228,7 +224,6 @@ const setFeeEstimates = (state, action) => {
 }
 
 const setOriginChain = (state, { originChain }) => {
-  unsubscribe(state);
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (!originChain.canTransferXcm(destinationChain)) {
@@ -236,6 +231,9 @@ const setOriginChain = (state, { originChain }) => {
   }
   const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
+  const senderAssetTargetBalance = getNewSenderAssetTargetBalance(
+    senderAssetType, state.senderAssetTargetBalance
+  );
 
   return {
     ...state,
@@ -244,21 +242,25 @@ const setOriginChain = (state, { originChain }) => {
     destinationChainOptions,
     senderAssetType,
     senderAssetTypeOptions,
+    senderAssetTargetBalance,
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
-  unsubscribe(state);
   const senderAssetTypeOptions = getSenderAssetTypeOptions(state.originChain, destinationChain);
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
+  let senderAssetTargetBalance = getNewSenderAssetTargetBalance(
+    senderAssetType, state.senderAssetTargetBalance
+  );
 
   return {
     ...state,
     senderAssetTypeOptions,
     senderAssetType,
     destinationChain,
+    senderAssetTargetBalance,
     senderNativeTokenPublicBalance: null,
     senderAssetCurrentBalance: null
   };

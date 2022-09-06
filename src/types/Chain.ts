@@ -1,10 +1,10 @@
 // @ts-nocheck
 import config from 'config';
 import Svgs from 'resources/icons';
-import { KaruraAdapter } from '@polkawallet/bridge/build/adapters/acala';
-import { CalamariAdapter } from '@polkawallet/bridge/build/adapters/manta';
-import { KusamaAdapter} from '@polkawallet/bridge/build/adapters/polkadot';
-import { MoonriverAdapter } from '@polkawallet/bridge/build/adapters/moonbeam';
+import { KaruraAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/acala';
+import { CalamariAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/manta';
+import { KusamaAdapter} from 'manta-polkawallet-bridge-dev/build/adapters/polkadot';
+import { MoonriverAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/moonbeam';
 import { typesBundlePre900 } from "moonbeam-types-bundle"
 import types from '../config/types.json';
 import AssetType from './AssetType';
@@ -53,6 +53,7 @@ export default class Chain {
     this.apiOptions = apiOptions;
     this.apiTypesBundle = apiTypesBundle;
     this.ethMetadata = ethMetadata;
+    this.api = null;
   }
 
   static Dolphin() {
@@ -157,8 +158,8 @@ export default class Chain {
       return [
         Chain.Calamari(),
         Chain.Kusama(),
-        Chain.Karura(),
-        Chain.Moonriver()
+        Chain.Karura()
+        // Chain.Moonriver()
       ];
     } else {
       return [];
@@ -166,6 +167,7 @@ export default class Chain {
   }
 
   async _initApi() {
+    console.log("this.socket", this.socket)
     const provider = new WsProvider(this.socket);
     if (this.apiOptions) {
       this.api = await ApiPromise.create(options({ provider, types: this.apiTypes}));
