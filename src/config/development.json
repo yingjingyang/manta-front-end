@@ -14,7 +14,7 @@
     "CALAMARI_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
     "KARURA_SOCKET": "wss://taupo.kusama-internal.karura-testnet.calamari.systems",
     "MOONRIVER_SOCKET": "wss://alith.kusama-internal.moonriver-testnet.calamari.systems",
-    "MOONRIVER_RPC": "https://faith.kusama-internal.moonriver-testnet.calamari.systems:9933",
+    "MOONRIVER_RPC": "https://rpc.faith.kusama-internal.moonriver-testnet.calamari.systems",
 
     "DOWNTIME": false
 }
