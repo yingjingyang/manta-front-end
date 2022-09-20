@@ -22,6 +22,39 @@ export const PrivateWalletSyncContextProvider = (props) => {
   const [timePerPercentage, setTimePerPercentage] = useState(0);
   const syncError = useRef(false);
 
+
+  // this function takes the restult of a "pull" from the manta-wasm-wallet Api
+  // and updates the necessary percentages that are used to display sync progress.
+  const updatePercentages = async (receivers,sender_index,senders_receivers_total) => {
+    const pullBatchTime = performance.now() - pullBatchStartTime.current;
+    console.log('pullBatchTime - ', pullBatchTime);
+    const percentagePerBatch = parseInt(
+      (
+        ((receivers.length - syncSenderIndex.current + sender_index) /
+          senders_receivers_total) *
+        100
+      ).toFixed(0)
+    );
+    setTimePerPercentage(pullBatchTime / percentagePerBatch);
+
+    const newSyncPercentage = parseInt(
+      (
+        ((currentSyncReceivers.current + sender_index) /
+          senders_receivers_total) *
+        100
+      ).toFixed(0)
+    );
+    setSyncPercentage(newSyncPercentage >= 100 ? 100 : newSyncPercentage);
+    setNextSyncPercentage(
+      newSyncPercentage + percentagePerBatch >= 100
+        ? 100
+        : newSyncPercentage + percentagePerBatch
+    );
+  }
+
+  // this function is passed to the manta-wasm-wallet Api upon creation
+  // as the pullCallBack() method. Which updates the sync percentage with respect to 
+  // the ledger data that is pulled and processed.
   const updateSyncProgress = async (
     receivers,
     senders,
@@ -54,30 +87,7 @@ export const PrivateWalletSyncContextProvider = (props) => {
         store.set(localStorageKeys.CurrentSyncSenderIndex, sender_index);
       }
 
-      const pullBatchTime = performance.now() - pullBatchStartTime.current;
-      console.log('pullBatchTime - ', pullBatchTime);
-      const percentagePerBatch = parseInt(
-        (
-          ((receivers.length - syncSenderIndex.current + sender_index) /
-            senders_receivers_total) *
-          100
-        ).toFixed(0)
-      );
-      setTimePerPercentage(pullBatchTime / percentagePerBatch);
-
-      const newSyncPercentage = parseInt(
-        (
-          ((currentSyncReceivers.current + sender_index) /
-            senders_receivers_total) *
-          100
-        ).toFixed(0)
-      );
-      setSyncPercentage(newSyncPercentage >= 100 ? 100 : newSyncPercentage);
-      setNextSyncPercentage(
-        newSyncPercentage + percentagePerBatch >= 100
-          ? 100
-          : newSyncPercentage + percentagePerBatch
-      );
+      updatePercentages(receivers,sender_index,senders_receivers_total);
 
       pullBatchStartTime.current = performance.now();
       syncSenderIndex.current = sender_index;
