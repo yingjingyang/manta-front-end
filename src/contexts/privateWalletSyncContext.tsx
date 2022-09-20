@@ -18,8 +18,8 @@ export const PrivateWalletSyncContextProvider = (props) => {
   const syncSenderIndex = useRef(null);
   const pullBatchStartTime = useRef(null);
   const [syncPercentage, setSyncPercentage] = useState(0);
-  const [nextSyncPercentage, setNextSyncPercentage] = useState(0);
-  const [timePerPercentage, setTimePerPercentage] = useState(0);
+  const [nextSyncPercentage, setNextSyncPercentage] = useState(null);
+  const [timePerPercentage, setTimePerPercentage] = useState(null);
   const syncError = useRef(false);
 
 
@@ -103,6 +103,8 @@ export const PrivateWalletSyncContextProvider = (props) => {
 
   useEffect(() => {
     let interval;
+
+    if (!nextSyncPercentage || !timePerPercentage) return;
     if (timePerPercentage > 0) {
       interval = setInterval(() => {
         if (syncPercentage < 100 && syncPercentage < nextSyncPercentage) {
