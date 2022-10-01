@@ -19,8 +19,13 @@ import mapPostToTransaction from 'utils/api/MapPostToTransaction';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
+import { network } from '../constants/NetworkConstants';
 
 const PrivateWalletContext = createContext();
+
+const DolphinNetwork = network.dolphin;
+//const CalamariNetwork = network.calamari;
+//const MantaNetwork = network.manta;
 
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
@@ -240,8 +245,8 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  async function buildExtrinsics(transaction, assetMetadata) {
-    const posts = await wallet.sign(transaction, assetMetadata);
+  async function buildExtrinsics(transaction, assetMetadata, networkType) {
+    const posts = await wallet.sign(transaction, assetMetadata, networkType);
     const transactions = [];
     for (let i = 0; i < posts.length; i++) {
       const transaction = await mapPostToTransaction(posts[i], api);
@@ -278,7 +283,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPublic = async (balance, txResHandler) => {
+  const toPublic = async (balance, txResHandler, network=DolphinNetwork) => {
     // build wasm params
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -286,11 +291,13 @@ export const PrivateWalletContextProvider = (props) => {
     const transaction = wasm.Transaction.from_string(txJson);
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
+    const networkJson = `{"network":${network}}`;
+    const networkType = wasm.NetworkType.from_string(networkJson);
 
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
       const res = await publishBatchesSequentially(transactions, txResHandler);
       return res;
@@ -301,7 +308,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const privateTransfer = async (balance, recipient, txResHandler) => {
+  const privateTransfer = async (balance, recipient, txResHandler, network=DolphinNetwork) => {
     // build wasm params
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
@@ -310,11 +317,13 @@ export const PrivateWalletContextProvider = (props) => {
     const transaction = wasm.Transaction.from_string(txJson);
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
+    const networkJson = `{"network":${network}}`;
+    const networkType = wasm.NetworkType.from_string(networkJson);
 
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
       const res = await publishBatchesSequentially(transactions, txResHandler);
       return res;
