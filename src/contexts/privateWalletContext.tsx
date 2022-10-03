@@ -334,17 +334,19 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPrivate = async (balance, txResHandler) => {
+  const toPrivate = async (balance, txResHandler, network=DolphinNetwork) => {
     await waitForWallet();
     walletIsBusy.current = true;
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
+    const networkJson = `{"network":${network}}`;
+    const networkType = wasm.NetworkType.from_string(networkJson);
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     try {
-      const res = await wallet.post(transaction, null);
+      const res = await wallet.post(transaction, null, networkType);
       walletIsBusy.current = false;
       return res;
     } catch (error) {
