@@ -1,14 +1,21 @@
 // @ts-nocheck
 import React, { createContext, useState, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
+import TxStatus from 'types/TxStatus';
 
 const TxStatusContext = createContext();
 
-export const TxStatusContextProvider = (props) => {
-  const [txStatus, _setTxStatus] = useState(null);
-  const txStatusRef = useRef(null);
+interface useTxStatusReturn {
+  txStatus: TxStatus | null,
+  txStatusRef: React.MutableRefObject<string | null>,
+  setTxStatus: (status: string) => void
+}
 
-  const setTxStatus = (status) => {
+export const TxStatusContextProvider = (props) => {
+  const [txStatus, _setTxStatus] = useState<TxStatus | null>(null);
+  const txStatusRef = useRef<string | null>(null);
+
+  const setTxStatus = (status: string) => {
     _setTxStatus(status);
     txStatusRef.current = status;
   }
@@ -30,6 +37,6 @@ TxStatusContextProvider.propTypes = {
   children: PropTypes.any,
 };
 
-export const useTxStatus = () => ({
+export const useTxStatus: () => useTxStatusReturn = () => ({
   ...useContext(TxStatusContext),
 });
