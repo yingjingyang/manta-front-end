@@ -4,7 +4,14 @@ const FAILED = 'failed';
 const PROCESSING = 'processing';
 
 export default class TxStatus {
-  constructor(status, extrinsic = null, block = null, message = null) {
+  status: string;
+  extrinsic: string | null;
+  block: string | null;
+  message: string | null;
+  batchNum: null;
+  totalBatches: null;
+
+  constructor(status: string, extrinsic: null | string = null, block: null | string = null, message: null | string = null) {
     this.status = status;
     this.extrinsic = extrinsic;
     this.block = block;
@@ -13,31 +20,31 @@ export default class TxStatus {
     this.totalBatches = null;
   }
 
-  static processing(message) {
-    return new TxStatus(PROCESSING, null, message);
+  static processing(message: string | null): TxStatus {
+    return new TxStatus({status: PROCESSING, message: message});
   }
 
-  static finalized(extrinsic, block) {
-    return new TxStatus(FINALIZED, extrinsic, block, null);
+  static finalized(extrinsic: string | null, block: string | null): TxStatus {
+    return new TxStatus({status: FINALIZED, extrinsic: extrinsic, block: block});
   }
 
-  static failed(block, message) {
-    return new TxStatus(FAILED, block, message);
+  static failed(block: string | null, message: string | null): TxStatus {
+    return new TxStatus({status: FAILED, block: block, message: message});
   }
 
-  isProcessing() {
+  isProcessing(): boolean {
     return this.status === PROCESSING;
   }
 
-  isFinalized() {
+  isFinalized(): boolean {
     return this.status === FINALIZED;
   }
 
-  isFailed() {
+  isFailed(): boolean {
     return this.status === FAILED;
   }
 
-  toString() {
+  toString(): string {
     let message = this.status;
     if (this.block) {
       message += `;\n block hash: ${this.block}`;
