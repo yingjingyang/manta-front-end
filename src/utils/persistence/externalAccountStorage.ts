@@ -1,10 +1,9 @@
 // @ts-nocheck
 import store from 'store';
-import config from 'config';
 
 const LAST_ACCOUNT_STORAGE_KEY = 'lastAccessedExternalAccountAddress';
 
-export const getLastAccessedExternalAccount = (keyring) => {
+export const getLastAccessedExternalAccount = (config, keyring) => {
   const lastAccountAddress = store.get(
     `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`);
 
@@ -19,7 +18,7 @@ export const getLastAccessedExternalAccount = (keyring) => {
   }
 };
 
-export const setLastAccessedExternalAccountAddress = (lastAccount) => {
+export const setLastAccessedExternalAccountAddress = (config, lastAccount) => {
   store.set(
     `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`, lastAccount);
 };

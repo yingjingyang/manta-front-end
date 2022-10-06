@@ -1,13 +1,20 @@
 {
-    "PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": false,
-    "BASE_STORAGE_KEY": "dolphinDev",
-    "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "NETWORK_NAME": "Dolphin",
+    "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
+    "CALAMARI_PROVIDER_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
     "NODES": [{
-        "name": "Dolphin",
-        "url": "wss://ws.rococo.dolphin.engineering"
-    }],
-    "DOWNTIME": false
+            "name": "Calamari",
+            "path": "/calamari",
+            "url": "wss://crispy.kusama-internal.testnet.calamari.systems",
+            "explorer": "calamari.subscan.io"
+        },
+        {
+            "name": "Dolphin",
+            "path": "/dolphin",
+            "url": "wss://ws.rococo.dolphin.engineering",
+            "testnet": true,
+            "explorer": "dolphin.subscan.io"
+        }
+    ]
 }

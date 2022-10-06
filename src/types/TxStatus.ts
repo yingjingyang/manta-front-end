@@ -14,7 +14,7 @@ export default class TxStatus {
   }
 
   static processing(message) {
-    return new TxStatus(PROCESSING, null, message);
+    return new TxStatus(PROCESSING, null, null, message);
   }
 
   static finalized(extrinsic, block) {
@@ -22,7 +22,7 @@ export default class TxStatus {
   }
 
   static failed(block, message) {
-    return new TxStatus(FAILED, block, message);
+    return new TxStatus(FAILED, null, block, message);
   }
 
   isProcessing() {

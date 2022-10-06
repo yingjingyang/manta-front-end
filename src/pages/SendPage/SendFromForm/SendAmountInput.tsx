@@ -25,8 +25,8 @@ const SendAmountInput = () => {
     isInitialSync && (isPrivateTransfer() || isToPublic())
       ? 'Syncing to ledger'
       : senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
+        ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+        : '';
 
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();

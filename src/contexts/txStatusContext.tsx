@@ -11,7 +11,7 @@ export const TxStatusContextProvider = (props) => {
   const setTxStatus = (status) => {
     _setTxStatus(status);
     txStatusRef.current = status;
-  }
+  };
 
   const value = {
     txStatus,

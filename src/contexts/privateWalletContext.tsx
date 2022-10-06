@@ -11,19 +11,21 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
 import Api, { ApiConfig } from 'manta-wasm-wallet-api';
-import config from 'config';
 import * as axios from 'axios';
 import { base58Decode, base58Encode } from '@polkadot/util-crypto';
 import TxStatus from 'types/TxStatus';
 import mapPostToTransaction from 'utils/api/MapPostToTransaction';
+import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
+import { useConfig } from './configContext';
 
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
+  const config = useConfig();
   const { api, socket } = useSubstrate();
   const { externalAccountSigner } = useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
@@ -70,14 +72,19 @@ export const PrivateWalletContextProvider = (props) => {
     };
 
     const canInitWallet = () => {
-      return api && externalAccountSigner && signerIsConnected;
+      return (
+        api
+        && externalAccountSigner
+        && signerIsConnected
+        && signerVersion
+        && !signerIsOutOfDate(config, signerVersion)
+      );
     };
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
       setIsInitialSync(true);
       walletIsBusy.current = false;
-      await api.isReady;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
@@ -105,7 +112,7 @@ export const PrivateWalletContextProvider = (props) => {
     if (canInitWallet() && !isReady) {
       initWallet();
     }
-  }, [api, externalAccountSigner, signerIsConnected]);
+  }, [api, externalAccountSigner, signerIsConnected, signerVersion]);
 
   const fetchSignerVersion = async () => {
     try {
@@ -126,6 +133,7 @@ export const PrivateWalletContextProvider = (props) => {
         setWallet(null);
       }
     } catch (err) {
+      console.error(err);
       setSignerIsConnected(false);
       setSignerVersion(null);
       setWasm(null);

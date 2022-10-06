@@ -14,10 +14,10 @@ const Button = ({
     <button
       type={type}
       className={classNames(
-        className,
-        `py-2 text-center px-5 outline-none focus:outline-none btn-hover rounded-full ${
+        `px-3 py-3 text-center font-medium outline-none focus:outline-none btn-hover rounded-md ${
           disabled ? 'btn-disabled' : ''
-        }`
+        }`,
+        className
       )}
       onClick={onClick}
       disabled={disabled}

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import APP_NAME from 'constants/AppConstants';
 import React, {
   createContext,
   useState,
@@ -8,18 +9,19 @@ import React, {
 import PropTypes from 'prop-types';
 import uiKeyring from '@polkadot/ui-keyring';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
-import config from 'config';
+import { useConfig } from './configContext';
 
 const KeyringContext = createContext();
 
 export const KeyringContextProvider = (props) => {
+  const config = useConfig();
   const [keyring, setKeyring] = useState(null);
 
   useEffect(() => {
     const polkadotJsIsInjected = () => !!window.injectedWeb3['polkadot-js'];
 
     const initKeyring = async () => {
-      await web3Enable(config.APP_NAME);
+      await web3Enable(APP_NAME);
       let allAccounts = await web3Accounts();
       allAccounts = allAccounts.map(({ address, meta }) => ({
         address,
