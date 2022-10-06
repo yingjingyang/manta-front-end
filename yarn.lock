@@ -8914,15 +8914,11 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-wasm-wallet-api@1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.3.1.tgz#7b132d1a309abdb64e7075dd16f15d30c9f4c5f5"
-  integrity sha512-ouxnKy/Dttn+WxYnhl8h6p1jn3rYo34fmSy+62LfW3ctCyYHS68FzWAASHh9fhPYyu7Vy0PQmlYl2jGxWjf16g==
+"manta-wasm-wallet-api@file:../sdk/wallet/api":
+  version "1.5.1"
 
-manta-wasm-wallet@1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet/-/manta-wasm-wallet-1.3.1.tgz#d455b0b327e9063663c8404074cc1f73238aa957"
-  integrity sha512-aMp2FN+qVuC5ezSg6PrLE9y2I4uTrZZ22KK/RowZ+51Cz8EmZRaOPCVLrDq8mhlT8Yr7jIDnpdxllDRD/sgdKw==
+"manta-wasm-wallet@file:../sdk/wallet/crate/pkg":
+  version "1.5.1"
 
 map-cache@^0.2.2:
   version "0.2.2"
