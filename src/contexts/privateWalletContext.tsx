@@ -301,7 +301,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPublic = async (balance, txResHandler, network=DolphinNetwork) => {
+  const toPublic = async (balance, txResHandler, network=currentNetwork) => {
     // build wasm params
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -325,7 +325,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const privateTransfer = async (balance, recipient, txResHandler, network=DolphinNetwork) => {
+  const privateTransfer = async (balance, recipient, txResHandler, network=currentNetwork) => {
     // build wasm params
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
@@ -350,7 +350,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPrivate = async (balance, txResHandler, network=DolphinNetwork) => {
+  const toPrivate = async (balance, txResHandler, network=currentNetwork) => {
     await waitForWallet();
     walletIsBusy.current = true;
     const value = balance.valueAtomicUnits.toString();
