@@ -51,6 +51,11 @@ export const PrivateWalletContextProvider = (props) => {
   const finalTxResHandler = useRef(null);
   const balancesAreStale = useRef(false);
 
+  // current network - currently hardcoded as Dolphin
+  // @TODO: Link this with the correct currently selected network.
+  // @TODO: Add useEffect() to call initWallet() upon change in network.
+  const [currentNetwork, setCurrentNetwork] = useState(DolphinNetwork);
+
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
   }, [wallet, signerIsConnected]);
@@ -96,7 +101,7 @@ export const PrivateWalletContextProvider = (props) => {
       setPrivateAddress(privateAddress);
       console.log('Beginning initial sync');
       const startTime = performance.now();
-      await wasmWallet.restart();
+      await wasmWallet.restart(currentNetwork);
       const endTime = performance.now();
       console.log(
         `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
@@ -166,7 +171,7 @@ export const PrivateWalletContextProvider = (props) => {
     try {
       console.log('Beginning sync');
       const startTime = performance.now();
-      await wallet.sync();
+      await wallet.sync(currentNetwork);
       const endTime = performance.now();
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
       balancesAreStale.current = false;
