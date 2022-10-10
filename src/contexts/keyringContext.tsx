@@ -19,7 +19,9 @@ export const KeyringContextProvider = (props) => {
   const [isWalletConnected, setIsWalletConnected] = useState(!!window.localStorage.getItem('isWalletConnected'));
 
   useEffect(() => {
-    const polkadotJsIsInjected = () => !!window.injectedWeb3['polkadot-js'];
+    const IsWalletInjected = () => {
+      return !!window.injectedWeb3['polkadot-js'] || !!window.injectedWeb3['talisman'];
+    };
 
     const initKeyring = async () => {
       if (isWalletConnected) {
@@ -41,11 +43,11 @@ export const KeyringContextProvider = (props) => {
     };
 
     const initKeyringWhenInjected = async () => {
-      if (polkadotJsIsInjected()) {
+      if (IsWalletInjected()) {
         await initKeyring();
       } else {
         setTimeout(async () => {
-          if (!polkadotJsIsInjected()) {
+          if (!IsWalletInjected()) {
             setKeyring(false);
           } else if (!keyring) {
             await initKeyring();
