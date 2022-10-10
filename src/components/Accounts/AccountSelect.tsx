@@ -16,12 +16,14 @@ import ConnectWalletModal from 'components/Modal/connectWallet';
 import { useConfig } from 'contexts/configContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
+import { useKeyring } from 'contexts/keyringContext';
 
 const AccountSelect = () => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
   const { externalAccount, externalAccountOptions, changeExternalAccount } = useExternalAccount();
   const { ModalWrapper, showModal } = useModal();
+  const { setIsWalletConnected } = useKeyring();
 
   const [showAccountList, setShowAccountList] = useState(false);
   const [addressCopied, setAddressCopied] = useState(-1);
@@ -31,6 +33,12 @@ const AccountSelect = () => {
     navigator.clipboard.writeText(address);
     setAddressCopied(index);
     return false;
+  };
+
+  const handleOnClick = () => {
+    setIsWalletConnected(true); 
+    window.localStorage.setItem('isWalletConnected', true); 
+    showModal();
   };
 
   useEffect(() => {
@@ -138,7 +146,7 @@ const AccountSelect = () => {
         <>
           <Button
             className="btn-secondary rounded-lg relative z-10"
-            onClick={showModal}
+            onClick={handleOnClick}
           >
             Connect Wallet
           </Button>

@@ -16,25 +16,28 @@ const KeyringContext = createContext();
 export const KeyringContextProvider = (props) => {
   const config = useConfig();
   const [keyring, setKeyring] = useState(null);
+  const [isWalletConnected, setIsWalletConnected] = useState(!!window.localStorage.getItem('isWalletConnected'));
 
   useEffect(() => {
     const polkadotJsIsInjected = () => !!window.injectedWeb3['polkadot-js'];
 
     const initKeyring = async () => {
-      await web3Enable(APP_NAME);
-      let allAccounts = await web3Accounts();
-      allAccounts = allAccounts.map(({ address, meta }) => ({
-        address,
-        meta: { ...meta, name: meta.name },
-      }));
-      uiKeyring.loadAll(
-        {
-          ss58Format: config.SS58_FORMAT,
-          isDevelopment: config.DEVELOPMENT_KEYRING
-        },
-        allAccounts,
-      );
-      setKeyring(uiKeyring);
+      if (isWalletConnected) {
+        await web3Enable(APP_NAME);
+        let allAccounts = await web3Accounts();
+        allAccounts = allAccounts.map(({ address, meta }) => ({
+          address,
+          meta: { ...meta, name: meta.name },
+        }));
+        uiKeyring.loadAll(
+          {
+            ss58Format: config.SS58_FORMAT,
+            isDevelopment: config.DEVELOPMENT_KEYRING
+          },
+          allAccounts,
+        );
+        setKeyring(uiKeyring);
+      }
     };
 
     const initKeyringWhenInjected = async () => {
@@ -52,12 +55,13 @@ export const KeyringContextProvider = (props) => {
     };
     if (keyring) return;
     initKeyringWhenInjected();
-  }, [keyring]);
+  }, [keyring, isWalletConnected]);
 
 
 
   const value = {
-    keyring: keyring
+    keyring: keyring,
+    setIsWalletConnected: setIsWalletConnected
   };
 
   return (
