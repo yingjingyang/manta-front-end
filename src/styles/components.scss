@@ -83,13 +83,23 @@
 // notifications
 .el-notification {
     border-radius: 10px !important;
-    padding: 10px !important;
+    padding: 16px !important;
+    background-color: var(--color-bg-secondary) !important;
+    width: 360px !important;
     &__icon {
         top: 12px !important;
         font-size: 30px !important;
     }
     &__content {
         margin-top: 5px !important;
+    }
+    &__title {
+        color: white !important;
+        display: none;
+    }
+    &__closeBtn {
+        top: 10px !important;
+        right: 10px !important;
     }
 }
 

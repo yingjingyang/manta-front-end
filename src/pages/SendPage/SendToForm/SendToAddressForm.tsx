@@ -11,9 +11,9 @@ import {
   validatePrivateAddress,
   validatePublicAddress
 } from 'utils/validation/validateAddress';
-import { useSend } from '../SendContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
+import { useSend } from '../SendContext';
 
 const SendToAddressForm = ({
   internalAccountOptions,

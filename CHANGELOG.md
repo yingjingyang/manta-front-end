@@ -35,3 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#183](https://github.com/Manta-Network/manta-front-end/pull/183) Fixed Dolphin icon missing piece
 - [\#188](https://github.com/Manta-Network/manta-front-end/pull/188) Fixed sidebar menu disappearing on smaller screens
 - [\#182](https://github.com/Manta-Network/manta-front-end/pull/182) Fixed autocomplete getting discolored under some conditions
+
+## [3.0.0] - 2022-10-5
+### Added
+- [\#252](https://github.com/Manta-Network/manta-front-end/pull/252) Added Calamari staking page and support for multiple networks

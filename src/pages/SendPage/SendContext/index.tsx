@@ -12,12 +12,14 @@ import AssetType from 'types/AssetType';
 import { FAILURE as WASM_WALLET_FAILURE } from 'manta-wasm-wallet-api';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
+import { useConfig } from 'contexts/configContext';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { SEND_INIT_STATE } from './sendReducer';
 
 const SendContext = React.createContext();
 
 export const SendContextProvider = (props) => {
+  const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
   const {
@@ -119,7 +121,7 @@ export const SendContextProvider = (props) => {
   // State is set upstream in `externalAccountContext`, and propagates downstream here
   // (see `syncPublicAccountToExternalAccount` above)
   const setSenderPublicAccount = async (senderPublicAccount) => {
-    setLastAccessedExternalAccountAddress(senderPublicAccount.address);
+    setLastAccessedExternalAccountAddress(config, senderPublicAccount.address);
     await changeExternalAccount(senderPublicAccount);
   };
 
@@ -198,7 +200,6 @@ export const SendContextProvider = (props) => {
     if (!api || !address) {
       return null;
     }
-    await api.isReady;
     if (assetType.isNativeToken) {
       const balance = await fetchNativeTokenPublicBalance(address);
       return balance;
@@ -217,12 +218,8 @@ export const SendContextProvider = (props) => {
     if (!api || !address) {
       return null;
     }
-    await api.isReady;
     const balances = await api.derive.balances.account(address);
-    return new Balance(
-      AssetType.Dolphin(false),
-      new BN(balances.freeBalance.toString())
-    );
+    return Balance.Native(config, new BN(balances.freeBalance.toString()));
   };
 
   // Gets the available balance for the currently selected sender account, whether public or private
@@ -325,14 +322,8 @@ export const SendContextProvider = (props) => {
     if (!senderNativeTokenPublicBalance) {
       return null;
     }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(
-      AssetType.Dolphin(false),
-      0.1
-    );
-    const existentialDeposit = new Balance(
-      AssetType.Dolphin(false),
-      AssetType.Dolphin(false).existentialDeposit
-    );
+    const conservativeFeeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 0.1);
+    const existentialDeposit = Balance.Native(config, AssetType.Native(config).existentialDeposit);
     return conservativeFeeEstimate.add(existentialDeposit);
   };
 
@@ -346,13 +337,8 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       !senderAssetTargetBalance?.assetType.isPrivate
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
-        AssetType.Dolphin(false),
-        1
-      );
-      const balanceAfterTx = senderAssetCurrentBalance.sub(
-        senderAssetTargetBalance
-      );
+      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Native(config), 1);
+      const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);
       return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
     }
     return false;
@@ -375,7 +361,7 @@ export const SendContextProvider = (props) => {
 
   // Checks if the user has enough native token to pay fees & publish a transaction
   const userCanPayFee = () => {
-    if (!senderNativeTokenPublicBalance) {
+    if (!senderNativeTokenPublicBalance || !senderAssetTargetBalance) {
       return null;
     }
     let requiredNativeTokenBalance = getReservedNativeTokenBalance();

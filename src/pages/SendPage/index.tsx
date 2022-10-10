@@ -1,42 +1,35 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
-import PageContent from 'components/PageContent';
-import Navbar from 'components/Navbar';
-import Svgs from 'resources/icons';
-import { showError, showSuccess } from 'utils/ui/Notifications';
-import { useTxStatus } from 'contexts/txStatusContext';
-import SendFromForm from './SendFromForm';
-import SendToForm from './SendToForm';
+import NETWORK from 'constants/NetworkConstants';
+import React from 'react';
+import { TxStatusContextProvider } from 'contexts/txStatusContext';
+import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
+import { SubstrateContextProvider } from 'contexts/substrateContext';
+import { DolphinNavbar } from 'components/Navbar';
+import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
+import DeveloperConsole from 'components/Developer/DeveloperConsole';
+import { ConfigContextProvider } from 'contexts/configContext';
 import { SendContextProvider } from './SendContext';
+import SendPageContent from './SendPageContent';
 
 const SendPage = () => {
-  const { txStatus } = useTxStatus();
-
-  useEffect(() => {
-    if (txStatus?.isFinalized()) {
-      showSuccess('Transaction finalized', txStatus?.extrinsic);
-    } else if (txStatus?.isFailed()) {
-      showError('Transaction failed');
-    }
-  }, [txStatus]);
-
   return (
-    <SendContextProvider>
-      <PageContent>
-        <Navbar />
-        <div className="absolute inset-y-0 inset-x-0 lg:left-32 2xl:inset-x-0 justify-center flex items-center pb-2">
-          <div className="p-8 bg-secondary rounded-3xl">
-            <SendFromForm />
-            <img
-              className="mx-auto pt-1 pb-4"
-              src={Svgs.ArrowDownIcon}
-              alt="switch-icon"
-            />
-            <SendToForm />
-          </div>
-        </div>
-      </PageContent>
-    </SendContextProvider>
+    <ConfigContextProvider network={NETWORK.DOLPHIN}>
+      <SubstrateContextProvider>
+        <ExternalAccountContextProvider>
+          <TxStatusContextProvider >
+            <PrivateWalletContextProvider>
+              <SendContextProvider>
+                <div className="min-h-screen">
+                  <DolphinNavbar />
+                  <SendPageContent />
+                </div>
+                <DeveloperConsole />
+              </SendContextProvider>
+            </PrivateWalletContextProvider>
+          </TxStatusContextProvider>
+        </ExternalAccountContextProvider>
+      </SubstrateContextProvider>
+    </ConfigContextProvider>
   );
 };
 

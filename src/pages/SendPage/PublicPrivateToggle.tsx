@@ -16,9 +16,9 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, label, prefix }) => {
 
   let buttonId;
   if (isPrivate) {
-      buttonId = `${prefix}PrivateTogglePublic`;
+    buttonId = `${prefix}PrivateTogglePublic`;
   } else {
-      buttonId = `${prefix}PublicTogglePrivate`;
+    buttonId = `${prefix}PublicTogglePrivate`;
   }
 
   return (
