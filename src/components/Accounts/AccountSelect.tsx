@@ -11,6 +11,7 @@ import {
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Button from 'components/Button';
 import PolkadotIcon from 'resources/icons/chain/polkadot.svg';
+import TailsmanIcon from 'resources/icons/chain/tailsman.svg';
 import { useModal } from 'hooks';
 import ConnectWalletModal from 'components/Modal/connectWallet';
 import { useConfig } from 'contexts/configContext';
@@ -33,6 +34,14 @@ const AccountSelect = () => {
     navigator.clipboard.writeText(address);
     setAddressCopied(index);
     return false;
+  };
+
+  const getAccountIcon = (source: string) => {
+    if (source === 'talisman') {
+      return TailsmanIcon;
+    } else if (source === 'polkadot-js') {
+      return PolkadotIcon;
+    }
   };
 
   const handleOnClick = () => {
@@ -70,7 +79,7 @@ const AccountSelect = () => {
               )}
               onClick={onClickAccountSelect}
             >
-              <img className="w-6 h-6" src={PolkadotIcon} alt="Polkadot" />
+              <img className="w-6 h-6" src={getAccountIcon(externalAccount.meta.source)} alt={externalAccount.meta.source} />
               {externalAccount.meta.name}
             </div>
             {showAccountList ? (
