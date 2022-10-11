@@ -71,7 +71,7 @@ const StakingTable = () => {
     const collator = collatorCandidates.find(
       (collator) => collator.address === delegation.collator.address
     );
-    if (!collator.isActive) {
+    if (!collator.isFunctionallyActive) {
       return '⚠️ Collator inactive';
     } else if (delegation.rank > 100) {
       return '⚠️ Stake too small';
