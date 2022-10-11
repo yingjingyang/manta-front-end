@@ -102,9 +102,9 @@ const CollatorsTable = () => {
         return true;
       }
       if (filterOption.value === 'active') {
-        return collator.isActive;
+        return collator.isFunctionallyActive;
       }
-      return !collator.isActive;
+      return !collator.isFunctionallyActive;
     })
     .map((collator) => {
       return {
@@ -112,7 +112,7 @@ const CollatorsTable = () => {
         'Amount Staked': collator.balanceEffectiveBonded,
         'Minimum Stake': collator.minStake,
         Delegations: collator.delegationCount,
-        Status: collator.isActive ? 'Active' : '⚠️ Inactive',
+        Status: collator.isFunctionallyActive ? 'Active' : '⚠️ Inactive',
         'APY Estimate': collator,
         data: collator
       };
@@ -123,7 +123,7 @@ const CollatorsTable = () => {
     'Minimum stake required to earn staking rewards for this collator';
   const delegationTooltip =
     'Total stakers delegating to this node; only the top 100 stakers earn rewards';
-  const apyEstimateTooltip = 'APY estimates assume collators never miss blocks';
+  const apyEstimateTooltip = 'APY estimates are based on collator performance last round';
   const statusTooltip = 'Whether this collator is producing blocks and earning yield';
 
   const columnDefs: ColDef[] = [

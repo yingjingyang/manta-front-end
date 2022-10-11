@@ -14,6 +14,7 @@ import UnstakeRequest from 'types/UnstakeRequest';
 import Decimal from 'decimal.js';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
+import shuffle from 'utils/general/shuffle';
 import { BASE_MIN_DELEGATION } from '../StakeConstants';
 import { STAKE_INIT_STATE, stakeReducer } from './stakeReducer';
 import STAKE_ACTIONS from './stakeActions';
@@ -22,7 +23,9 @@ import {
   getCalamariTokenValue,
   getAnnualInflation,
   getCollatorsAreActive,
-  getCollatorCandidateInfo
+  getCollatorCandidateInfo,
+  getBlocksPreviousRound,
+  getUserTotalRecentRewards
 } from './stakeQueries';
 
 const StakeDataContext = createContext();
@@ -37,7 +40,8 @@ export const StakeDataContextProvider = (props) => {
   const [state, dispatch] = useReducer(stakeReducer, initState);
   const {
     userDelegations,
-    collatorCandidates
+    collatorCandidates,
+    userTotalRecentRewards
   } = state;
 
   useEffect(() => {
@@ -98,7 +102,8 @@ export const StakeDataContextProvider = (props) => {
       collator,
       annualRewardsPerCollatorAtomicUnits,
       marginalDelegationAtomicUnits,
-      collatorComission
+      collatorComission,
+      collatorExpectedBlocksPerRound
     ) => {
       const collatorDelegationValueAtomicUnits = new Decimal(
         collator.balanceEffectiveBonded.valueAtomicUnits.toString()
@@ -111,9 +116,14 @@ export const StakeDataContextProvider = (props) => {
       const marginalRewardAtomicUnits = annualRewardsPerCollatorAtomicUnits.mul(
         marginalDelegationProportion
       );
+
+      const performanceAdjustmentFactor = collator.blocksPreviousRound / collatorExpectedBlocksPerRound;
+
+
       Decimal.set({ rounding: 1 });
       let apy = marginalRewardAtomicUnits
         .div(marginalDelegationAtomicUnits)
+        .mul(new Decimal(performanceAdjustmentFactor))
         .mul(new Decimal(100))
         .round();
       apy = deductCollatorCommission(apy, collatorComission);
@@ -121,7 +131,7 @@ export const StakeDataContextProvider = (props) => {
     };
 
     // Sets the estimated APY for all collators
-    const setCollatorsApys = async (collatorCandidates, collatorComission) => {
+    const setCollatorsApys = async (collatorCandidates, collatorComission, round) => {
       const annualInflation = await getAnnualInflation(api, config);
       const totalActiveCollators = new BN(
         collatorCandidates.filter(collator => collator.isActive).length
@@ -137,12 +147,16 @@ export const StakeDataContextProvider = (props) => {
       const marginalDelegationAtomicUnits = new Decimal(
         marginalDelegation.valueAtomicUnits.toString()
       );
+
+      const collatorExpectedBlocksPerRound = round.length.toNumber() / collatorCandidates.length;
+
       collatorCandidates.forEach(collator => {
         setSingleCollatorApy(
           collator,
           annualRewardsPerCollatorAtomicUnits,
           marginalDelegationAtomicUnits,
-          collatorComission
+          collatorComission,
+          collatorExpectedBlocksPerRound
         );
       });
     };
@@ -162,13 +176,15 @@ export const StakeDataContextProvider = (props) => {
 
     // Sets collator information including address, APY estimate, total delegation information etc.
     const setCollatorCandidates = async () => {
-      if (!api) {
+      if (!api || collatorCandidates.length) {
         return;
       }
       try {
         const collatorAddresses = (await api.query.parachainStaking.candidatePool())
           .map(candidateRaw => candidateRaw.owner.toString());
         const collatorsAreActive = await getCollatorsAreActive(api, collatorAddresses);
+        const round = await api.query.parachainStaking.round();
+        const blocksPreviousRound = await getBlocksPreviousRound(api, round, collatorAddresses);
         const collatorComission = await getCollatorComission(api);
         const collatorCandidatesInfo = await getCollatorCandidateInfo(
           api, config, collatorAddresses
@@ -184,15 +200,16 @@ export const StakeDataContextProvider = (props) => {
               collatorCandidatesInfo[i].lowestTopDelegationAmount,
               collatorCandidatesInfo[i].delegationCount
             ),
-            collatorsAreActive[i]
+            collatorsAreActive[i],
+            blocksPreviousRound[i]
           );
           collatorCandidates.push(collator);
         }
-        await setCollatorsApys(collatorCandidates, collatorComission);
-
+        await setCollatorsApys(collatorCandidates, collatorComission, round);
         if (txStatusRef.current?.isProcessing()) {
           return;
         }
+        shuffle(collatorCandidates);
         dispatch({
           type: STAKE_ACTIONS.SET_COLLATOR_CANDIDATES,
           collatorCandidates,
@@ -314,6 +331,30 @@ export const StakeDataContextProvider = (props) => {
     setUnstakeRequests();
     return unsub && unsub();
   }, [api, address, userDelegations, txStatus]);
+
+
+  useEffect(() => {
+    const setUserTotalRecentRewards = async () => {
+      if (!api || !address || !config || userTotalRecentRewards) {
+        return;
+      }
+      try {
+        const {
+          userTotalRecentRewards,
+          secondsSinceReward
+        } = await getUserTotalRecentRewards(api, config, address);
+        dispatch({
+          type: STAKE_ACTIONS.SET_USER_TOTAL_RECENT_REWARDS,
+          userTotalRecentRewards,
+          secondsSinceReward
+        });
+      } catch(error) {
+        console.error(error);
+      }
+    };
+    setUserTotalRecentRewards();
+  }, [api, config, address]);
+
 
   // Sets the balance that the user intends to stake
   const setStakeTargetBalance = (stakeTargetBalance) => {
