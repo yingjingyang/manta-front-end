@@ -118,13 +118,18 @@ const CollatorsTable = () => {
       };
     });
 
-  const amountStakedTooltip = 'Total balance staked for this collator across all delegations';
+  const amountStakedTooltip =
+    'Total balance staked for this collator across all delegations';
   const minStakeTooltip =
     'Minimum stake required to earn staking rewards for this collator';
   const delegationTooltip =
     'Total stakers delegating to this node; only the top 100 stakers earn rewards';
-  const apyEstimateTooltip = 'APY estimates are based on collator performance last round';
-  const statusTooltip = 'Whether this collator is producing blocks and earning yield';
+  const apyEstimateTooltip =
+    'APY estimates are based on collator performance last round';
+  const statusTooltip =
+    'Whether this collator is producing blocks and earning yield';
+  const inactiveCollatorTooltip =
+    'Newly launched collators may take up to 6 hours to activate';
 
   const columnDefs: ColDef[] = [
     {
@@ -174,7 +179,12 @@ const CollatorsTable = () => {
       unSortIcon: true,
       headerTooltip: statusTooltip,
       width: 175,
-      suppressMovable: true
+      suppressMovable: true,
+      tooltipValueGetter: (params: any) => {
+        if (params.value === 'Inactive') {
+          return inactiveCollatorTooltip;
+        }
+      }
     },
     {
       field: 'Delegations',

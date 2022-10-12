@@ -80,19 +80,33 @@ const StakingTable = () => {
     }
   };
 
+  const getApyEstimateString = (collator) => {
+    if (!collator.apy) {
+      return '-';
+    } else {
+      return `${collator.apy.toNumber().toLocaleString(undefined)} %`;
+    }
+  };
+
   const rowData = userDelegations.map((delegation: Delegation) => {
     return {
       Collator: delegation.collator,
       Amount: delegation.delegatedBalance,
       Status: getIsEarningString(delegation),
       Rank: delegation.rank,
+      'APY Estimate': collatorCandidates.find(
+        (collator) => collator.address === delegation.collator.address
+      ),
       data: delegation
     };
   });
 
   const amountTooltip = 'Your balance staked with this collator';
   const statusTooltip = 'Whether this delegation is earning yield';
-  const rankTooltip = 'Your rank among the top 100 delegations to this collator';
+  const rankTooltip =
+    'Your rank among the top 100 delegations to this collator';
+  const apyEstimateTooltip =
+    'APY estimates are based on collator performance last round';
 
   const columnDefs: ColDef[] = [
     {
@@ -136,9 +150,21 @@ const StakingTable = () => {
         valueA < valueB ? 1 : -1
     },
     {
+      field: 'APY Estimate',
+      width: 200,
+      suppressMovable: true,
+      unSortIcon: true,
+      headerTooltip: apyEstimateTooltip,
+      cellRenderer: (params: any) => {
+        return getApyEstimateString(params.data['APY Estimate']);
+      },
+      comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
+        valueA.apy.toNumber() > valueB.apy.toNumber() ? 1 : -1
+    },
+    {
       field: '',
       sortable: false,
-      width: 460,
+      width: 260,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         const delegation = params.data.data;
