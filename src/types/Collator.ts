@@ -1,6 +1,10 @@
 // @ts-nocheck
 
+import BN from 'bn.js';
 import Decimal from 'decimal.js';
+import { BASE_MIN_DELEGATION } from 'pages/StakePage/StakeConstants';
+import AssetType from './AssetType';
+import Balance from './Balance';
 
 const ADDRESS_TO_COLLATOR_NAME_MAP = {
   dmxa3MJczFGT92BUQjwsxguUC2t5qFaDdagfpBQWdGkNPJYQ5: 'Anonstake',
@@ -69,6 +73,19 @@ export default class Collator {
     // i.e. whether the collator is actually producing blocks
     this.isFunctionallyActive = this._getIsFunctionallyActive();
     this.apy = null;
+  }
+
+  // A node that was once in the set of collator candidates but has since left
+  static Former(config, address) {
+    return new Collator(
+      address,
+      null,
+      null,
+      null,
+      Balance.fromBaseUnits(AssetType.Native(config), new BN(BASE_MIN_DELEGATION)),
+      false,
+      0
+    );
   }
 
   _getIsFunctionallyActive() {
