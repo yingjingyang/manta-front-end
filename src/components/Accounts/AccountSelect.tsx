@@ -24,7 +24,7 @@ const AccountSelect = () => {
   const { txStatus } = useTxStatus();
   const { externalAccount, externalAccountOptions, changeExternalAccount } = useExternalAccount();
   const { ModalWrapper, showModal } = useModal();
-  const { setIsWalletConnected } = useKeyring();
+  const { setHasAuthToConnectWallet } = useKeyring();
 
   const [showAccountList, setShowAccountList] = useState(false);
   const [addressCopied, setAddressCopied] = useState(-1);
@@ -45,8 +45,8 @@ const AccountSelect = () => {
   };
 
   const handleOnClick = () => {
-    setIsWalletConnected(true); 
-    window.localStorage.setItem('isWalletConnected', true); 
+    setHasAuthToConnectWallet(true); 
+    window.localStorage.setItem('hasAuthToConnectWallet', true); 
     showModal();
   };
 
