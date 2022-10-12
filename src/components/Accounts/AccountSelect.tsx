@@ -12,6 +12,7 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import Button from 'components/Button';
 import PolkadotIcon from 'resources/icons/chain/polkadot.svg';
 import TailsmanIcon from 'resources/icons/chain/tailsman.svg';
+import WalletIcon from 'resources/icons/wallet-icon.svg';
 import { useModal } from 'hooks';
 import ConnectWalletModal from 'components/Modal/connectWallet';
 import { useConfig } from 'contexts/configContext';
@@ -41,6 +42,8 @@ const AccountSelect = () => {
       return TailsmanIcon;
     } else if (source === 'polkadot-js') {
       return PolkadotIcon;
+    } else {
+      return WalletIcon;
     }
   };
 
@@ -89,6 +92,10 @@ const AccountSelect = () => {
                     <div
                       key={account.address}
                       className="flex items-center gap-5 justify-between border border-secondary rounded-xl px-6 py-4 mb-5 text-secondary"
+                      onClick={() => {
+                        changeExternalAccount(account);
+                        setShowAccountList(false);
+                      }}
                     >
                       <div>
                         <div className="flex items-center gap-3">
@@ -101,10 +108,6 @@ const AccountSelect = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <div
-                            onClick={() => {
-                              changeExternalAccount(account);
-                              setShowAccountList(false);
-                            }}
                           >
                             {`${account.address.slice(
                               0,
@@ -112,6 +115,7 @@ const AccountSelect = () => {
                             )}...${account.address.slice(-5)}`}
                           </div>
                           <a
+                            onClick={e => e.stopPropagation()}
                             href={getBlockExplorerLink(account.address)}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -128,21 +132,19 @@ const AccountSelect = () => {
                             <FontAwesomeIcon
                               className="cursor-pointer"
                               icon={faCopy}
-                              onClick={() =>
-                                copyToClipboard(account.address, index)
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(account.address, index);
+                              }
                               }
                             />
                           )}
                         </div>
                       </div>
                       <div
-                        className="border-2 font-semibold border-secondary text-link rounded-full py-1 px-2 cursor-pointer"
-                        onClick={() => {
-                          changeExternalAccount(account);
-                          setShowAccountList(false);
-                        }}
+                        className="py-1 px-6"
                       >
-                        Change
+                        {externalAccount.address === account.address &&<FontAwesomeIcon className="fa-xl" icon={faCheck} style={{color: 'green'}}/>}
                       </div>
                     </div>
                   ))}
