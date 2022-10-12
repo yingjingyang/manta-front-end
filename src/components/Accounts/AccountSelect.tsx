@@ -10,9 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Button from 'components/Button';
-import PolkadotIcon from 'resources/icons/chain/polkadot.svg';
-import TailsmanIcon from 'resources/icons/chain/tailsman.svg';
-import WalletIcon from 'resources/icons/wallet-icon.svg';
+import Svgs from 'resources/icons';
 import { useModal } from 'hooks';
 import ConnectWalletModal from 'components/Modal/connectWallet';
 import { useConfig } from 'contexts/configContext';
@@ -39,11 +37,11 @@ const AccountSelect = () => {
 
   const getAccountIcon = (source: string) => {
     if (source === 'talisman') {
-      return TailsmanIcon;
+      return Svgs.TailsmanIcon;
     } else if (source === 'polkadot-js') {
-      return PolkadotIcon;
+      return Svgs.PolkadotJSIcon;
     } else {
-      return WalletIcon;
+      return Svgs.WalletIcon;
     }
   };
 
