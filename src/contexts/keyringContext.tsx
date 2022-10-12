@@ -19,9 +19,10 @@ export const KeyringContextProvider = (props) => {
   const [waitExtensionCounter, setWaitExtensionCounter] = useState(0);
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState([]);
-  const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState({});
-  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(!!window.localStorage.getItem('isWalletConnected'));
-  
+  const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
+  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(!!window.localStorage.getItem('hasAuthToConnectWallet'));
+  const [timeCounter, setTimeCounter] = useState(0);
+
   const isKeyringLoaded = () => {
     try {
       return isKeyringInit;
@@ -31,36 +32,8 @@ export const KeyringContextProvider = (props) => {
     }
   };
 
-
-  const updateWeb3ExtensionInjected = () => {
-    try {
-      if (window.injectedWeb3) {
-        setWeb3ExtensionInjected(window.injectedWeb3);
-      }
-      else {
-        if (waitExtensionCounter < 5) {
-          setTimeout(() => {
-            setWaitExtensionCounter(counter => counter + 1);
-          }, 1000);
-        }
-      }
-    } catch (e) {
-      console.log(`encounter error: ${e} while updateWeb3ExtensionInjected`);
-    }
-  };
-
-  let unsubscribe;
-  const initKeyring = async () => {
-    await web3Enable(APP_NAME);
-    keyring.loadAll(
-      {
-        ss58Format: config.SS58_FORMAT,
-        isDevelopment: config.DEVELOPMENT_KEYRING
-      },
-      [],
-    );
-    setIsKeyringInit(true);
-    unsubscribe = await web3AccountsSubscribe((accounts) => {
+  const subscribeWeb3Accounts = async () => {
+    let unsubscribe = await web3AccountsSubscribe((accounts) => {
       const newAddresses = [];
       const oldAddresses = [];
 
@@ -85,19 +58,103 @@ export const KeyringContextProvider = (props) => {
       });
       setKeyringAddresses(newAddresses);
     });
+    return unsubscribe;
+  };
+
+  const detectNewInjectedAccounts = async () => {
+    let unsubscribe = () => {};
+    let shouldUpdate = false;
+    const newWeb3ExtensionInjected = [];
+    const extensions = await web3Enable(APP_NAME);
+    for (let i = 0; i < extensions.length; i++) {
+      newWeb3ExtensionInjected.push(extensions[i].name);
+      shouldUpdate = shouldUpdate || !web3ExtensionInjected.includes(extensions[i].name);
+      console.log(`
+      shouldUpdate: ${shouldUpdate}
+      name - ${extensions[i].name}
+      props - ${Object.getOwnPropertyNames(extensions[i])}
+    `);
+    }
+    if (shouldUpdate) {
+      console.log('!!! entered shouldUpdate');
+      setWeb3ExtensionInjected(newWeb3ExtensionInjected);
+      unsubscribe = subscribeWeb3Accounts();
+    }
+    return unsubscribe;
+  };
+
+
+  const initKeyringWhenWeb3ExtensionsInjected = async () => {
+    try {
+      const extensionNames = Object.getOwnPropertyNames(window.injectedWeb3);
+      console.log(`window.injectedWeb3 props - ${extensionNames} | ${extensionNames.length !== 0}`);
+      if (!isKeyringInit) {
+        if (window.injectedWeb3 && extensionNames.length !== 0) {
+          setWeb3ExtensionInjected(extensionNames);
+          setTimeout(async () => {
+            await initKeyring();
+            setWaitExtensionCounter(counter => counter + 1);
+          }, 1000);
+        } else {
+          setTimeout(async () => {
+            setWaitExtensionCounter(counter => counter + 1);
+          }, 1000);
+        }
+      }
+    } catch (e) {
+      console.log(`encounter error: ${e} while updateWeb3ExtensionInjected`);
+    }
+  };
+
+  const initKeyring = async () => {
+    // !!Log
+    console.log(`
+    entered - initKeyring
+    hasAuthToConnectWallet - ${hasAuthToConnectWallet}
+    !isKeyringLoaded() - ${!isKeyringLoaded()}
+    web3ExtensionInjected.length - ${web3ExtensionInjected.length}
+    waitExtensionCounter - ${waitExtensionCounter}
+    isKeyringInit - ${isKeyringInit}
+    `);
+    // !!Log
+    let unsubscribe = () => {};
+    if (hasAuthToConnectWallet && !isKeyringLoaded() && web3ExtensionInjected.length !== 0){
+      keyring.loadAll(
+        {
+          ss58Format: config.SS58_FORMAT,
+          isDevelopment: config.DEVELOPMENT_KEYRING
+        },
+        [],
+      );
+      setIsKeyringInit(true);
+      await web3Enable(APP_NAME);
+      unsubscribe = await subscribeWeb3Accounts();
+    }
+    return unsubscribe;
   }; 
 
 
+  // hasAuthToConnectWallet equals true when user previously connected wallet
   useEffect(() => {
-    if (hasAuthToConnectWallet && !isKeyringLoaded() && Object.keys(web3ExtensionInjected).length !== 0){
-      initKeyring();
-      return () => { unsubscribe && unsubscribe(); }; 
-    }
-  }, [web3ExtensionInjected, hasAuthToConnectWallet]);
+    return initKeyring(); 
+  }, [hasAuthToConnectWallet]);
 
   useEffect(() => {
-    updateWeb3ExtensionInjected();
+    initKeyringWhenWeb3ExtensionsInjected();
   }, [waitExtensionCounter]);
+
+  // continuously detect new injected accounts 
+  useEffect(() => {
+    setTimeout(() => {
+      try {
+        detectNewInjectedAccounts();
+      } catch (e) {
+        console.error(e);
+      }
+      setTimeCounter(timeCounter => timeCounter + 1);
+    }, 10000);
+  }, [timeCounter]);
+
 
 
   const value = {
