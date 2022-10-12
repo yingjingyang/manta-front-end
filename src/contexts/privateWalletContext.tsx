@@ -19,12 +19,12 @@ import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
-import { network } from '../constants/NetworkConstants';
+import NETWORK from '../constants/NetworkConstants';
 import { useConfig } from './configContext';
 
 const PrivateWalletContext = createContext();
 
-const DolphinNetwork = network.dolphin;
+const DolphinNetwork = NETWORK.DOLPHIN;
 //const CalamariNetwork = network.calamari;
 //const MantaNetwork = network.manta;
 
