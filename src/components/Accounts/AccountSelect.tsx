@@ -37,7 +37,7 @@ const AccountSelect = () => {
 
   const getAccountIcon = (source: string) => {
     if (source === 'talisman') {
-      return Svgs.TailsmanIcon;
+      return Svgs.Talisman;
     } else if (source === 'polkadot-js') {
       return Svgs.PolkadotJSIcon;
     } else {
