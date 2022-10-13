@@ -49,6 +49,7 @@ import TotalIcon from 'resources/icons/chain/total.svg';
 import StakedIcon from 'resources/icons/chain/staked.svg';
 import ValidatorIcon from 'resources/icons/chain/validator.svg';
 import RateIcon from 'resources/icons/chain/rate.svg';
+import PolkadotJSIcon from 'resources/icons/chain/polkadot.svg';
 
 // extrinsic icons
 import SuccessIcon from 'resources/icons/success.svg';
@@ -106,6 +107,7 @@ const Svgs = {
   StakedIcon,
   ValidatorIcon,
   RateIcon,
+  PolkadotJSIcon,
   SuccessIcon,
   CopyIcon,
   FlowerIcon,
