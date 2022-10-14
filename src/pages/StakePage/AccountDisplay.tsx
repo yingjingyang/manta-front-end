@@ -2,13 +2,18 @@
 import React from 'react';
 import DotLoader from 'components/Loaders/DotLoader';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import { formatHoursMinutes } from 'utils/time/timeString';
+import { useConfig } from 'contexts/configContext';
 import { useStakeData } from './StakeContext/StakeDataContext';
 
 const AccountDisplay = () => {
+  const config = useConfig();
   const {
     userTotalBalance,
     userAvailableBalance,
-    userStakedBalance
+    userStakedBalance,
+    userTotalRecentRewards,
+    secondsSinceReward
   } = useStakeData();
 
   const { externalAccount } = useExternalAccount();
@@ -23,9 +28,15 @@ const AccountDisplay = () => {
     }
   };
 
+  const blockExplorerRewardsLink =
+    `${config.SUBSCAN_URL}/nominator/${externalAccount?.address}?tab=reward`;
+  const timeSinceRewardDisplayString = secondsSinceReward
+    ? `Last updated: ${formatHoursMinutes(secondsSinceReward)} ago`
+    : '';
   const totalBalanceDisplayString = getBalanceDisplayString(userTotalBalance);
   const avialableBalanceDisplayString = getBalanceDisplayString(userAvailableBalance);
   const stakedBalanceDisplayString = getBalanceDisplayString(userStakedBalance);
+  const userTotalRecentRewardsDisplayString = getBalanceDisplayString(userTotalRecentRewards);
 
   const onClickStartStaking = () =>  {
     const element = document.getElementById('collatorsTable');
@@ -51,7 +62,7 @@ const AccountDisplay = () => {
               Start staking
             </button>
           </div>
-          <div className="flex justify-end gap-12">
+          <div className="flex justify-end gap-8">
             <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
               <h2 className="text-secondary font-medium text-base">
                 Available Balance
@@ -67,6 +78,29 @@ const AccountDisplay = () => {
               <h1 className="text-black dark:text-white font-bold text-lg mt-4">
                 {stakedBalanceDisplayString}
               </h1>
+            </div>
+            <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
+              <h2 className="text-secondary font-medium text-base">
+                Rewards Last Round
+              </h2>
+              <h1 className="text-black dark:text-white font-bold text-lg mt-4">
+                {userTotalRecentRewardsDisplayString}
+              </h1>
+              <h3 className="text-secondary font-medium text-xss mt-3">
+                {timeSinceRewardDisplayString}
+              </h3>
+              {userTotalRecentRewards &&
+                <div className="mt-3">
+                  <a
+                    href={blockExplorerRewardsLink}
+                    className="text-link text-xss"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    More
+                  </a>
+                </div>
+              }
             </div>
           </div>
         </div>

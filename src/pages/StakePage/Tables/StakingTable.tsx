@@ -8,6 +8,8 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import Delegation from 'types/Delegation';
 import getTableHeight from 'utils/ui/getTableHeight';
 import { useSubstrate } from 'contexts/substrateContext';
+import Collator from 'types/Collator';
+import { useConfig } from 'contexts/configContext';
 import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
@@ -38,6 +40,7 @@ const NothingStakedDisplay = () => {
 };
 
 const StakingTable = () => {
+  const config = useConfig();
   const { apiState } = useSubstrate();
   const {
     collatorCandidates,
@@ -67,11 +70,19 @@ const StakingTable = () => {
     return `${rank} / 100`;
   };
 
-  const getIsEarningString = (delegation) => {
-    const collator = collatorCandidates.find(
-      (collator) => collator.address === delegation.collator.address
+  const getDelegationCollator = (delegation) => {
+    let collator = collatorCandidates.find(
+      (candidate) => candidate.address === delegation.collator.address
     );
-    if (!collator.isActive) {
+    if (!collator) {
+      collator = Collator.Former(config, delegation.collator.address);
+    }
+    return collator;
+  };
+
+  const getIsEarningString = (delegation) => {
+    const collator = getDelegationCollator(delegation);
+    if (!collator.isFunctionallyActive) {
       return '⚠️ Collator inactive';
     } else if (delegation.rank > 100) {
       return '⚠️ Stake too small';
@@ -145,9 +156,7 @@ const StakingTable = () => {
         const unstakeRequest = unstakeRequests.find(
           (request) => request.collator.address === delegation.collator.address
         );
-        const collator = collatorCandidates.find(
-          (candidate) => candidate.address === delegation.collator.address
-        );
+        const collator = getDelegationCollator(delegation);
         const onClickStake = () => {
           setSelectedCollator(collator);
           showStakeModal();

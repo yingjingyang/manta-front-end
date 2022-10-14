@@ -1,5 +1,11 @@
 // @ts-nocheck
 
+import BN from 'bn.js';
+import Decimal from 'decimal.js';
+import { BASE_MIN_DELEGATION } from 'pages/StakePage/StakeConstants';
+import AssetType from './AssetType';
+import Balance from './Balance';
+
 const ADDRESS_TO_COLLATOR_NAME_MAP = {
   dmxa3MJczFGT92BUQjwsxguUC2t5qFaDdagfpBQWdGkNPJYQ5: 'Anonstake',
   dmup6erAb8iJHQ2UXyHkA1G6m1hnSLRM55PdSD7DDbN1Ww4ZN: 'Validatrium',
@@ -24,7 +30,7 @@ const ADDRESS_TO_COLLATOR_NAME_MAP = {
   dmvPNCD8YaHusmrdtvpB6HG72BibVSpnbHugT893x4Hw9P186: 'STAKECRAFT',
   dmyhGCWjejSyze6Hcqx43f8PNR9RWwm4EEobo8HehtBb8W8aU: 'CJ Calamari',
   dmuPiPzqGwuKsik8XLLPPi2xHCEwADyrfxakgiQbjtYEh7bDy: 'kooltek68',
-  dmvvqrfK5AUYH294zTCCiimJRV7CQDDQyC7RAkd5aZgUn9S6f: 'Youhane Momoka | 255 DAO',
+  dmvvqrfK5AUYH294zTCCiimJRV7CQDDQyC7RAkd5aZgUn9S6f: '255 DAO',
   dmvoKqM8n2PVKyiYhm5VpMMnzMdk1z1WZAYDJEDmSLSqRgrbQ: 'Polkadotters',
   dmz1cxDw6nC5impJMZVfDwve5AG2s5AeaqSkZvQnEuqVwLYnL:
     'pithecus-calamari-john316',
@@ -32,6 +38,7 @@ const ADDRESS_TO_COLLATOR_NAME_MAP = {
   dmuaG34aVnxirpMsHXu6Mg7RxNN3cxG74ZyjLVEgvzNqBXm2U: 'SunshineAutosKma',
   dmyxfU1bJM5UR5RWsypKm9KQDkVofm3ifp5gVjzs8uQHUmBZb: 'pathrocknetwork',
   dmvVY24KwgNwoYnHw5EbC8mTUF9CtZeJzCnSGBawWzaRkNHH4: 'lets_node',
+  dmyhNFR1qUuA8efaYvpW75qGKrYfzrK8ejygttHojeL4ujzUb: '🧊Iceberg Nodes🧊 | C1',
   // test collators
   dmyjURuBeJwFo4Nvf2GZ8f5E2Asz98JY2d7UcaDykqYm1zpoi: 'Alice',
   dmxAK9q1WBDFtuNS9bLbBujK452yFfm8h8HLHWrr5mZqnEBi2: 'Bob',
@@ -49,16 +56,40 @@ export default class Collator {
     balanceEffectiveBonded,
     delegationCount,
     minStake,
-    isActive
+    isActive,
+    blocksPreviousRound
   ) {
     this.address = address;
     this.name = this.mapAddressToName(address);
     this.delegationCount = delegationCount;
     this.balanceSelfBonded = balanceSelfBonded;
     this.balanceEffectiveBonded = balanceEffectiveBonded;
-    this.isActive = isActive;
     this.minStake = minStake;
+    this.blocksPreviousRound = blocksPreviousRound;
+    // Whether the collator is active according to on-chain data
+    // i.e. whether the collator is part of the set of collators permitted to produce blocks
+    this.isActive = isActive;
+    // Whether the collator is active for the purposes of end users
+    // i.e. whether the collator is actually producing blocks
+    this.isFunctionallyActive = this._getIsFunctionallyActive();
     this.apy = null;
+  }
+
+  // A node that was once in the set of collator candidates but has since left
+  static Former(config, address) {
+    return new Collator(
+      address,
+      null,
+      null,
+      null,
+      Balance.fromBaseUnits(AssetType.Native(config), new BN(BASE_MIN_DELEGATION)),
+      false,
+      0
+    );
+  }
+
+  _getIsFunctionallyActive() {
+    return this.isActive && this.blocksPreviousRound > 0;
   }
 
   setApy(apy) {
