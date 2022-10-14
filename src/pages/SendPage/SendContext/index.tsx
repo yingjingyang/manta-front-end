@@ -99,9 +99,9 @@ export const SendContextProvider = (props) => {
         const externalAccount = externalAccountOptions.find(
           (account) => account.address === receiverAddress
         );
-        externalAccount && changeExternalAccount(externalAccount);
+        externalAccount && changeExternalAccount(externalAccount, externalAccountOptions);
       } else if (isPublicTransfer() || isToPrivate()) {
-        senderPublicAccount && changeExternalAccount(senderPublicAccount);
+        senderPublicAccount && changeExternalAccount(senderPublicAccount, externalAccountOptions);
       }
     };
     syncExternalAccountToPublicAccount();
@@ -122,7 +122,7 @@ export const SendContextProvider = (props) => {
   // (see `syncPublicAccountToExternalAccount` above)
   const setSenderPublicAccount = async (senderPublicAccount) => {
     setLastAccessedExternalAccountAddress(config, senderPublicAccount.address);
-    await changeExternalAccount(senderPublicAccount);
+    await changeExternalAccount(senderPublicAccount, externalAccountOptions);
   };
 
   // Toggles the private/public status of the sender's account
