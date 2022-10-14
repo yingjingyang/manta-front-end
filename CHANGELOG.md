@@ -39,3 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.0.0] - 2022-10-5
 ### Added
 - [\#252](https://github.com/Manta-Network/manta-front-end/pull/252) Added Calamari staking page and support for multiple networks
+
+## [3.0.1] - 2022-10-5
+### Added
+- [\#270](https://github.com/Manta-Network/manta-front-end/pull/270) Display previous round rewards and APY estimates adjusted for collator performance on the staking page
+
+## [3.0.2] - 2022-10-5
+### Fixed
+- [\#272](https://github.com/Manta-Network/manta-front-end/pull/272) Prevent error when user is staked to a node that left the set of collator candidates

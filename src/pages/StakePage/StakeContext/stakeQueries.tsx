@@ -5,6 +5,7 @@ import * as axios from 'axios';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Delegation from 'types/Delegation';
+import { MAX_DELEGATIONS, POINTS_PER_BLOCK, SECONDS_PER_BLOCK } from '../StakeConstants';
 
 // Get the proportion of delegated rewards paid to colators
 export const getCollatorComission = async (api) => {
@@ -66,10 +67,53 @@ export const getDelegations = async (api, config, userAddress) => {
   });
 };
 
+
+// Gets the number of blocks that this collator authored during the previous round
+export const getBlocksPreviousRound = async (api, round, collatorAddresses) => {
+  if (round.current === 0) {
+    return 0;
+  }
+  const args = collatorAddresses.map(address => [round.current - 1, address]);
+  const pointsPreviousRoundRaw = await api.query.parachainStaking.awardedPts.multi(args);
+  return pointsPreviousRoundRaw.map(pointsRaw => pointsRaw.toNumber() / POINTS_PER_BLOCK);
+};
+
 // Gets Calamari value denominated in USD
 export const getCalamariTokenValue = async () => {
   const res = await axios.get(
     'https://api.coingecko.com/api/v3/simple/price?ids=calamari-network&vs_currencies=usd'
   );
   return new Decimal(res.data['calamari-network']['usd']);
+};
+
+// Gets the user's total rewards across all delegations for the past round
+// and time since reward payout
+export const getUserTotalRecentRewards = async (api, config, userAddress) => {
+  const round = await api.query.parachainStaking.round();
+  const currentBlockNumber = (await api.query.system.number()).toString();
+  const startBlockNumber = round.first.toString();
+  const blockRangeQueryString = `${startBlockNumber}-${currentBlockNumber}`;
+  const res = await axios.post(
+    'https://calamari.api.subscan.io/api/scan/account/reward_slash',
+    {
+      block_range: blockRangeQueryString,
+      row: MAX_DELEGATIONS,
+      page: 0,
+      address: userAddress,
+      category: 'Reward'
+    }
+  );
+  const userTotalRecentRewardsRaw = res.data.data.list || [];
+  const userTotalRecentRewards = userTotalRecentRewardsRaw
+    .map(raw => Balance.Native(config, new BN(raw.amount)))
+    .reduce(
+      (partialSum, reward) => reward.add(partialSum),
+      Balance.Native(config, new BN(0))
+    );
+  const secondsSinceReward = (currentBlockNumber - round.first.toNumber()) * SECONDS_PER_BLOCK;
+
+  return {
+    userTotalRecentRewards,
+    secondsSinceReward
+  };
 };
