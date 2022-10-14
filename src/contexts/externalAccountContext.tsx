@@ -1,4 +1,5 @@
 // @ts-nocheck
+import APP_NAME from 'constants/AppConstants';
 import React, {
   createContext,
   useState,
@@ -7,7 +8,7 @@ import React, {
   useRef,
 } from 'react';
 import PropTypes from 'prop-types';
-import { web3FromSource } from '@polkadot/extension-dapp';
+import { web3Enable, web3FromSource } from '@polkadot/extension-dapp';
 import { getLastAccessedExternalAccount, setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
@@ -24,6 +25,17 @@ export const ExternalAccountContextProvider = (props) => {
   const [externalAccountSigner, setExternalAccountSigner] = useState(null);
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
 
+  const orderExternalAccountOptions = (selectedAccount, externalAccountOptions) => {
+    let orderedExternalAccountOptions = [];
+    orderedExternalAccountOptions.push(selectedAccount);
+    externalAccountOptions.map((account) => {
+      if (account.address !== selectedAccount.address) {
+        orderedExternalAccountOptions.push(account);
+      }
+    });
+    return orderedExternalAccountOptions;
+  };
+
   useEffect(() => {
     const setInitialExternalAccount = async () => {
       if (api && isKeyringLoaded() && keyringAddresses.length > 0) {
@@ -34,8 +46,7 @@ export const ExternalAccountContextProvider = (props) => {
           getLastAccessedExternalAccount(config, keyring) ||
           externalAccountOptions[0]
         );
-        setExternalAccountOptions(externalAccountOptions);
-        changeExternalAccount(initialAccount);
+        changeExternalAccount(initialAccount, externalAccountOptions);
       }
     };
     setInitialExternalAccount();
@@ -44,24 +55,41 @@ export const ExternalAccountContextProvider = (props) => {
   useEffect(() => {
     if (!externalAccount || !api) return;
     const setSignerOnChangeExternalAccount = async () => {
-      const {
-        meta: { source, isInjected },
-      } = externalAccount;
-      // signer is from Polkadot-js browser extension
-      if (isInjected) {
-        const injected = await web3FromSource(source);
-        api.setSigner(injected.signer);
+      // check whether external account is disabled
+      if (keyringAddresses.includes(externalAccount.address)) {
+        const {
+          meta: { source, isInjected },
+        } = externalAccount;
+        // signer is from Polkadot-js browser extension
+        if (isInjected) {
+          await web3Enable(APP_NAME);
+          const injected = await web3FromSource(source);
+          api.setSigner(injected.signer);
+        }
+        const signer = externalAccount.meta.isInjected ? externalAccount.address : externalAccount;
+        setExternalAccountSigner(signer);
+      } else {
+        if (keyringAddresses.length > 0) {
+          // reset everything if there are accounts after disable selected external account
+          const externalAccountOptions =  keyring.getPairs();
+          changeExternalAccount(externalAccountOptions[0], externalAccountOptions);
+        } else {
+          // reset everything if there are no account after disable selected external account
+          changeExternalAccount(null, []);
+          setExternalAccountSigner(null);
+          setExternalAccountOptions([]);
+          setExternalAccountSigner(null);
+        }
       }
-      const signer = externalAccount.meta.isInjected ? externalAccount.address : externalAccount;
-      setExternalAccountSigner(signer);
     };
     setSignerOnChangeExternalAccount();
   });
 
-  const changeExternalAccount = async (account) => {
+  const changeExternalAccount = async (account, externalAccounts) => {
     setExternalAccount(account);
+    setExternalAccountOptions(orderExternalAccountOptions(account, externalAccounts));
     externalAccountRef.current = account;
-    setLastAccessedExternalAccountAddress(config, account.address);
+    setLastAccessedExternalAccountAddress(config, account?.address);
   };
 
   const value = {
