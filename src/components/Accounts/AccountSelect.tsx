@@ -21,7 +21,8 @@ import { useKeyring } from 'contexts/keyringContext';
 const AccountSelect = () => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
-  const { externalAccount, externalAccountOptions, changeExternalAccount } = useExternalAccount();
+  const { externalAccount, externalAccountOptions, changeExternalAccount } =
+    useExternalAccount();
   const { ModalWrapper, showModal } = useModal();
   const { setHasAuthToConnectWallet, web3ExtensionInjected } = useKeyring();
 
@@ -46,9 +47,11 @@ const AccountSelect = () => {
   };
 
   const handleOnClick = () => {
-    setHasAuthToConnectWallet(true);
     window.localStorage.setItem('hasAuthToConnectWallet', true);
-    !!web3ExtensionInjected || showModal();
+    if (web3ExtensionInjected && web3ExtensionInjected.length === 0) {
+      showModal();
+    }
+    setHasAuthToConnectWallet(true);
   };
 
   useEffect(() => {
@@ -88,68 +91,70 @@ const AccountSelect = () => {
         {showAccountList ? (
           <div className="mt-3 bg-secondary rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
             <div className="max-h-96 overflow-y-auto pr-4">
-              {externalAccountOptions.map((account: any, index: number) =>(
-                <div
-                  key={account.address}
-                  className="hover:bg-thirdry cursor-pointer flex items-center gap-5 justify-between border border-secondary rounded-xl px-6 py-4 mb-5 text-secondary"
-                  onClick={() => {
-                    changeExternalAccount(account, externalAccountOptions);
-                    setShowAccountList(false);
-                  }}
-                >
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <Identicon
-                        value={account.address}
-                        size={32}
-                        theme="polkadot"
-                      />
-                      {account.meta.name}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
+              {Array.isArray(externalAccountOptions)
+                ? externalAccountOptions.map((account: any, index: number) => (
+                    <div
+                      key={account.address}
+                      className="hover:bg-thirdry cursor-pointer flex items-center gap-5 justify-between border border-secondary rounded-xl px-6 py-4 mb-5 text-secondary"
+                      onClick={() => {
+                        changeExternalAccount(account, externalAccountOptions);
+                        setShowAccountList(false);
+                      }}
+                    >
                       <div>
-                        {`${account.address.slice(
-                          0,
-                          4
-                        )}...${account.address.slice(-5)}`}
+                        <div className="flex items-center gap-3">
+                          <Identicon
+                            value={account.address}
+                            size={32}
+                            theme="polkadot"
+                          />
+                          {account.meta.name}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div>
+                            {`${account.address.slice(
+                              0,
+                              4
+                            )}...${account.address.slice(-5)}`}
+                          </div>
+                          <a
+                            onClick={(e) => e.stopPropagation()}
+                            href={getBlockExplorerLink(account.address)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FontAwesomeIcon
+                              className="cursor-pointer"
+                              icon={faArrowUpRightFromSquare}
+                              href={getBlockExplorerLink(account.address)}
+                            />
+                          </a>
+                          {addressCopied === index ? (
+                            <FontAwesomeIcon icon={faCheck} />
+                          ) : (
+                            <FontAwesomeIcon
+                              className="cursor-pointer"
+                              icon={faCopy}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(account.address, index);
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                      <a
-                        onClick={(e) => e.stopPropagation()}
-                        href={getBlockExplorerLink(account.address)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FontAwesomeIcon
-                          className="cursor-pointer"
-                          icon={faArrowUpRightFromSquare}
-                          href={getBlockExplorerLink(account.address)}
-                        />
-                      </a>
-                      {addressCopied === index ? (
-                        <FontAwesomeIcon icon={faCheck} />
-                      ) : (
-                        <FontAwesomeIcon
-                          className="cursor-pointer"
-                          icon={faCopy}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(account.address, index);
-                          }}
-                        />
-                      )}
+                      <div className="py-1 px-6">
+                        {externalAccount.address === account.address && (
+                          <FontAwesomeIcon
+                            className="fa-xl"
+                            icon={faCheck}
+                            style={{ color: 'green' }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="py-1 px-6">
-                    {externalAccount.address === account.address && (
-                      <FontAwesomeIcon
-                        className="fa-xl"
-                        icon={faCheck}
-                        style={{ color: 'green' }}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
+                  ))
+                : null}
             </div>
           </div>
         ) : null}

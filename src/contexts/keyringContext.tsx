@@ -19,7 +19,7 @@ export const KeyringContextProvider = (props) => {
 
   const isKeyringLoaded = () => {
     try {
-      return !!keyring.keyring;
+      return isKeyringInit;
     } catch (e) {
       console.log(`encounter error: ${e} while isKeyringLoaded`);
       return false;
@@ -92,7 +92,7 @@ export const KeyringContextProvider = (props) => {
   const initKeyringWhenWeb3ExtensionsInjected = async () => {
     try {
       const extensionNames = Object.getOwnPropertyNames(window.injectedWeb3);
-      if (!isKeyringInit) {
+      if (!isKeyringLoaded()) {
         if (window.injectedWeb3 && extensionNames.length !== 0) {
           setWeb3ExtensionInjected(extensionNames);
           setTimeout(async () => {
