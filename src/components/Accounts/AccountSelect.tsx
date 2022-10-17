@@ -1,22 +1,20 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import Identicon from '@polkadot/react-identicon';
-import OutsideClickHandler from 'react-outside-click-handler';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowUpRightFromSquare,
-  faCopy,
-  faCheck
-} from '@fortawesome/free-solid-svg-icons';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import classNames from 'classnames';
 import Button from 'components/Button';
-import Svgs from 'resources/icons';
-import { useModal } from 'hooks';
 import ConnectWalletModal from 'components/Modal/connectWallet';
 import { useConfig } from 'contexts/configContext';
-import { useTxStatus } from 'contexts/txStatusContext';
-import classNames from 'classnames';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { useModal } from 'hooks';
+import React, { useEffect, useState } from 'react';
+import OutsideClickHandler from 'react-outside-click-handler';
+import Svgs from 'resources/icons';
+import { setHasAuthToConnectStorage } from 'utils/persistence/connectAuthorizationStorage';
+
+import { faArrowUpRightFromSquare, faCheck, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Identicon from '@polkadot/react-identicon';
 
 const AccountSelect = () => {
   const config = useConfig();
@@ -47,7 +45,7 @@ const AccountSelect = () => {
   };
 
   const handleOnClick = () => {
-    window.localStorage.setItem('hasAuthToConnectWallet', true);
+    setHasAuthToConnectStorage(true);
     if (web3ExtensionInjected && web3ExtensionInjected.length === 0) {
       showModal();
     }
@@ -70,7 +68,68 @@ const AccountSelect = () => {
     !disabled && setShowAccountList(!showAccountList);
   };
 
-  const accountsComponent = (
+  const avaliableAccounts = () => {
+    if (!Array.isArray(externalAccountOptions)) {
+      return null;
+    }
+    return externalAccountOptions.map((account: any, index: number) => (
+      <div
+        key={account.address}
+        className="hover:bg-thirdry cursor-pointer flex items-center gap-5 justify-between border border-secondary rounded-xl px-6 py-4 mb-5 text-secondary"
+        onClick={() => {
+          changeExternalAccount(account, externalAccountOptions);
+          setShowAccountList(false);
+        }}
+      >
+        <div>
+          <div className="flex items-center gap-3">
+            <Identicon value={account.address} size={32} theme="polkadot" />
+            {account.meta.name}
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <div>
+              {`${account.address.slice(0, 4)}...${account.address.slice(-5)}`}
+            </div>
+            <a
+              onClick={(e) => e.stopPropagation()}
+              href={getBlockExplorerLink(account.address)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon
+                className="cursor-pointer"
+                icon={faArrowUpRightFromSquare}
+                href={getBlockExplorerLink(account.address)}
+              />
+            </a>
+            {addressCopied === index ? (
+              <FontAwesomeIcon icon={faCheck} />
+            ) : (
+              <FontAwesomeIcon
+                className="cursor-pointer"
+                icon={faCopy}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(account.address, index);
+                }}
+              />
+            )}
+          </div>
+        </div>
+        <div className="py-1 px-6">
+          {externalAccount.address === account.address && (
+            <FontAwesomeIcon
+              className="fa-xl"
+              icon={faCheck}
+              style={{ color: 'green' }}
+            />
+          )}
+        </div>
+      </div>
+    ));
+  };
+
+  const displayAccountsButtonComponent = (
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
@@ -91,70 +150,7 @@ const AccountSelect = () => {
         {showAccountList ? (
           <div className="mt-3 bg-secondary rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
             <div className="max-h-96 overflow-y-auto pr-4">
-              {Array.isArray(externalAccountOptions)
-                ? externalAccountOptions.map((account: any, index: number) => (
-                    <div
-                      key={account.address}
-                      className="hover:bg-thirdry cursor-pointer flex items-center gap-5 justify-between border border-secondary rounded-xl px-6 py-4 mb-5 text-secondary"
-                      onClick={() => {
-                        changeExternalAccount(account, externalAccountOptions);
-                        setShowAccountList(false);
-                      }}
-                    >
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <Identicon
-                            value={account.address}
-                            size={32}
-                            theme="polkadot"
-                          />
-                          {account.meta.name}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div>
-                            {`${account.address.slice(
-                              0,
-                              4
-                            )}...${account.address.slice(-5)}`}
-                          </div>
-                          <a
-                            onClick={(e) => e.stopPropagation()}
-                            href={getBlockExplorerLink(account.address)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FontAwesomeIcon
-                              className="cursor-pointer"
-                              icon={faArrowUpRightFromSquare}
-                              href={getBlockExplorerLink(account.address)}
-                            />
-                          </a>
-                          {addressCopied === index ? (
-                            <FontAwesomeIcon icon={faCheck} />
-                          ) : (
-                            <FontAwesomeIcon
-                              className="cursor-pointer"
-                              icon={faCopy}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                copyToClipboard(account.address, index);
-                              }}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <div className="py-1 px-6">
-                        {externalAccount.address === account.address && (
-                          <FontAwesomeIcon
-                            className="fa-xl"
-                            icon={faCheck}
-                            style={{ color: 'green' }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))
-                : null}
+              {avaliableAccounts()}
             </div>
           </div>
         ) : null}
@@ -162,7 +158,7 @@ const AccountSelect = () => {
     </div>
   );
 
-  const connectedAccountComponent = (
+  const connectAccountButtonComponent = (
     <div>
       <Button
         className="btn-secondary rounded-lg relative z-10"
@@ -176,7 +172,7 @@ const AccountSelect = () => {
     </div>
   );
 
-  return externalAccount ? accountsComponent : connectedAccountComponent;
+  return externalAccount ? displayAccountsButtonComponent : connectAccountButtonComponent;
 };
 
 export default AccountSelect;

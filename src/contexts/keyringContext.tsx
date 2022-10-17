@@ -1,9 +1,12 @@
 // @ts-nocheck
 import APP_NAME from 'constants/AppConstants';
-import React, { createContext, useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getHasAuthToConnectStorage } from 'utils/persistence/connectAuthorizationStorage';
+
+import { web3AccountsSubscribe, web3Enable } from '@polkadot/extension-dapp';
 import keyring from '@polkadot/ui-keyring';
-import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
+
 import { useConfig } from './configContext';
 
 const KeyringContext = createContext();
@@ -14,30 +17,18 @@ export const KeyringContextProvider = (props) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState([]);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
-  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(!!window.localStorage.getItem('hasAuthToConnectWallet'));
+  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(getHasAuthToConnectStorage());
   const [timeCounter, setTimeCounter] = useState(0);
-
-  const isKeyringLoaded = () => {
-    try {
-      return isKeyringInit;
-    } catch (e) {
-      console.log(`encounter error: ${e} while isKeyringLoaded`);
-      return false;
-    }
-  };
 
   const subscribeWeb3Accounts = async () => {
     let unsubscribe = await web3AccountsSubscribe((accounts) => {
       const newAddresses = [];
-      const oldAddresses = [];
 
       //populate existingAddresses with not updated accounts' addresses
-      keyring.getAccounts().map(({ address }) => {
-        oldAddresses.push(address);
-      });
+      const oldAddresses = keyring.getAccounts().map(account => account.address)
 
       //add newly created account into keyring
-      accounts.map(({ address, meta, type }) => {
+      accounts.forEach(({ address, meta, type }) => {
         newAddresses.push(address);
         if (!oldAddresses.includes(address)) {
           keyring.loadInjected(address, { ...meta, name: meta.name }, type);
@@ -45,7 +36,7 @@ export const KeyringContextProvider = (props) => {
       });
 
       //remove newly deleted account from keyring
-      oldAddresses.map((address) => {
+      oldAddresses.forEach((address) => {
         if (!newAddresses.includes(address)) {
           keyring.forgetAccount(address);
         }
@@ -57,56 +48,47 @@ export const KeyringContextProvider = (props) => {
 
   const detectNewInjectedAccounts = async () => {
     let unsubscribe = () => {};
-    try {
-      let isEqual = false;
-      let newWeb3ExtensionInjected = [];
-      const extensions = await web3Enable(APP_NAME);
+    let isEqual = false;
+    let newWeb3ExtensionInjected = [];
+    const extensions = await web3Enable(APP_NAME);
 
-      for (let i = 0; i < extensions.length; i++) {
-        newWeb3ExtensionInjected.push(extensions[i].name);
-      }
-
-      isEqual = isTwoStringArrayEqual(
-        web3ExtensionInjected,
-        newWeb3ExtensionInjected
-      );
-      if (!isEqual) {
-        // check whether user disabled a existing extension
-        if (
-          newWeb3ExtensionInjected.length === 0 ||
-          newWeb3ExtensionInjected !== 0
-        ) {
-          if (isKeyringLoaded()) {
-            unsubscribe = subscribeWeb3Accounts();
-          }
-        }
-        setWeb3ExtensionInjected(newWeb3ExtensionInjected);
-      }
-      return unsubscribe;
-    } catch (e) {
-      console.log(`detectNewInjectedAccounts error : ${e}`);
-      return unsubscribe;
+    for (let i = 0; i < extensions.length; i++) {
+      newWeb3ExtensionInjected.push(extensions[i].name);
     }
+
+    isEqual = isTwoStringArrayEqual(
+      web3ExtensionInjected,
+      newWeb3ExtensionInjected
+    );
+    if (!isEqual) {
+      // check whether user disabled a existing extension
+      if (
+        newWeb3ExtensionInjected.length === 0 ||
+        newWeb3ExtensionInjected !== 0
+      ) {
+        if (isKeyringInit) {
+          unsubscribe = subscribeWeb3Accounts();
+        }
+      }
+      setWeb3ExtensionInjected(newWeb3ExtensionInjected);
+    }
+    return unsubscribe;
   };
 
-  const initKeyringWhenWeb3ExtensionsInjected = async () => {
-    try {
-      const extensionNames = Object.getOwnPropertyNames(window.injectedWeb3);
-      if (!isKeyringLoaded()) {
-        if (window.injectedWeb3 && extensionNames.length !== 0) {
-          setWeb3ExtensionInjected(extensionNames);
-          setTimeout(async () => {
-            await initKeyring();
-            setWaitExtensionCounter((counter) => counter + 1);
-          }, 1000);
-        } else {
-          setTimeout(async () => {
-            setWaitExtensionCounter((counter) => counter + 1);
-          }, 1000);
-        }
+  const triggerInitKeyringWhenWeb3ExtensionsInjected = async () => {
+    const extensionNames = Object.getOwnPropertyNames(window.injectedWeb3);
+    if (!isKeyringInit) {
+      if (window.injectedWeb3 && extensionNames.length !== 0) {
+        setWeb3ExtensionInjected(extensionNames);
+        setTimeout(async () => {
+          await initKeyring();
+          setWaitExtensionCounter((counter) => counter + 1);
+        }, 500);
+      } else {
+        setTimeout(async () => {
+          setWaitExtensionCounter((counter) => counter + 1);
+        }, 500);
       }
-    } catch (e) {
-      console.log(`encounter error: ${e} while updateWeb3ExtensionInjected`);
     }
   };
 
@@ -114,7 +96,7 @@ export const KeyringContextProvider = (props) => {
     let unsubscribe = () => {};
     if (
       hasAuthToConnectWallet &&
-      !isKeyringLoaded() &&
+      !isKeyringInit &&
       web3ExtensionInjected.length !== 0
     ) {
       keyring.loadAll(
@@ -155,28 +137,23 @@ export const KeyringContextProvider = (props) => {
   }, [hasAuthToConnectWallet]);
 
   useEffect(() => {
-    initKeyringWhenWeb3ExtensionsInjected();
+    triggerInitKeyringWhenWeb3ExtensionsInjected();
   }, [waitExtensionCounter]);
 
   // continuously detect new injected accounts
   useEffect(() => {
     setTimeout(() => {
-      try {
-        detectNewInjectedAccounts();
-      } catch (e) {
-        console.error(e);
-      }
+      detectNewInjectedAccounts();
       setTimeCounter((timeCounter) => timeCounter + 1);
     }, 10000);
   }, [timeCounter]);
 
   const value = {
     keyring: keyring, // keyring object would not change even if properties changed
-    isKeyringLoaded: isKeyringLoaded,
+    isKeyringInit: isKeyringInit,
     keyringAddresses: keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
     setHasAuthToConnectWallet: setHasAuthToConnectWallet,
     web3ExtensionInjected: web3ExtensionInjected,
-    detectNewInjectedAccounts: detectNewInjectedAccounts
   };
 
   return (

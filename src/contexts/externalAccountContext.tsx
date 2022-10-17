@@ -22,8 +22,7 @@ const ExternalAccountContext = createContext();
 export const ExternalAccountContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
-  const { keyring, isKeyringLoaded, isKeyringInit, keyringAddresses } =
-    useKeyring();
+  const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
   const externalAccountRef = useRef(null);
   const [externalAccount, setExternalAccount] = useState(null);
   const [externalAccountSigner, setExternalAccountSigner] = useState(null);
@@ -37,7 +36,7 @@ export const ExternalAccountContextProvider = (props) => {
   ) => {
     let orderedExternalAccountOptions = [];
     orderedExternalAccountOptions.push(selectedAccount);
-    externalAccountOptions.map((account) => {
+    externalAccountOptions.forEach((account) => {
       if (account.address !== selectedAccount.address) {
         orderedExternalAccountOptions.push(account);
       }
@@ -89,7 +88,7 @@ export const ExternalAccountContextProvider = (props) => {
       if (
         !isInitialAccountSet &&
         api &&
-        isKeyringLoaded() &&
+        isKeyringInit &&
         keyringAddresses.length > 0
       ) {
         // The user's default account is either their last accessed polkadot.js account,
@@ -107,21 +106,24 @@ export const ExternalAccountContextProvider = (props) => {
   }, [api, isKeyringInit, keyringAddresses]);
 
   useEffect(() => {
-    if (!isInitialAccountSet || !api) return;
-    // ensure newly added account after removing all accounts can be updated
-    if (!externalAccount) {
-      const accounts = keyring.getPairs();
-      changeExternalAccount(accounts[0], accounts);
-      return;
-    }
+    const handleKeyringAddressesChange = () => {
+      if (!isInitialAccountSet || !api) return;
+      // ensure newly added account after removing all accounts can be updated
+      if (!externalAccount) {
+        const accounts = keyring.getPairs();
+        changeExternalAccount(accounts[0], accounts);
+        return;
+      }
 
-    if (!keyringAddresses.includes(externalAccount.address)) {
-      setStateWhenRemoveActiveExternalAccount();
-    } else {
-      setExternalAccountOptions(
-        orderExternalAccountOptions(externalAccount, keyring.getPairs())
-      );
-    }
+      if (!keyringAddresses.includes(externalAccount.address)) {
+        setStateWhenRemoveActiveExternalAccount();
+      } else {
+        setExternalAccountOptions(
+          orderExternalAccountOptions(externalAccount, keyring.getPairs())
+        );
+      }
+    };
+    handleKeyringAddressesChange();
   }, [keyringAddresses]);
 
   const changeExternalAccount = async (account, externalAccounts) => {
