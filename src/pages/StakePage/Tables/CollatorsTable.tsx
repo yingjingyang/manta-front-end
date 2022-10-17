@@ -77,7 +77,7 @@ const CollatorsTable = () => {
     apiState === 'ERROR' || apiState === 'DISCONNECTED';
 
   const [filterText, setFilterText] = useState('');
-  const [filterOption, setFilterOption] = useState(collatorStatusOptions[0]);
+  const [filterOption, setFilterOption] = useState(collatorStatusOptions[1]);
 
   const getApyEstimateString = (collator) => {
     if (!collator.apy) {
@@ -271,6 +271,7 @@ const CollatorsTable = () => {
             placeholder=""
             value={filterOption}
             onChange={onChangeOption}
+            isSearchable={false}
           />
         </div>
       </div>
