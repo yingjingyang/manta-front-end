@@ -92,7 +92,9 @@ const StakingTable = () => {
   };
 
   const getApyEstimateString = (collator) => {
-    if (!collator.apy) {
+    if (!collator) {
+      return 0;
+    } else if (!collator.apy) {
       return '-';
     } else {
       return `${collator.apy.toNumber().toLocaleString(undefined)} %`;
