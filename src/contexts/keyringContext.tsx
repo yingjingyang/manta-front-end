@@ -25,7 +25,7 @@ export const KeyringContextProvider = (props) => {
       const newAddresses = [];
 
       //populate existingAddresses with not updated accounts' addresses
-      const oldAddresses = keyring.getAccounts().map(account => account.address)
+      const oldAddresses = keyring.getPairs().map(pair => pair.address)
 
       //add newly created account into keyring
       accounts.forEach(({ address, meta, type }) => {
@@ -62,13 +62,8 @@ export const KeyringContextProvider = (props) => {
     );
     if (!isEqual) {
       // check whether user disabled a existing extension
-      if (
-        newWeb3ExtensionInjected.length === 0 ||
-        newWeb3ExtensionInjected !== 0
-      ) {
-        if (isKeyringInit) {
-          unsubscribe = subscribeWeb3Accounts();
-        }
+      if (isKeyringInit) {
+        unsubscribe = await subscribeWeb3Accounts();
       }
       setWeb3ExtensionInjected(newWeb3ExtensionInjected);
     }
@@ -118,12 +113,12 @@ export const KeyringContextProvider = (props) => {
       return false;
     }
 
-    arrOne.map((item) => {
+    arrOne.forEach(item => {
       if (!arrTwo.includes(item)) {
         return false;
       }
     });
-    arrTwo.map((item) => {
+    arrTwo.forEach(item => {
       if (!arrOne.includes(item)) {
         return false;
       }

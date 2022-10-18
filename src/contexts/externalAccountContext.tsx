@@ -53,14 +53,9 @@ export const ExternalAccountContextProvider = (props) => {
     // signer is from Polkadot-js browser extension
 
     const extensions = await web3Enable(APP_NAME);
-    let existingExtensionNames = [];
-    if (extensions.length !== 0) {
-      extensions.map((ex) => {
-        existingExtensionNames.push(ex.name);
-      });
-    }
+    const extensionNames = extensions.map(ext => ext.name);
 
-    if (isInjected && existingExtensionNames.includes(source)) {
+    if (isInjected && extensionNames.includes(source)) {
       const injected = await web3FromSource(source);
       api.setSigner(injected.signer);
     }

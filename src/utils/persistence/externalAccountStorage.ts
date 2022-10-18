@@ -5,7 +5,8 @@ const LAST_ACCOUNT_STORAGE_KEY = 'lastAccessedExternalAccountAddress';
 
 export const getLastAccessedExternalAccount = (config, keyring) => {
   const lastAccountAddress = store.get(
-    `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`);
+    `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`
+  );
 
   if (!lastAccountAddress) {
     return null;
@@ -20,5 +21,7 @@ export const getLastAccessedExternalAccount = (config, keyring) => {
 
 export const setLastAccessedExternalAccountAddress = (config, lastAccount) => {
   store.set(
-    `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`, lastAccount);
+    `${config.BASE_STORAGE_KEY}${LAST_ACCOUNT_STORAGE_KEY}`,
+    lastAccount
+  );
 };
