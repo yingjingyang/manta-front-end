@@ -40,10 +40,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - [\#252](https://github.com/Manta-Network/manta-front-end/pull/252) Added Calamari staking page and support for multiple networks
 
-## [3.0.1] - 2022-10-5
+## [3.0.1] - 2022-10-11
 ### Added
 - [\#270](https://github.com/Manta-Network/manta-front-end/pull/270) Display previous round rewards and APY estimates adjusted for collator performance on the staking page
 
-## [3.0.2] - 2022-10-5
+## [3.0.2] - 2022-10-12
 ### Fixed
 - [\#272](https://github.com/Manta-Network/manta-front-end/pull/272) Prevent error when user is staked to a node that left the set of collator candidates
+
+
+## [3.0.3] - 2022-10-19
+### Fixed
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Fix table width on wide screens; fix Talisman wallet connection bug;
+
+### Changed
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Show only active collators by default
+
+### Added
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Display total balance in staking modals; add tooltip explaining inactive status
