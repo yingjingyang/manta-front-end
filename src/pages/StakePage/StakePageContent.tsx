@@ -45,7 +45,7 @@ const StakePageContent = () => {
   }
 
   return (
-    <div className="w-full px-10 py-10">
+    <div className="self-center staking-table px-10 py-10">
       {warningModal}
       <AccountDisplay />
       <StakingTable />

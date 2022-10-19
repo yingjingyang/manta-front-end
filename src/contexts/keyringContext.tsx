@@ -18,7 +18,9 @@ export const KeyringContextProvider = (props) => {
   const [keyring, setKeyring] = useState(null);
 
   useEffect(() => {
-    const polkadotJsIsInjected = () => !!window.injectedWeb3['polkadot-js'];
+    const extensionIsInjected = () => {
+      return !!window.injectedWeb3['polkadot-js'] || !!window.injectedWeb3['talisman'] ;
+    };
 
     const initKeyring = async () => {
       await web3Enable(APP_NAME);
@@ -38,11 +40,11 @@ export const KeyringContextProvider = (props) => {
     };
 
     const initKeyringWhenInjected = async () => {
-      if (polkadotJsIsInjected()) {
+      if (extensionIsInjected()) {
         await initKeyring();
       } else {
         setTimeout(async () => {
-          if (!polkadotJsIsInjected()) {
+          if (!extensionIsInjected()) {
             setKeyring(false);
           } else if (!keyring) {
             await initKeyring();
