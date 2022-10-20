@@ -45,23 +45,22 @@ export const ExternalAccountContextProvider = (props) => {
     return orderedExternalAccountOptions;
   };
 
-  const setSignerOnChangeExternalAccount = async () => {
-    if (!externalAccount) return;
+  const setSignerOnChangeExternalAccount = async (account) => {
+    if (!account) return;
     const {
       meta: { source, isInjected }
-    } = externalAccount;
+    } = account;
     // signer is from Polkadot-js browser extension
 
     const extensions = await web3Enable(APP_NAME);
     const extensionNames = extensions.map(ext => ext.name);
-
     if (isInjected && extensionNames.includes(source)) {
       const injected = await web3FromSource(source);
       api.setSigner(injected.signer);
     }
-    const signer = externalAccount.meta.isInjected
-      ? externalAccount.address
-      : externalAccount;
+    const signer = account.meta.isInjected
+      ? account.address
+      : account;
     setExternalAccountSigner(signer);
   };
 
@@ -126,7 +125,7 @@ export const ExternalAccountContextProvider = (props) => {
     setExternalAccountOptions(
       orderExternalAccountOptions(account, externalAccounts)
     );
-    setSignerOnChangeExternalAccount();
+    setSignerOnChangeExternalAccount(account);
     externalAccountRef.current = account;
     setLastAccessedExternalAccountAddress(config, account?.address);
   };
