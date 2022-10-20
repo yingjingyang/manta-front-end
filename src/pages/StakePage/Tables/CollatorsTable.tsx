@@ -250,8 +250,15 @@ const CollatorsTable = () => {
 
   return (
     <div className="mt-20" id="collatorsTable">
-      <h1 className="text-base font-semibold text-black dark:text-white">
+      <h1 className="text-base font-semibold text-black dark:text-white flex items-end gap-10">
         Collators
+        <a
+          href="https://docs.manta.network/docs/calamari/Staking/Collation/Overview"
+          target="_blank"
+          className="text-link text-sm underline"
+        >
+          Launch your own collator
+        </a>
       </h1>
       <div className="mt-6 flex space-x-5">
         <div className="p-3 rounded-md border border-manta-gray flex items-center gap-2 text-secondary bg-secondary">

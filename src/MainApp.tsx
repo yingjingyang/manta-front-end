@@ -31,7 +31,10 @@ function MainApp() {
           />
           <Route
             path="/calamari"
-            render={() => <Redirect to="/calamari/stake" />}
+            render={(props) => {
+              console.log({ props });
+              return <Redirect to="/calamari/stake" />;
+            }}
             exact
           />
           <Route path="/dolphin/transact" component={SendPage} exact />
