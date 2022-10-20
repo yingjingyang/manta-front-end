@@ -9,13 +9,14 @@ import React, {
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import PropTypes from 'prop-types';
-import AssetType from 'types/AssetType';
 import { useSubstrate } from './substrateContext';
 import { useExternalAccount } from './externalAccountContext';
+import { useConfig } from './configContext';
 
 const NativeTokenWalletContext = createContext();
 
 export const NativeTokenWalletContextProvider = (props) => {
+  const config = useConfig();
   const { api } = useSubstrate();
   const { externalAccount, externalAccountRef } = useExternalAccount();
   const [nativeTokenBalance, setNativeTokenBalance] = useState(null);
@@ -23,15 +24,11 @@ export const NativeTokenWalletContextProvider = (props) => {
 
   useEffect(() => {
     const refreshNativeTokenBalance = async () => {
-      await api.isReady;
       const spendableBalanceAmount = await api.query.system.account(
         externalAccountRef.current.address
       );
       setNativeTokenBalance(
-        new Balance(
-          AssetType.Dolphin(),
-          new BN(spendableBalanceAmount.data.free.toString())
-        )
+        Balance.Native(config, new BN(spendableBalanceAmount.data.free.toString()))
       );
     };
     const refreshNativeTokenBalanceLoop = async () => {
@@ -42,7 +39,6 @@ export const NativeTokenWalletContextProvider = (props) => {
         refreshNativeTokenBalance();
         // refresh on new block
       } else {
-        await api.isReady;
         refreshLoopIsActive.current = true;
         api.rpc.chain.subscribeNewHeads(async () => {
           refreshNativeTokenBalance();
@@ -55,15 +51,12 @@ export const NativeTokenWalletContextProvider = (props) => {
   const getTransactionFee = async (transaction) => {
     const paymentInfo = await transaction.paymentInfo(externalAccount);
     const feeAmount = new BN(paymentInfo.partialFee.toString());
-    return new Balance(AssetType.Dolphin(), feeAmount);
+    return Balance.Native(config, feeAmount);
   };
 
   const getUserCanPayFeeForNativeTokenTransfer = async (transaction) => {
     const fee = await getTransactionFee(transaction);
-    const transferAmount = new Balance(
-      AssetType.Dolphin(),
-      new BN(transaction.args[1].toString())
-    );
+    const transferAmount = Balance.Native(config, new BN(transaction.args[1].toString()));
     return fee.lt(nativeTokenBalance.sub(transferAmount));
   };
 
@@ -71,8 +64,6 @@ export const NativeTokenWalletContextProvider = (props) => {
     if (nativeTokenBalance === null || !api) {
       return false;
     }
-    await api.isReady;
-
     const NATIVE_TOKEN_TRANSFER_EXTRINSIC_NAME = 'transfer';
     if (
       transaction.method.meta.name.toString() ===

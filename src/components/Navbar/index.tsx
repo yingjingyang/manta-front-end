@@ -1,77 +1,28 @@
 // @ts-nocheck
-import React, { useState } from 'react';
-
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
-
-import Logo from 'components/Logo';
-import SidebarMenu from 'components/Sidebar/SidebarMenu';
-import SocialMenu from 'components/Sidebar/SocialMenu';
-import ThemeToggle from 'components/ThemeToggle';
-import { MenuSvg, CloseMenuSvg } from 'resources/svgs';
+import React from 'react';
+import AccountSelect from 'components/Accounts/AccountSelect';
+// import Navs from './Navs';
+import ChainSelector from './ChainSelector';
 import SignerConnectionStatusLabel from './SignerConnectionStatusLabel';
 
-const Navbar = ({ isVisible = false }) => {
-  const [isOpen, setIsOpen] = useState(false);
 
+export const CalamariNavbar = () => {
   return (
-    <div>
-      <div
-        className={classNames(
-          'navbar z-50 items-center fixed left-0 lg:top-4 right-0 relative px-4 py-2 lg:py-0 lg:ml-6 md:pl-6 flex justify-between lg:justify-end',
-          { 'lg:hidden': isVisible }
-        )}
-      >
-        <div className="lg:hidden flex items-center">
-          {!isOpen ? (
-            <MenuSvg
-              onClick={() => setIsOpen(!isOpen)}
-              className="fill-current group-hover:fill-primary cursor-pointer"
-            />
-          ) : (
-            <div
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2.5 cursor-pointer"
-            >
-              <CloseMenuSvg className="fill-current group-hover:fill-primary" />
-            </div>
-          )}
-          <div className="logo w-8 h-8 ml-6 rounded-full">
-            <Logo />
-          </div>
-        </div>
-        <span className="flex">
-          <SignerConnectionStatusLabel />
-        </span>
-      </div>
-      <div
-        style={{ transform: isOpen && 'none', overflow: isOpen && 'visible' }}
-        className="nav-menu-mobile lg:hidden bg-primary z-40"
-      >
-        <div className="h-full overflow-y-auto flex flex-col justify-between py-6 pb-14 px-5">
-          <SidebarMenu />
-          <div>
-            <div className="pb-4 pl-2 flex justify-center">
-              <ThemeToggle isHidden={false} />
-            </div>
-            <SocialMenu />
-          </div>
-        </div>
-      </div>
-      {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="navbar-mobile-overlay overflow-hidden fixed bg-overlay top-0 right-0 left-0 bottom-0 z-30 opacity-75"
-        ></div>
-      )}
+    <div className="py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
+      <ChainSelector />
+      {/* <Navs /> */}
+      <AccountSelect />
+      <div className="absolute inset-0 border-b pointer-events-none bg-slate-600 border-gray-600 translate-y-0" />
     </div>
   );
 };
 
-Navbar.propTypes = {
-  isVisible: PropTypes.bool,
-  isSearch: PropTypes.bool,
-  hidden: PropTypes.bool
+export const DolphinNavbar = () => {
+  return (
+    <div className="py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
+      <ChainSelector />
+      {/* <Navs /> */}
+      <SignerConnectionStatusLabel />
+    </div>
+  );
 };
-
-export default Navbar;

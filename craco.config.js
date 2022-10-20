@@ -9,9 +9,10 @@ module.exports = {
       ],
     },
   },
-  // Required while we are on webpack v4;
-  // see https://github.com/LedgerHQ/ledger-live/issues/763
   webpack: {
+    // though we don't use @ledgerhq, it is a dependency of a dependency, and has
+    // caused problems. Seems to require React scripts 5.
+    // see: https://github.com/solana-labs/wallet-adapter/issues/499
     plugins: {add: [
       new webpack.NormalModuleReplacementPlugin(
         /@ledgerhq\/devices\/hid-framing/,

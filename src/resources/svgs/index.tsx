@@ -22,6 +22,8 @@ import GithubSvg from './GithubSvg';
 import MediumSvg from './MediumSvg';
 import AngelListSvg from './AngelListSvg';
 import NewsletterSvg from './NewsletterSvg';
+import DiscordSvg from './DiscordSvg';
+import HeartSvg from './HeartSvg';
 
 export {
   PoolSvg,
@@ -47,4 +49,6 @@ export {
   MediumSvg,
   AngelListSvg,
   NewsletterSvg,
+  DiscordSvg,
+  HeartSvg
 };

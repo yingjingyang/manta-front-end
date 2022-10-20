@@ -1,6 +1,8 @@
 // @ts-nocheck
-export const network = {
-  calamari: 'Calamari',
-  dolphin: 'Dolphin',
-  manta: 'Manta',
+const NETWORK = {
+  CALAMARI: 'Calamari',
+  DOLPHIN: 'Dolphin',
+  MANTA: 'Manta',
 };
+
+export default NETWORK;
