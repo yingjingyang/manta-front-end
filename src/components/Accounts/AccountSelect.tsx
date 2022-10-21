@@ -11,7 +11,6 @@ import React, { useEffect, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import Svgs from 'resources/icons';
 import { setHasAuthToConnectStorage } from 'utils/persistence/connectAuthorizationStorage';
-
 import { faArrowUpRightFromSquare, faCheck, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Identicon from '@polkadot/react-identicon';
@@ -68,10 +67,7 @@ const AccountSelect = () => {
     !disabled && setShowAccountList(!showAccountList);
   };
 
-  const avaliableAccounts = () => {
-    if (!Array.isArray(externalAccountOptions)) {
-      return null;
-    }
+  const AvaliableAccounts = () => {
     return externalAccountOptions.map((account: any, index: number) => (
       <div
         key={account.address}
@@ -129,7 +125,7 @@ const AccountSelect = () => {
     ));
   };
 
-  const displayAccountsButtonComponent = (
+  const DisplayAccountsButton = () => (
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
@@ -150,7 +146,7 @@ const AccountSelect = () => {
         {showAccountList ? (
           <div className="mt-3 bg-secondary rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
             <div className="max-h-96 overflow-y-auto pr-4">
-              {avaliableAccounts()}
+              <AvaliableAccounts />
             </div>
           </div>
         ) : null}
@@ -158,7 +154,7 @@ const AccountSelect = () => {
     </div>
   );
 
-  const connectAccountButtonComponent = (
+  const ConnectAccountButton = () => (
     <div>
       <Button
         className="btn-secondary rounded-lg relative z-10"
@@ -172,7 +168,7 @@ const AccountSelect = () => {
     </div>
   );
 
-  return externalAccount ? displayAccountsButtonComponent : connectAccountButtonComponent;
+  return externalAccount ? <DisplayAccountsButton /> : <ConnectAccountButton/>;
 };
 
 export default AccountSelect;

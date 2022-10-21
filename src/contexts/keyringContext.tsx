@@ -3,10 +3,8 @@ import APP_NAME from 'constants/AppConstants';
 import PropTypes from 'prop-types';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getHasAuthToConnectStorage } from 'utils/persistence/connectAuthorizationStorage';
-
 import { web3Accounts, web3AccountsSubscribe, web3Enable } from '@polkadot/extension-dapp';
 import keyring from '@polkadot/ui-keyring';
-
 import { useConfig } from './configContext';
 
 const KeyringContext = createContext();
