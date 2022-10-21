@@ -21,6 +21,7 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import NETWORK from '../constants/NetworkConstants';
 import { useConfig } from './configContext';
+import { useWhatChanged } from '@simbathesailor/use-what-changed';
 
 const PrivateWalletContext = createContext();
 
@@ -68,6 +69,7 @@ export const PrivateWalletContextProvider = (props) => {
     setIsReady(false);
   }, [socket]);
 
+  //useWhatChanged([api, externalAccountSigner, signerIsConnected, signerVersion]);
   useEffect(() => {
     const getPrivateAddress = async (wasm, wallet) => {
       const keys = await wallet.receiving_keys(
@@ -94,8 +96,9 @@ export const PrivateWalletContextProvider = (props) => {
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
+      console.log([api, externalAccountSigner, signerIsConnected, signerVersion,walletIsBusy.current]);
       setIsInitialSync(true);
-      walletIsBusy.current = false;
+      walletIsBusy.current = true;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
@@ -115,13 +118,14 @@ export const PrivateWalletContextProvider = (props) => {
       console.log(
         `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
       );
+      walletIsBusy.current = false;
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
       setIsInitialSync(false);
     };
 
-    if (canInitWallet() && !isReady) {
+    if (canInitWallet() && !isReady && !walletIsBusy.current) {
       initWallet();
     }
   }, [api, externalAccountSigner, signerIsConnected, signerVersion]);
