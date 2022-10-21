@@ -1,0 +1,161 @@
+{
+    "relaychain": {
+        "bin": "/home/simeonzahariev/work/polkadot/target/release/polkadot",
+        "chain": "rococo-local",
+        "nodes": [
+            {
+                "name": "alice",
+                "wsPort": 9944,
+                "port": 30444,
+                "flags": [
+                    "--rpc-cors=all"
+                ]
+            },
+            {
+                "name": "bob",
+                "wsPort": 9955,
+                "port": 30555,
+                "flags": [
+                    "--rpc-cors=all"
+                ]
+            },
+            {
+                "name": "charlie",
+                "wsPort": 9966,
+                "port": 30666,
+                "flags": [
+                    "--rpc-cors=all"
+                ]
+            }
+        ],
+        "genesis": {
+            "runtime": {
+                "runtime_genesis_config": {
+                    "configuration": {
+                        "config": {
+                            "validation_upgrade_frequency": 5,
+                            "validation_upgrade_delay": 5
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "parachains": [
+        {
+			"bin": "/home/simeonzahariev/work/Manta/target/release/manta",
+			"id": "2084",
+			"chain": "calamari-local",
+            "balance": "1000000000000000000000",
+			"nodes": [
+				{
+					"wsPort": 9801,
+					"port": 31201,
+					"name": "alice",
+					"basePath": "collator1",
+					"flags": [
+						"--rpc-cors=all",
+						"--rpc-port=9971",
+						"--execution=wasm",
+						"--wasm-execution=compiled"
+					]
+				},
+				{
+					"wsPort": 9802,
+					"port": 31202,
+					"name": "bob",
+					"basePath": "collator2",
+					"flags": [
+						"--rpc-cors=all",
+						"--rpc-port=9972",
+						"--execution=wasm",
+						"--wasm-execution=compiled"
+					]
+				},
+				{
+					"wsPort": 9803,
+					"port": 31203,
+					"name": "charlie",
+					"basePath": "collator3",
+					"flags": [
+						"--rpc-cors=all",
+						"--rpc-port=9973",
+						"--execution=wasm",
+						"--wasm-execution=compiled"
+					]
+				},
+				{
+					"wsPort": 9804,
+					"port": 31204,
+					"name": "dave",
+					"basePath": "collator4",
+					"flags": [
+						"--rpc-cors=all",
+						"--rpc-port=9974",
+						"--execution=wasm",
+						"--wasm-execution=compiled"
+					]
+				},
+				{
+					"wsPort": 9805,
+					"port": 31205,
+					"name": "eve",
+					"basePath": "collator5",
+					"flags": [
+						"--rpc-cors=all",
+						"--rpc-port=9975",
+						"--execution=wasm",
+						"--wasm-execution=compiled"
+					]
+				}
+			]
+		},
+        {
+            "bin": "/home/simeonzahariev/work/Manta/target/release/manta",
+            "chain": "dolphin-local",
+            "balance": "1000000000000000000000",
+            "nodes": [
+                {
+                    "name": "alice",
+                    "wsPort": 9921,
+                    "port": 32331,
+                    "flags": [
+                        "--rpc-cors=all",
+                        "--unsafe-ws-external",
+                        "--rpc-port=9971",
+                        "--unsafe-rpc-external"
+                    ]
+                },
+                {
+                    "name": "bob",
+                    "wsPort": 9922,
+                    "port": 32332,
+                    "flags": [
+                        "--rpc-cors=all",
+                        "--unsafe-ws-external",
+                        "--rpc-port=9972",
+                        "--unsafe-rpc-external"
+                    ]
+                },
+                {
+                    "name": "charlie",
+                    "wsPort": 9923,
+                    "port": 32333,
+                    "flags": [
+                        "--rpc-cors=all",
+                        "--rpc-port=9973",
+                        "--unsafe-ws-external",
+                        "--unsafe-rpc-external",
+                        "--",
+                        "--execution=wasm"
+                    ]
+                }
+            ]
+        }
+    ],
+    "hrmpChannels": [
+    ],
+    "types": {},
+    "finalization": false
+}
+

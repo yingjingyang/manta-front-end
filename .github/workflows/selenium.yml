@@ -1,0 +1,84 @@
+name: Selenium Test
+on:
+  push:
+  pull_request:
+jobs:
+  selenium:
+    name: Selenium Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Chrome
+        run: |
+          sudo apt update
+          sudo apt upgrade
+          sudo apt install wget
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          echo $(google-chrome --version)
+      - name: Install Firefox
+        run: |
+          sudo add-apt-repository ppa:mozillateam/ppa
+          echo '
+          Package: *
+          Pin: release o=LP-PPA-mozillateam
+          Pin-Priority: 1001
+          ' | sudo tee /etc/apt/preferences.d/mozilla-firefox
+          echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+          sudo apt install firefox
+      - name: Checkout This
+        uses: actions/checkout@v3
+        with:
+          path: manta-front-end
+      - name: Parse test_config
+        run: |
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < manta-front-end/tests/test_config.env
+      - name: Check Out Signer
+        uses: actions/checkout@v3
+        with:
+          repository: Manta-Network/manta-signer
+          ref: ${{ env.MANTA_SIGNER_REF }}
+          path: manta-signer
+      - name: Checkout manta node
+        uses: actions/checkout@v3
+        with:
+          repository: Manta-Network/Manta
+          ref: ${{ env.MANTA_NODE_REF }}
+          path: manta
+      - name: fetch and chmod polkadot
+        run: |
+          curl -L -o ./polkadot https://github.com/paritytech/polkadot/releases/download/v0.9.26/polkadot
+          chmod +x ./polkadot
+          ls -ahl
+      - name: Checkout Polkadot
+        uses: actions/checkout@v3
+        with:
+          repository: paritytech/polkadot-launch
+          path: polkadot-launch
+      - name: Edit config with new places
+        run: | 
+          cd manta-front-end/tests/selenium-tests
+          contents="$(jq '.relaychain."bin" = "${{ github.workspace }}/polkadot/polkadot"' dolphin-config.json)" && \
+          echo -E "${contents}" > dolphin-config.json
+          contents="$(jq '.parachains[0].bin = "${{ github.workspace }}/manta/target/release/manta"' dolphin-config.json)" && \
+          echo -E "${contents}" > dolphin-config.json
+          contents="$(jq '.parachains[1].bin = "${{ github.workspace }}/manta/target/release/manta"' dolphin-config.json)" && \
+          echo -E "${contents}" > dolphin-config.json
+          cat dolphin-config.json
+      - name: Selenium Tests
+        run: |
+          yarn global add polkadot-launch
+          sudo apt update
+          sudo apt install -y pkg-config libssl-dev
+          curl -s https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+          rustup install nightly
+          rustup toolchain install stable
+          rustup default stable
+          rustup update
+          rustup target add wasm32-unknown-unknown
+          sudo apt-get install gnome-terminal
+          cd manta-front-end/tests/selenium-tests
+          ./run_tests.sh -plc=dolphin-config.json \
+          -uip=${{ github.workspace }}/manta-front-end -sp=${{ github.workspace }}/manta-signer -np=${{ github.workspace }}/manta

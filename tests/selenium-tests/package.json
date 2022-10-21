@@ -1,0 +1,22 @@
+{
+  "name": "selenium-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Manta-Network",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "mocha download-extensions.js",
+    "runtest": "mocha selenium-test.js"
+  },
+  "dependencies": {
+    "chromedriver": "^105.0.0",
+    "geckodriver": "^3.0.2",
+    "selenium-webdriver": "^4.4.0",
+    "firefox-profile": "^4.2.2",
+    "assert": "^2.0.0",
+    "jasmine": "^4.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0"
+  }
+}

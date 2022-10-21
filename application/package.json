@@ -63,7 +63,8 @@
         "test": "craco test",
         "lint": "npx eslint src/**/*.js",
         "eject": "react-scripts eject",
-        "deploy": "gh-pages -d build -m '[ci skip] Updates'"
+        "deploy": "gh-pages -d build -m '[ci skip] Updates'",
+        "selenium-test": "NODE_ENV=selenium-test craco start"
     },
     "development": [
         "last 1 chrome version",
