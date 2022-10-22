@@ -21,7 +21,6 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import NETWORK from '../constants/NetworkConstants';
 import { useConfig } from './configContext';
-import { useWhatChanged } from '@simbathesailor/use-what-changed';
 
 const PrivateWalletContext = createContext();
 
