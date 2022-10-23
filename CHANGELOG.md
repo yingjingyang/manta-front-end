@@ -48,13 +48,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#272](https://github.com/Manta-Network/manta-front-end/pull/272) Prevent error when user is staked to a node that left the set of collator candidates
 
-
 ## [3.0.3] - 2022-10-19
 ### Fixed
-- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Fix table width on wide screens; fix Talisman wallet connection bug;
-
-### Changed
-- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Show only active collators by default
-
-### Added
-- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Display total balance in staking modals; add tooltip explaining inactive status
+- [\#275](https://github.com/Manta-Network/manta-front-end/pull/275) Fix display issue on widescreens; fix failure to connect to Talisman wallet
