@@ -2,7 +2,6 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { SendPage, StakePage } from 'pages';
-import ThemeToggle from 'components/ThemeToggle';
 
 function MainApp() {
   return (
@@ -37,9 +36,6 @@ function MainApp() {
           <Route path="/dolphin/transact" element={<SendPage />} exact />
           <Route path="/calamari/stake" element={<StakePage />} exact />
         </Routes>
-        <div className="p-4 hidden change-theme lg:block fixed right-0 bottom-0">
-          <ThemeToggle />
-        </div>
       </div>
     </div>
   );
