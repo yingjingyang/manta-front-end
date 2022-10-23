@@ -116,7 +116,7 @@ const ReceiverBalanceDisplay = () => {
   const { api } = useSubstrate();
 
   const shouldShowLoader = receiverAddress && !receiverCurrentBalance && api?.isConnected;
-  const shouldShowInitialSync = shouldShowLoader && isInitialSync && receiverIsPrivate();
+  const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && receiverIsPrivate();
   const balanceString = shouldShowInitialSync
     ? 'Syncing to network' : receiverCurrentBalance?.toString(true);
 

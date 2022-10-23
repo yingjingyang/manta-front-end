@@ -27,7 +27,7 @@ const SendAmountInput = () => {
   const [inputValue, setInputValue] = useState('');
 
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
-  const shouldShowInitialSync = shouldShowLoader && isInitialSync && senderIsPrivate();
+  const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && senderIsPrivate();
   const balanceText = shouldShowInitialSync
     ? 'Syncing to network' : senderAssetCurrentBalance?.toString(true);
   const disabled = txStatus?.isProcessing();
