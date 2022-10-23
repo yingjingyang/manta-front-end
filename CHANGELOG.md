@@ -52,6 +52,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#275](https://github.com/Manta-Network/manta-front-end/pull/275) Fix display issue on widescreens; fix failure to connect to Talisman wallet
 
-## [3.0.4] - 2022-10-21
+## [3.0.4] - 2022-10-22
 ### Fixed
 - [\#281](https://github.com/Manta-Network/manta-front-end/pull/281) Prevent excess api calls when initializing wallet
+
+## [3.1.0] - 2022-10-27
+### Changed
+- [\#208](https://github.com/Manta-Network/manta-front-end/pull/208) Display transaction success modal when transaction is in block instead of finalized
+- [\#210](https://github.com/Manta-Network/manta-front-end/pull/210) Add ids for e2e automation
+
+### Removed
+- [\#227](https://github.com/Manta-Network/manta-front-end/pull/227) Remove gh-pages dependency target
+
+### Fixed
+- [\#183](https://github.com/Manta-Network/manta-front-end/pull/228) Prevent loader and initial sync text from displaying if polkadot.js api becomes disconnected
+
+### Security
+- [\#198](https://github.com/Manta-Network/manta-front-end/pull/198) Bump react-router-dom from 5.3.3 to 6.3.0 (required refactoring of breaking API changes)
+- [\#201](https://github.com/Manta-Network/manta-front-end/pull/201) Bump @craco/craco from 6.4.3 to 6.4.5
+- [\#117](https://github.com/Manta-Network/manta-front-end/pull/117) Bump node-sass from 6.0.1 to 7.0.1
