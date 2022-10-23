@@ -51,3 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.0.3] - 2022-10-19
 ### Fixed
 - [\#275](https://github.com/Manta-Network/manta-front-end/pull/275) Fix display issue on widescreens; fix failure to connect to Talisman wallet
+
+## [3.0.4] - 2022-10-21
+### Fixed
+- [\#281](https://github.com/Manta-Network/manta-front-end/pull/281) Prevent excess api calls when initializing wallet

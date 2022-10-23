@@ -22,7 +22,7 @@ const SendAmountInput = () => {
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
   const balanceText =
-    isInitialSync && (isPrivateTransfer() || isToPublic())
+    isInitialSync.current && (isPrivateTransfer() || isToPublic())
       ? 'Syncing to ledger'
       : senderAssetCurrentBalance
         ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
