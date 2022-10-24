@@ -117,7 +117,11 @@ const ReceiverBalanceDisplay = () => {
   const { syncError } = usePrivateWalletSync();
   const { api } = useSubstrate();
 
-  const shouldShowLoader = receiverAddress && !receiverCurrentBalance && api?.isConnected;
+  const shouldShowLoader =
+    receiverAddress &&
+    !receiverCurrentBalance &&
+    api?.isConnected;
+
   const shouldShowInitialSync = !syncError.current && shouldShowLoader && isInitialSync.current && receiverIsPrivate();
   const balanceString = shouldShowInitialSync
     ? 'Syncing to network'

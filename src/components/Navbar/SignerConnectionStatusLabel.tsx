@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
@@ -10,7 +9,6 @@ import {
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import Version from 'types/Version';
-import { useConfig } from 'contexts/configContext';
 
 const SignerConnectionLabelTitle = () => {
   return <p className="text-primary text-sm pb-2">Manta Signer</p>;
@@ -60,13 +58,12 @@ SignerConnectedLabel.propTypes = {
 };
 
 const SignerConnectionStatusLabel = () => {
-  const config = useConfig();
-  const { signerVersion } = usePrivateWallet();
+  const { signerVersion, signerIsOutOfDate } = usePrivateWallet();
   return (
     <div className="flex text-center items-center text-green-500 pr-6">
       {!signerVersion ? (
         <SignerNotConnectedLabel />
-      ) : signerIsOutOfDate(config, signerVersion) ? (
+      ) : signerIsOutOfDate ? (
         <SignerOutOfDateLabel signerVersion={signerVersion} />
       ) : (
         <SignerConnectedLabel signerVersion={signerVersion} />

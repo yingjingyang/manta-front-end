@@ -17,7 +17,7 @@ import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import mapPostToTransaction from 'utils/api/MapPostToTransaction';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import getSignerIsOutOfDate from 'utils/validation/getSignerIsOutOfDate';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -49,6 +49,7 @@ export const PrivateWalletContextProvider = (props) => {
   // signer connection
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
+  const [signerIsOutOfDate, setSignerIsOutOfDate] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
   const walletIsBusy = useRef(false);
@@ -59,7 +60,18 @@ export const PrivateWalletContextProvider = (props) => {
   const balancesAreStale = useRef(false);
 
   useEffect(() => {
-    setIsReady(wallet && signerIsConnected);
+    if (signerVersion) {
+      setSignerIsOutOfDate(
+        getSignerIsOutOfDate(config, signerVersion)
+      );
+    }
+  }, [config, signerVersion]);
+
+  useEffect(() => {
+    setIsReady(
+      wallet &&
+      signerIsConnected
+    );
   }, [wallet, signerIsConnected]);
 
   // WASM wallet must be reinitialized when socket changes
@@ -87,7 +99,7 @@ export const PrivateWalletContextProvider = (props) => {
         && externalAccountSigner
         && signerIsConnected
         && signerVersion
-        && !signerIsOutOfDate(config, signerVersion)
+        && signerIsOutOfDate === false
         && !isInitialSync.current
       );
     };
@@ -106,6 +118,7 @@ export const PrivateWalletContextProvider = (props) => {
 
     const syncErrorCallback = () => {
       syncError.current = true;
+      walletIsBusy.current = false;
       isInitialSync.current = false;
     };
 
@@ -422,6 +435,7 @@ export const PrivateWalletContextProvider = (props) => {
     sync,
     signerIsConnected,
     signerVersion,
+    signerIsOutOfDate,
     isInitialSync,
     walletIsBusy,
     balancesAreStale

@@ -22,7 +22,7 @@ const SendButton = () => {
     receiverAmountIsOverExistentialBalance
   } = useSend();
   const { apiState } = useSubstrate();
-  const { signerIsConnected, isReady, isInitialSync, signerVersion } =
+  const { signerIsConnected, isReady, isInitialSync } =
     usePrivateWallet();
   const { syncPercentage, syncError } = usePrivateWalletSync();
   const { txStatus } = useTxStatus();
@@ -30,9 +30,7 @@ const SendButton = () => {
   const disabled = txStatus?.isProcessing();
 
   const onClick = () => {
-    if (!signerIsConnected) {
-      showError('Signer must be connected');
-    } else if (receiverAmountIsOverExistentialBalance() === false) {
+    if (receiverAmountIsOverExistentialBalance() === false) {
       const existentialDeposit = new Balance(
         receiverAssetType,
         receiverAssetType.existentialDeposit
@@ -64,7 +62,6 @@ const SendButton = () => {
     !syncError.current &&
     apiState !== 'ERROR' &&
     signerIsConnected &&
-    !isReady &&
     isInitialSync.current &&
     (isPrivateTransfer() || isToPublic() || isToPrivate());
 
@@ -73,7 +70,7 @@ const SendButton = () => {
     else if (apiState === 'ERROR') return 'Failed to connect to the node';
     else if (
       !isReady &&
-      !signerIsConnected &&
+      signerIsConnected === false &&
       (isPrivateTransfer() || isToPublic() || isToPrivate())
     )
       return 'Failed to connect to the signer';

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -23,15 +23,19 @@ const SendAmountInput = () => {
     senderIsPrivate
   } = useSend();
   const { syncError } = usePrivateWalletSync();
-  const { isInitialSync } = usePrivateWallet();
+  const { isInitialSync, signerIsConnected, signerIsOutOfDate } = usePrivateWallet();
   const { txStatus } = useTxStatus();
 
   const [inputValue, setInputValue] = useState('');
 
-  const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
+  const shouldShowLoader =
+    !senderAssetCurrentBalance &&
+    api?.isConnected &&
+    (senderIsPrivate() && signerIsConnected && !signerIsOutOfDate);
+
   const shouldShowInitialSync =
-    !syncError.current &&
     shouldShowLoader &&
+    !syncError.current &&
     isInitialSync.current &&
     senderIsPrivate();
   const balanceText = shouldShowInitialSync

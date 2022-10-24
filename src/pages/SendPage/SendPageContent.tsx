@@ -5,7 +5,6 @@ import Svgs from 'resources/icons';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import NewerSignerVersionRequiredModal from 'components/Modal/newerSignerVersionRequiredModal';
 import { useConfig } from 'contexts/configContext';
@@ -19,7 +18,7 @@ import SendToForm from './SendToForm';
 const SendPageContent = () => {
   const { keyring } = useKeyring();
   const { txStatus } = useTxStatus();
-  const { signerVersion } = usePrivateWallet();
+  const { signerIsOutOfDate } = usePrivateWallet();
   const config = useConfig();
 
   useEffect(() => {
@@ -43,7 +42,7 @@ const SendPageContent = () => {
     warningModal = <DowntimeModal />;
   } else if (userIsMobile()) {
     warningModal = <MobileNotSupportedModal />;
-  } else if (signerIsOutOfDate(config, signerVersion)) {
+  } else if (signerIsOutOfDate) {
     warningModal = <NewerSignerVersionRequiredModal />;
   } else {
     warningModal = <MissingRequiredSoftwareModal />;
