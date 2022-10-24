@@ -45,7 +45,7 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
-  const [isInitialSync, setIsInitialSync] = useState(false);
+  const isInitialSync = useRef(false);
   const walletIsBusy = useRef(false);
 
   // transaction state
@@ -89,13 +89,13 @@ export const PrivateWalletContextProvider = (props) => {
         && signerIsConnected
         && signerVersion
         && !signerIsOutOfDate(config, signerVersion)
+        && !isInitialSync.current
       );
     };
 
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
-      setIsInitialSync(true);
-      walletIsBusy.current = false;
+      isInitialSync.current = true;
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
@@ -118,7 +118,7 @@ export const PrivateWalletContextProvider = (props) => {
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
-      setIsInitialSync(false);
+      isInitialSync.current = false;
     };
 
     if (canInitWallet() && !isReady) {

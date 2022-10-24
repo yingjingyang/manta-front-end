@@ -45,6 +45,9 @@ export const stakeReducer = (state, action) => {
   case STAKE_ACTIONS.SET_USD_PER_KMA:
     return setUsdPerKma(state, action);
 
+  case STAKE_ACTIONS.SET_USER_TOTAL_RECENT_REWARDS:
+    return setUserTotalRecentRewards(state, action);
+
   default:
     throw new Error(`Unknown type: ${action.type}`);
   }
@@ -130,5 +133,13 @@ const setUsdPerKma = (state, {usdPerKma}) => {
   return {
     ...state,
     usdPerKma
+  };
+};
+
+const setUserTotalRecentRewards = (state, {userTotalRecentRewards, secondsSinceReward}) => {
+  return {
+    ...state,
+    userTotalRecentRewards,
+    secondsSinceReward
   };
 };

@@ -7,6 +7,7 @@ import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
 import CalamariFooter from 'components/Footer';
+import initAxios from 'utils/api/initAxios';
 import AccountDisplay from './AccountDisplay';
 import StakingTable from './Tables/StakingTable';
 import UnstaktingTable from './Tables/UnstakingTable';
@@ -16,6 +17,7 @@ const StakePageContent = () => {
   const { keyring } = useKeyring();
   const { txStatus } = useTxStatus();
   const config = useConfig();
+  initAxios(config);
 
   document.title = config.PAGE_TITLE;
 
@@ -43,7 +45,7 @@ const StakePageContent = () => {
   }
 
   return (
-    <div className="w-full px-10 py-10">
+    <div className="self-center staking-table px-10 py-10">
       {warningModal}
       <AccountDisplay />
       <StakingTable />

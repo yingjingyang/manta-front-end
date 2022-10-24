@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { SECONDS_PER_BLOCK } from 'pages/StakePage/StakeConstants';
 import { formatDaysHoursMinutes } from 'utils/time/timeString';
 import Collator from './Collator';
 
@@ -29,7 +30,6 @@ export default class UnstakeRequest {
     const roundsRemaining = this.epochWhenExecutable - round.current;
     const currentRoundFinalBlock = round.first.toNumber() + round.length.toNumber();
     const blocksRemainingInRound = currentRoundFinalBlock - currentBlockNumber;
-    const SECONDS_PER_BLOCK = 12;
     const timeRemainingSeconds = ((roundsRemaining * round.length.toNumber()) + blocksRemainingInRound) * SECONDS_PER_BLOCK;
     return formatDaysHoursMinutes(timeRemainingSeconds);
   }
