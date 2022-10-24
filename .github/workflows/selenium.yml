@@ -75,9 +75,9 @@ jobs:
           source $HOME/.cargo/env
           rustup install nightly
           rustup toolchain install stable
+          rustup target add wasm32-unknown-unknown
           rustup default stable
           rustup update
-          rustup target add wasm32-unknown-unknown
           sudo apt-get install gnome-terminal
           cd manta-front-end/tests/selenium-tests
           ./run_tests.sh -plc=dolphin-config.json \

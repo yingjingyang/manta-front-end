@@ -48,6 +48,7 @@ cd extension
 
 #Build manta
 cd ${MANTA}
+cargo install
 cargo b -r
 
 # build and start dolphin / signer/ front end
