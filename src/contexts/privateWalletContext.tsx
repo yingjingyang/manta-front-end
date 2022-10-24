@@ -143,6 +143,7 @@ export const PrivateWalletContextProvider = (props) => {
         setPrivateAddress(null);
         setWasmApi(null);
         setWallet(null);
+        isInitialSync.current = false;
       }
     } catch (err) {
       console.error(err);
@@ -152,6 +153,7 @@ export const PrivateWalletContextProvider = (props) => {
       setPrivateAddress(null);
       setWasmApi(null);
       setWallet(null);
+      isInitialSync.current = false;
     }
   };
 
