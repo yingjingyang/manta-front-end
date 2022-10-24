@@ -154,7 +154,7 @@ export const PrivateWalletContextProvider = (props) => {
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
-      isInitialSync.current = true;
+      isInitialSync.current = false;
 
       store.remove(localStorageKeys.CurrentSyncReceiversCount);
       store.remove(localStorageKeys.CurrentSyncSenderIndex);

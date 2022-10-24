@@ -100,8 +100,9 @@ export const PrivateWalletSyncContextProvider = (props) => {
   useEffect(() => {
     let interval;
 
-    if (!nextSyncPercentage || !timePerPercentage) return;
-    if (timePerPercentage > 0) {
+    if (!nextSyncPercentage || !timePerPercentage) {
+      return;
+    } else if (timePerPercentage > 0) {
       interval = setInterval(() => {
         if (syncPercentage < 100 && syncPercentage < nextSyncPercentage) {
           setSyncPercentage(syncPercentage + 1);
