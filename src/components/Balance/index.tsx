@@ -1,12 +1,12 @@
 import React from 'react';
-import DotLoader from '../Loaders/DotLoader';
+import DotLoader from 'components/Loaders/DotLoader';
 
-type IBalanceProps = {
+interface IBalanceProps {
   balance: string;
   className: string;
   loaderClassName: string;
   loader: boolean;
-};
+}
 
 const Balance: React.FC<IBalanceProps> = ({
   balance,

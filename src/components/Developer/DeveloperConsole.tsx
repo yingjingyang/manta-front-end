@@ -3,10 +3,16 @@
 import { useEffect } from 'react';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useKeyring } from 'contexts/keyringContext';
+import { useConfig } from 'contexts/configContext';
 
 export default function DeveloperConsole() {
   const { api, apiState } = useSubstrate();
   const { keyring } = useKeyring();
+  const config = useConfig();
+
+  if (!config.DEV_CONSOLE) {
+    return;
+  }
 
   useEffect(() => {
     if (keyring) {

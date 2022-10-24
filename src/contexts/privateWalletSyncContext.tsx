@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { localStorageKeys } from 'constants/LocalStorageConstants';
 import React, {
   createContext,
   useState,
@@ -8,7 +9,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import store from 'store';
-import { localStorageKeys } from 'constants/LocalStorageConstants';
 
 const PrivateWalletSyncContext = createContext();
 
@@ -25,13 +25,13 @@ export const PrivateWalletSyncContextProvider = (props) => {
 
   // this function takes the restult of a "pull" from the manta-wasm-wallet Api
   // and updates the necessary percentages that are used to display sync progress.
-  const updatePercentages = async (receivers,sender_index,senders_receivers_total) => {
+  const updatePercentages = async (receivers, senderIndex, sendersReceiversTotal) => {
     const pullBatchTime = performance.now() - pullBatchStartTime.current;
     console.log('pullBatchTime - ', pullBatchTime);
     const percentagePerBatch = parseInt(
       (
-        ((receivers.length - syncSenderIndex.current + sender_index) /
-          senders_receivers_total) *
+        ((receivers.length - syncSenderIndex.current + senderIndex) /
+          sendersReceiversTotal) *
         100
       ).toFixed(0)
     );
@@ -39,8 +39,8 @@ export const PrivateWalletSyncContextProvider = (props) => {
 
     const newSyncPercentage = parseInt(
       (
-        ((currentSyncReceivers.current + sender_index) /
-          senders_receivers_total) *
+        ((currentSyncReceivers.current + senderIndex) /
+          sendersReceiversTotal) *
         100
       ).toFixed(0)
     );
@@ -50,31 +50,31 @@ export const PrivateWalletSyncContextProvider = (props) => {
         ? 100
         : newSyncPercentage + percentagePerBatch
     );
-  }
+  };
 
   // this function is passed to the manta-wasm-wallet Api upon creation
-  // as the pullCallBack() method. Which updates the sync percentage with respect to 
+  // as the pullCallBack() method, which updates the sync percentage with respect to
   // the ledger data that is pulled and processed.
   const updateSyncProgress = async (
     receivers,
     senders,
-    sender_index,
-    senders_receivers_total
+    senderIndex,
+    sendersReceiversTotal
   ) => {
     try {
-      if (!currentSyncReceivers.current || sender_index === 0) {
+      if (!currentSyncReceivers.current || senderIndex === 0) {
         // if it's the first batch or page refreshed during sync
         currentSyncReceivers.current = receivers.length;
       } else {
         if (
           currentSyncReceivers.current + receivers.length <
-          senders_receivers_total
+          sendersReceiversTotal
         )
           currentSyncReceivers.current =
             currentSyncReceivers.current + receivers.length;
       }
 
-      if (sender_index === 0) {
+      if (senderIndex === 0) {
         // if it's the first batch response
         setSyncPercentage(0);
         store.set(localStorageKeys.CurrentSyncReceiversCount, receivers.length);
@@ -84,21 +84,17 @@ export const PrivateWalletSyncContextProvider = (props) => {
           localStorageKeys.CurrentSyncReceiversCount,
           currentSyncReceivers.current
         );
-        store.set(localStorageKeys.CurrentSyncSenderIndex, sender_index);
+        store.set(localStorageKeys.CurrentSyncSenderIndex, senderIndex);
       }
 
-      updatePercentages(receivers,sender_index,senders_receivers_total);
+      updatePercentages(receivers, senderIndex, sendersReceiversTotal);
 
       pullBatchStartTime.current = performance.now();
-      syncSenderIndex.current = sender_index;
+      syncSenderIndex.current = senderIndex;
       syncError.current = false;
     } catch (err) {
-      console.log('sync callback error - ', err);
+      console.log('Error syncing private wallet', err);
     }
-  };
-
-  const syncErrorCallback = async () => {
-    syncError.current = true;
   };
 
   useEffect(() => {
@@ -123,8 +119,6 @@ export const PrivateWalletSyncContextProvider = (props) => {
     syncPercentage,
     syncError,
     updateSyncProgress,
-    syncErrorCallback,
-    syncPercentage,
     pullBatchStartTime,
     currentSyncReceivers,
     syncSenderIndex,

@@ -14,6 +14,7 @@ import {
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceComponent from 'components/Balance';
 import { useSubstrate } from 'contexts/substrateContext';
+import { usePrivateWalletSync } from 'contexts/privateWalletSyncContext';
 import { useSend } from '../SendContext';
 
 const SendToAddressForm = ({
@@ -113,12 +114,11 @@ const ReceiverBalanceDisplay = () => {
     receiverIsPrivate
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
+  const { syncError } = usePrivateWalletSync();
   const { api } = useSubstrate();
 
-  const shouldShowLoader =
-    receiverAddress && !receiverCurrentBalance && api?.isConnected;
-  const shouldShowInitialSync =
-    shouldShowLoader && isInitialSync && receiverIsPrivate();
+  const shouldShowLoader = receiverAddress && !receiverCurrentBalance && api?.isConnected;
+  const shouldShowInitialSync = !syncError.current && shouldShowLoader && isInitialSync.current && receiverIsPrivate();
   const balanceString = shouldShowInitialSync
     ? 'Syncing to network'
     : receiverCurrentBalance?.toString(true);

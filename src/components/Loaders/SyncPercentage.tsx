@@ -16,7 +16,7 @@ const SyncPercentage: React.FC<{ percentage?: number }> = ({
         </div>
       </div>
       <p className="text-base font-bold text-black dark:text-white">
-        Syncing to node
+        Syncing to network
         <DotLoader />
       </p>
     </div>

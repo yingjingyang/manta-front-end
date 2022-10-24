@@ -8,8 +8,8 @@ import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePrivateWalletSync } from 'contexts/privateWalletSyncContext';
 import { useSubstrate } from 'contexts/substrateContext';
-import { useSend } from './SendContext';
 import SyncPercentage from 'components/Loaders/SyncPercentage';
+import { useSend } from './SendContext';
 
 const SendButton = () => {
   const {
@@ -31,7 +31,7 @@ const SendButton = () => {
 
   const onClick = () => {
     if (!signerIsConnected) {
-      showError('Manta signer must be connected');
+      showError('Signer must be connected');
     } else if (receiverAmountIsOverExistentialBalance() === false) {
       const existentialDeposit = new Balance(
         receiverAssetType,
@@ -65,7 +65,7 @@ const SendButton = () => {
     apiState !== 'ERROR' &&
     signerIsConnected &&
     !isReady &&
-    isInitialSync &&
+    isInitialSync.current &&
     (isPrivateTransfer() || isToPublic() || isToPrivate());
 
   const errorLabel = useMemo(() => {

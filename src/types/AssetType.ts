@@ -1,6 +1,7 @@
 // @ts-nocheck
 import Svgs from 'resources/icons';
 import BN from 'bn.js';
+
 export default class AssetType {
   constructor(
     assetId,
@@ -25,6 +26,14 @@ export default class AssetType {
     this.isNativeToken = isNativeToken;
   }
 
+  static Native(config) {
+    if (config.NETWORK_NAME === 'Calamari') {
+      return AssetType.Calamari(false);
+    } else {
+      return AssetType.Dolphin(false);
+    }
+  }
+
   static Dolphin(isPrivate) {
     return new AssetType(
       1,
@@ -33,6 +42,19 @@ export default class AssetType {
       Svgs.Dolphin,
       18,
       new BN('100000000000000000'),
+      isPrivate,
+      true
+    );
+  }
+
+  static Calamari(isPrivate) {
+    return new AssetType(
+      1,
+      'Calamari',
+      'KMA',
+      Svgs.Calamari,
+      12,
+      new BN('100000000000'),
       isPrivate,
       true
     );
