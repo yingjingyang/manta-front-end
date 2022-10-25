@@ -4,9 +4,41 @@ import { Header, Icon, Modal } from 'semantic-ui-react';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import classNames from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 
-function MissingRequiredSoftwareModal() {
+const ModalFAQSection = ({signerIsConnected}) => {
+  return (
+    <div className="pl-16 pt-12">
+      {!signerIsConnected &&
+        <p>
+          <FontAwesomeIcon icon={faInfoCircle} />{' '}
+          <a
+            href="https://docs.manta.network/docs/concepts/Signer"
+            className="link-text"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+          Why do I need Manta Signer?</a>
+        </p>
+      }
+      <p className={classNames({'pt-6': !signerIsConnected})}>
+        <FontAwesomeIcon icon={faInfoCircle} />{' '}
+        <a
+          href="https://docs.manta.network/docs/guides/DolphinPay"
+          className="link-text"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+        How do I use Dolphin Testnet?</a>
+      </p>
+    </div>
+  );
+};
+
+
+const MissingRequiredSoftwareModal = () => {
   const [modalCanBeOpened, setModalCanBeOpened] = useState(true);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { keyring } = useKeyring();
@@ -70,23 +102,26 @@ function MissingRequiredSoftwareModal() {
           </p>
         }
         {(signerIsConnected === false) &&
-          <p className={classNames('pl-16', {'pt-6': (keyring === false)})}>
-            Install{' '}
-            <a
-              href="https://signer.manta.network/"
-              className="link-text"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Manta Signer
-            </a>
-            {' '}if you have not yet done so, open the app, and sign in.
-          </p>
+          <>
+            <p className={classNames('pl-16', {'pt-6': (keyring === false)})}>
+              Install{' '}
+              <a
+                href="https://signer.manta.network/"
+                className="link-text"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Manta Signer
+              </a>
+              {' '}if you have not yet done so, open the app, and sign in.
+            </p>
+          </>
         }
+        <ModalFAQSection signerIsConnected={signerIsConnected} />
       </Modal.Content>
     </Modal>
   );
-}
+};
 
 export default MissingRequiredSoftwareModal;
 
