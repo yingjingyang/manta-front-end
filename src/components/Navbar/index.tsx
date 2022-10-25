@@ -6,13 +6,12 @@ import Menu from 'components/Menu/DotMenu';
 import ChainSelector from './ChainSelector';
 import SignerConnectionStatusLabel from './SignerConnectionStatusLabel';
 
-
 export const CalamariNavbar = () => {
   return (
     <div className="h-20 py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
       <ChainSelector />
       {/* <Navs /> */}
-      <div className="h-12 gap-4 flex justify-end">
+      <div className="h-12 gap-4 flex justify-end items-center">
         <AccountSelect />
         <Menu />
       </div>
@@ -26,7 +25,7 @@ export const DolphinNavbar = () => {
     <div className="h-20 py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
       <ChainSelector />
       {/* <Navs /> */}
-      <div className="h-12 gap-4 flex justify-end">
+      <div className="h-12 gap-4 flex justify-end items-center">
         <SignerConnectionStatusLabel />
         <Menu />
       </div>

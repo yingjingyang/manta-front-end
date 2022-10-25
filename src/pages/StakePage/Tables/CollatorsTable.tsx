@@ -252,15 +252,8 @@ const CollatorsTable = () => {
     <div className="mt-20" id="collatorsTable">
       <h1 className="text-base font-semibold text-black dark:text-white flex items-end gap-10">
         Collators
-        <a
-          href="https://docs.manta.network/docs/calamari/Staking/Collation/Overview"
-          target="_blank"
-          className="text-link text-sm underline"
-        >
-          Launch your own collator
-        </a>
       </h1>
-      <div className="mt-6 flex space-x-5">
+      <div className="mt-6 flex gap-5">
         <div className="p-3 rounded-md border border-manta-gray flex items-center gap-2 text-secondary bg-secondary">
           <input
             className="bg-transparent text-black dark:text-white outline-none"
@@ -280,6 +273,17 @@ const CollatorsTable = () => {
             onChange={onChangeOption}
             isSearchable={false}
           />
+        </div>
+        <div className="ml-auto flex items-center">
+          <a
+            href="https://docs.manta.network/docs/calamari/Staking/Collation/Overview"
+            target="_blank"
+            className={
+              'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white'
+            }
+          >
+            Launch your own collator
+          </a>
         </div>
       </div>
       <div className="w-full mt-4">
