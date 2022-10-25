@@ -175,18 +175,6 @@ const CollatorsTable = () => {
         valueA.apy.toNumber() > valueB.apy.toNumber() ? 1 : -1
     },
     {
-      field: 'Status',
-      unSortIcon: true,
-      headerTooltip: statusTooltip,
-      width: 175,
-      suppressMovable: true,
-      tooltipValueGetter: (params: any) => {
-        if (params.value === 'Inactive') {
-          return inactiveCollatorTooltip;
-        }
-      }
-    },
-    {
       field: 'Delegations',
       unSortIcon: true,
       headerTooltip: delegationTooltip,

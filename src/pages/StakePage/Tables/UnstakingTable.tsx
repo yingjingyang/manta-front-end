@@ -38,7 +38,8 @@ const UnstakingTable = () => {
   });
 
   const amountTooltip = 'Your balance scheduled for unstaking';
-  const timeRemainingTooltip = 'Time until you can withdraw your unstaking balance';
+  const timeRemainingTooltip =
+    'Time until you can withdraw your unstaking balance';
 
   const columnDefs: ColDef[] = [
     {
@@ -72,7 +73,7 @@ const UnstakingTable = () => {
     {
       field: '',
       sortable: false,
-      width: 690,
+      width: 515,
       suppressMovable: true,
       cellRenderer: (params) => {
         const unstakeRequest = params.data.data;
