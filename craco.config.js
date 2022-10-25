@@ -26,17 +26,6 @@ module.exports = {
           loader: require.resolve('@open-wc/webpack-import-meta-loader'),
         }
       )
-      webpackConfig.module.rules.push(
-        {
-          test: /\.(js|ts)$/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/env']
-            }
-          }
-        }
-      )
 
       const wasmExtensionRegExp = /\.wasm$/;
       webpackConfig.resolve.extensions.push('.wasm');

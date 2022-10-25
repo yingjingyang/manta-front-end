@@ -104,7 +104,7 @@ const AccountDisplay = () => {
             </div>
           </div>
         </div>
-        <div className="-mt-2 max-w-sm flex flex-grow flex-col items-center justify-center flex-shrink-0 py-4 bg-secondary rounded-lg relative z-20 shadow-2xl">
+        <div className="-mt-2 max-w-sm flex flex-grow flex-col items-center justify-center flex-shrink-0 px-8 py-6 bg-secondary rounded-lg relative z-20 shadow-2xl">
           <div>
             <h2 className="text-secondary font-medium text-lg">Resources</h2>
             <div className="mt-6">
