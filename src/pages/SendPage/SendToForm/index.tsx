@@ -15,7 +15,7 @@ const SendToForm = () => {
       <div className="flex flex-col gap-4 items-stretch">
         <PublicPrivateToggle
           onToggle={toggleReceiverIsPrivate}
-          isPrivate={receiverAssetType.isPrivate}
+          isPrivate={receiverAssetType?.isPrivate}
           prefix="receiver"
         />
         <SendToAddressForm />

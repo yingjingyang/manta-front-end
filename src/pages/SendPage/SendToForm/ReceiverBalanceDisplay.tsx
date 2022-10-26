@@ -31,13 +31,13 @@ const ReceiverBalanceDisplay = () => {
         <div>
           <img
             className="w-8 h-8 rounded-full"
-            src={receiverAssetType.icon}
+            src={receiverAssetType?.icon}
             alt="icon"
           />
         </div>
         <GradientText
           className="text-2xl font-bold"
-          text={receiverAssetType.ticker}
+          text={receiverAssetType?.ticker}
         />
       </div>
     </div>

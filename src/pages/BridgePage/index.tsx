@@ -7,6 +7,7 @@ import { showError, showSuccess } from 'utils/ui/Notifications';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { BridgeContextProvider } from './BridgeContext';
 import BridgeForm from './BridgeForm';
+import BridgePageContent from './BridgePageContent';
 
 const BridgePage = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -22,14 +23,19 @@ const BridgePage = () => {
   }, [txStatus]);
 
   return (
-    <MetamaskContextProvider>
-      <BridgeContextProvider>
-        <PageContent>
-          <Navbar />
-          <BridgeForm />
-        </PageContent>
-      </BridgeContextProvider>
-    </MetamaskContextProvider>
+    <ConfigContextProvider network={NETWORK.CALAMARI}>
+      <SubstrateContextProvider>
+        <ExternalAccountContextProvider>
+          <TxStatusContextProvider >
+          <MetamaskContextProvider>
+            <BridgeContextProvider>
+              <BridgePageContent />
+            </BridgeContextProvider>
+          </MetamaskContextProvider>
+          </TxStatusContextProvider>
+        </ExternalAccountContextProvider>
+      </SubstrateContextProvider>
+    </ConfigContextProvider>
   );
 };
 

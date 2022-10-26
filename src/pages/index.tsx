@@ -1,8 +1,6 @@
 // @ts-nocheck
-// import TransactPage from './TransactPage';
-// import GovernPage from './GovernPage';
-// import SwapPage from './SwapPage';
 import SendPage from './SendPage';
+import StakePage from './StakePage';
+import BridgePage from './BridgePage';
 
-
-export { SendPage };
+export { SendPage, StakePage, BridgePage };

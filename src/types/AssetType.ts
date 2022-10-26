@@ -1,8 +1,6 @@
 // @ts-nocheck
 import Svgs from 'resources/icons';
 import BN from 'bn.js';
-import config from 'config';
-
 
 const DolphinAssetIds = {
   DOL: 1,
@@ -26,10 +24,13 @@ const CalamariAssetIds = {
   PHA: 13
 }
 
-const AssetIds = config.NETWORK_NAME === 'Calamari' ? CalamariAssetIds : DolphinAssetIds;
+const getAssetIds = (config) => {
+  return config.NETWORK_NAME === 'Calamari' ? CalamariAssetIds : DolphinAssetIds;
+}
 
 export default class AssetType {
   constructor(
+    config,
     assetId,
     baseName,
     baseTicker,
@@ -52,9 +53,18 @@ export default class AssetType {
     this.isNativeToken = isNativeToken;
   }
 
-  static Dolphin(isPrivate) {
+  static Native(config) {
+    if (config.NETWORK_NAME === 'Calamari') {
+      return AssetType.Calamari(config, false);
+    } else {
+      return AssetType.Dolphin(config, false);
+    }
+  }
+
+  static Dolphin(config, isPrivate) {
     return new AssetType(
-      AssetIds.DOL,
+      config,
+      getAssetIds(config).DOL,
       'Dolphin',
       'DOL',
       Svgs.Dolphin,
@@ -65,23 +75,25 @@ export default class AssetType {
     );
   }
 
-  static Calamari(isPrivate) {
+  static Calamari(config, isPrivate) {
     return new AssetType(
-      AssetIds.KMA,
+      config,
+      getAssetIds(config).KMA,
       'Calamari',
       'KMA',
       Svgs.Calamari,
-      18,
-      new BN('100000000000000000'),
+      12,
+      new BN('100000000000'),
       isPrivate,
       true,
     );
   }
 
 
-  static Karura(isPrivate) {
+  static Karura(config, isPrivate) {
     return new AssetType(
-      AssetIds.KAR,
+      config,
+      getAssetIds(config).KAR,
       'Karura',
       'KAR',
       Svgs.KarIcon,
@@ -92,9 +104,10 @@ export default class AssetType {
     );
   }
 
-  static AcalaDollar(isPrivate) {
+  static AcalaDollar(config, isPrivate) {
     return new AssetType(
-      AssetIds.AUSD,
+      config,
+      getAssetIds(config).AUSD,
       'Acala Dollar',
       'aUSD',
       Svgs.AusdIcon,
@@ -104,9 +117,10 @@ export default class AssetType {
     );
   }
 
-  static Kusama(isPrivate) {
+  static Kusama(config, isPrivate) {
     return new AssetType(
-      AssetIds.KSM,
+      config,
+      getAssetIds(config).KSM,
       'Kusama',
       'KSM',
       Svgs.KusamaIcon,
@@ -117,9 +131,10 @@ export default class AssetType {
     );
   }
 
-  static KaruraLiquidKusama(isPrivate) {
+  static KaruraLiquidKusama(config, isPrivate) {
     return new AssetType(
-      AssetIds.LKSM,
+      config,
+      getAssetIds(config).LKSM,
       'Karura Liquid Kusama',
       'LKSM',
       Svgs.KusamaIcon,
@@ -130,9 +145,10 @@ export default class AssetType {
     );
   }
 
-  static Rococo(isPrivate) {
+  static Rococo(config, isPrivate) {
     return new AssetType(
-      AssetIds.ROC,
+      config,
+      getAssetIds(config).ROC,
       'Rococo',
       'ROC',
       Svgs.RocIcon,
@@ -142,9 +158,10 @@ export default class AssetType {
     );
   }
 
-  static KintsugiBTC(isPrivate) {
+  static KintsugiBTC(config, isPrivate) {
     return new AssetType(
-      AssetIds.KBTC,
+      config,
+      getAssetIds(config).KBTC,
       'Kintsugi BTC',
       'kBTC',
       Svgs.KbtcIcon,
@@ -154,9 +171,10 @@ export default class AssetType {
     );
   }
 
-  static Moonriver(isPrivate) {
+  static Moonriver(config, isPrivate) {
     return new AssetType(
-      AssetIds.MOVR,
+      config,
+      getAssetIds(config).MOVR,
       'Moonriver',
       'MOVR',
       Svgs.MovrIcon,
@@ -166,25 +184,26 @@ export default class AssetType {
     );
   }
 
-  static AllCurrencies(isPrivate) {
+  static AllCurrencies(config, isPrivate) {
+    console.log('config', config)
     if (config.NETWORK_NAME === "Dolphin") {
       return [
-        AssetType.Karura(isPrivate),
-        AssetType.AcalaDollar(isPrivate),
-        AssetType.KaruraLiquidKusama(isPrivate),
-        AssetType.Rococo(isPrivate),
-        AssetType.KintsugiBTC(isPrivate),
-        AssetType.Moonriver(isPrivate),
-        AssetType.Dolphin(isPrivate)
+        AssetType.Karura(config, isPrivate),
+        AssetType.AcalaDollar(config, isPrivate),
+        AssetType.KaruraLiquidKusama(config, isPrivate),
+        AssetType.Rococo(config, isPrivate),
+        AssetType.KintsugiBTC(config, isPrivate),
+        AssetType.Moonriver(config, isPrivate),
+        AssetType.Dolphin(config, isPrivate)
       ];
     } else if (config.NETWORK_NAME === "Calamari") {
       return [
-        AssetType.Karura(isPrivate),
-        AssetType.AcalaDollar(isPrivate),
-        AssetType.KaruraLiquidKusama(isPrivate),
-        AssetType.Moonriver(isPrivate),
-        AssetType.Kusama(isPrivate),
-        AssetType.Calamari(isPrivate)
+        AssetType.Karura(config, isPrivate),
+        AssetType.AcalaDollar(config, isPrivate),
+        AssetType.KaruraLiquidKusama(config, isPrivate),
+        AssetType.Moonriver(config, isPrivate),
+        AssetType.Kusama(config, isPrivate),
+        AssetType.Calamari(config, isPrivate)
       ];
     }
   }
@@ -199,6 +218,7 @@ export default class AssetType {
 
   toPrivate() {
     return new AssetType(
+      this.config,
       this.assetId,
       this.baseName,
       this.baseTicker,
@@ -212,6 +232,7 @@ export default class AssetType {
 
   toPublic() {
     return new AssetType(
+      this.config,
       this.assetId,
       this.baseName,
       this.baseTicker,

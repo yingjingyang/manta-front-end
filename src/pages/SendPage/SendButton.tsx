@@ -10,8 +10,12 @@ import { useSend } from './SendContext';
 
 const SendButton = () => {
   const {
-    isToPrivate, isToPublic, isPublicTransfer,
-    isPrivateTransfer, userCanPayFee, receiverAssetType,
+    isToPrivate,
+    isToPublic,
+    isPublicTransfer,
+    isPrivateTransfer,
+    userCanPayFee,
+    receiverAssetType,
     receiverAmountIsOverExistentialBalance
   } = useSend();
   const { signerIsConnected } = usePrivateWallet();
@@ -21,10 +25,17 @@ const SendButton = () => {
 
   const onClick = () => {
     if (!signerIsConnected) {
-      showError('Manta signer must be connected');
+      showError('Signer must be connected');
     } else if (receiverAmountIsOverExistentialBalance() === false) {
-      const existentialDeposit = new Balance(receiverAssetType, receiverAssetType.existentialDeposit);
-      showError(`Minimum ${receiverAssetType.ticker} transaction is ${existentialDeposit.toString()}`);
+      const existentialDeposit = new Balance(
+        receiverAssetType,
+        receiverAssetType.existentialDeposit
+      );
+      showError(
+        `Minimum ${
+          receiverAssetType.ticker
+        } transaction is ${existentialDeposit.toString()}`
+      );
     } else if (userCanPayFee() === false) {
       showError('Cannot pay transaction fee; deposit DOL to transact');
     } else if (!disabled) {
@@ -35,11 +46,11 @@ const SendButton = () => {
   let buttonLabel;
   if (isToPrivate()) {
     buttonLabel = 'To Private';
-  } else if (isToPublic())  {
+  } else if (isToPublic()) {
     buttonLabel = 'To Public';
-  } else if (isPublicTransfer())  {
+  } else if (isPublicTransfer()) {
     buttonLabel = 'Public Transfer';
-  } else if (isPrivateTransfer())  {
+  } else if (isPrivateTransfer()) {
     buttonLabel = 'Private Transfer';
   }
 

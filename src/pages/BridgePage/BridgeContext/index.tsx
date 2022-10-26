@@ -13,24 +13,25 @@ import AssetType from 'types/AssetType';
 import { useMetamask } from 'contexts/metamaskContext';
 import Chain from 'types/Chain';
 import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
-import bridgeReducer, { BRIDGE_INIT_STATE } from './bridgeReducer';
+import bridgeReducer, { buildInitState } from './bridgeReducer';
 import BRIDGE_ACTIONS from './bridgeActions';
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { Bridge } from 'manta-polkawallet-bridge-dev/build';
+import { useConfig } from 'contexts/configContext';
 
 const BridgeContext = React.createContext();
 
 export const BridgeContextProvider = (props) => {
   const { provider, ethAddress, configureMoonRiver } = useMetamask();
   const { setTxStatus } = useTxStatus();
+  const config = useConfig();
   const {
     externalAccount,
     externalAccountSigner,
     externalAccountOptions,
     changeExternalAccount
   } = useExternalAccount();
-  const initState = { ...BRIDGE_INIT_STATE };
-  const [state, dispatch] = useReducer(bridgeReducer, initState);
+  const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
   const {
     senderAssetType,
@@ -401,7 +402,7 @@ export const BridgeContextProvider = (props) => {
 
   const sendEth = async () => {
     const success = await transferMovrFromMoonriverToCalamari(
-      provider, senderAssetTargetBalance, senderSubstrateAccount.address
+      config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
     );
     if (success) {
       setTxStatus(TxStatus.finalized());

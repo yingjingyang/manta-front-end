@@ -48,7 +48,7 @@ const getXtokensPrecompileAccountId32 = (accountId) => {
   );
 };
 
-export const transferMovrFromMoonriverToCalamari = async (provider, balance, address) => {
+export const transferMovrFromMoonriverToCalamari = async (config, provider, balance, address) => {
   console.log('address', address);
   const abi = Xtokens.abi;
   const ethersProvider = new ethers.providers.Web3Provider(provider);
@@ -56,7 +56,7 @@ export const transferMovrFromMoonriverToCalamari = async (provider, balance, add
   const contract = new ethers.Contract(XTOKENS_PRECOMPILE_ADDRESS, abi, signer);
   const amount = balance.valueAtomicUnits.toString();
   const accountId = addressToAccountId(address);
-  const destination = getXtokensPrecompileLocation(Chain.Calamari().parachainId, accountId);
+  const destination = getXtokensPrecompileLocation(Chain.Calamari(config).parachainId, accountId);
   const weight = CALAMARI_DESTINATION_WEIGHT;
 
   try {

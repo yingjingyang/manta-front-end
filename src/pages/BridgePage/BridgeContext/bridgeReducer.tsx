@@ -12,8 +12,8 @@ const getDestinationChainOptions = (originChain, originChainOptions) => {
     .filter(chain => originChain.canTransferXcm(chain));
 };
 
-const getSenderAssetTypeOptions = (originChain, destinationChain) => {
-  return AssetType.AllCurrencies(false).filter(
+const getSenderAssetTypeOptions = (config, originChain, destinationChain) => {
+  return AssetType.AllCurrencies(config, false).filter(
     assetType => assetType.canTransferXcm(originChain, destinationChain));
 };
 
@@ -34,38 +34,47 @@ const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) =
   return targetBalance;
 }
 
-const initOriginChainOptions = Chain.All();
-const initOriginChain = initOriginChainOptions[0];
-const initDestinationChainOptions = getDestinationChainOptions(initOriginChain, initOriginChainOptions);
-const initDestinationChain = initDestinationChainOptions[0];
-const initSenderAssetTypeOptions = getSenderAssetTypeOptions(initOriginChain, initDestinationChain);
-const initSenderAssetType = initSenderAssetTypeOptions[0];
+export const buildInitState = (config) => {
+  const initOriginChainOptions = Chain.All(config);
+  const initOriginChain = initOriginChainOptions[0];
+  const initDestinationChainOptions = getDestinationChainOptions(
+    initOriginChain, initOriginChainOptions
+  );
+  const initDestinationChain = initDestinationChainOptions[0];
+  const initSenderAssetTypeOptions = getSenderAssetTypeOptions(
+    config, initOriginChain, initDestinationChain
+  );
+  const initSenderAssetType = initSenderAssetTypeOptions[0];
 
-export const BRIDGE_INIT_STATE = {
-  bridge: null,
+  return {
+    config,
+    bridge: null,
 
-  senderEthAccount: null,
-  senderSubstrateAccount: null,
-  senderSubstrateAccountOptions: [],
+    senderEthAccount: null,
+    senderSubstrateAccount: null,
+    senderSubstrateAccountOptions: [],
 
-  senderAssetType: initSenderAssetType,
-  senderAssetTypeOptions: initSenderAssetTypeOptions,
-  senderAssetCurrentBalance: null,
-  senderAssetTargetBalance: null,
-  maxInput: null,
-  minInput: null,
-  senderNativeTokenPublicBalance: null,
-  senderBalanceSubscription: null,
-  senderInputConfigSubscription: null,
+    senderAssetType: initSenderAssetType,
+    senderAssetTypeOptions: initSenderAssetTypeOptions,
+    senderAssetCurrentBalance: null,
+    senderAssetTargetBalance: null,
+    maxInput: null,
+    minInput: null,
+    senderNativeTokenPublicBalance: null,
+    senderBalanceSubscription: null,
+    senderInputConfigSubscription: null,
 
-  originChain: initOriginChain,
-  originChainOptions: initOriginChainOptions,
-  originFee: null,
+    originChain: initOriginChain,
+    originChainOptions: initOriginChainOptions,
+    originFee: null,
 
-  destinationChain: initDestinationChain,
-  destinationChainOptions: initDestinationChainOptions,
-  destinationFee: null,
-};
+    destinationChain: initDestinationChain,
+    destinationChainOptions: initDestinationChainOptions,
+    destinationFee: null,
+  };
+}
+
+
 
 const bridgeReducer = (state, action) => {
   switch (action.type) {
@@ -229,7 +238,9 @@ const setOriginChain = (state, { originChain }) => {
   if (!originChain.canTransferXcm(destinationChain)) {
     destinationChain = destinationChainOptions[0];
   }
-  const senderAssetTypeOptions = getSenderAssetTypeOptions(originChain, destinationChain);
+  const senderAssetTypeOptions = getSenderAssetTypeOptions(
+    state.config, originChain, destinationChain
+  );
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
   const senderAssetTargetBalance = getNewSenderAssetTargetBalance(
     senderAssetType, state.senderAssetTargetBalance
@@ -249,7 +260,9 @@ const setOriginChain = (state, { originChain }) => {
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
-  const senderAssetTypeOptions = getSenderAssetTypeOptions(state.originChain, destinationChain);
+  const senderAssetTypeOptions = getSenderAssetTypeOptions(
+    state.config, state.originChain, destinationChain
+  );
   const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
   let senderAssetTargetBalance = getNewSenderAssetTargetBalance(
     senderAssetType, state.senderAssetTargetBalance

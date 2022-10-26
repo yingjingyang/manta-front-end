@@ -5,7 +5,7 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import
 AccountSelect,
 { substrateAccountToReactSelectOption, substrateAccountsToReactSelectOptions }
-  from 'components/Accounts/AccountSelect';
+  from 'components/Accounts/AccountSelectDropdown';
 
 const PublicToAccountSelect = () => {
   const {

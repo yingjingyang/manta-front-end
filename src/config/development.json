@@ -1,20 +1,29 @@
 {
-    "PROVIDER_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
+    "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
+    "CALAMARI_PROVIDER_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": true,
     "BASE_STORAGE_KEY": "calamariDev",
     "SUBSCAN_URL": "https://calamari.subscan.io",
+    "DOWNTIME": false,
     "NETWORK_NAME": "Calamari",
     "NODES": [{
-        "name": "Calamari",
-        "url": "wss://crispy.kusama-internal.testnet.calamari.systems"
-    }],
-
+            "name": "Calamari",
+            "path": "/calamari",
+            "url": "wss://crispy.kusama-internal.testnet.calamari.systems",
+            "explorer": "calamari.subscan.io"
+        },
+        {
+            "name": "Dolphin",
+            "path": "/dolphin",
+            "url": "wss://ws.rococo.dolphin.engineering",
+            "testnet": true,
+            "explorer": "dolphin.subscan.io"
+        }
+    ],
     "KUSAMA_SOCKET": "wss://arangatuy.kusama-internal.calamari.systems",
     "CALAMARI_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
     "KARURA_SOCKET": "wss://taupo.kusama-internal.karura-testnet.calamari.systems",
     "MOONRIVER_SOCKET": "wss://alith.kusama-internal.moonriver-testnet.calamari.systems",
-    "MOONRIVER_RPC": "https://rpc.faith.kusama-internal.moonriver-testnet.calamari.systems",
-
-    "DOWNTIME": false
+    "MOONRIVER_RPC": "https://rpc.faith.kusama-internal.moonriver-testnet.calamari.systems"
 }

@@ -1,10 +1,12 @@
 // @ts-nocheck
 import React from 'react';
 import { Header, Modal } from 'semantic-ui-react';
-import config from 'config';
 import { ReactComponent as DowntimeImage } from 'resources/images/maintenance.svg';
+import { useConfig } from 'contexts/configContext';
 
 function DowntimeModal() {
+  const config = useConfig();
+
   return (
     <Modal
       basic

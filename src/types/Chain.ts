@@ -1,5 +1,4 @@
 // @ts-nocheck
-import config from 'config';
 import Svgs from 'resources/icons';
 import { KaruraAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/acala';
 import { CalamariAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/manta';
@@ -56,76 +55,76 @@ export default class Chain {
     this.api = null;
   }
 
-  static Dolphin() {
+  static Dolphin(config) {
     return new Chain(
       'dolphin',
       'Dolphin',
       2084,
       Svgs.Dolphin,
       config.DOLPHIN_SOCKET,
-      [AssetType.Rococo(), AssetType.Karura(), AssetType.Moonriver()],
-      AssetType.Dolphin(),
+      [AssetType.Rococo(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      AssetType.Dolphin(config),
       new CalamariAdapter(),
       types
     );
   }
 
-  static Calamari() {
+  static Calamari(config) {
     return new Chain(
       'calamari',
       'Calamari',
       2084,
       Svgs.Calamari,
       config.CALAMARI_SOCKET,
-      [AssetType.Kusama(), AssetType.Karura(), AssetType.Moonriver()],
-      AssetType.Calamari(),
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      AssetType.Calamari(config),
       new CalamariAdapter(),
       types
     );
   }
 
-  static Rococo() {
+  static Rococo(config) {
     return new Chain(
       'rococo',
       'Rococo',
       null,
       Svgs.RocIcon,
       config.ROCOCO_SOCKET,
-      [AssetType.Rococo()],
-      AssetType.Rococo(),
+      [AssetType.Rococo(config)],
+      AssetType.Rococo(config),
       new KusamaAdapter()
     );
   }
 
-  static Kusama() {
+  static Kusama(config) {
     return new Chain(
       'kusama',
       'Kusama',
       null,
       Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
-      [AssetType.Kusama()],
-      AssetType.Kusama(),
+      [AssetType.Kusama(config)],
+      AssetType.Kusama(config),
       new KusamaAdapter()
     );
   }
 
-  static Karura() {
+  static Karura(config) {
     return new Chain(
       'karura',
       'Karura',
       2000,
       Svgs.KarIcon,
       config.KARURA_SOCKET,
-      [AssetType.Karura()],
-      AssetType.Karura(),
+      [AssetType.Karura(config)],
+      AssetType.Karura(config),
       new KaruraAdapter(),
       null,
       options
     );
   }
 
-  static Moonriver() {
+  static Moonriver(config) {
     const moonriverEthMetadata = {
       chainId: '0x500',
       chainName: 'Moonriver Development Testnet',
@@ -143,8 +142,8 @@ export default class Chain {
       1000,
       Svgs.MovrIcon,
       config.MOONRIVER_SOCKET,
-      [AssetType.Moonriver()],
-      AssetType.Moonriver(),
+      [AssetType.Moonriver(config)],
+      AssetType.Moonriver(config),
       new MoonriverAdapter(),
       typesBundlePre900,
       null,
@@ -153,13 +152,13 @@ export default class Chain {
     );
   }
 
-  static All() {
+  static All(config) {
     if (config.NETWORK_NAME === 'Calamari') {
       return [
-        Chain.Calamari(),
-        Chain.Kusama(),
-        Chain.Karura(),
-        Chain.Moonriver()
+        Chain.Calamari(config),
+        Chain.Kusama(config),
+        Chain.Karura(config),
+        Chain.Moonriver(config)
       ];
     } else {
       return [];

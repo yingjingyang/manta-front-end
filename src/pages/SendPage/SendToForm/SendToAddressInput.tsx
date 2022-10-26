@@ -56,7 +56,7 @@ const SendToAddressInput = () => {
     }
   };
 
-  const onChangeInput = receiverAssetType.isPrivate ? onChangePrivateInput : onChangePublicInput;
+  const onChangeInput = receiverAssetType?.isPrivate ? onChangePrivateInput : onChangePublicInput;
 
   return (
     <>

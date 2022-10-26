@@ -10,6 +10,7 @@ import {
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import Version from 'types/Version';
+import { useConfig } from 'contexts/configContext';
 
 const SignerConnectionLabelTitle = () => {
   return <p className="text-primary text-sm pb-2">Manta Signer</p>;
@@ -59,12 +60,13 @@ SignerConnectedLabel.propTypes = {
 };
 
 const SignerConnectionStatusLabel = () => {
+  const config = useConfig();
   const { signerVersion } = usePrivateWallet();
   return (
     <div className="flex text-center items-center text-green-500 pr-6">
       {!signerVersion ? (
         <SignerNotConnectedLabel />
-      ) : signerIsOutOfDate(signerVersion) ? (
+      ) : signerIsOutOfDate(config, signerVersion) ? (
         <SignerOutOfDateLabel signerVersion={signerVersion} />
       ) : (
         <SignerConnectedLabel signerVersion={signerVersion} />

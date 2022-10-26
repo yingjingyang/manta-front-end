@@ -2,7 +2,7 @@
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import React from 'react';
-import AccountSelect from '../../../components/Accounts/AccountSelect';
+import AccountSelect from '../../../components/Accounts/AccountSelectMenu';
 
 
 const PublicFromAccountSelect = () => {

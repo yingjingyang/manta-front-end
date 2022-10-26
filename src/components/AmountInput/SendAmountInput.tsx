@@ -8,17 +8,29 @@ import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import BalanceComponent from 'components/Balance';
+import { useSend } from 'pages/SendPage/SendContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 
 const SendAmountInput = ({
-  balanceText,
   senderAssetCurrentBalance,
   setSenderAssetTargetBalance,
   senderAssetType,
   maxSendableBalance,
 }) => {
+  const { isInitialSync } = usePrivateWallet();
+  const { isPrivateTransfer, isToPublic } = useSend();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const [inputValue, setInputValue] = useState('');
+
+  let balanceText;
+  if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
+    balanceText = 'Syncing to ledger';
+  } else if (senderAssetCurrentBalance) {
+    balanceText = `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+  } else {
+  balanceText = ''
+  }
 
   const onChangeSendAmountInput = (value) => {
     if (value === '') {

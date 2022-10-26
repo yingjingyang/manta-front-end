@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react';
 import
-AccountSelect,
+AccountSelectDropdown,
 { substrateAccountToReactSelectOption, substrateAccountsToReactSelectOptions }
-  from 'components/Accounts/AccountSelect';
+  from 'components/Accounts/AccountSelectDropdown';
 import Chain from 'types/Chain';
 import { useBridge } from './BridgeContext';
 import MetamaskAccountDisplay from './MetamaskAccountDisplay';

@@ -22,13 +22,10 @@ module.exports = {
       lg: 'var(--min-width-lg)'
     },
     extend: {
-      backgroundImage: {
-        primary: 'var(--gradient-bg-primary)',
-        button: 'var(--gradient-button-primary)'
-      },
+      backgroundImage: {},
 
       backgroundColor: {
-        // primary: 'var(--color-bg-primary)',
+        primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
         thirdry: 'var(--color-bg-thirdry)',
         fourth: 'var(--color-bg-fourth)',
@@ -36,15 +33,18 @@ module.exports = {
         'table-row': 'var(--color-bg-table-row)',
         success: 'var(--color-bg-success)',
         danger: 'var(--color-bg-danger)',
-        'manta-gray': 'var(--color-bg-manta-gray)'
+        'manta-gray': 'var(--color-bg-manta-gray)',
+        button: 'var(--color-bg-button)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        link: 'var(--color-bg-button)',
         'gray-light': 'var(--color-text-gray)',
-        'manta-gray': 'var(--color-bg-manta-gray)'
+        'manta-gray': 'var(--color-bg-manta-gray)',
+        warning: 'var(--color-text-warning)'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -53,7 +53,9 @@ module.exports = {
         gray: 'var(--color-fill-gray)'
       },
       borderColor: {
-        'manta-gray': 'var(--color-bg-manta-gray)'
+        'manta-gray': 'var(--color-bg-manta-gray)',
+        primary: 'var(--color-border-primary)',
+        secondary: 'var(--color-bg-button)'
       }
     }
   },

@@ -21,11 +21,11 @@ const SendAssetSelect = () => {
   const maxSendableBalance = getMaxSendableBalance();
 
   const balanceText =
-  isInitialSync && (isPrivateTransfer() || isToPublic())
-    ? 'Syncing to ledger'
-    : senderAssetCurrentBalance
-      ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-      : '';
+    isInitialSync && (isPrivateTransfer() || isToPublic())
+      ? 'Syncing to ledger'
+      : senderAssetCurrentBalance
+        ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
+        : '';
 
   return (
     <div className="w-100 relative">
