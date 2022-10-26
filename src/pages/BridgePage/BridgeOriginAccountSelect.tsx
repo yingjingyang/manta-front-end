@@ -7,8 +7,10 @@ AccountSelectDropdown,
 import Chain from 'types/Chain';
 import { useBridge } from './BridgeContext';
 import MetamaskAccountDisplay from './MetamaskAccountDisplay';
+import { useConfig } from 'contexts/configContext';
 
 const BridgeOriginAccountSelect = () => {
+  const config = useConfig();
   const {
     senderSubstrateAccountOptions,
     setSenderSubstrateAccount,
@@ -26,7 +28,7 @@ const BridgeOriginAccountSelect = () => {
   return (
     <>
       {
-        (originChain.parachainId === Chain.Moonriver().parachainId)
+        (originChain.parachainId === Chain.Moonriver(config).parachainId)
           ? <MetamaskAccountDisplay />
           : <AccountSelect
             options={options}

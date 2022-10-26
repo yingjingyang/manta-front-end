@@ -1,13 +1,15 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
-import PageContent from 'components/PageContent';
-import Navbar from 'components/Navbar';
-import { useTxStatus } from 'contexts/txStatusContext';
+import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { BridgeContextProvider } from './BridgeContext';
-import BridgeForm from './BridgeForm';
 import BridgePageContent from './BridgePageContent';
+import NETWORK from 'constants/NetworkConstants';
+import { ConfigContextProvider } from 'contexts/configContext';
+import { SubstrateContextProvider } from 'contexts/substrateContext';
+import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
+import { CalamariNavbar } from 'components/Navbar';
 
 const BridgePage = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -27,11 +29,14 @@ const BridgePage = () => {
       <SubstrateContextProvider>
         <ExternalAccountContextProvider>
           <TxStatusContextProvider >
-          <MetamaskContextProvider>
-            <BridgeContextProvider>
-              <BridgePageContent />
-            </BridgeContextProvider>
-          </MetamaskContextProvider>
+            <MetamaskContextProvider>
+              <BridgeContextProvider>
+                <div className='min-h-screen'>
+                  <CalamariNavbar />
+                  <BridgePageContent />
+                </div>
+              </BridgeContextProvider>
+            </MetamaskContextProvider>
           </TxStatusContextProvider>
         </ExternalAccountContextProvider>
       </SubstrateContextProvider>

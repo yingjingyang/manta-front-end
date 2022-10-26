@@ -212,7 +212,7 @@ export const BridgeContextProvider = (props) => {
   // substrate-based payments
   useEffect(() => {
     const syncSenderSubstrateAccountToExternalAccount = () => {
-      if (senderAssetType?.assetId === AssetType.Moonriver().assetId) {
+      if (senderAssetType?.assetId === AssetType.Moonriver(config).assetId) {
         dispatch({
           type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
           senderSubstrateAccount: null

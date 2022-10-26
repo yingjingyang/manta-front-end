@@ -11,7 +11,7 @@ function MainApp() {
         <Switch>
           <Route
             path="/"
-            render={() => <Redirect to="/calamari/stake" />}
+            render={() => <Redirect to="/calamari/bridge" />}
             exact
           />
           <Route
@@ -31,7 +31,7 @@ function MainApp() {
           />
           <Route
             path="/calamari"
-            render={() => <Redirect to="/calamari/stake" />}
+            render={() => <Redirect to="/calamari/bridge" />}
             exact
           />
           <Route

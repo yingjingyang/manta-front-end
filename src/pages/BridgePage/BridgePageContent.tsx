@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import PageContent from 'components/PageContent';
-// import Navbar from 'components/Navbar';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import BridgeForm from './BridgeForm';
@@ -20,7 +19,6 @@ const BridgePageContent = () => {
 
   return (
         <PageContent>
-          {/* <Navbar /> */}
           <BridgeForm />
         </PageContent>
   );
