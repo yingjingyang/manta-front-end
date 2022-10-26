@@ -15,6 +15,7 @@ import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import StakeErrorDisplay from '../StakeErrorDisplay';
 import CollatorDisplayCell from './CollatorDisplayCell';
+import { MAX_TABLE_WIDTH } from '../StakeConstants';
 
 const NothingStakedDisplay = () => {
   const { externalAccount } = useExternalAccount();
@@ -128,13 +129,13 @@ const StakingTable = () => {
       cellRenderer: (params: any) => {
         return <CollatorDisplayCell collator={params.data.Collator} />;
       },
-      width: 270,
+      width: 250,
       suppressMovable: true
     },
     {
       field: 'Amount',
       unSortIcon: true,
-      width: 230,
+      width: 200,
       suppressMovable: true,
       headerTooltip: amountTooltip,
       cellRenderer: (params: any) => {
@@ -147,14 +148,14 @@ const StakingTable = () => {
       field: 'Status',
       unSortIcon: true,
       headerTooltip: statusTooltip,
-      width: 230,
+      width: 200,
       suppressMovable: true
     },
     {
       field: 'Rank',
       unSortIcon: true,
       headerTooltip: rankTooltip,
-      width: 230,
+      width: 200,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         return getRankString(params.data['Rank']);
@@ -164,7 +165,7 @@ const StakingTable = () => {
     },
     {
       field: 'APY Estimate',
-      width: 200,
+      width: 175,
       suppressMovable: true,
       unSortIcon: true,
       headerTooltip: apyEstimateTooltip,
@@ -177,7 +178,7 @@ const StakingTable = () => {
     {
       field: '',
       sortable: false,
-      width: 260,
+      width: 220,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         const delegation = params.data.data;
@@ -225,6 +226,7 @@ const StakingTable = () => {
   } else if (userDelegations.length) {
     mainComponent = (
       <SortableTable
+        maxWidth={MAX_TABLE_WIDTH}
         height={getTableHeight(rowData.length, 5)}
         columnDefs={columnDefs}
         rowData={rowData}
@@ -234,7 +236,7 @@ const StakingTable = () => {
 
   return (
     <>
-      <div className="mt-20">
+      <div style={{ maxWidth: MAX_TABLE_WIDTH }} className="mt-20 mx-auto">
         <h1 className="text-base font-semibold text-black dark:text-white">
           Staking
         </h1>

@@ -9,6 +9,7 @@ import { WithdrawModal } from '../Modals/WithdrawModal';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import CancelUnstakeModal from '../Modals/CancelUnstakeModal';
 import CollatorDisplayCell from './CollatorDisplayCell';
+import { MAX_TABLE_WIDTH } from '../StakeConstants';
 
 const UnstakingTable = () => {
   const { apiState } = useSubstrate();
@@ -112,7 +113,7 @@ const UnstakingTable = () => {
     return <div />;
   }
   return (
-    <div className="mt-8">
+    <div style={{ maxWidth: MAX_TABLE_WIDTH }} className="mt-8 mx-auto">
       <h1 className="text-base font-semibold text-black dark:text-white">
         Unstaking
       </h1>

@@ -152,7 +152,7 @@ export const StakeModal = ({ hideModal }) => {
         <h1 className="text-secondary text-left text-sm font-medium">
           {minimumStakeText}
         </h1>
-        <h1 className="mt-4 text-secondary text-left text-sm font-medium">
+        <h1 className="text-secondary text-left text-sm font-medium">
           Balance: {totalBalanceDisplayString}
         </h1>
         <div

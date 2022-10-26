@@ -14,6 +14,7 @@ import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import StakeErrorDisplay from '../StakeErrorDisplay';
 import CollatorDisplayCell from './CollatorDisplayCell';
+import { MAX_TABLE_WIDTH } from '../StakeConstants';
 
 const collatorStatusOptions = [
   { value: 'all', label: 'All' },
@@ -237,7 +238,11 @@ const CollatorsTable = () => {
   };
 
   return (
-    <div className="mt-20" id="collatorsTable">
+    <div
+      className="mt-20 mx-auto"
+      id="collatorsTable"
+      style={{ maxWidth: MAX_TABLE_WIDTH }}
+    >
       <h1 className="text-base font-semibold text-black dark:text-white flex items-end gap-10">
         Collators
       </h1>
@@ -279,6 +284,7 @@ const CollatorsTable = () => {
           <StakeErrorDisplay />
         ) : (
           <SortableTable
+            maxWidth={MAX_TABLE_WIDTH}
             height={getTableHeight(rowData.length, 10)}
             columnDefs={columnDefs}
             rowData={rowData}
