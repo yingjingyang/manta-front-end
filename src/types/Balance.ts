@@ -38,7 +38,6 @@ export default class Balance {
     const balanceAtomicUnitsDecimal = new Decimal(
       this.valueAtomicUnits.toString()
     );
-    console.log('this.assetType', this.assetType)
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(this.assetType.numberOfDecimals)
     );

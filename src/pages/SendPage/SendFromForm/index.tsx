@@ -2,7 +2,6 @@
 import React from 'react';
 import PublicPrivateToggle from 'pages/SendPage/PublicPrivateToggle';
 import { useSend } from '../SendContext';
-import FromAccountSelect from './FromAccountSelect';
 import SendAssetSelect from './SendAssetSelect';
 import FormErrorText from 'components/Error/FormErrorText';
 
@@ -32,9 +31,6 @@ const SendFromForm = () => {
           isPrivate={senderAssetType.isPrivate}
           prefix="sender"
         />
-        <div className="w-100 items-center flex-grow">
-          <FromAccountSelect />
-        </div>
       </div>
       <SendAssetSelect />
       <FormErrorText

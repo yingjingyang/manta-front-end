@@ -185,7 +185,6 @@ export default class AssetType {
   }
 
   static AllCurrencies(config, isPrivate) {
-    console.log('config', config)
     if (config.NETWORK_NAME === "Dolphin") {
       return [
         AssetType.Karura(config, isPrivate),

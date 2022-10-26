@@ -21,8 +21,6 @@ export const buildInitState = (config) => {
     config, store.get(localStorageKeys.IsPrivateReceiver, true)
   );
 
-  console.log('///', initReceiverAssetType);
-
   return {
     config,
     senderPublicAccount: null,

@@ -7,7 +7,6 @@ const AccountDisplay = ({address, label}) => {
   const [addressCopied, setAddressCopied] = useState(false);
 
   const copyToClipboard = (e) => {
-    console.log('address', address)
     navigator.clipboard.writeText(address);
     setAddressCopied(true);
     e.stopPropagation();

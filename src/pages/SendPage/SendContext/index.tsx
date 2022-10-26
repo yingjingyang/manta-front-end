@@ -14,8 +14,7 @@ import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externa
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useConfig } from 'contexts/configContext';
 import SEND_ACTIONS from './sendActions';
-import sendReducer from './sendReducer';
-import { buildInitState } from 'pages/BridgePage/BridgeContext/bridgeReducer';
+import sendReducer, { buildInitState } from './sendReducer';
 
 const SendContext = React.createContext();
 
@@ -31,7 +30,6 @@ export const SendContextProvider = (props) => {
   } = useExternalAccount();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
-
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
     senderAssetType,

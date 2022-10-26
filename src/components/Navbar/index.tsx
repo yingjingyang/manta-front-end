@@ -20,9 +20,12 @@ export const CalamariNavbar = () => {
 export const DolphinNavbar = () => {
   return (
     <div className="py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
-      <ChainSelector />
+      <ChainSelector className='justify-self-start' />
       {/* <Navs /> */}
-      <SignerConnectionStatusLabel />
+      <div className='flex flex-wrap space-x-6 justify-self-end'>
+        <AccountSelectMenu />
+        <SignerConnectionStatusLabel />
+      </div>
     </div>
   );
 };
