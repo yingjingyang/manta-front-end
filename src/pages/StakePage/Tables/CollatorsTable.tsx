@@ -50,7 +50,7 @@ const dropdownStyles = () => {
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: 'var(--color-text-secondary)'
+      color: 'var(--color-text-thirdry)'
     })
   };
 };
@@ -136,7 +136,7 @@ const CollatorsTable = () => {
     {
       field: 'Collator',
       sortable: false,
-      width: 250,
+      width: 270,
       cellRenderer: (params: any) => {
         return <CollatorDisplayCell collator={params.data.Collator} />;
       },
@@ -144,6 +144,7 @@ const CollatorsTable = () => {
     },
     {
       field: 'Amount Staked',
+      width: 200,
       unSortIcon: true,
       headerTooltip: amountStakedTooltip,
       suppressMovable: true,
@@ -155,6 +156,7 @@ const CollatorsTable = () => {
     },
     {
       field: 'Minimum Stake',
+      width: 200,
       unSortIcon: true,
       headerTooltip: minStakeTooltip,
       suppressMovable: true,
@@ -166,6 +168,7 @@ const CollatorsTable = () => {
     },
     {
       field: 'APY Estimate',
+      width: 200,
       unSortIcon: true,
       headerTooltip: apyEstimateTooltip,
       suppressMovable: true,
@@ -179,7 +182,7 @@ const CollatorsTable = () => {
       field: 'Delegations',
       unSortIcon: true,
       headerTooltip: delegationTooltip,
-      width: 175,
+      width: 200,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         return `${params.data['Delegations']} / 100`;
@@ -249,7 +252,7 @@ const CollatorsTable = () => {
       <div className="mt-6 flex gap-5">
         <div className="p-3 rounded-md border border-manta-gray flex items-center gap-2 text-secondary bg-secondary">
           <input
-            className="bg-transparent text-black dark:text-white outline-none"
+            className="bg-transparent text-thirdry outline-none"
             placeholder="Search Collators"
             onChange={(e) => setFilterText(e.target.value)}
             value={filterText}

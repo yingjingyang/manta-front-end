@@ -129,7 +129,7 @@ const StakingTable = () => {
       cellRenderer: (params: any) => {
         return <CollatorDisplayCell collator={params.data.Collator} />;
       },
-      width: 250,
+      width: 270,
       suppressMovable: true
     },
     {
@@ -165,7 +165,7 @@ const StakingTable = () => {
     },
     {
       field: 'APY Estimate',
-      width: 175,
+      width: 200,
       suppressMovable: true,
       unSortIcon: true,
       headerTooltip: apyEstimateTooltip,

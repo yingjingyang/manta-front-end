@@ -56,7 +56,7 @@ const UnstakingTable = () => {
       field: 'Amount',
       unSortIcon: true,
       headerTooltip: amountTooltip,
-      width: 230,
+      width: 200,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         return params.data['Amount'].toString(true, 0);
@@ -68,13 +68,13 @@ const UnstakingTable = () => {
       field: 'Time remaining',
       unSortIcon: true,
       headerTooltip: timeRemainingTooltip,
-      width: 230,
+      width: 200,
       suppressMovable: true
     },
     {
       field: '',
       sortable: false,
-      width: 515,
+      width: 575,
       suppressMovable: true,
       cellRenderer: (params) => {
         const unstakeRequest = params.data.data;
