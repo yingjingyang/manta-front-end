@@ -113,14 +113,15 @@ const ReceiverBalanceDisplay = () => {
     receiverAddress,
     receiverIsPrivate
   } = useSend();
-  const { isInitialSync } = usePrivateWallet();
+  const { isInitialSync, signerIsConnected, signerIsOutOfDate } = usePrivateWallet();
   const { syncError } = usePrivateWalletSync();
   const { api } = useSubstrate();
 
   const shouldShowLoader =
     receiverAddress &&
     !receiverCurrentBalance &&
-    api?.isConnected;
+    api?.isConnected &&
+    (!receiverIsPrivate() || (signerIsConnected && !signerIsOutOfDate));
 
   const shouldShowInitialSync = !syncError.current && shouldShowLoader && isInitialSync.current && receiverIsPrivate();
   const balanceString = shouldShowInitialSync

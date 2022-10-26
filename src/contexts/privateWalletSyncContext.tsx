@@ -22,6 +22,15 @@ export const PrivateWalletSyncContextProvider = (props) => {
   const [timePerPercentage, setTimePerPercentage] = useState(null);
   const syncError = useRef(false);
 
+  const restartSync = () => {
+    currentSyncReceivers.current = null;
+    syncSenderIndex.current = null;
+    pullBatchStartTime.current = null;
+    setSyncPercentage(0);
+    setNextSyncPercentage(null);
+    setTimePerPercentage(null);
+  };
+
 
   // this function takes the restult of a "pull" from the manta-wasm-wallet Api
   // and updates the necessary percentages that are used to display sync progress.
@@ -123,7 +132,8 @@ export const PrivateWalletSyncContextProvider = (props) => {
     pullBatchStartTime,
     currentSyncReceivers,
     syncSenderIndex,
-    nextSyncPercentage
+    nextSyncPercentage,
+    restartSync
   };
 
   return (

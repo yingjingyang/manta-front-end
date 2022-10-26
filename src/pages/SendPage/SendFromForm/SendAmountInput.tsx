@@ -31,7 +31,7 @@ const SendAmountInput = () => {
   const shouldShowLoader =
     !senderAssetCurrentBalance &&
     api?.isConnected &&
-    (senderIsPrivate() && signerIsConnected && !signerIsOutOfDate);
+    (!senderIsPrivate() || (signerIsConnected && !signerIsOutOfDate));
 
   const shouldShowInitialSync =
     shouldShowLoader &&
