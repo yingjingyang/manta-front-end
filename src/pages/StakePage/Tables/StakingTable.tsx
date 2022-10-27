@@ -151,18 +151,6 @@ const StakingTable = () => {
       suppressMovable: true
     },
     {
-      field: 'Rank',
-      unSortIcon: true,
-      headerTooltip: rankTooltip,
-      width: 200,
-      suppressMovable: true,
-      cellRenderer: (params: any) => {
-        return getRankString(params.data['Rank']);
-      },
-      comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
-        valueA < valueB ? 1 : -1
-    },
-    {
       field: 'APY Estimate',
       width: 200,
       suppressMovable: true,
@@ -173,6 +161,18 @@ const StakingTable = () => {
       },
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
         valueA.apy.toNumber() > valueB.apy.toNumber() ? 1 : -1
+    },
+    {
+      field: 'Rank',
+      unSortIcon: true,
+      headerTooltip: rankTooltip,
+      width: 200,
+      suppressMovable: true,
+      cellRenderer: (params: any) => {
+        return getRankString(params.data['Rank']);
+      },
+      comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
+        valueA < valueB ? 1 : -1
     },
     {
       field: '',
