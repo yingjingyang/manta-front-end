@@ -21,9 +21,9 @@
             "explorer": "dolphin.subscan.io"
         }
     ],
-    "KUSAMA_SOCKET": "wss://arangatuy.kusama-internal.calamari.systems",
+    "KUSAMA_SOCKET": "wss://v1.internal.kusama.systems/0",
     "CALAMARI_SOCKET": "wss://c5.calamari.seabird.systems",
-    "KARURA_SOCKET": "wss://taupo.kusama-internal.karura-testnet.calamari.systems",
-    "MOONRIVER_SOCKET": "wss://alith.kusama-internal.moonriver-testnet.calamari.systems",
-    "MOONRIVER_RPC": "https://rpc.faith.kusama-internal.moonriver-testnet.calamari.systems"
+    "KARURA_SOCKET": "wss://c1.karura.seabird.systems",
+    "MOONRIVER_SOCKET": "wss://c1.moonriver.seabird.systems",
+    "MOONRIVER_RPC": "https://rpc.c1.moonriver.seabird.systems"
 }
