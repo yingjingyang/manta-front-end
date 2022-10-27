@@ -8,8 +8,8 @@ import { useSubstrate } from 'contexts/substrateContext';
 import { WithdrawModal } from '../Modals/WithdrawModal';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import CancelUnstakeModal from '../Modals/CancelUnstakeModal';
-import CollatorDisplayCell from './CollatorDisplayCell';
 import { MAX_TABLE_WIDTH } from '../StakeConstants';
+import CollatorDisplayCell from './CollatorDisplayCell';
 
 const UnstakingTable = () => {
   const { apiState } = useSubstrate();
@@ -74,7 +74,7 @@ const UnstakingTable = () => {
     {
       field: '',
       sortable: false,
-      width: 575,
+      width: 618,
       suppressMovable: true,
       cellRenderer: (params) => {
         const unstakeRequest = params.data.data;

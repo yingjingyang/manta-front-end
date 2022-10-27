@@ -14,8 +14,8 @@ import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import StakeErrorDisplay from '../StakeErrorDisplay';
-import CollatorDisplayCell from './CollatorDisplayCell';
 import { MAX_TABLE_WIDTH } from '../StakeConstants';
+import CollatorDisplayCell from './CollatorDisplayCell';
 
 const NothingStakedDisplay = () => {
   const { externalAccount } = useExternalAccount();

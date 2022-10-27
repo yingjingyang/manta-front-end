@@ -52,7 +52,7 @@ const AccountDisplay = () => {
   return (
     <div className="text-center">
       <div className="inline-flex xl:flex-nowrap justify-start flex-wrap-reverse gap-4">
-        <div className="-mt-2 px-5 py-4 bg-secondary flex-grow rounded-lg gap-12 relative z-20 flex justify-evenly items-center shadow-2xl">
+        <div className="-mt-2 px-9 py-4 bg-secondary flex-grow rounded-lg gap-8 relative z-20 flex justify-evenly items-center shadow-2xl">
           <div className="mt-4">
             <h2 className="text-secondary text-center font-medium text-lg">
               Total Balance
@@ -69,7 +69,7 @@ const AccountDisplay = () => {
               Start staking
             </button>
           </div>
-          <div className="flex justify-end gap-8">
+          <div className="flex justify-end gap-5">
             <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
               <h2 className="text-secondary font-medium text-base">
                 Available Balance

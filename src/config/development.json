@@ -2,11 +2,11 @@
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": false,
     "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
-    "CALAMARI_PROVIDER_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
+    "CALAMARI_PROVIDER_SOCKET": "wss://c5.calamari.seabird.systems",
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
-            "url": "wss://crispy.kusama-internal.testnet.calamari.systems",
+            "url": "wss://c5.calamari.seabird.systems",
             "explorer": "calamari.subscan.io"
         },
         {

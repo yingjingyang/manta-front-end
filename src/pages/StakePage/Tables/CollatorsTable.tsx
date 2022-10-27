@@ -13,8 +13,8 @@ import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import StakeErrorDisplay from '../StakeErrorDisplay';
-import CollatorDisplayCell from './CollatorDisplayCell';
 import { MAX_TABLE_WIDTH } from '../StakeConstants';
+import CollatorDisplayCell from './CollatorDisplayCell';
 
 const collatorStatusOptions = [
   { value: 'all', label: 'All' },
@@ -127,10 +127,6 @@ const CollatorsTable = () => {
     'Total stakers delegating to this node; only the top 100 stakers earn rewards';
   const apyEstimateTooltip =
     'APY estimates are based on collator performance last round';
-  const statusTooltip =
-    'Whether this collator is producing blocks and earning yield';
-  const inactiveCollatorTooltip =
-    'Newly launched collators may take up to 6 hours to activate';
 
   const columnDefs: ColDef[] = [
     {
@@ -194,7 +190,7 @@ const CollatorsTable = () => {
       field: '',
       sortable: false,
       suppressMovable: true,
-      width: 220,
+      width: 210,
       cellRenderer: (params: any) => {
         const collator = params.data.data;
         const unstakeRequest = unstakeRequests.find(
@@ -276,7 +272,7 @@ const CollatorsTable = () => {
             target="_blank"
             className={
               'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white'
-            }
+            } rel="noreferrer"
           >
             Launch your own collator
           </a>
