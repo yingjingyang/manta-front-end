@@ -14,7 +14,6 @@ import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import StakeErrorDisplay from '../StakeErrorDisplay';
-import { MAX_TABLE_WIDTH } from '../StakeConstants';
 import CollatorDisplayCell from './CollatorDisplayCell';
 
 const NothingStakedDisplay = () => {
@@ -226,7 +225,6 @@ const StakingTable = () => {
   } else if (userDelegations.length) {
     mainComponent = (
       <SortableTable
-        maxWidth={MAX_TABLE_WIDTH}
         height={getTableHeight(rowData.length, 5)}
         columnDefs={columnDefs}
         rowData={rowData}
@@ -236,7 +234,7 @@ const StakingTable = () => {
 
   return (
     <>
-      <div style={{ maxWidth: MAX_TABLE_WIDTH }} className="mt-20 mx-auto">
+      <div className="mt-20 mx-auto sortable-table-wrapper">
         <h1 className="text-base font-semibold text-black dark:text-white">
           Staking
         </h1>
