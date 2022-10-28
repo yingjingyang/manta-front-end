@@ -56,22 +56,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#281](https://github.com/Manta-Network/manta-front-end/pull/281) Prevent excess api calls when initializing wallet
 
-## [3.1.0] - 2022-10-27
+## [3.1.0] - 2022-10-28
 
 ### Added
+- [\#249](https://github.com/Manta-Network/manta-front-end/pull/249) Add FAQ links to missing required software modal
 - [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Display user balance in staking modal; add APY estimates to staking table; add link to collator onboarding docs to staking UI
+- [\#273](https://github.com/Manta-Network/manta-front-end/pull/273) Add secondary menu containing social and documentation links + theme toggle
 
 ### Changed
 - [\#208](https://github.com/Manta-Network/manta-front-end/pull/208) Display transaction success modal when transaction is in block instead of finalized
 - [\#210](https://github.com/Manta-Network/manta-front-end/pull/210) Add ids for e2e automation
+- [\#235](https://github.com/Manta-Network/manta-front-end/pull/235) Change text displayed while node is syncing
 - [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Show only active collators by default on staking page; reduce staking page width to improve UX on smaller screens
 
 ### Removed
 - [\#227](https://github.com/Manta-Network/manta-front-end/pull/227) Remove gh-pages dependency target
 
 ### Fixed
-- [\#183](https://github.com/Manta-Network/manta-front-end/pull/228) Prevent loader and initial sync text from displaying if polkadot.js api becomes disconnected
-- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Fixes issue with URL parameters being ignored before '#'
+- [\#228](https://github.com/Manta-Network/manta-front-end/pull/228) Prevent loader and initial sync text from displaying if polkadot.js api becomes disconnected
+- [\#259](https://github.com/Manta-Network/manta-front-end/pull/259) Fix typescript type annotation compilation for files with `.ts` extension
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Fix issue with URL parameters being ignored before '#'
 
 ### Security
 - [\#198](https://github.com/Manta-Network/manta-front-end/pull/198) Bump react-router-dom from 5.3.3 to 6.3.0 (required refactoring of breaking API changes)
