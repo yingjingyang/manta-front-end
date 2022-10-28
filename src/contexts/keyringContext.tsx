@@ -19,7 +19,7 @@ export const KeyringContextProvider = (props) => {
 
   useEffect(() => {
     const extensionIsInjected = () => {
-      return !!window.injectedWeb3['polkadot-js'] || !!window.injectedWeb3['talisman'] ;
+      return !!window.injectedWeb3['polkadot-js'] || !!window.injectedWeb3['talisman'];
     };
 
     const initKeyring = async () => {

@@ -67,7 +67,7 @@ const AccountSelect = () => {
             </div>
             {showAccountList ? (
               <div className="mt-3 bg-secondary rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
-                <div className="max-h-96 overflow-y-scroll pr-4">
+                <div className="max-h-96 overflow-y-auto pr-4">
                   {externalAccountOptions.map((account: any, index: number) => (
                     <div
                       key={account.address}

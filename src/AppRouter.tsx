@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { HashRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import MainApp from 'MainApp';
 
 function AppRouter() {
