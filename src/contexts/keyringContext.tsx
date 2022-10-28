@@ -18,7 +18,6 @@ export const KeyringContextProvider = (props) => {
   const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(getHasAuthToConnectStorage());
 
   const subscribeWeb3Accounts = async () => {
-
     let unsubscribe = await web3AccountsSubscribe(async () => {
       const updatedAccounts = await web3Accounts();
       const updatedAddresses = [];

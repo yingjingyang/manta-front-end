@@ -27,7 +27,7 @@ const SendToForm = () => {
       </div>
       <SendButton />
       <data
-        value={isInitialSync || walletIsBusy.current}
+        value={isInitialSync.current || walletIsBusy.current}
         data-testing-id="sync-status"
       />
     </div>
