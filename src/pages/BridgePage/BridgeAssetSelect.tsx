@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import SendAmountInput from 'components/AmountInput/SendAmountInput';
+import BridgeBalanceInput from 'components/AmountInput/BridgeBalanceInput';
 import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useBridge } from './BridgeContext';
 
@@ -34,7 +34,7 @@ const BridgeAssetSelect = () => {
         assetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}
       />
-      <SendAmountInput
+      <BridgeBalanceInput
         balanceText={balanceText}
         senderAssetCurrentBalance={senderAssetCurrentBalance}
         setSenderAssetTargetBalance={setSenderAssetTargetBalance}

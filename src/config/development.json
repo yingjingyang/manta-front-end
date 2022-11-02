@@ -3,10 +3,6 @@
     "CALAMARI_PROVIDER_SOCKET": "wss://c5.calamari.seabird.systems",
     "DEV_CONSOLE": true,
     "DEVELOPMENT_KEYRING": true,
-    "BASE_STORAGE_KEY": "calamariDev",
-    "SUBSCAN_URL": "https://calamari.subscan.io",
-    "DOWNTIME": false,
-    "NETWORK_NAME": "Calamari",
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",

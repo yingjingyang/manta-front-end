@@ -3,10 +3,12 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import detectEthereumProvider from '@metamask/detect-provider';
 import Chain from 'types/Chain';
+import { useConfig } from './configContext';
 
 const MetamaskContext = createContext();
 
 export const MetamaskContextProvider = (props) => {
+  const config = useConfig();
   const [provider, setProvider] = useState(null);
   const ethAddress = provider?.selectedAddress;
 
@@ -15,7 +17,7 @@ export const MetamaskContextProvider = (props) => {
       await provider.request({ method: 'eth_requestAccounts'});
       await provider.request({
         method: 'wallet_addEthereumChain',
-        params: [Chain.Moonriver().ethMetadata]
+        params: [Chain.Moonriver(config).ethMetadata]
       });
     } catch(e) {
       console.error(e);

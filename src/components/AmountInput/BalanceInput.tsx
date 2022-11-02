@@ -1,62 +1,20 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
 import GradientText from 'components/GradientText';
-import Balance from 'types/Balance';
-import Decimal from 'decimal.js';
-import BN from 'bn.js';
 import BalanceComponent from 'components/Balance';
-import { useSend } from 'pages/SendPage/SendContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 
-const SendAmountInput = ({
-  senderAssetCurrentBalance,
-  setSenderAssetTargetBalance,
-  senderAssetType,
-  maxSendableBalance,
+const BalanceInput = ({
+  onChangeAmountInput,
+  inputValue,
+  onClickMax,
+  balanceText,
+  shouldShowLoader
 }) => {
-  const { isInitialSync } = usePrivateWallet();
-  const { isPrivateTransfer, isToPublic } = useSend();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const [inputValue, setInputValue] = useState('');
-
-  let balanceText;
-  if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
-    balanceText = 'Syncing to ledger';
-  } else if (senderAssetCurrentBalance) {
-    balanceText = `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-  } else {
-  balanceText = ''
-  }
-
-  const onChangeSendAmountInput = (value) => {
-    if (value === '') {
-      setSenderAssetTargetBalance(null);
-      setInputValue('');
-    } else {
-      try {
-        const targetBalance = Balance.fromBaseUnits(
-          senderAssetType,
-          new Decimal(value)
-        );
-        setInputValue(value);
-        if (targetBalance.valueAtomicUnits.gt(new BN(0))) {
-          setSenderAssetTargetBalance(targetBalance);
-        } else {
-          setSenderAssetTargetBalance(null);
-        }
-      } catch (error) {}
-    }
-  };
-
-  const onClickMax = () => {
-    if (maxSendableBalance) {
-      onChangeSendAmountInput(maxSendableBalance.toString());
-    }
-  };
 
   return (
     <div
@@ -68,7 +26,7 @@ const SendAmountInput = ({
       <div className="flex justify-items-center">
         <input
           id="amountInput"
-          onChange={(e) => onChangeSendAmountInput(e.target.value)}
+          onChange={(e) => onChangeAmountInput(e.target.value)}
           className={classNames(
             'w-full pl-3 pt-1 text-4xl font-bold text-black dark:text-white manta-bg-gray outline-none rounded-2xl',
             { disabled: disabled }
@@ -86,18 +44,18 @@ const SendAmountInput = ({
         balance={balanceText}
         className="w-full text-xs manta-gray mt-2.5 pl-3"
         loaderClassName="text-manta-gray border-manta-gray bg-manta-gray"
-        loader={!senderAssetCurrentBalance}
+        loader={shouldShowLoader}
       />
     </div>
   );
 };
 
-SendAmountInput.propTypes = {
-  balanceText: PropTypes.string,
-  onChange: PropTypes.func,
-  value: PropTypes.any,
+BalanceInput.propTypes = {
+  onChangeAmountInput: PropTypes.func,
+  inputValue: PropTypes.string,
   onClickMax: PropTypes.func,
-  isDisabled: PropTypes.bool
+  balanceText: PropTypes.string,
+  shouldShowLoader: PropTypes.bool
 };
 
 const MaxButton = ({ onClickMax, isDisabled }) => {
@@ -123,4 +81,5 @@ MaxButton.propTypes = {
   disabled: PropTypes.bool
 };
 
-export default SendAmountInput;
+
+export default BalanceInput;

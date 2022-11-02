@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import SendAmountInput from 'components/AmountInput/SendAmountInput';
+import SendAmountInput from 'components/AmountInput/SendBalanceInput';
 import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useSend } from '../SendContext';
 

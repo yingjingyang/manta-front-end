@@ -267,7 +267,7 @@ export const BridgeContextProvider = (props) => {
 
   // Sets the origin chain
   const setOriginChain = (originChain) => {
-    if (originChain.name === Chain.Moonriver().name) {
+    if (originChain.name === Chain.Moonriver(config).name) {
       configureMoonRiver()
     }
     dispatch({
@@ -278,7 +278,7 @@ export const BridgeContextProvider = (props) => {
 
   // Sets the destination chain
   const setDestinationChain = (destinationChain) => {
-    if (destinationChain.name === Chain.Moonriver().name) {
+    if (destinationChain.name === Chain.Moonriver(config).name) {
       configureMoonRiver()
     }
     dispatch({
@@ -328,7 +328,7 @@ export const BridgeContextProvider = (props) => {
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
     return (
-      api &&
+      originChain?.api &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
       userCanSign() &&
