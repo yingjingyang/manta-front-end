@@ -3,12 +3,12 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MantaLoading from 'components/Loading';
-import { useBridge } from './BridgeContext';
+import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 
 const SendButton = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { send } = useBridge();
+  const { send } = useBridgeTx();
 
   const onClick = () => {
     send();

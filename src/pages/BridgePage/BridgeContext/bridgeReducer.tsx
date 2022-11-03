@@ -61,8 +61,6 @@ export const buildInitState = (config) => {
     maxInput: null,
     minInput: null,
     senderNativeTokenPublicBalance: null,
-    senderBalanceSubscription: null,
-    senderInputConfigSubscription: null,
 
     originChain: initOriginChain,
     originChainOptions: initOriginChainOptions,
@@ -92,12 +90,6 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
     return setSenderAssetCurrentBalance(state, action);
-
-  case BRIDGE_ACTIONS.SET_SENDER_BALANCE_SUBSCRIPTION:
-    return setSenderBalanceSubscription(state, action)
-
-  case BRIDGE_ACTIONS.SET_INPUT_CONFIG_SUBSCRIPTION:
-    return setInputConfigSubscription(state, action)
 
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
     return setSenderAssetTargetBalance(state, action);
@@ -129,18 +121,6 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   return stateAssetType?.assetId !== updateAssetType.assetId;
 };
 
-const unsubscribeInputConfig = (state) => {
-  if (state.senderInputConfigSubscription) {
-    state.senderInputConfigSubscription.unsubscribe();
-  }
-}
-
-const unsubscribeBalances = (state) => {
-  if (state.senderBalanceSubscription) {
-    state.senderBalanceSubscription.unsubscribe();
-  }
-}
-
 const setBridge = (state, { bridge }) => {
   return {
     ...state,
@@ -149,7 +129,6 @@ const setBridge = (state, { bridge }) => {
 }
 
 const setSelectedAssetType = (state, action) => {
-  unsubscribe(state);
   store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let senderAssetTargetBalance = null;
@@ -190,22 +169,6 @@ const setSenderAssetCurrentBalance = (state, action) => {
     senderAssetCurrentBalance: action.senderAssetCurrentBalance
   };
 };
-
-const setSenderBalanceSubscription = (state, action) => {
-  unsubscribeBalances(state);
-  return {
-    ...state,
-    senderBalanceSubscription: action.senderBalanceSubscription
-  };
-}
-
-const setInputConfigSubscription = (state, action) => {
-  unsubscribeInputConfig(state);
-  return {
-    ...state,
-    inputConfigSubscription: action.inputConfigSubscription
-  };
-}
 
 const setSenderAssetTargetBalance = (state, action) => {
   return {
@@ -255,7 +218,9 @@ const setOriginChain = (state, { originChain }) => {
     senderAssetTypeOptions,
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance: null,
-    senderAssetCurrentBalance: null
+    senderAssetCurrentBalance: null,
+    originFee: null,
+    destinationFee: null
   };
 };
 
@@ -275,7 +240,9 @@ const setDestinationChain = (state, { destinationChain }) => {
     destinationChain,
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance: null,
-    senderAssetCurrentBalance: null
+    senderAssetCurrentBalance: null,
+    originFee: null,
+    destinationFee: null
   };
 };
 

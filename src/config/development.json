@@ -19,7 +19,7 @@
     ],
     "KUSAMA_SOCKET": "wss://v1.internal.kusama.systems/0",
     "CALAMARI_SOCKET": "wss://c5.calamari.seabird.systems",
-    "KARURA_SOCKET": "wss://c1.karura.seabird.systems",
+    "KARURA_SOCKET": "wss://c1.acala.seabird.systems",
     "MOONRIVER_SOCKET": "wss://c1.moonriver.seabird.systems",
     "MOONRIVER_RPC": "https://rpc.c1.moonriver.seabird.systems"
 }

@@ -2,7 +2,8 @@
 import React from 'react';
 import BridgeBalanceInput from 'components/AmountInput/BridgeBalanceInput';
 import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
-import { useBridge } from './BridgeContext';
+import { useBridgeTx } from './BridgeContext/BridgeTxContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const BridgeAssetSelect = () => {
   const {
@@ -12,9 +13,11 @@ const BridgeAssetSelect = () => {
     maxInput,
     senderAssetTypeOptions,
     setSelectedAssetType,
+  } = useBridgeData();
+  const {
     txIsOverMinAmount,
     userHasSufficientFunds,
-  } = useBridge();
+  } = useBridgeTx();
 
   const balanceText = senderAssetCurrentBalance
     ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`

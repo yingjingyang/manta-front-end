@@ -1,12 +1,12 @@
 // @ts-nocheck
 import React from 'react';
-import { useBridge } from './BridgeContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const BridgeFeeDisplay = () => {
   const {
     originFee,
     destinationFee
-  } = useBridge();
+  } = useBridgeData();
 
   const originFeeText = originFee ? originFee.toFeeString() : '';
   const destinationFeeText = destinationFee ? destinationFee.toFeeString() : '';

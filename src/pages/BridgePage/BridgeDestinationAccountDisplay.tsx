@@ -1,12 +1,12 @@
 // @ts-nocheck
 import React from 'react';
-import { useBridge } from './BridgeContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import MetamaskAccountDisplay from './MetamaskAccountDisplay';
 
 const BridgeDestinationAccountDisplay = () => {
   const {
     destinationChain
-  } = useBridge();
+  } = useBridgeData();
 
   return (
     <>

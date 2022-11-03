@@ -1,29 +1,24 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect, useState } from 'react';
+import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
-import { useTxStatus } from 'contexts/txStatusContext';
-import TxStatus from 'types/TxStatus';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
-import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import AssetType from 'types/AssetType';
 import { useMetamask } from 'contexts/metamaskContext';
 import Chain from 'types/Chain';
-import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 import BRIDGE_ACTIONS from './bridgeActions';
-import { FixedPointNumber } from '@acala-network/sdk-core';
 import { Bridge } from 'manta-polkawallet-bridge-dev/build';
 import { useConfig } from 'contexts/configContext';
+import { firstValueFrom } from 'rxjs';
 
-const BridgeContext = React.createContext();
+const BridgeDataContext = React.createContext();
 
-export const BridgeContextProvider = (props) => {
-  const { provider, ethAddress, configureMoonRiver } = useMetamask();
-  const { setTxStatus } = useTxStatus();
+export const BridgeDataContextProvider = (props) => {
+  const { ethAddress, configureMoonRiver } = useMetamask();
   const config = useConfig();
   const {
     externalAccount,
@@ -31,19 +26,17 @@ export const BridgeContextProvider = (props) => {
     externalAccountOptions,
     changeExternalAccount
   } = useExternalAccount();
+
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
   const {
     senderAssetType,
-    senderAssetCurrentBalance,
     senderAssetTargetBalance,
     senderSubstrateAccount,
     originChainOptions,
     originChain,
     destinationChain,
     bridge,
-    maxInput,
-    minInput
   } = state;
 
   const originAddress = originChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
@@ -87,32 +80,25 @@ export const BridgeContextProvider = (props) => {
       const senderBalanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
         senderAssetType.baseTicker, originAddress
       );
-      const senderBalanceSubscription = senderBalanceObserveable.subscribe(handleBalanceChange);
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_SENDER_BALANCE_SUBSCRIPTION,
-        senderBalanceSubscription,
-      });
+      senderBalanceObserveable.subscribe(handleBalanceChange);
     }
     subscribeBalanceChanges()
   }, [senderAssetType, originAddress, originChain, bridge])
 
   useEffect(() => {
     const getDestinationFee = (inputConfig) => {
-      console.log('getDestinationFee', senderAssetType, inputConfig);
       return Balance.fromBaseUnits(
         senderAssetType,
         inputConfig.destFee.balance
       )
     }
     const getOriginFee = (inputConfig) => {
-      console.log('getOriginFee', originChain.nativeAsset, inputConfig);
       return new Balance(
         originChain.nativeAsset,
         new BN(inputConfig.estimateFee)
       )
     }
     const getMaxInput = (inputConfig) => {
-      console.log('getMaxInput', senderAssetType, inputConfig);
       return Balance.fromBaseUnits(
         senderAssetType,
         Decimal.max(new Decimal(inputConfig.maxInput.toString()), new Decimal(0))
@@ -126,16 +112,6 @@ export const BridgeContextProvider = (props) => {
     }
 
     const handleInputConfigChange = (inputConfig) => {
-      console.log('handleInputConfigChange', inputConfig);
-      const res = {
-        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-        originFee: getOriginFee(inputConfig),
-        destinationFee: getDestinationFee(inputConfig),
-        maxInput: getMaxInput(inputConfig),
-        minInput: getMinInput(inputConfig)
-      };
-      console.log('fee info', res)
-
       dispatch({
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
         originFee: getOriginFee(inputConfig),
@@ -166,7 +142,7 @@ export const BridgeContextProvider = (props) => {
       };
     }
 
-    const subscribeInputConfig = () => {
+    const subscribeInputConfig = async () => {
       if (
         !senderAssetType
         || !originAddress
@@ -177,13 +153,10 @@ export const BridgeContextProvider = (props) => {
       };
       const inputConfigParams = getInputConfigParams()
       const inputConfigObservable = originChain.xcmAdapter.subscribeInputConfigs(inputConfigParams);
-      const inputConfigSubscription = inputConfigObservable.subscribe(handleInputConfigChange)
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_INPUT_CONFIG_SUBSCRIPTION,
-        inputConfigSubscription,
-      });
+      const inputConfig = await firstValueFrom(inputConfigObservable);
+      handleInputConfigChange(inputConfig);
     }
-    subscribeInputConfig()
+    subscribeInputConfig();
   },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, destinationChain, bridge])
 
   /**
@@ -287,150 +260,22 @@ export const BridgeContextProvider = (props) => {
     });
   };
 
-  /**
-   *
-   * Transaction validation
-   */
-
-  // Checks if the user has enough funds to pay for a transaction
-  const userHasSufficientFunds = () => {
-    if (!maxInput || !senderAssetTargetBalance) {
-      return null;
-    } else if (
-      senderAssetTargetBalance?.assetType.assetId !==
-      maxInput?.assetType.assetId
-    ) {
-      return null;
-    }
-    return senderAssetTargetBalance.lte(maxInput);
-  };
-
-  const txIsOverMinAmount = () => {
-    if (!minInput || !senderAssetTargetBalance) {
-      return null;
-    } else if (
-      senderAssetTargetBalance?.assetType.assetId !==
-      minInput?.assetType.assetId
-    ) {
-      return null;
-    }
-    return senderAssetTargetBalance.gte(minInput);
-  }
-
-  const userCanSign = () => {
-    if (senderAssetType?.ethMetadata) {
-      return provider !== null;
-    } else {
-      return externalAccountSigner !== null;
-    }
-  };
-
-  // Checks that it is valid to attempt a transaction
-  const isValidToSend = () => {
-    return (
-      originChain?.api &&
-      senderAssetTargetBalance &&
-      senderAssetCurrentBalance &&
-      userCanSign() &&
-      userHasSufficientFunds() &&
-      txIsOverMinAmount()
-    );
-  };
-
-  /**
-   *
-   * Transaction logic
-   */
-
-
-  // Handles the result of a transaction
-  const handleTxRes = async ({ status, events }) => {
-    const api = originChain.api;
-    if (status.isInBlock) {
-      for (const event of events) {
-        if (api.events.system.ExtrinsicFailed.is(event.event)) {
-          setTxStatus(TxStatus.failed());
-          console.error('Transaction failed', event);
-        } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
-          try {
-            console.log('status.asInBlock', status.asInBlock)
-            console.log('api', api)
-            const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
-            const extrinsics = signedBlock.block.extrinsics;
-            const extrinsic = extrinsics.find((extrinsic) =>
-              extrinsicWasSentByUser(extrinsic, externalAccount, api)
-            );
-            const extrinsicHash = extrinsic.hash.toHex();
-            setTxStatus(TxStatus.finalized(extrinsicHash));
-            setTxStatus(TxStatus.finalized())
-          } catch(error) {
-            console.error(error);
-          }
-        }
-      }
-    }
-  };
-
-  // Attempts to build and send a transaction
-  const send = async () => {
-    if (!isValidToSend()) {
-      return;
-    }
-    setTxStatus(TxStatus.processing());
-    if (originChain.xcmAdapter.chain.type === "ethereum") {
-      await sendEth();
-    } else {
-      await sendSubstrate();
-    }
-  };
-
-  const sendSubstrate = async () => {
-    const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
-    const tx = originChain.xcmAdapter.createTx({
-      amount: FixedPointNumber.fromInner(value, 10),
-      to: destinationChain.name,
-      token: senderAssetTargetBalance.assetType.baseTicker,
-      address: senderSubstrateAccount.address,
-    });
-    try {
-      await tx.signAndSend(externalAccountSigner, handleTxRes);
-    } catch (error) {
-      console.error('Transaction failed', error);
-      setTxStatus(TxStatus.failed());
-    }
-  };
-
-  const sendEth = async () => {
-    const success = await transferMovrFromMoonriverToCalamari(
-      config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
-    );
-    if (success) {
-      setTxStatus(TxStatus.finalized());
-    } else {
-      setTxStatus(TxStatus.failed());
-    }
-  };
-
   const value = {
-    userHasSufficientFunds,
-    txIsOverMinAmount,
-    isValidToSend,
     setSenderAssetTargetBalance,
     setSenderSubstrateAccount,
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,
-    send,
     ...state
   };
 
   return (
-    <BridgeContext.Provider value={value}>{props.children}</BridgeContext.Provider>
+    <BridgeDataContext.Provider value={value}>{props.children}</BridgeDataContext.Provider>
   );
 };
 
-BridgeContextProvider.propTypes = {
+BridgeDataContextProvider.propTypes = {
   children: PropTypes.any
 };
 
-export const useBridge = () => ({ ...useContext(BridgeContext) });
+export const useBridgeData = () => ({ ...useContext(BridgeDataContext) });

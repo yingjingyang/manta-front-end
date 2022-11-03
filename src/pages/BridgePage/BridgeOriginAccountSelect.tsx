@@ -5,7 +5,7 @@ AccountSelectDropdown,
 { substrateAccountToReactSelectOption, substrateAccountsToReactSelectOptions }
   from 'components/Accounts/AccountSelectDropdown';
 import Chain from 'types/Chain';
-import { useBridge } from './BridgeContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import MetamaskAccountDisplay from './MetamaskAccountDisplay';
 import { useConfig } from 'contexts/configContext';
 
@@ -16,7 +16,7 @@ const BridgeOriginAccountSelect = () => {
     setSenderSubstrateAccount,
     senderSubstrateAccount,
     originChain
-  } = useBridge();
+  } = useBridgeData();
 
   const options = substrateAccountsToReactSelectOptions(senderSubstrateAccountOptions);
   const selectedOption = substrateAccountToReactSelectOption(senderSubstrateAccount);

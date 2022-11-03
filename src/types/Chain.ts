@@ -158,7 +158,7 @@ export default class Chain {
         Chain.Calamari(config),
         Chain.Kusama(config),
         // Chain.Karura(config),
-        Chain.Moonriver(config)
+        // Chain.Moonriver(config)
       ];
     } else {
       return [];

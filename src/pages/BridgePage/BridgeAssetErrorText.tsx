@@ -1,15 +1,12 @@
 // @ts-nocheck
 import React from 'react';
 import FormErrorText from 'components/Error/FormErrorText';
-import { useBridge } from './BridgeContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
+import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 
 const BridgeAssetErrorText = () => {
-  const {
-    txIsOverMinAmount,
-    userHasSufficientFunds,
-    senderAssetType,
-    minInput
-  } = useBridge();
+  const { senderAssetType, minInput } = useBridgeData();
+  const { txIsOverMinAmount, userHasSufficientFunds} = useBridgeTx();
 
   let errorText = null;
   if (userHasSufficientFunds() === false) {

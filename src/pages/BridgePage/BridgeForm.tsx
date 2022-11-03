@@ -3,10 +3,9 @@ import React from 'react';
 import ChainSelect from 'pages/BridgePage/ChainSelect';
 import SendButton from 'pages/BridgePage/SendButton';
 import Svgs from 'resources/icons';
-import { useBridge } from './BridgeContext';
+import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
-import BridgeOriginAccountSelect from './BridgeOriginAccountSelect';
 import BridgeDestinationAccountDisplay from './BridgeDestinationAccountDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText'
 
@@ -18,7 +17,7 @@ const BridgeForm = () => {
     destinationChain,
     destinationChainOptions,
     setDestinationChain
-  } = useBridge();
+  } = useBridgeData();
 
   return (
     <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
