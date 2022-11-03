@@ -12,14 +12,14 @@
         {
             "name": "Dolphin",
             "path": "/dolphin",
-            "url": "wss://ws.rococo.dolphin.engineering",
+            "url": "ws://127.0.0.1:9800",
             "testnet": true,
             "explorer": "dolphin.subscan.io"
         }
     ],
-    "KUSAMA_SOCKET": "wss://v1.internal.kusama.systems/0",
-    "CALAMARI_SOCKET": "wss://c5.calamari.seabird.systems",
-    "KARURA_SOCKET": "wss://c1.acala.seabird.systems",
-    "MOONRIVER_SOCKET": "wss://c1.moonriver.seabird.systems",
-    "MOONRIVER_RPC": "https://c1.moonriver.seabird.systems:443"
+    "ROCOCO_SOCKET": "ws://127.0.0.1:9944",
+    "DOLPHIN_SOCKET": "ws://127.0.0.1:9800",
+    "KARURA_SOCKET": "ws://127.0.0.1:9804",
+    "MOONRIVER_SOCKET": "ws://127.0.0.1:9802",
+    "MOONRIVER_RPC": "http://127.0.0.1:9972"
 }

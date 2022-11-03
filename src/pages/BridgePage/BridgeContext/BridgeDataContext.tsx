@@ -44,7 +44,7 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const initBridge = async () => {
-      if (!externalAccount || !externalAccountSigner || !originChainOptions) {
+      if (state.bridge || !externalAccount || !externalAccountSigner || !originChainOptions) {
         return
       };
       const adapters = originChainOptions.map(chain => chain.xcmAdapter);

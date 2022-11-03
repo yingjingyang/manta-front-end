@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
@@ -135,6 +136,8 @@ export const BridgeTxContextProvider = (props) => {
       address: senderSubstrateAccount.address,
     });
     try {
+      const injected = await web3FromSource(externalAccount.meta.source);
+      originChain.api.setSigner(injected.signer);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);

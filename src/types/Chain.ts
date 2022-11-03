@@ -10,21 +10,6 @@ import AssetType from './AssetType';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
-// export type ApiConfig = {
-//   socket: string
-//   apiTypes: bool,
-//   apiOptions: bool,
-//   apiTypesBundle: bool
-// }
-
-// export type XcmConfig = {
-//   xcmAssets: string
-//   nativeAsset: string
-//   xcmAdapter: string
-//   parachainId: number
-// }
-
-
 export default class Chain {
   constructor(
     name,
@@ -32,6 +17,7 @@ export default class Chain {
     parachainId,
     icon,
     socket,
+    blockExplorerUrl,
     xcmAssets,
     nativeAsset,
     xcmAdapter,
@@ -45,6 +31,7 @@ export default class Chain {
     this.parachainId = parachainId;
     this.icon = icon;
     this.socket = socket;
+    this.blockExplorerUrl = blockExplorerUrl;
     this.xcmAssets = xcmAssets;
     this.nativeAsset = nativeAsset;
     this.xcmAdapter = xcmAdapter;
@@ -62,6 +49,7 @@ export default class Chain {
       2084,
       Svgs.Dolphin,
       config.DOLPHIN_SOCKET,
+      'https://dolphin.subscan.io',
       [AssetType.Rococo(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Dolphin(config),
       new CalamariAdapter(),
@@ -76,6 +64,7 @@ export default class Chain {
       2084,
       Svgs.Calamari,
       config.CALAMARI_SOCKET,
+      'https://calamari.subscan.io',
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
       new CalamariAdapter(),
@@ -90,6 +79,7 @@ export default class Chain {
       null,
       Svgs.RocIcon,
       config.ROCOCO_SOCKET,
+      'https://rococo.subscan.io',
       [AssetType.Rococo(config)],
       AssetType.Rococo(config),
       new KusamaAdapter()
@@ -103,6 +93,7 @@ export default class Chain {
       null,
       Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
+      'https://rococo.subscan.io',
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
       new KusamaAdapter()
@@ -116,6 +107,7 @@ export default class Chain {
       2000,
       Svgs.KarIcon,
       config.KARURA_SOCKET,
+      'https://karura.subscan.io',
       [AssetType.Karura(config)],
       AssetType.Karura(config),
       new KaruraAdapter(),
@@ -142,6 +134,7 @@ export default class Chain {
       1000,
       Svgs.MovrIcon,
       config.MOONRIVER_SOCKET,
+      'https://moonriver.subscan.io',
       [AssetType.Moonriver(config)],
       AssetType.Moonriver(config),
       new MoonriverAdapter(),
@@ -157,7 +150,7 @@ export default class Chain {
       return [
         Chain.Calamari(config),
         Chain.Kusama(config),
-        // Chain.Karura(config),
+        Chain.Karura(config),
         // Chain.Moonriver(config)
       ];
     } else {
