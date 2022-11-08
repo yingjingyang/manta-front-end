@@ -32,8 +32,8 @@ const AccountSelect = ({
   return (
     <Select
       className={classNames(
-        'w-100 gradient-border flex items-center h-16',
-        'rounded-full p-0.5 text-black dark:text-white',
+        'w-100 flex items-center h-16 manta-bg-gray',
+        'rounded-lg p-0.5 text-black dark:text-white',
         {'disabled': disabled})
       }
       isSearchable={false}

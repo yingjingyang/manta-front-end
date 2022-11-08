@@ -63,7 +63,7 @@ const SignerConnectionStatusLabel = () => {
   const config = useConfig();
   const { signerVersion } = usePrivateWallet();
   return (
-    <div className="flex text-center items-center text-green-500 pr-6">
+    <div className="flex text-center items-center text-green-500">
       {!signerVersion ? (
         <SignerNotConnectedLabel />
       ) : signerIsOutOfDate(config, signerVersion) ? (
