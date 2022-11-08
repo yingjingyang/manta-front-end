@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect } from 'react';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -29,6 +29,7 @@ export const SendContextProvider = (props) => {
     changeExternalAccount
   } = useExternalAccount();
   const privateWallet = usePrivateWallet();
+  const [ senderInputValue, setSenderInputValue] = useState('');
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
@@ -572,6 +573,8 @@ export const SendContextProvider = (props) => {
     receiverIsPrivate,
     senderIsPublic,
     receiverIsPrivate,
+    senderInputValue,
+    setSenderInputValue,
     ...state
   };
 

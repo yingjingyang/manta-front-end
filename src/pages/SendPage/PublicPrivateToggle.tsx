@@ -22,14 +22,14 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, label, prefix }) => {
   }
 
   return (
-    <div className="flex justify-center items-center h-11">
+    <div className="flex justify-center items-center h-5">
       <label className="text-primary">{label}</label>
       <span
         id={buttonId}
         onClick={onClick}
         className={classNames(
-          'py-2 pr-1 cursor-pointer btn-hover unselectable-text',
-          'text-center rounded-full btn-primary flex items-center justify-center gap-1 w-28 text-white',
+          'py-1 pr-1 cursor-pointer btn-hover unselectable-text',
+          'text-center rounded-full btn-primary flex items-center justify-center gap-3 w-32 text-white text-sm',
           { disabled: disabled }
         )}
       >

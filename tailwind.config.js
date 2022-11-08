@@ -22,6 +22,9 @@ module.exports = {
       lg: 'var(--min-width-lg)'
     },
     extend: {
+      spacing: {
+        '128': '32rem'
+      },
       backgroundImage: {},
 
       backgroundColor: {

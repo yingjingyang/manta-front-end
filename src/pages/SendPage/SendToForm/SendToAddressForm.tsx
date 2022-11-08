@@ -9,13 +9,11 @@ const SendToAddressForm = () => {
   const { isPrivateTransfer, isPublicTransfer } = useSend();
 
   return isPrivateTransfer() || isPublicTransfer() ? (
-    <div>
+    <>
       <SendToAddressInput />
-      {isPublicTransfer() && <ReceiverBalanceDisplay />}
-    </div>
+    </>
   ) : (
     <>
-      <ToAccountSelect />
       <ReceiverBalanceDisplay />
     </>
   );

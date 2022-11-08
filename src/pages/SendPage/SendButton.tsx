@@ -64,7 +64,7 @@ const SendButton = () => {
           onClick={onClick}
           className={classNames(
             'py-3 cursor-pointer text-xl btn-hover unselectable-text',
-            'text-center rounded-full btn-primary w-full',
+            'text-center rounded-lg btn-primary w-full',
             { disabled: disabled }
           )}
         >
