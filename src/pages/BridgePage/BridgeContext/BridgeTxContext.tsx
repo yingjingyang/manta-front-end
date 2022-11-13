@@ -115,9 +115,9 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction
   const send = async () => {
-    if (!isValidToSend()) {
-      return;
-    }
+    // if (!isValidToSend()) {
+    //   return;
+    // }
     setTxStatus(TxStatus.processing());
     if (originChain.xcmAdapter.chain.type === "ethereum") {
       await sendEth();
@@ -148,7 +148,7 @@ export const BridgeTxContextProvider = (props) => {
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
     const success = await transferMovrFromMoonriverToCalamari(
-      config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
+      config, provider, senderAssetTargetBalance, 'dmtwYSVMbbuX1nujyNQBpcKMVUziqy4cM3sqBwZTa2stL3a4H'// senderSubstrateAccount.address
     );
     if (success) {
       setTxStatus(TxStatus.finalized());
