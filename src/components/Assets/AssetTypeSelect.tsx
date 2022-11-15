@@ -33,7 +33,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-2 top-2 gradient-border rounded-2xl text-black dark:text-white',
+        '!absolute right-2 top-2 manta-bg-gray rounded-2xl text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -44,6 +44,7 @@ const AssetTypeSelect = ({
       placeholder="--"
       styles={dropdownStyles(disabled)}
       components={{
+        Control: AssetTypeControl,
         SingleValue: AssetTypeSingleValue,
         Option: AssetTypeOption,
         IndicatorSeparator: EmptyIndicatorSeparator
@@ -101,11 +102,17 @@ const EmptyIndicatorSeparator = () => {
   return <div />;
 };
 
+const AssetTypeControl = (props) => {
+  return (
+      <components.Control className="w-40" {...props} />
+  );
+};
+
 const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="pl-2 border-0 flex items-center gap-3">
       <img className="w-8 h-8 rounded-full" src={data.icon} alt="icon" />
-      <GradientText className="text-2xl font-bold" text={data.ticker} />
+      <div className="text-2xl font-bold">{data.ticker}</div>
     </div>
   );
 };

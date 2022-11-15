@@ -4,10 +4,9 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import React from 'react';
 import Select, { components } from 'react-select';
 
-const ChainSelect = ({chain, chainOptions, setChain}) => {
+const ChainSelect = ({ chain, chainOptions, setChain, chainFromOrTo }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-
 
   const dropdownOptions = chainOptions?.map((chain) => {
     return {
@@ -19,23 +18,42 @@ const ChainSelect = ({chain, chainOptions, setChain}) => {
   });
 
   return (
-    <Select
-      className={classNames(
-        "w-52 rounded-2xl gradient-border text-black dark:text-white",  {"disabled": disabled}
-      )}
-      isSearchable={false}
-      value={chain}
-      onChange={(option) => setChain(option.value)}
-      options={dropdownOptions}
-      placeholder=""
-      styles={dropdownStyles}
-      isDisabled={disabled}
-      components={{
-        SingleValue: ChainSingleValue,
-        Option: ChainOption,
-        IndicatorSeparator: EmptyIndicatorSeparator
-      }}
-    ></Select>
+    <div>
+      <Select
+        className={classNames(
+          'w-52 rounded-lg manta-bg-gray text-black dark:text-white',
+          { disabled: disabled }
+        )}
+        isSearchable={false}
+        chainFromOrTo={chainFromOrTo}
+        value={chain}
+        onChange={(option) => setChain(option.value)}
+        options={dropdownOptions}
+        placeholder=""
+        styles={dropdownStyles}
+        isDisabled={disabled}
+        components={{
+          Control: ChainControl,
+          SingleValue: ChainSingleValue,
+          Option: ChainOption,
+          IndicatorSeparator: EmptyIndicatorSeparator
+        }}
+      ></Select>
+    </div>
+  );
+};
+
+const ChainControl = (props) => {
+  const {
+    selectProps: { chainFromOrTo }
+  } = props;
+  return (
+    <div className="flex flex-col">
+      <div className="relative w-48 left-5 top-3 text-manta-gray">
+        {chainFromOrTo}
+      </div>
+      <components.Control className="w-48 left-3" {...props} />
+    </div>
   );
 };
 
@@ -45,17 +63,19 @@ const EmptyIndicatorSeparator = () => {
 
 const ChainSingleValue = ({ data }) => {
   return (
-    <div  className="w-full cursor-pointer">
+    <div className="w-full cursor-pointer">
       <div className="flex items-center inline">
-        <div>
+        <div className="ml-1 w-8 h-8">
           <img
-            className="w-9 h-9 ml-2 my-2 rounded-full"
+            className="rounded-full"
             src={data?.icon}
             alt="icon"
           />
         </div>
         <div className="p-2 pl-3">
-        <div className="text-lg text-black dark:text-white">{data?.displayName}</div>
+          <div className="text-lg text-black dark:text-white">
+            {data?.displayName}
+          </div>
         </div>
       </div>
     </div>
@@ -83,7 +103,7 @@ const ChainOption = (props) => {
 };
 
 const dropdownStyles = {
-  dropdownIndicator: () => ({ paddingRight: '1rem'}),
+  dropdownIndicator: () => ({ paddingRight: '1rem' }),
   control: (provided) => ({
     ...provided,
     backgroundColor: 'transparent',
@@ -95,7 +115,7 @@ const dropdownStyles = {
     cursor: 'pointer'
   }),
   option: () => ({
-    fontSize: '12pt',
+    fontSize: '12pt'
   }),
   valueContainer: () => ({
     minHeight: '2rem',

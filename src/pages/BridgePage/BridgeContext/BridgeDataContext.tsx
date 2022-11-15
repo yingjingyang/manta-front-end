@@ -41,6 +41,9 @@ export const BridgeDataContextProvider = (props) => {
 
   const originAddress = originChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
   const destinationAddress = destinationChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
+  console.log('originAddress', originAddress)
+  console.log('destinationAddress', destinationAddress)
+
 
   useEffect(() => {
     const initBridge = async () => {
@@ -128,10 +131,10 @@ export const BridgeDataContextProvider = (props) => {
 
       let address = destinationAddress;
       // Can't estimate fees for eth addresses like on Moonriver; use any substrate address instead
-      if (destinationAddress === ethAddress) {
-        const ARBITRARY_ADDRESS = '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
-        address = ARBITRARY_ADDRESS;
-      };
+      // if (destinationAddress === ethAddress) {
+      //   const ARBITRARY_ADDRESS = '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
+      //   address = ARBITRARY_ADDRESS;
+      // };
 
       return {
         signer: originAddress,
@@ -261,6 +264,8 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   const value = {
+    originAddress,
+    destinationAddress,
     setSenderAssetTargetBalance,
     setSenderSubstrateAccount,
     setSelectedAssetType,

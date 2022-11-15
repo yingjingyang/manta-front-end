@@ -61,13 +61,13 @@ const SendToAddressInput = () => {
   return (
     <>
       <div
-        className={`flex-grow gradient-border ${
+        className={`flex-grow manta-bg-gray ${
           errorMessage && 'error'
-        } h-16 rounded-full p-0.5 py-3`}
+        } h-16 rounded-lg p-0.5 py-3`}
       >
         <input
           id="recipientAddress"
-          className="w-full h-full rounded-full px-5 bg-secondary text-black dark:text-white outline-none"
+          className="w-full h-full rounded-lg manta-bg-gray px-5 text-black dark:text-white outline-none"
           onChange={(e) => onChangeInput(e)}
           disabled={disabled}
           placeholder={'address'}

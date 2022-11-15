@@ -20,10 +20,10 @@ const ReceiverBalanceDisplay = () => {
       : receiverCurrentBalance?.toString();
 
   return (
-    <div className="flex justify-between items-center px-6 py-2">
+    <div className="flex flex-row gap-4 justify-between items-center px-4 py-2">
       <BalanceComponent
         balance={balanceString}
-        className="text-black dark:text-white"
+        className="flex flex-row gap-1 text-black dark:text-white text-base"
         loaderClassName="bg-black dark:bg-white"
         loader={receiverAddress && !receiverCurrentBalance}
       />

@@ -11,6 +11,8 @@ import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { useConfig } from 'contexts/configContext';
 import { useBridgeData } from './BridgeDataContext';
+import { evmToAddress, addressToEvm } from '@polkadot/util-crypto';
+
 
 const BridgeTxContext = React.createContext();
 
@@ -26,6 +28,8 @@ export const BridgeTxContextProvider = (props) => {
     senderSubstrateAccount,
     originChain,
     destinationChain,
+    originAddress,
+    destinationAddress,
     maxInput,
     minInput
   } = useBridgeData();
@@ -115,9 +119,9 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction
   const send = async () => {
-    // if (!isValidToSend()) {
-    //   return;
-    // }
+    if (!isValidToSend()) {
+      return;
+    }
     setTxStatus(TxStatus.processing());
     if (originChain.xcmAdapter.chain.type === "ethereum") {
       await sendEth();
@@ -126,15 +130,29 @@ export const BridgeTxContextProvider = (props) => {
     }
   };
 
+  const convertEVMtoSubstrate = (account20) => {
+    const substrateAddress = evmToAddress(account20);
+    return substrateAddress;
+  }
+
+
   // Attempts to build and send a bridge transaction with a substrate origin chain
   const sendSubstrate = async () => {
     const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
+
+    // let address = destinationAddress;
+    // if (destinationChain.ethMetadata) {
+    //   address = convertEVMtoSubstrate(destinationAddress)
+    // }
+    // console.log('address', address);
+
     const tx = originChain.xcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
       to: destinationChain.name,
       token: senderAssetTargetBalance.assetType.baseTicker,
-      address: senderSubstrateAccount.address,
+      destinationAddress,
     });
+    console.log('tx?', tx)
     try {
       const injected = await web3FromSource(externalAccount.meta.source);
       originChain.api.setSigner(injected.signer);
@@ -147,6 +165,7 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
+    console.log('what?')
     const success = await transferMovrFromMoonriverToCalamari(
       config, provider, senderAssetTargetBalance, 'dmtwYSVMbbuX1nujyNQBpcKMVUziqy4cM3sqBwZTa2stL3a4H'// senderSubstrateAccount.address
     );
