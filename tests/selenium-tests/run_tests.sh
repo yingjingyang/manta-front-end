@@ -10,15 +10,15 @@ for i in "$@"; do
       PLCONFIG="${i#*=}"
       shift # past argument=value
       ;;
-    -uip=*|--ui_path=*)
+    -uip=*|--ui_path=*) #front-end
       UIPATH="${i#*=}"
       shift # past argument=value
       ;;
-    -sp=*|--signer_path=*)
-      BACKENDPATH="${i#*=}"
+    -sp=*|--signer_path=*) #signer
+      BACKENDPATH="${i#*=}" 
       shift # past argument=value
       ;;
-    -np=*|--nodd_path=*)
+    -np=*|--nodd_path=*) #manta node
       MANTA="${i#*=}"
       shift # past argument=value
       ;;
@@ -41,9 +41,9 @@ TESTS_DIR=$(pwd)
 [ ! -d "extension" ] && git clone https://github.com/polkadot-js/extension.git
 cd extension
 # build chrome extension
-#yarn
-#yarn install
-#yarn build
+yarn
+yarn install
+yarn build
 # Firefox extension is downloaded through javascript
 
 #Build manta
