@@ -17,10 +17,10 @@ import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 
 const SendPageContent = () => {
+  const config = useConfig();
   const { keyring } = useKeyring();
   const { txStatus } = useTxStatus();
   const { signerVersion } = usePrivateWallet();
-  const config = useConfig();
 
   useEffect(() => {
     if (keyring) {

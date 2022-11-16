@@ -41,9 +41,6 @@ export const BridgeDataContextProvider = (props) => {
 
   const originAddress = originChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
   const destinationAddress = destinationChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
-  console.log('originAddress', originAddress)
-  console.log('destinationAddress', destinationAddress)
-
 
   useEffect(() => {
     const initBridge = async () => {
@@ -66,6 +63,7 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const handleBalanceChange = (balanceData) => {
+
       const senderAssetCurrentBalance = Balance.fromBaseUnits(
         senderAssetType,
         balanceData.free
@@ -76,16 +74,17 @@ export const BridgeDataContextProvider = (props) => {
       })
     }
 
-    const subscribeBalanceChanges = async () => {
+    const subscribeBalanceChanges = () => {
       if (!senderAssetType || !originAddress || !bridge || !originChain) {
         return
       }
       const senderBalanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
         senderAssetType.baseTicker, originAddress
       );
-      senderBalanceObserveable.subscribe(handleBalanceChange);
+      return senderBalanceObserveable.subscribe(handleBalanceChange);
     }
-    subscribeBalanceChanges()
+    const subscription = subscribeBalanceChanges()
+    return () => subscription?.unsubscribe();
   }, [senderAssetType, originAddress, originChain, bridge])
 
   useEffect(() => {
