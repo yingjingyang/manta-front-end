@@ -19,9 +19,14 @@ import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
+import NETWORK from '../constants/NetworkConstants';
 import { useConfig } from './configContext';
 
 const PrivateWalletContext = createContext();
+
+const DolphinNetwork = NETWORK.DOLPHIN;
+//const CalamariNetwork = network.calamari;
+//const MantaNetwork = network.manta;
 
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
@@ -48,6 +53,11 @@ export const PrivateWalletContextProvider = (props) => {
   const finalTxResHandler = useRef(null);
   const balancesAreStale = useRef(false);
 
+  // current network - currently hardcoded as Dolphin
+  // @TODO: Link this with the correct currently selected network.
+  // @TODO: Add useEffect() to call initWallet() upon change in network.
+  const [currentNetwork, _setCurrentNetwork] = useState(DolphinNetwork);
+
   useEffect(() => {
     setIsReady(wallet && signerIsConnected);
   }, [wallet, signerIsConnected]);
@@ -61,7 +71,8 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     const getPrivateAddress = async (wasm, wallet) => {
       const keys = await wallet.receiving_keys(
-        new wasm.ReceivingKeyRequest('GetAll')
+        new wasm.ReceivingKeyRequest('GetAll'),
+        wasm.Network.from_string(`"${currentNetwork}"`)
       );
       const privateAddressRaw = keys[0];
       const privateAddressBytes = [
@@ -98,10 +109,11 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
       const privateAddress = await getPrivateAddress(wasm, wasmWallet);
+      const networkType = wasm.Network.from_string(`"${currentNetwork}"`);
       setPrivateAddress(privateAddress);
       console.log('Beginning initial sync');
       const startTime = performance.now();
-      await wasmWallet.restart();
+      await wasmWallet.restart(networkType);
       const endTime = performance.now();
       console.log(
         `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
@@ -135,6 +147,7 @@ export const PrivateWalletContextProvider = (props) => {
         setPrivateAddress(null);
         setWasmApi(null);
         setWallet(null);
+        isInitialSync.current = false;
       }
     } catch (err) {
       console.error(err);
@@ -144,6 +157,7 @@ export const PrivateWalletContextProvider = (props) => {
       setPrivateAddress(null);
       setWasmApi(null);
       setWallet(null);
+      isInitialSync.current = false;
     }
   };
 
@@ -176,7 +190,8 @@ export const PrivateWalletContextProvider = (props) => {
     try {
       console.log('Beginning sync');
       const startTime = performance.now();
-      await wallet.sync();
+      const networkType = wasm.Network.from_string(`"${currentNetwork}"`);
+      await wallet.sync(networkType);
       const endTime = performance.now();
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
       balancesAreStale.current = false;
@@ -255,11 +270,22 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  async function buildExtrinsics(transaction, assetMetadata) {
-    const posts = await wallet.sign(transaction, assetMetadata);
+  const convertToOldPost = (post) => {
+    // need to iterate over all receiverPosts and convert EncryptedNote from new
+    // format of EncryptedNote { header: (), Ciphertext {...} } to old format:
+    // EncryptedNote { ephermeral_public_key: [], ciphertext: [] }
+
+    let postCopy = JSON.parse(JSON.stringify(post));
+    postCopy.receiver_posts.map(x => {x.encrypted_note = x.encrypted_note.ciphertext});
+    return postCopy
+  }
+
+  async function buildExtrinsics(transaction, assetMetadata, networkType) {
+    const posts = await wallet.sign(transaction, assetMetadata, networkType);
     const transactions = [];
     for (let i = 0; i < posts.length; i++) {
-      const transaction = await mapPostToTransaction(posts[i], api);
+      let convertedPost = convertToOldPost(posts[i]);
+      const transaction = await mapPostToTransaction(convertedPost, api);
       transactions.push(transaction);
     }
     return transactions;
@@ -293,7 +319,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPublic = async (balance, txResHandler) => {
+  const toPublic = async (balance, txResHandler, network=currentNetwork) => {
     // build wasm params
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -301,11 +327,12 @@ export const PrivateWalletContextProvider = (props) => {
     const transaction = wasm.Transaction.from_string(txJson);
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
+    const networkType = wasm.Network.from_string(`"${network}"`);
 
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
       const res = await publishBatchesSequentially(transactions, txResHandler);
       return res;
@@ -316,7 +343,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const privateTransfer = async (balance, recipient, txResHandler) => {
+  const privateTransfer = async (balance, recipient, txResHandler, network=currentNetwork) => {
     // build wasm params
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
@@ -324,12 +351,13 @@ export const PrivateWalletContextProvider = (props) => {
     const txJson = `{ "PrivateTransfer": [{ "id": ${assetId}, "value": "${value}" }, ${addressJson} ]}`;
     const transaction = wasm.Transaction.from_string(txJson);
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
-    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
+    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);;
+    const networkType = wasm.Network.from_string(`"${network}"`);
 
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata);
+      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
       const res = await publishBatchesSequentially(transactions, txResHandler);
       return res;
@@ -340,17 +368,18 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
-  const toPrivate = async (balance, txResHandler) => {
+  const toPrivate = async (balance, txResHandler, network=currentNetwork) => {
     await waitForWallet();
     walletIsBusy.current = true;
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
+    const networkType = wasm.Network.from_string(`"${network}"`);
     wasmApi.txResHandler = txResHandler;
     wasmApi.externalAccountSigner = externalAccountSigner;
     try {
-      const res = await wallet.post(transaction, null);
+      const res = await wallet.post(transaction, null, networkType);
       walletIsBusy.current = false;
       return res;
     } catch (error) {
