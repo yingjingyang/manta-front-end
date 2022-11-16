@@ -12,8 +12,7 @@ export const Navbar = ({shouldShowZkAccount}) => {
       <ChainSelector className='justify-self-start' />
       <Navs />
       <div className="h-12 gap-4 flex flex-wrap space-x-6 justify-end items-center">
-        {shouldShowZkAccount && <ZkAccountButton />
-}
+      {shouldShowZkAccount && <ZkAccountButton />}
         <AccountSelectMenu />
         <Menu />
       </div>

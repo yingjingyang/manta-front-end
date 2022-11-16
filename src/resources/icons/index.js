@@ -36,6 +36,7 @@ import SwitchIcon from 'resources/icons/switch.svg';
 import SettingIcon from 'resources/icons/setting.svg';
 import ArrowDownIcon from 'resources/icons/arrow-down.svg';
 import ArrowLeftIcon from 'resources/icons/arrow-left.svg';
+import ArrowUpDownIcon from 'resources/icons/arrow-up-down.svg'
 import LeftIcon from 'resources/icons/left.svg';
 import RightIcon from 'resources/icons/right.svg';
 import SearchIcon from 'resources/icons/search.svg';
@@ -97,6 +98,7 @@ const Svgs = {
   SettingIcon,
   ArrowDownIcon,
   ArrowLeftIcon,
+  ArrowUpDownIcon,
   SearchIcon,
   BlocksIcon,
   SignIcon,

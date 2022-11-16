@@ -23,7 +23,7 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128':'32rem'
+        '128': '32rem'
       },
       backgroundImage: {},
 

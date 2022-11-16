@@ -112,7 +112,7 @@ const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="pl-2 border-0 flex items-center gap-3">
       <img className="w-8 h-8 rounded-full" src={data.icon} alt="icon" />
-      <div className="text-2xl font-bold">{data.ticker}</div>
+      <div className="text-2xl font-bold text-black dark:text-white">{data.ticker}</div>
     </div>
   );
 };

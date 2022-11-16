@@ -17,7 +17,7 @@ const Balance: React.FC<IBalanceProps> = ({
   return (
     <div id="balanceText" className={className}>
       Balance:&nbsp;{balance}
-      {loader ? <DotLoader /> : <div className="w-8"></div>}
+      {loader && <DotLoader />}
     </div>
   );
 };

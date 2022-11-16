@@ -29,7 +29,7 @@ const BalanceInput = ({
           id="amountInput"
           onChange={(e) => onChangeAmountInput(e.target.value)}
           className={classNames(
-            'w-1/2 absolute left-4 bottom-8 p-2 text-2xl font-bold text-black dark:text-white manta-bg-gray outline-none rounded-lg',
+            'w-1/2 absolute left-4 bottom-8 p-2 text-2xl font-bold placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray outline-none rounded-lg',
             { disabled: disabled }
           )}
           value={inputValue}
@@ -44,7 +44,7 @@ const BalanceInput = ({
       </div>
       <BalanceComponent
         balance={balanceText}
-        className="text-xs manta-gray mt-2.5 absolute right-9 bottom-3"
+        className="text-xs manta-gray mt-2.5 absolute right-10 bottom-3"
         loaderClassName="text-manta-gray border-manta-gray bg-manta-gray"
         loader={shouldShowLoader}
       />
