@@ -63,31 +63,35 @@ const AccountDisplay = () => {
     }
   };
 
-  const fetchPrivateBalances = async () => {
-    let totalUsd = new Usd(new Decimal(0));
-    console.log('assets', assets);
-    const updatedBalances = await Promise.all(
-      assets.map(async (assetType: any) => {
-        const fetchPrivateBalanceRes = await fetchPrivateBalanceHelper(
-          assetType
-        );
-        fetchPrivateBalanceRes.usdBalance &&
-          totalUsd.add(fetchPrivateBalanceRes.usdBalance.value);
-        return fetchPrivateBalanceRes;
-      })
-    );
-
-    setBalances([
-      ...updatedBalances.filter(
-        (balance) =>
-          balance.privateBalance &&
-          balance.privateBalance.gt(new Balance(balance.assetType, new BN(0)))
-      )
-    ]);
-    setTotalBalanceString(totalUsd.toUsdString());
-  };
 
   useEffect(() => {
+    const fetchPrivateBalances = async () => {
+      let totalUsd = new Usd(new Decimal(0));
+      console.log('assets', assets);
+      const updatedBalances = await Promise.all(
+        assets.map(async (assetType: any) => {
+          const fetchPrivateBalanceRes = await fetchPrivateBalanceHelper(
+            assetType
+          );
+          console.log('fetchPrivateBalanceRes', fetchPrivateBalanceRes);
+
+          fetchPrivateBalanceRes.usdBalance &&
+            totalUsd.add(fetchPrivateBalanceRes.usdBalance.value);
+          return fetchPrivateBalanceRes;
+        })
+      );
+      console.log('done')
+
+      setBalances([
+        ...updatedBalances.filter(
+          (balance) =>
+            balance.privateBalance &&
+            balance.privateBalance.gt(new Balance(balance.assetType, new BN(0)))
+        )
+      ]);
+      setTotalBalanceString(totalUsd.toUsdString());
+    };
+
     if (
       isReady &&
       privateAddress &&
@@ -97,13 +101,9 @@ const AccountDisplay = () => {
     }
   }, [
     isReady,
-    usdPrices,
     privateAddress,
-    txStatus,
-    senderAssetCurrentBalance,
     senderAssetType,
     receiverAssetType,
-    receiverCurrentBalance
   ]);
 
   const ZkAccountModalContent = () => {
@@ -164,6 +164,7 @@ const AccountDisplay = () => {
   };
 
   const PrivateTokenTableContent = () => {
+    console.log('balances', balances)
     if (balances && balances.length > 0) {
       return balances.map((balance, index) => (
         <PrivateTokenItem balance={balance} key={balance.assetType.assetId} />

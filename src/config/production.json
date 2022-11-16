@@ -1,12 +1,12 @@
 {
-    "DEV_CONSOLE": true,
-    "DEVELOPMENT_KEYRING": false,
     "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
-    "CALAMARI_PROVIDER_SOCKET": "wss://ws.calamari.systems/",
+    "CALAMARI_PROVIDER_SOCKET": "wss://c5.calamari.seabird.systems",
+    "DEV_CONSOLE": true,
+    "DEVELOPMENT_KEYRING": true,
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
-            "url": "wss://ws.calamari.systems/",
+            "url": "wss://c5.calamari.seabird.systems",
             "explorer": "calamari.subscan.io"
         },
         {
@@ -17,9 +17,9 @@
             "explorer": "dolphin.subscan.io"
         }
     ],
-    "KUSAMA_SOCKET": "wss://arangatuy.kusama-internal.calamari.systems",
-    "CALAMARI_SOCKET": "wss://crispy.kusama-internal.testnet.calamari.systems",
-    "KARURA_SOCKET": "wss://taupo.kusama-internal.karura-testnet.calamari.systems",
-    "MOONRIVER_SOCKET": "wss://alith.kusama-internal.moonriver-testnet.calamari.systems",
-    "MOONRIVER_RPC": "https://rpc.faith.kusama-internal.moonriver-testnet.calamari.systems"
+    "KUSAMA_SOCKET": "wss://v1.internal.kusama.systems/0",
+    "CALAMARI_SOCKET": "wss://c5.calamari.seabird.systems",
+    "KARURA_SOCKET": "wss://c1.acala.seabird.systems",
+    "MOONRIVER_SOCKET": "wss://c1.moonriver.seabird.systems",
+    "MOONRIVER_RPC": "https://c1.moonriver.seabird.systems/rpc"
 }
