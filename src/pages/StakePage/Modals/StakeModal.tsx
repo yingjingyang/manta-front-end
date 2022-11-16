@@ -62,7 +62,7 @@ export const StakeModal = ({ hideModal }) => {
 
   const usdValueText =
     stakeTargetBalance && usdPerKma
-      ? stakeTargetBalance.toUsdString(usdPerKma)
+      ? stakeTargetBalance.toUsd(usdPerKma).toUsdString()
       : '';
 
   const notes = [

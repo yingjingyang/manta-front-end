@@ -237,7 +237,7 @@ const CollatorsTable = () => {
 
   return (
     <div className="mt-20 mx-auto sortable-table-wrapper" id="collatorsTable">
-      <h1 className="text-base font-semibold text-black dark:text-white flex items-end gap-10">
+      <h1 className="text-base font-semibold text-fourth flex items-end gap-10">
         Collators
       </h1>
       <div className="mt-6 flex gap-5">

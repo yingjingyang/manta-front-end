@@ -113,7 +113,7 @@ const UnstakingTable = () => {
   }
   return (
     <div className="mt-8 mx-auto sortable-table-wrapper">
-      <h1 className="text-base font-semibold text-black dark:text-white">
+      <h1 className="text-base font-semibold text-fourth">
         Unstaking
       </h1>
       <div className="w-full mt-4">

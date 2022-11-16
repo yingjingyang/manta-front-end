@@ -44,6 +44,7 @@ module.exports = {
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        fourth: 'var(--color-text-fourth)',
         link: 'var(--color-bg-button)',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
@@ -58,7 +59,7 @@ module.exports = {
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)',
         primary: 'var(--color-border-primary)',
-        secondary: 'var(--color-bg-button)'
+        secondary: 'var(--color-border-secondary)'
       }
     }
   },

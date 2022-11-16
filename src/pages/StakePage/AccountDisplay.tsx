@@ -57,7 +57,7 @@ const AccountDisplay = () => {
             <h2 className="text-secondary text-center font-medium text-lg">
               Total Balance
             </h2>
-            <h1 className="text-black dark:text-white font-bold text-xl text-center mt-4">
+            <h1 className="text-fourth font-bold text-xl text-center mt-4">
               {totalBalanceDisplayString}
             </h1>
             <button
@@ -74,7 +74,7 @@ const AccountDisplay = () => {
               <h2 className="text-secondary font-medium text-base">
                 Available Balance
               </h2>
-              <h1 className="text-black dark:text-white font-bold text-lg mt-4">
+              <h1 className="text-fourth font-bold text-lg mt-4">
                 {avialableBalanceDisplayString}
               </h1>
             </div>
@@ -82,7 +82,7 @@ const AccountDisplay = () => {
               <h2 className="text-secondary font-medium text-base">
                 Total Staked
               </h2>
-              <h1 className="text-black dark:text-white font-bold text-lg mt-4">
+              <h1 className="text-fourth font-bold text-lg mt-4">
                 {stakedBalanceDisplayString}
               </h1>
             </div>
@@ -90,7 +90,7 @@ const AccountDisplay = () => {
               <h2 className="text-secondary font-medium text-base">
                 Rewards Last Round
               </h2>
-              <h1 className="text-black dark:text-white font-bold text-lg mt-4">
+              <h1 className="text-fourth font-bold text-lg mt-4">
                 {userTotalRecentRewardsDisplayString}
               </h1>
               <h3 className="text-secondary font-medium text-xss mt-3">

@@ -51,7 +51,7 @@ export const UnstakeModal = ({ hideModal }) => {
   const minimumStakeText = ` Minimum stake: ${minimumStakeAmountString}`;
 
   const usdValueText = (unstakeTargetBalance && usdPerKma)
-    ? unstakeTargetBalance.toUsdString(usdPerKma)
+    ? unstakeTargetBalance.toUsd(usdPerKma).toUsdString()
     : '';
 
   const notes = [

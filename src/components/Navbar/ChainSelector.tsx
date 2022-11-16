@@ -45,7 +45,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
   return (
     <Link to={node.path}>
       <div
-        className={`px-8 py-4 font-bold text-lg text-black dark:text-white cursor-pointer hover:bg-thirdry ${
+        className={`px-8 py-4 font-bold text-lg text-fourth cursor-pointer hover:bg-thirdry ${
           activeNode.name === node.name ? 'bg-thirdry' : ''
         }`}
         key={node.name}
@@ -80,7 +80,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
           ) : null}
         </div>
         {activeNode.name === node.name ? (
-          <div className="mt-2 ml-2 flex items-center justify-between text-black dark:text-white font-normal text-base">
+          <div className="mt-2 ml-2 flex items-center justify-between text-fourth font-normal text-base">
             {node.explorer}
             <a href={`https://${node.explorer}`} target="_blank" rel="noreferrer">
               <FontAwesomeIcon icon={faLink} />
@@ -125,7 +125,7 @@ const ChainSelector = () => {
               {activeNode.name}&nbsp;{activeNode.testnet ? 'testnet' : ''}
             </h1>
           </div>
-          <div className="text-black dark:text-white text-lg ml-4">
+          <div className="text-fourth text-lg ml-4">
             <FontAwesomeIcon icon={showNetworkList ? faAngleUp : faAngleDown} />
           </div>
         </div>

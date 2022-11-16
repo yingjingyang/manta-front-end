@@ -14,8 +14,10 @@ const ReceiverBalanceDisplay = () => {
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
 
+  console.log('isInitialSync', isInitialSync)
+
   const balanceString =
-    isInitialSync && (isToPrivate() || isPrivateTransfer())
+    isInitialSync.current && (isToPrivate() || isPrivateTransfer())
       ? 'Syncing to ledger'
       : receiverCurrentBalance?.toString();
 

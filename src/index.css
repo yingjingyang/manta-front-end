@@ -29,6 +29,7 @@ body {
   --color-text-primary: #ffffff;
   --color-text-secondary: #a4a3a7;
   --color-text-thirdry: #ffffff;
+  --color-text-fourth: #ffffff;
   --color-text-accent: #ffffff;
   --color-text-warning: #e96e79;
   --color-fill-secondary: #ffffff;
@@ -52,6 +53,7 @@ body {
   --color-text-primary: #104ea1;
   --color-text-secondary: #212f41;
   --color-text-thirdry: #070707;
+  --color-text-fourth: #000000;
   --color-text-accent: #33385f;
   --color-text-warning: #ef9f9f;
   --color-fill-secondary: #889ebc;

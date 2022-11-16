@@ -38,7 +38,8 @@ export default class AssetType {
     numberOfDecimals,
     publicExistentialDeposit,
     isPrivate,
-    isNativeToken
+    coingeckoId = '',
+    isNativeToken = false
   ) {
     this.assetId = assetId;
     this.baseName = baseName;
@@ -51,6 +52,7 @@ export default class AssetType {
     this.existentialDeposit = isPrivate ? new BN(0) : publicExistentialDeposit;
     this.isPrivate = isPrivate;
     this.isNativeToken = isNativeToken;
+    this.coingeckoId = coingeckoId;
   }
 
   static Native(config) {
@@ -71,7 +73,8 @@ export default class AssetType {
       18,
       new BN('100000000000000000'),
       isPrivate,
-      true,
+      'dolphin',
+      true
     );
   }
 
@@ -85,7 +88,8 @@ export default class AssetType {
       12,
       new BN('100000000000'),
       isPrivate,
-      true,
+      'calamari-network',
+      true
     );
   }
 
@@ -100,7 +104,7 @@ export default class AssetType {
       12,
       new BN('100000000000'),
       isPrivate,
-      false,
+      'karura'
     );
   }
 
@@ -113,7 +117,8 @@ export default class AssetType {
       Svgs.AusdIcon,
       12,
       new BN('10000000000'),
-      isPrivate
+      isPrivate,
+      'acala-dollar'
     );
   }
 
@@ -142,6 +147,7 @@ export default class AssetType {
       new BN('500000000'),
       isPrivate,
       false,
+      'kusama'
     );
   }
 
@@ -154,7 +160,8 @@ export default class AssetType {
       Svgs.RocIcon,
       12,
       new BN('1'),
-      isPrivate
+      isPrivate,
+      'rococo'
     );
   }
 
@@ -167,7 +174,8 @@ export default class AssetType {
       Svgs.KbtcIcon,
       8,
       new BN('1'),
-      isPrivate
+      isPrivate,
+      'bitcoin'
     );
   }
 
@@ -180,7 +188,8 @@ export default class AssetType {
       Svgs.MovrIcon,
       18,
       new BN('10000000000000000'),
-      isPrivate
+      isPrivate,
+      'moonriver'
     );
   }
 

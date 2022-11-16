@@ -16,7 +16,7 @@ const SendPage = () => {
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <SubstrateContextProvider>
         <ExternalAccountContextProvider>
-          <TxStatusContextProvider >
+          <TxStatusContextProvider>
             <PrivateWalletContextProvider>
               <SendContextProvider>
                 <div className="min-h-screen">

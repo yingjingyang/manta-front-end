@@ -12122,10 +12122,10 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-polkawallet-bridge-dev@0.0.6-dev11:
-  version "0.0.6-dev11"
-  resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge-dev/-/manta-polkawallet-bridge-dev-0.0.6-dev11.tgz#bd62cf8717c8d947de0ccd300e2f01bd402a83bf"
-  integrity sha512-iWC/ObBl5UL4ib7PB44mLoMNYpuJS2fMLLWQRQn582NtY9C68i3flQ1oaVRO1q5dvBL7CIMNrQ0nGy0z7lsKPA==
+manta-polkawallet-bridge-dev@0.0.6-dev12:
+  version "0.0.6-dev12"
+  resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge-dev/-/manta-polkawallet-bridge-dev-0.0.6-dev12.tgz#a98983b232a01078eaec8a578191b606a21439d6"
+  integrity sha512-oBJRexoJo+EdeSgzrcJ2tO/MwWBbJrMQhwiTstnyMDG1lkl1Dpe9QyxXSfEkeD+c6CUjSqN8g1+Zh/LfLcs56w==
   dependencies:
     "@acala-network/api" "4.1.6-23"
     "@acala-network/sdk" "4.1.6-23"

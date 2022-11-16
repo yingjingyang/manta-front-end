@@ -4,7 +4,7 @@ import AccountSelectMenu from 'components/Accounts/AccountSelectMenu';
 import Menu from 'components/Menu/DotMenu';
 import Navs from './Navs';
 import ChainSelector from './ChainSelector';
-import SignerConnectionStatusLabel from './SignerConnectionStatusLabel';
+import ZkAccountButton from './ZkAccountButton';
 
 export const Navbar = ({shouldShowZkAccount}) => {
   return (
@@ -12,7 +12,8 @@ export const Navbar = ({shouldShowZkAccount}) => {
       <ChainSelector className='justify-self-start' />
       <Navs />
       <div className="h-12 gap-4 flex flex-wrap space-x-6 justify-end items-center">
-        {shouldShowZkAccount && <SignerConnectionStatusLabel />}
+        {shouldShowZkAccount && <ZkAccountButton />
+}
         <AccountSelectMenu />
         <Menu />
       </div>

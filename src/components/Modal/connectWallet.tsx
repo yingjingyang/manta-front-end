@@ -5,11 +5,11 @@ import PolkadotIcon from 'resources/icons/chain/polkadot.svg';
 const ConnectWalletModal = () => {
   return (
     <div className="p-4 w-96">
-      <h1 className="text-black dark:text-white text-xl">Connect wallet</h1>
+      <h1 className="text-fourth text-xl">Connect wallet</h1>
       <a
         href="https://talisman.xyz/"
         target="_blank"
-        className="mt-6 p-4 text-black dark:text-white flex items-center justify-between border border-manta-gray text-secondary rounded-xl w-full block" rel="noreferrer"
+        className="mt-6 p-4 text-fourth flex items-center justify-between border border-manta-gray text-secondary rounded-xl w-full block" rel="noreferrer"
       >
         Talisman
         <img src={Svgs.Talisman} alt="Talisman" className="w-8 h-8" />
@@ -17,7 +17,7 @@ const ConnectWalletModal = () => {
       <a
         href="https://polkadot.js.org/extension/"
         target="_blank"
-        className="mt-6 p-4 text-black dark:text-white flex items-center justify-between border border-manta-gray text-secondary rounded-xl w-full block" rel="noreferrer"
+        className="mt-6 p-4 text-fourth flex items-center justify-between border border-manta-gray text-secondary rounded-xl w-full block" rel="noreferrer"
       >
         Polkadot
         <img src={PolkadotIcon} alt="Polkadot" className="w-8 h-8" />

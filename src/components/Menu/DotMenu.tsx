@@ -57,7 +57,7 @@ const ChangeThemeMenuItem = ({theme, setTheme, name, icon}) => (
     </div>
     <FontAwesomeIcon
       icon={icon}
-      className="items-center w-4 h-5 text-xl text-black dark:text-white dark:hover:text-link"
+      className="items-center w-4 h-5 text-xl text-fourth dark:hover:text-link"
     />
   </div>
 );
@@ -111,7 +111,7 @@ const Menu = () => {
         >
           <FontAwesomeIcon
             icon={faEllipsis}
-            className="text-xl text-black dark:text-white"
+            className="text-xl text-fourth"
           />
         </div>
         {isOpen && <DotMenuContent/>}

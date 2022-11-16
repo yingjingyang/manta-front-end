@@ -73,12 +73,12 @@ export const PrivateWalletContextProvider = (props) => {
 
     const canInitWallet = () => {
       return (
-        api
-        && externalAccountSigner
-        && signerIsConnected
-        && signerVersion
-        && !signerIsOutOfDate(config, signerVersion)
-        && !isInitialSync.current
+        api &&
+        externalAccountSigner &&
+        signerIsConnected &&
+        signerVersion &&
+        !signerIsOutOfDate(config, signerVersion) &&
+        !isInitialSync.current
       );
     };
 
@@ -89,7 +89,10 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
       const wasmApiConfig = new ApiConfig(
-        api, externalAccountSigner, DEFAULT_PULL_SIZE, DEFAULT_PULL_SIZE
+        api,
+        externalAccountSigner,
+        DEFAULT_PULL_SIZE,
+        DEFAULT_PULL_SIZE
       );
       const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
@@ -120,12 +123,11 @@ export const PrivateWalletContextProvider = (props) => {
       const res = await axios.get(`${config.SIGNER_URL}version`, {
         timeout: 1500
       });
-      console.log('res', res);
-      const signerVersion = res.data;
-      const signerIsConnected = !!signerVersion;
+      const updatedSignerVersion = res.data;
+      const signerIsConnected = !!updatedSignerVersion;
       setSignerIsConnected(signerIsConnected);
-      if (signerIsConnected) {
-        setSignerVersion(new Version(signerVersion));
+      if (signerIsConnected && signerVersion !== updatedSignerVersion) {
+          setSignerVersion(new Version(updatedSignerVersion));
       } else {
         setSignerIsConnected(signerIsConnected);
         setSignerVersion(null);
@@ -146,10 +148,13 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      fetchSignerVersion();
-    }, 2000);
-    return () => clearInterval(interval);
+    let interval;
+    if (!signerIsConnected) {
+      interval = setInterval(async () => {
+        fetchSignerVersion();
+      }, 2000);
+    }
+    return () => interval && clearInterval(interval);
   }, [api, wallet]);
 
   // WASM wallet doesn't allow you to call two methods at once, so before

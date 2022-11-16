@@ -94,7 +94,7 @@ export const useModal: (options?: IUseModal) => any = (
             {!closeDisabled ? (
               <div className="relative inline-block px-6 py-4 bg-secondary rounded-lg text-black">
                 <div
-                  className="absolute top-4 right-4 text-black dark:text-white cursor-pointer text-xl"
+                  className="absolute top-4 right-4 text-fourth cursor-pointer text-xl"
                   onClick={() => hideModal()}
                 >
                   <FontAwesomeIcon icon={faTimes} />

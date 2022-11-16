@@ -292,7 +292,7 @@ export const SendContextProvider = (props) => {
       fetchSenderBalance();
       fetchReceiverBalance();
       fetchFeeBalance();
-    }, 200);
+    }, 3000);
     return () => clearInterval(interval);
   }, [
     senderAssetType,
@@ -558,7 +558,6 @@ export const SendContextProvider = (props) => {
     isValidToSend,
     setSenderAssetTargetBalance,
     setSenderPublicAccount,
-    receiverAssetType,
     toggleSenderIsPrivate,
     toggleReceiverIsPrivate,
     setSelectedAssetType,
@@ -571,7 +570,6 @@ export const SendContextProvider = (props) => {
     senderIsPrivate,
     receiverIsPrivate,
     senderIsPublic,
-    receiverIsPrivate,
     ...state
   };
 

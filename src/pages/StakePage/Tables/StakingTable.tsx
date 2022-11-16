@@ -235,7 +235,7 @@ const StakingTable = () => {
   return (
     <>
       <div className="mt-20 mx-auto sortable-table-wrapper">
-        <h1 className="text-base font-semibold text-black dark:text-white">
+        <h1 className="text-base font-semibold text-fourth">
           Staking
         </h1>
         <div className="w-full mt-4">{mainComponent}</div>
