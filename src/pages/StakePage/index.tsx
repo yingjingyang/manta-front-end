@@ -3,7 +3,7 @@ import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import { TxStatusContextProvider } from 'contexts/txStatusContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
-import { CalamariNavbar } from 'components/Navbar';
+import Navbar from 'components/Navbar';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider } from 'contexts/configContext';
@@ -20,7 +20,7 @@ const StakePage = () => {
           <TxStatusContextProvider>
             <StakeDataContextProvider >
               <StakeTxContextProvider >
-                <CalamariNavbar />
+                <Navbar shouldShowZkAccount={false} />
                 <StakePageContent />
                 <DeveloperConsole />
               </StakeTxContextProvider>

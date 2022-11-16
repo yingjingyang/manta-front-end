@@ -8,7 +8,7 @@ import NETWORK from 'constants/NetworkConstants';
 import { ConfigContextProvider } from 'contexts/configContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
-import { CalamariNavbar } from 'components/Navbar';
+import Navbar from 'components/Navbar';
 import { BridgeDataContextProvider } from './BridgeContext/BridgeDataContext';
 import { BridgeTxContextProvider } from './BridgeContext/BridgeTxContext';
 
@@ -34,7 +34,7 @@ const BridgePage = () => {
               <BridgeDataContextProvider>
                 <BridgeTxContextProvider>
                 <div className='min-h-screen'>
-                  <CalamariNavbar />
+                  <Navbar shouldShowZkAccount={false}/>
                   <BridgePageContent />
                 </div>
                 </BridgeTxContextProvider>

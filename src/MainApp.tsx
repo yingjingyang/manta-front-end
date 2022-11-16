@@ -24,6 +24,11 @@ function MainApp() {
             exact
           />
           <Route
+            path="/bridge"
+            element={<Navigate to="/calamari/bridge" replace />}
+            exact
+          />
+          <Route
             path="/dolphin"
             element={<Navigate to="/dolphin/transact" replace />}
             exact
