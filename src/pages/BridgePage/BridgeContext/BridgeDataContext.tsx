@@ -99,7 +99,7 @@ export const BridgeDataContextProvider = (props) => {
       return new Balance(
         originChain.nativeAsset,
         new BN(inputConfig.estimateFee)
-      )
+      );
     }
     const getMaxInput = (inputConfig) => {
       return Balance.fromBaseUnits(
@@ -188,18 +188,11 @@ export const BridgeDataContextProvider = (props) => {
   // substrate-based payments
   useEffect(() => {
     const syncSenderSubstrateAccountToExternalAccount = () => {
-      if (senderAssetType?.assetId === AssetType.Moonriver(config).assetId) {
-        dispatch({
-          type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
-          senderSubstrateAccount: null
-        });
-      } else {
-        dispatch({
+      dispatch({
           type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
           senderSubstrateAccount: externalAccount
-        });
-      }
-    };
+      });
+    }
     syncSenderSubstrateAccountToExternalAccount();
   }, [externalAccount]);
 

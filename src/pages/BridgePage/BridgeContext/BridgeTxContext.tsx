@@ -130,29 +130,15 @@ export const BridgeTxContextProvider = (props) => {
     }
   };
 
-  const convertEVMtoSubstrate = (account20) => {
-    const substrateAddress = evmToAddress(account20);
-    return substrateAddress;
-  }
-
-
   // Attempts to build and send a bridge transaction with a substrate origin chain
   const sendSubstrate = async () => {
     const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
-
-    // let address = destinationAddress;
-    // if (destinationChain.ethMetadata) {
-    //   address = convertEVMtoSubstrate(destinationAddress)
-    // }
-    // console.log('address', address);
-
     const tx = originChain.xcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
       to: destinationChain.name,
       token: senderAssetTargetBalance.assetType.baseTicker,
-      destinationAddress,
+      address: destinationAddress,
     });
-    console.log('tx?', tx)
     try {
       const injected = await web3FromSource(externalAccount.meta.source);
       originChain.api.setSigner(injected.signer);
@@ -165,9 +151,8 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    console.log('what?')
     const success = await transferMovrFromMoonriverToCalamari(
-      config, provider, senderAssetTargetBalance, 'dmtwYSVMbbuX1nujyNQBpcKMVUziqy4cM3sqBwZTa2stL3a4H'// senderSubstrateAccount.address
+      config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
     );
     if (success) {
       setTxStatus(TxStatus.finalized());

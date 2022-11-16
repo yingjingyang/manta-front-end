@@ -53,6 +53,7 @@ const getXtokensPrecompileAccountId32 = (accountId) => {
 export const transferMovrFromMoonriverToCalamari = async (config, provider, balance, address) => {
   const abi = Xtokens.abi;
   const ethersProvider = new ethers.providers.Web3Provider(provider);
+  console.log('gas price', ethersProvider.getGasPrice());
   const signer = ethersProvider.getSigner();
   const contract = new ethers.Contract(XTOKENS_PRECOMPILE_ADDRESS, abi, signer);
 
@@ -67,8 +68,8 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
       'estimate',
       contract.estimateGas.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight)
     )
-    // const createReceipt = await contract.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight);
-    // await createReceipt.wait();
+    const createReceipt = await contract.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight);
+    await createReceipt.wait();
     console.log(`Tx successful with hash: ${createReceipt.hash}`);
     return true;
   } catch (error) {
