@@ -32,7 +32,7 @@ const SendPageContent = () => {
 
   useEffect(() => {
     if (txStatus?.isFinalized()) {
-      showSuccess(config, 'Transaction succeeded', txStatus?.extrinsic);
+      showSuccess(config.SUBSCAN_URL, 'Transaction succeeded', txStatus?.extrinsic);
     } else if (txStatus?.isFailed()) {
       showError('Transaction failed');
     }

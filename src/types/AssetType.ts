@@ -208,11 +208,11 @@ export default class AssetType {
   }
 
   static _getFullName(baseName, isPrivate) {
-    return isPrivate ? `Test Private ${baseName}` : `Test ${baseName}`;
+    return isPrivate ? `Test zk${baseName}` : `Test ${baseName}`;
   }
 
   static _getFullTicker(baseTicker, isPrivate) {
-    return isPrivate ? `p${baseTicker}` : baseTicker;
+    return isPrivate ? `zk${baseTicker}` : baseTicker;
   }
 
   toPrivate() {

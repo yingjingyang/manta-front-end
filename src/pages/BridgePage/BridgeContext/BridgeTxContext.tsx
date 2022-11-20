@@ -151,11 +151,11 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    const success = await transferMovrFromMoonriverToCalamari(
+    const txHash = await transferMovrFromMoonriverToCalamari(
       config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
     );
-    if (success) {
-      setTxStatus(TxStatus.finalized());
+    if (txHash) {
+      setTxStatus(TxStatus.finalized(txHash));
     } else {
       setTxStatus(TxStatus.failed());
     }

@@ -127,13 +127,7 @@ export const BridgeDataContextProvider = (props) => {
       const amount = senderAssetTargetBalance
         ? senderAssetTargetBalance.valueBaseUnits.toString()
         : "0";
-
       let address = destinationAddress;
-      // Can't estimate fees for eth addresses like on Moonriver; use any substrate address instead
-      // if (destinationAddress === ethAddress) {
-      //   const ARBITRARY_ADDRESS = '5HDoTPBGGxfnkg6DNacyvCz6FzENJ2bgWkas239VfY9CGq72';
-      //   address = ARBITRARY_ADDRESS;
-      // };
 
       return {
         signer: originAddress,
