@@ -5,7 +5,7 @@ import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import { useSubstrate } from 'contexts/substrateContext';
-import BalanceInput from './BalanceInput';
+import BalanceInput from '../../components/Balance/BalanceInput';
 import { useBridgeData } from 'pages/BridgePage/BridgeContext/BridgeDataContext';
 
 const BridgeBalanceInput = () => {
@@ -17,7 +17,7 @@ const BridgeBalanceInput = () => {
     maxInput
   } = useBridgeData();
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
-  const balanceText = senderAssetCurrentBalance?.toString(true);
+  const balanceText = senderAssetCurrentBalance?.toString();
 
 
   const [inputValue, setInputValue] = useState('');

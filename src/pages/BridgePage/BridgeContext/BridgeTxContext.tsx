@@ -151,13 +151,15 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    const txHash = await transferMovrFromMoonriverToCalamari(
-      config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
-    );
-    if (txHash) {
-      setTxStatus(TxStatus.finalized(txHash));
-    } else {
-      setTxStatus(TxStatus.failed());
+    if (originChain.name === 'moonriver') {
+      const txHash = await transferMovrFromMoonriverToCalamari(
+        config, provider, senderAssetTargetBalance, senderSubstrateAccount.address
+      );
+      if (txHash) {
+        setTxStatus(TxStatus.finalized(txHash));
+      } else {
+        setTxStatus(TxStatus.failed());
+      }
     }
   };
 

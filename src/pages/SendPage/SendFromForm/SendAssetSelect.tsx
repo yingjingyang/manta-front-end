@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import SendAmountInput from 'components/AmountInput/SendBalanceInput';
+import SendAmountInput from 'pages/SendPage/SendBalanceInput';
 import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useSend } from '../SendContext';
 
@@ -20,12 +20,12 @@ const SendAssetSelect = () => {
 
   const maxSendableBalance = getMaxSendableBalance();
 
-  const balanceText =
-    isInitialSync && (isPrivateTransfer() || isToPublic())
-      ? 'Syncing to ledger'
-      : senderAssetCurrentBalance
-        ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-        : '';
+  let balanceText = ''
+  if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
+    balanceText = 'Syncing to ledger';
+  } else if (senderAssetCurrentBalance) {
+    balanceText = senderAssetCurrentBalance.toDisplayString();
+  }
 
   return (
     <div className="w-100 relative">

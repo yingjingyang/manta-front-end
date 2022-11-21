@@ -5,8 +5,8 @@ import { useBridgeData } from './BridgeContext/BridgeDataContext';
 const BridgeFeeDisplay = () => {
   const { originFee, destinationFee } = useBridgeData();
 
-  const originFeeText = originFee ? originFee.toFeeString() : '';
-  const destinationFeeText = destinationFee ? destinationFee.toFeeString() : '';
+  const originFeeText = originFee ? originFee.toFeeDisplayString() : '--';
+  const destinationFeeText = destinationFee ? destinationFee.toFeeDisplayString() : '--';
 
   return (
     <div className="flex flex-col gap-2 py-1">

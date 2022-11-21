@@ -7,7 +7,7 @@ import BN from 'bn.js';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import BalanceInput from './BalanceInput';
+import BalanceInput from '../../components/Balance/BalanceInput';
 
 const SendBalanceInput = () => {
   const { api } = useSubstrate();
@@ -15,13 +15,14 @@ const SendBalanceInput = () => {
     senderAssetCurrentBalance,
     setSenderAssetTargetBalance,
     senderAssetType,
-    senderIsPrivate
+    senderIsPrivate,
+    getMaxSendableBalance
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
   const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && senderIsPrivate();
   const balanceText = shouldShowInitialSync
-    ? 'Syncing to network' : senderAssetCurrentBalance?.toString(true);
+    ? 'Syncing to network' : senderAssetCurrentBalance?.toString();
 
 
   const [inputValue, setInputValue] = useState('');
@@ -47,6 +48,7 @@ const SendBalanceInput = () => {
   };
 
   const onClickMax = () => {
+    const maxSendableBalance = getMaxSendableBalance()
     if (maxSendableBalance) {
       onChangeSendAmountInput(maxSendableBalance.toString());
     }

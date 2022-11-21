@@ -159,7 +159,6 @@ export default class Chain {
   }
 
   async _initApi() {
-    console.log("this.socket", this.socket)
     const provider = new WsProvider(this.socket);
     if (this.apiOptions) {
       this.api = await ApiPromise.create(options({ provider, types: this.apiTypes}));

@@ -1,7 +1,7 @@
 import React from 'react';
 import GradientText from 'components/GradientText';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import BalanceComponent from 'components/Balance';
+import BalanceDisplay from 'components/Balance/BalanceDisplay';
 import { useSend } from '../SendContext';
 
 const ReceiverBalanceDisplay = () => {
@@ -21,10 +21,9 @@ const ReceiverBalanceDisplay = () => {
 
   return (
     <div className="flex flex-row gap-4 justify-between items-center px-4 py-2">
-      <BalanceComponent
+      <BalanceDisplay
         balance={balanceString}
         className="flex flex-row gap-1 text-black dark:text-white text-base"
-        loaderClassName="bg-black dark:bg-white"
         loader={receiverAddress && !receiverCurrentBalance}
       />
       <div className="pl-2 border-0 flex items-center gap-3">

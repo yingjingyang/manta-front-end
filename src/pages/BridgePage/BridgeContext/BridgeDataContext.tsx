@@ -6,7 +6,6 @@ import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
 import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
-import AssetType from 'types/AssetType';
 import { useMetamask } from 'contexts/metamaskContext';
 import Chain from 'types/Chain';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
@@ -39,8 +38,12 @@ export const BridgeDataContextProvider = (props) => {
     bridge,
   } = state;
 
-  const originAddress = originChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
-  const destinationAddress = destinationChain.ethMetadata ? ethAddress : senderSubstrateAccount?.address;
+  const originAddress = originChain.xcmAdapter.chain.type === 'ethereum'
+    ? ethAddress
+    : senderSubstrateAccount?.address;
+  const destinationAddress = destinationChain.xcmAdapter.chain.type === 'ethereum'
+    ? ethAddress
+    : senderSubstrateAccount?.address;
 
   useEffect(() => {
     const initBridge = async () => {

@@ -44,10 +44,10 @@ export const UnstakeModal = ({ hideModal }) => {
   const [warningMessage, setWarningMessage] = useState(null);
 
   const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toString(true, 0)}`
+    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
     : 'Staked: 0 KMA';
 
-  const minimumStakeAmountString = selectedCollator.minStake.toString(true, 0);
+  const minimumStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const minimumStakeText = ` Minimum stake: ${minimumStakeAmountString}`;
 
   const usdValueText = (unstakeTargetBalance && usdPerKma)
@@ -125,7 +125,7 @@ export const UnstakeModal = ({ hideModal }) => {
 
   const onClickMax = async () => {
     const maxUnstakeableBalance =
-      selectedCollatorDelegation.delegatedBalance.toString(false);
+      selectedCollatorDelegation.delegatedBalance.toString();
     onChangeUnstakeAmountInput(maxUnstakeableBalance);
   };
 

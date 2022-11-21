@@ -6,7 +6,6 @@ import Svgs from 'resources/icons';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
-import BridgeDestinationAccountDisplay from './BridgeDestinationAccountDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText';
 
 const BridgeForm = () => {
@@ -27,7 +26,7 @@ const BridgeForm = () => {
             chain={originChain}
             chainOptions={originChainOptions}
             setChain={setOriginChain}
-            chainFromOrTo="From"
+            isOriginChain={true}
           />
           <img
             className="mx-auto pb-7"
@@ -38,7 +37,7 @@ const BridgeForm = () => {
             chain={destinationChain}
             chainOptions={destinationChainOptions}
             setChain={setDestinationChain}
-            chainFromOrTo="To"
+            isOriginChain={false}
           />
         </div>
         <div className="pt-4 flex flex-col gap-4 flex-y mt-4">

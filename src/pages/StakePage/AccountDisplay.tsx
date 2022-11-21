@@ -24,7 +24,7 @@ const AccountDisplay = () => {
     } else if (!balance) {
       return <DotLoader />;
     } else {
-      return balance.toString(true, 0);
+      return balance.toDisplayString(0);
     }
   };
 

@@ -72,8 +72,6 @@ export const buildInitState = (config) => {
   };
 }
 
-
-
 const bridgeReducer = (state, action) => {
   switch (action.type) {
   case BRIDGE_ACTIONS.SET_BRIDGE:
@@ -105,9 +103,6 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
     return setDestinationChain(state, action);
-
-  case BRIDGE_ACTIONS.SET_CHAIN_OPTIONS:
-    return setChainOptions(state, action);
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -243,21 +238,6 @@ const setDestinationChain = (state, { destinationChain }) => {
     senderAssetCurrentBalance: null,
     originFee: null,
     destinationFee: null
-  };
-};
-
-const setChainOptions = (state, { chainOptions }) => {
-  const defaultOriginChain = chainOptions[0];
-  const defaultDestinationChain = chainOptions[1];
-  const destinationChainOptions = getDestinationChainOptions(defaultOriginChain, chainOptions);
-
-  return {
-    ...state,
-    originChain: defaultOriginChain,
-    originChainOptions: chainOptions,
-    destinationChain: defaultDestinationChain,
-    destinationChainOptions: destinationChainOptions,
-    chainApis: []
   };
 };
 

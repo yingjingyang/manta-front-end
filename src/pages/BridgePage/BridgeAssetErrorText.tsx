@@ -12,7 +12,8 @@ const BridgeAssetErrorText = () => {
   if (userHasSufficientFunds() === false) {
     errorText = 'Insufficient balance'
   } else if (txIsOverMinAmount() === false) {
-    errorText = `Minimum ${senderAssetType.ticker} transaction is ${minInput.toFeeString()}`
+    const MIN_INPUT_DIGITS = 6;
+    errorText = `Minimum ${senderAssetType.ticker} transaction is ${minInput.toDisplayString(MIN_INPUT_DIGITS)}`
   }
 
   return (

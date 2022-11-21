@@ -71,6 +71,7 @@ export const SendContextProvider = (props) => {
     }
   }, [privateAddress]);
 
+  // Initializes the receiving address
   useEffect(() => {
     const initReceiver = (receiverAddress) => {
       dispatch({
@@ -358,10 +359,13 @@ export const SendContextProvider = (props) => {
 
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
-    if (!senderAssetTargetBalance || !senderAssetCurrentBalance) {
-      return null;
-    }
     if (
+      !senderAssetTargetBalance
+      || !senderAssetCurrentBalance
+      || !senderNativeTokenPublicBalance
+    ) {
+      return null;
+    } else if (
       senderAssetTargetBalance.assetType.assetId !==
       senderAssetCurrentBalance.assetType.assetId
     ) {

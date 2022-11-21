@@ -1,17 +1,15 @@
 import React from 'react';
 import DotLoader from 'components/Loaders/DotLoader';
 
-interface IBalanceProps {
+interface IBalanceDisplayProps {
   balance: string;
   className: string;
-  loaderClassName: string;
   loader: boolean;
 }
 
-const Balance: React.FC<IBalanceProps> = ({
+const BalanceDisplay: React.FC<IBalanceDisplayProps> = ({
   balance,
   className,
-  loaderClassName,
   loader
 }) => {
   return (
@@ -22,4 +20,4 @@ const Balance: React.FC<IBalanceProps> = ({
   );
 };
 
-export default Balance;
+export default BalanceDisplay;

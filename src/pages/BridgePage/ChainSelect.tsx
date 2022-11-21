@@ -4,7 +4,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import React from 'react';
 import Select, { components } from 'react-select';
 
-const ChainSelect = ({ chain, chainOptions, setChain, chainFromOrTo }) => {
+const ChainSelect = ({ chain, chainOptions, setChain, isOriginChain }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
@@ -25,7 +25,7 @@ const ChainSelect = ({ chain, chainOptions, setChain, chainFromOrTo }) => {
           { disabled: disabled }
         )}
         isSearchable={false}
-        chainFromOrTo={chainFromOrTo}
+        isOriginChain={isOriginChain}
         value={chain}
         onChange={(option) => setChain(option.value)}
         options={dropdownOptions}
@@ -45,12 +45,14 @@ const ChainSelect = ({ chain, chainOptions, setChain, chainFromOrTo }) => {
 
 const ChainControl = (props) => {
   const {
-    selectProps: { chainFromOrTo }
+    selectProps: { isOriginChain }
   } = props;
+  const chainControlLabel = isOriginChain ? 'From' : 'To'
+
   return (
     <div className="flex flex-col">
       <div className="relative w-48 left-5 top-3 text-manta-gray">
-        {chainFromOrTo}
+        {chainControlLabel}
       </div>
       <components.Control className="w-48 left-3" {...props} />
     </div>

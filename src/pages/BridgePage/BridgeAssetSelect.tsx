@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import BridgeBalanceInput from 'components/AmountInput/BridgeBalanceInput';
+import BridgeBalanceInput from 'pages/BridgePage/BridgeBalanceInput';
 import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
@@ -11,6 +11,7 @@ const BridgeAssetSelect = () => {
     senderAssetType,
     setSenderAssetTargetBalance,
     maxInput,
+    minInput,
     senderAssetTypeOptions,
     setSelectedAssetType,
   } = useBridgeData();
@@ -20,15 +21,8 @@ const BridgeAssetSelect = () => {
   } = useBridgeTx();
 
   const balanceText = senderAssetCurrentBalance
-    ? `${senderAssetCurrentBalance.toString()} ${senderAssetType.ticker}`
-    : null;
-
-  let errorText = null;
-  if (txIsOverMinAmount() === false) {
-    errorText = 'Tx amount too low'
-  } else if (userHasSufficientFunds() === false) {
-    errorText = 'Tx amount is too high'
-  }
+    ? senderAssetCurrentBalance.toDisplayString()
+    : '--';
 
   return (
     <div className="w-100 relative">
