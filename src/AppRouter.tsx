@@ -1,12 +1,43 @@
 // @ts-nocheck
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import MainApp from 'MainApp';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { SendPage, StakePage, BridgePage } from 'pages';
+import { CalamariBasePage, DolphinBasePage } from 'pages/BasePage';
 
-function AppRouter() {
+const AppRouter = () => {
   return (
     <Router>
-      <MainApp />
+      <Routes>
+        <Route
+          index
+          element={<Navigate to="/calamari/bridge" replace />}
+          exact
+        />
+        <Route
+          path="/transact"
+          element={<Navigate to="/dolphin/transact" replace />}
+          exact
+        />
+        <Route
+          path="/bridge"
+          element={<Navigate to="/calamari/bridge" replace />}
+          exact
+        />
+        <Route
+          path="/stake"
+          element={<Navigate to="/calamari/stake" replace />}
+          exact
+        />
+        <Route path="calamari" element={<CalamariBasePage />}>
+          <Route index element={<Navigate to="bridge" />} />
+          <Route path="bridge" element={<BridgePage />} exact />
+          <Route path="stake" element={<StakePage />} exact />
+        </ Route >
+        <Route path="dolphin" element={<DolphinBasePage />}>
+          <Route index element={<Navigate to="transact" />} />
+          <Route path="transact" element={<SendPage />} exact />
+        </ Route >
+      </Routes>
     </Router>
   );
 }

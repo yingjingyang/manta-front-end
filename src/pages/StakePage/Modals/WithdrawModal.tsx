@@ -42,7 +42,7 @@ export const WithdrawModal = ({hideModal}) => {
     getErrorMessage();
   }, [selectedUnstakeRequest, userAvailableBalance]);
 
-  const withdrawAmountText = `Withdrawal amount: ${selectedUnstakeRequest.unstakeAmount.toString(true, 0)} `;
+  const withdrawAmountText = `Withdrawal amount: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(0)} `;
   const notes = [
     'Withdrawn tokens are fully unstaked.',
     'You can transfer or stake withdrawn tokens without restriction.'

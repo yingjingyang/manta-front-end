@@ -1,38 +1,41 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import { useSubstrate } from 'contexts/substrateContext';
-import BalanceInput from './BalanceInput';
-import { useBridgeData } from 'pages/BridgePage/BridgeContext/BridgeDataContext';
+import { useSend } from 'pages/SendPage/SendContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import BalanceInput from '../../components/Balance/BalanceInput';
 
-const BridgeBalanceInput = () => {
+const SendBalanceInput = () => {
   const { api } = useSubstrate();
   const {
     senderAssetCurrentBalance,
     setSenderAssetTargetBalance,
     senderAssetType,
-    maxInput
-  } = useBridgeData();
+    senderIsPrivate,
+    senderInputValue,
+    setSenderInputValue,
+    getMaxSendableBalance
+  } = useSend();
+  const { isInitialSync } = usePrivateWallet();
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
-  const balanceText = senderAssetCurrentBalance?.toString(true);
-
-
-  const [inputValue, setInputValue] = useState('');
+  const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && senderIsPrivate();
+  const balanceText = shouldShowInitialSync
+    ? 'Syncing to network' : senderAssetCurrentBalance?.toString();
 
   const onChangeSendAmountInput = (value) => {
     if (value === '') {
       setSenderAssetTargetBalance(null);
-      setInputValue('');
+      setSenderInputValue('');
     } else {
       try {
         const targetBalance = Balance.fromBaseUnits(
           senderAssetType,
           new Decimal(value)
         );
-        setInputValue(value);
+        setSenderInputValue(value);
         if (targetBalance.valueAtomicUnits.gt(new BN(0))) {
           setSenderAssetTargetBalance(targetBalance);
         } else {
@@ -43,15 +46,16 @@ const BridgeBalanceInput = () => {
   };
 
   const onClickMax = () => {
-    if (maxInput) {
-      onChangeSendAmountInput(maxInput.toString());
+    const maxSendableBalance = getMaxSendableBalance()
+    if (maxSendableBalance) {
+      onChangeSendAmountInput(maxSendableBalance.toString());
     }
   };
 
   return (
     <BalanceInput
       onChangeAmountInput={onChangeSendAmountInput}
-      inputValue={inputValue}
+      inputValue={senderInputValue}
       onClickMax={onClickMax}
       balanceText={balanceText}
       shouldShowLoader={shouldShowLoader}
@@ -59,13 +63,4 @@ const BridgeBalanceInput = () => {
   );
 };
 
-BridgeBalanceInput.propTypes = {
-  balanceText: PropTypes.string,
-  onChange: PropTypes.func,
-  value: PropTypes.any,
-  onClickMax: PropTypes.func,
-  isDisabled: PropTypes.bool
-};
-
-
-export default BridgeBalanceInput;
+export default SendBalanceInput;

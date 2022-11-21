@@ -17,7 +17,7 @@ export default class Chain {
     parachainId,
     icon,
     socket,
-    blockExplorerUrl,
+    subscanUrl,
     xcmAssets,
     nativeAsset,
     xcmAdapter,
@@ -31,7 +31,7 @@ export default class Chain {
     this.parachainId = parachainId;
     this.icon = icon;
     this.socket = socket;
-    this.blockExplorerUrl = blockExplorerUrl;
+    this.subscanUrl = subscanUrl;
     this.xcmAssets = xcmAssets;
     this.nativeAsset = nativeAsset;
     this.xcmAdapter = xcmAdapter;
@@ -93,7 +93,7 @@ export default class Chain {
       null,
       Svgs.KusamaIcon,
       config.KUSAMA_SOCKET,
-      'https://rococo.subscan.io',
+      'https://kusama.subscan.io',
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
       new KusamaAdapter()
@@ -159,7 +159,6 @@ export default class Chain {
   }
 
   async _initApi() {
-    console.log("this.socket", this.socket)
     const provider = new WsProvider(this.socket);
     if (this.apiOptions) {
       this.api = await ApiPromise.create(options({ provider, types: this.apiTypes}));
