@@ -73,13 +73,9 @@ const SendToAddressInput = () => {
           placeholder={'address'}
         />
       </div>
-      <p
-        className={`text-xss text-red-500 ml-2 ${
-          errorMessage ? 'visible' : 'invisible'
-        }`}
-      >
-        {errorMessage ?? 'No Error'}
-      </p>
+      <div className='h-4 pt-1'>
+        <p className='text-xss text-red-500 ml-2'>{errorMessage}</p>
+      </div>
     </>
   );
 };

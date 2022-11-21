@@ -5,7 +5,6 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
-import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
 import { useMetamask } from 'contexts/metamaskContext';
 import Chain from 'types/Chain';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
@@ -21,9 +20,7 @@ export const BridgeDataContextProvider = (props) => {
   const config = useConfig();
   const {
     externalAccount,
-    externalAccountSigner,
-    externalAccountOptions,
-    changeExternalAccount
+    externalAccountSigner
   } = useExternalAccount();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
@@ -31,7 +28,6 @@ export const BridgeDataContextProvider = (props) => {
   const {
     senderAssetType,
     senderAssetTargetBalance,
-    senderSubstrateAccount,
     originChainOptions,
     originChain,
     destinationChain,
@@ -40,10 +36,10 @@ export const BridgeDataContextProvider = (props) => {
 
   const originAddress = originChain.xcmAdapter.chain.type === 'ethereum'
     ? ethAddress
-    : senderSubstrateAccount?.address;
+    : externalAccount?.address;
   const destinationAddress = destinationChain.xcmAdapter.chain.type === 'ethereum'
     ? ethAddress
-    : senderSubstrateAccount?.address;
+    : externalAccount?.address;
 
   useEffect(() => {
     const initBridge = async () => {
@@ -64,9 +60,35 @@ export const BridgeDataContextProvider = (props) => {
   }, [externalAccountSigner, externalAccount, originChainOptions]);
 
 
+  const subscribeBalanceChanges = (assetType, handler) => {
+    if (!assetType || !originAddress || !bridge || !originChain) {
+      return
+    }
+    const balanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
+      assetType.baseTicker, originAddress
+    );
+    return balanceObserveable.subscribe(handler);
+  }
+
+  useEffect(() => {
+    const handleSenderNativeAssetBalanceChange = (balanceData) => {
+      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
+        originChain.nativeAsset,
+        balanceData.free
+      );
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
+        senderNativeAssetCurrentBalance
+      })
+    }
+    const subscription = subscribeBalanceChanges(
+      originChain.nativeAsset, handleSenderNativeAssetBalanceChange
+    );
+    return () => subscription?.unsubscribe();
+  }, [senderAssetType, originAddress, originChain, bridge])
+
   useEffect(() => {
     const handleBalanceChange = (balanceData) => {
-
       const senderAssetCurrentBalance = Balance.fromBaseUnits(
         senderAssetType,
         balanceData.free
@@ -76,19 +98,10 @@ export const BridgeDataContextProvider = (props) => {
         senderAssetCurrentBalance
       })
     }
-
-    const subscribeBalanceChanges = () => {
-      if (!senderAssetType || !originAddress || !bridge || !originChain) {
-        return
-      }
-      const senderBalanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
-        senderAssetType.baseTicker, originAddress
-      );
-      return senderBalanceObserveable.subscribe(handleBalanceChange);
-    }
-    const subscription = subscribeBalanceChanges()
+    const subscription = subscribeBalanceChanges(senderAssetType, handleBalanceChange);
     return () => subscription?.unsubscribe();
   }, [senderAssetType, originAddress, originChain, bridge])
+
 
   useEffect(() => {
     const getDestinationFee = (inputConfig) => {
@@ -159,63 +172,9 @@ export const BridgeDataContextProvider = (props) => {
   },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, destinationChain, bridge])
 
   /**
-   * Initialization logic
-   */
-
-  // Adds the user's polkadot.js accounts to state on pageload
-  // These populate public address select dropdowns in the ui
-  useEffect(() => {
-    const initPublicAccountOptions = () => {
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT_OPTIONS,
-        senderSubstrateAccountOptions: externalAccountOptions
-      });
-    };
-    initPublicAccountOptions();
-  }, [externalAccountOptions]);
-
-  /**
-   * External state
-   */
-
-  // Synchronizes the user's current 'active' public account in local state
-  // to match its upstream source of truth in `externalAccountContext`
-  // The active `senderSubstrateAccount` sends and covers fees for all
-  // substrate-based payments
-  useEffect(() => {
-    const syncSenderSubstrateAccountToExternalAccount = () => {
-      dispatch({
-          type: BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT,
-          senderSubstrateAccount: externalAccount
-      });
-    }
-    syncSenderSubstrateAccountToExternalAccount();
-  }, [externalAccount]);
-
-  // Sets the polkadot.js signing and fee-paying account in 'externalAccountContext'
-  // to match the user's public account as set in the send form
-  useEffect(() => {
-    const syncExternalAccountToSubstrateAccount = () => {
-      senderSubstrateAccount && changeExternalAccount(senderSubstrateAccount);
-    };
-    syncExternalAccountToSubstrateAccount();
-  }, [
-    senderAssetType,
-    externalAccountOptions
-  ]);
-
-  /**
    *
    * Mutations exposed through UI
    */
-
-  // Sets the sender's public account, exposed in the `To Public` and `Public transfer` form;
-  // State is set upstream in `externalAccountContext`, and propagates downstream here
-  // (see `syncPublicAccountToExternalAccount` above)
-  const setSenderSubstrateAccount = async (senderSubstrateAccount) => {
-    setLastAccessedExternalAccountAddress(senderSubstrateAccount.address);
-    await changeExternalAccount(senderSubstrateAccount);
-  };
 
   // Sets the asset type to be transacted
   const setSelectedAssetType = (selectedAssetType) => {
@@ -252,14 +211,21 @@ export const BridgeDataContextProvider = (props) => {
     });
   };
 
+  // Switches origin and destination chain
+  const switchOriginAndDestination = () => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION,
+    });
+  }
+
   const value = {
     originAddress,
     destinationAddress,
     setSenderAssetTargetBalance,
-    setSenderSubstrateAccount,
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,
+    switchOriginAndDestination,
     ...state
   };
 

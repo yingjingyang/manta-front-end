@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Select, { components } from 'react-select';
 import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
-import GradientText from 'components/GradientText';
 import classNames from 'classnames';
 
 const AssetTypeSelect = ({
@@ -33,7 +32,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-2 top-2 manta-bg-gray rounded-2xl text-black dark:text-white',
+        '!absolute right-2 top-2 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -90,7 +89,7 @@ const dropdownStyles = (disabled) => {
     }),
     menu: (provided) => ({
       ...provided,
-      width: '150%'
+      width: '200%'
     }),
     container: () => ({
       position: 'absolute'
@@ -104,13 +103,13 @@ const EmptyIndicatorSeparator = () => {
 
 const AssetTypeControl = (props) => {
   return (
-      <components.Control className="w-40" {...props} />
+      <components.Control {...props} />
   );
 };
 
 const AssetTypeSingleValue = ({ data }) => {
   return (
-    <div className="pl-2 border-0 flex items-center gap-3">
+    <div className="pl-2 border-0 flex items-center gap-3 mr-2">
       <img className="w-8 h-8 rounded-full" src={data.icon} alt="icon" />
       <div className="text-2xl font-bold">{data.ticker}</div>
     </div>

@@ -7,6 +7,7 @@ import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText';
+import { useTxStatus } from 'contexts/txStatusContext';
 
 const BridgeForm = () => {
   const {
@@ -15,8 +16,16 @@ const BridgeForm = () => {
     setOriginChain,
     destinationChain,
     destinationChainOptions,
-    setDestinationChain
+    setDestinationChain,
+    switchOriginAndDestination
   } = useBridgeData();
+  const { txStatus } = useTxStatus();
+
+  const onClickSwitchOriginAndDestination = () => {
+    if (!txStatus?.isProcessing()) {
+      switchOriginAndDestination();
+    }
+  }
 
   return (
     <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
@@ -29,7 +38,8 @@ const BridgeForm = () => {
             isOriginChain={true}
           />
           <img
-            className="mx-auto pb-7"
+            onClick={onClickSwitchOriginAndDestination}
+            className="mx-auto pb-7 cursor-pointer"
             src={Svgs.ArrowRightIcon}
             alt="switch-icon"
           />

@@ -1,9 +1,6 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
-import PageContent from 'components/PageContent';
 import Svgs from 'resources/icons';
-import { showError, showSuccess } from 'utils/ui/Notifications';
-import { useTxStatus } from 'contexts/txStatusContext';
 import MissingRequiredSoftwareModal from 'components/Modal/missingRequiredSoftwareModal';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -16,10 +13,9 @@ import { useKeyring } from 'contexts/keyringContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 
-const SendPageContent = () => {
+const SendForm = () => {
   const config = useConfig();
   const { keyring } = useKeyring();
-  const { txStatus } = useTxStatus();
   const { signerVersion } = usePrivateWallet();
 
   useEffect(() => {
@@ -29,14 +25,6 @@ const SendPageContent = () => {
   }, [keyring]);
 
   document.title = config.PAGE_TITLE;
-
-  useEffect(() => {
-    if (txStatus?.isFinalized()) {
-      showSuccess(config.SUBSCAN_URL, 'Transaction succeeded', txStatus?.extrinsic);
-    } else if (txStatus?.isFailed()) {
-      showError('Transaction failed');
-    }
-  }, [txStatus]);
 
   let warningModal = <div />;
   if (config.DOWNTIME) {
@@ -50,7 +38,7 @@ const SendPageContent = () => {
   }
 
   return (
-    <PageContent>
+    <div>
       {warningModal}
       <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
         <div className="w-128 p-8 bg-secondary rounded-3xl">
@@ -63,8 +51,8 @@ const SendPageContent = () => {
           <SendToForm />
         </div>
       </div>
-    </PageContent>
+    </div>
   );
 };
 
-export default SendPageContent;
+export default SendForm;

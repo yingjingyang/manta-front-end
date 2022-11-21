@@ -1,19 +1,19 @@
 // @ts-nocheck
 import React from 'react';
-import { TxStatusContextProvider } from 'contexts/txStatusContext';
 import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { SendContextProvider } from './SendContext';
-import SendPageContent from './SendPageContent';
+import PageContent from 'components/PageContent';
+import SendForm from './SendForm';
 
 const SendPage = () => {
   return (
-    <TxStatusContextProvider >
       <PrivateWalletContextProvider>
         <SendContextProvider>
-          <SendPageContent />
+          <PageContent>
+            <SendForm />
+          </PageContent>
         </SendContextProvider>
       </PrivateWalletContextProvider>
-    </TxStatusContextProvider>
   );
 };
 
