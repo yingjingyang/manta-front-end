@@ -108,7 +108,6 @@ export const BridgeTxContextProvider = (props) => {
         if (api.events.system.ExtrinsicFailed.is(event.event)) {
           const error = event.event.data[0];
           if (error.isModule) {
-            console.log('phew')
             const decoded = api.registry.findMetaError(error.asModule.toU8a());
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);

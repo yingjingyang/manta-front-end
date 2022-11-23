@@ -25,7 +25,13 @@ const CalamariAssetIds = {
 }
 
 const getAssetIds = (config) => {
-  return config.NETWORK_NAME === 'Calamari' ? CalamariAssetIds : DolphinAssetIds;
+  if (config.NETWORK_NAME === 'Calamari') {
+    return CalamariAssetIds;
+  } else if (config.NETWORK_NAME === 'Dolphin') {
+    return DolphinAssetIds;
+  } else if (config.NETWORK_NAME === 'Manta') {
+    throw new Error('Unimplemented');
+  }
 }
 
 export default class AssetType {
