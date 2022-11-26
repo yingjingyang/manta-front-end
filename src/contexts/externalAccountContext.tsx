@@ -26,7 +26,7 @@ export const ExternalAccountContextProvider = (props) => {
 
   useEffect(() => {
     const setInitialExternalAccount = async () => {
-      if (keyring && api && keyring.getPairs().length > 0) {
+      if (keyring && keyring.getPairs().length > 0) {
         // The user's default account is either their last accessed polkadot.js account,
         // or, as a fallback, the first account in their polkadot.js wallet
         const externalAccountOptions =  keyring.getPairs();
@@ -39,10 +39,12 @@ export const ExternalAccountContextProvider = (props) => {
       }
     };
     setInitialExternalAccount();
-  }, [keyring, api]);
+  }, [keyring]);
 
   useEffect(() => {
-    if (!externalAccount || !api) return;
+    if (!externalAccount || !api) {
+      return;
+    }
     const setSignerOnChangeExternalAccount = async () => {
       const {
         meta: { source, isInjected },

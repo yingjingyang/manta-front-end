@@ -17,16 +17,15 @@ const SendButton = () => {
   return (
 
     <div >
-      {txStatus?.isProcessing() ? (
+      {disabled ? (
         <MantaLoading className="py-4" />
       ) : (
         <button
-          onClick={!disabled && onClick}
+          onClick={onClick}
           className={
             classNames(
               'py-3 cursor-pointer text-xl btn-hover unselectable-text',
               'text-center rounded-lg btn-primary w-full',
-              {'disabled': disabled}
             )}
         >
         Submit

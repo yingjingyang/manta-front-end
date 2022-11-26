@@ -23,7 +23,7 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128': '32rem'
+        '128':'32rem'
       },
       backgroundImage: {},
 
@@ -45,9 +45,9 @@ module.exports = {
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
         link: 'var(--color-bg-button)',
+        warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
-        warning: 'var(--color-text-warning)'
       },
       fill: {
         current: 'var(--color-text-secondary)',

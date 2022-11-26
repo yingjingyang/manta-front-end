@@ -23,10 +23,12 @@ export const showWarning = (msg) => {
   });
 };
 
-export const showSuccess = (config, msg, extrinsic = '') => {
+export const showSuccess = (subscanBaseUrl, msg, extrinsic = '') => {
   Notification({
     title: 'Success',
-    message: <TxSuccessNotificationContent config={config} msg={msg} extrinsic={extrinsic} />,
+    message: <TxSuccessNotificationContent
+        subscanBaseUrl={subscanBaseUrl} msg={msg} extrinsic={extrinsic}
+      />,
     type: 'success',
     duration: 15000,
     pauseOnHover: true

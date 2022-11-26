@@ -5,14 +5,17 @@ import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 
 const BridgeAssetErrorText = () => {
-  const { senderAssetType, minInput } = useBridgeData();
-  const { txIsOverMinAmount, userHasSufficientFunds} = useBridgeTx();
+  const { senderAssetType, minInput, originChain } = useBridgeData();
+  const { txIsOverMinAmount, userHasSufficientFunds, userCanPayOriginFee} = useBridgeTx();
 
   let errorText = null;
   if (userHasSufficientFunds() === false) {
     errorText = 'Insufficient balance'
+  } else if (userCanPayOriginFee() === false) {
+    errorText = `Insufficient ${originChain.nativeAsset.ticker} to pay origin fee`;
   } else if (txIsOverMinAmount() === false) {
-    errorText = `Minimum ${senderAssetType.ticker} transaction is ${minInput.toFeeString()}`
+    const MIN_INPUT_DIGITS = 6;
+    errorText = `Minimum ${senderAssetType.ticker} transaction is ${minInput.toDisplayString(MIN_INPUT_DIGITS)}`
   }
 
   return (

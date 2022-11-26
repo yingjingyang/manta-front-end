@@ -1,7 +1,7 @@
 import React from 'react';
 import GradientText from 'components/GradientText';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
-import BalanceComponent from 'components/Balance';
+import BalanceDisplay from 'components/Balance/BalanceDisplay';
 import { useSend } from '../SendContext';
 
 const ReceiverBalanceDisplay = () => {
@@ -20,7 +20,9 @@ const ReceiverBalanceDisplay = () => {
 
   return (
     <div className="relative gap-4 justify-between items-center px-4 py-2 manta-bg-gray rounded-lg h-24">
-      <div className="absolute left-6 top-7 font-bold text-2xl text-gray-500">{senderInputValue || '0.00'}</div>
+      <div className="absolute left-6 top-7 w-1/2 text-2xl text-gray-500 overflow-hidden font-bold">
+        {senderInputValue || '0.00'}
+      </div>
       <div className="absolute right-11 top-2 pl-2 border-0 flex flex-y items-center gap-3 mt-2 w-1/4">
         <div>
           <img
@@ -33,10 +35,9 @@ const ReceiverBalanceDisplay = () => {
           {receiverAssetType?.ticker}
         </div>
       </div>
-      <BalanceComponent
+      <BalanceDisplay
         balance={balanceString}
         className="absolute manta-gray right-9 bottom-3 flex flex-row gap-1 text-sm"
-        loaderClassName="bg-black dark:bg-white"
         loader={receiverAddress && !receiverCurrentBalance}
       />
     </div>

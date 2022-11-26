@@ -34,7 +34,7 @@ const SendButton = () => {
       showError(
         `Minimum ${
           receiverAssetType.ticker
-        } transaction is ${existentialDeposit.toString()}`
+        } transaction is ${existentialDeposit.toDisplayString()}`
       );
     } else if (userCanPayFee() === false) {
       showError('Cannot pay transaction fee; deposit DOL to transact');

@@ -51,16 +51,13 @@ export const buildInitState = (config) => {
     bridge: null,
 
     senderEthAccount: null,
-    senderSubstrateAccount: null,
-    senderSubstrateAccountOptions: [],
-
     senderAssetType: initSenderAssetType,
     senderAssetTypeOptions: initSenderAssetTypeOptions,
     senderAssetCurrentBalance: null,
     senderAssetTargetBalance: null,
     maxInput: null,
     minInput: null,
-    senderNativeTokenPublicBalance: null,
+    senderNativeAssetCurrentBalance: null,
 
     originChain: initOriginChain,
     originChainOptions: initOriginChainOptions,
@@ -72,8 +69,6 @@ export const buildInitState = (config) => {
   };
 }
 
-
-
 const bridgeReducer = (state, action) => {
   switch (action.type) {
   case BRIDGE_ACTIONS.SET_BRIDGE:
@@ -82,20 +77,11 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT:
-    return setSenderSubstrateAccount(state, action);
-
-  case BRIDGE_ACTIONS.SET_SENDER_SUBSTRATE_ACCOUNT_OPTIONS:
-    return setSenderSubstrateAccountOptions(state, action);
-
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
     return setSenderAssetCurrentBalance(state, action);
 
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
     return setSenderAssetTargetBalance(state, action);
-
-  case BRIDGE_ACTIONS.SET_SENDER_NATIVE_TOKEN_PUBLIC_BALANCE:
-    return setSenderNativeTokenPublicBalance(state, action);
 
   case BRIDGE_ACTIONS.SET_FEE_ESTIMATES:
     return setFeeEstimates(state, action)
@@ -106,8 +92,11 @@ const bridgeReducer = (state, action) => {
   case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
     return setDestinationChain(state, action);
 
-  case BRIDGE_ACTIONS.SET_CHAIN_OPTIONS:
-    return setChainOptions(state, action);
+  case BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION:
+    return switchOriginAndDestination(state);
+
+  case BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE:
+    return setSenderNativeAssetCurrentBalance(state, action)
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -145,21 +134,6 @@ const setSelectedAssetType = (state, action) => {
   };
 };
 
-const setSenderSubstrateAccount = (state, { senderSubstrateAccount }) => {
-  return {
-    ...state,
-    senderSubstrateAccount,
-    senderAssetCurrentBalance: null,
-  };
-};
-
-const setSenderSubstrateAccountOptions = (state, action) => {
-  return {
-    ...state,
-    senderSubstrateAccountOptions: action.senderSubstrateAccountOptions
-  };
-};
-
 const setSenderAssetCurrentBalance = (state, action) => {
   if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetCurrentBalance?.assetType)) {
     return state;
@@ -170,17 +144,24 @@ const setSenderAssetCurrentBalance = (state, action) => {
   };
 };
 
+
+const setSenderNativeAssetCurrentBalance = (state, {senderNativeAssetCurrentBalance}) => {
+  if (
+    balanceUpdateIsStale(
+      state?.originChain?.nativeAsset, senderNativeAssetCurrentBalance?.assetType
+  )) {
+    return state;
+  }
+  return {
+    ...state,
+    senderNativeAssetCurrentBalance
+  }
+}
+
 const setSenderAssetTargetBalance = (state, action) => {
   return {
     ...state,
     senderAssetTargetBalance: action.senderAssetTargetBalance
-  };
-};
-
-const setSenderNativeTokenPublicBalance = (state, action) => {
-  return {
-    ...state,
-    senderNativeTokenPublicBalance: action.senderNativeTokenPublicBalance
   };
 };
 
@@ -217,7 +198,7 @@ const setOriginChain = (state, { originChain }) => {
     senderAssetType,
     senderAssetTypeOptions,
     senderAssetTargetBalance,
-    senderNativeTokenPublicBalance: null,
+    senderNativeAssetCurrentBalance: null,
     senderAssetCurrentBalance: null,
     originFee: null,
     destinationFee: null
@@ -239,26 +220,27 @@ const setDestinationChain = (state, { destinationChain }) => {
     senderAssetType,
     destinationChain,
     senderAssetTargetBalance,
-    senderNativeTokenPublicBalance: null,
+    senderNativeAssetCurrentBalance: null,
     senderAssetCurrentBalance: null,
     originFee: null,
     destinationFee: null
   };
 };
 
-const setChainOptions = (state, { chainOptions }) => {
-  const defaultOriginChain = chainOptions[0];
-  const defaultDestinationChain = chainOptions[1];
-  const destinationChainOptions = getDestinationChainOptions(defaultOriginChain, chainOptions);
-
-  return {
-    ...state,
-    originChain: defaultOriginChain,
-    originChainOptions: chainOptions,
-    destinationChain: defaultDestinationChain,
-    destinationChainOptions: destinationChainOptions,
-    chainApis: []
-  };
-};
+const switchOriginAndDestination = (state) => {
+  const { originChain, destinationChain, senderAssetType, senderAssetTypeOptions} = state;
+  if (destinationChain.canTransferXcm(originChain)) {
+    return {
+      ...state,
+      originChain: destinationChain,
+      destinationChain: originChain,
+      senderAssetType: getNewSenderAssetType(senderAssetType, senderAssetTypeOptions),
+      senderNativeAssetCurrentBalance: null,
+      senderAssetCurrentBalance: null,
+      originFee: null,
+      destinationFee: null
+    }
+  }
+}
 
 export default bridgeReducer;

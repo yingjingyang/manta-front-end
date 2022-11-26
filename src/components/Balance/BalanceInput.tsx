@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
 import GradientText from 'components/GradientText';
-import BalanceComponent from 'components/Balance';
+import BalanceDisplay from 'components/Balance/BalanceDisplay';
+
 
 const BalanceInput = ({
   onChangeAmountInput,
@@ -41,9 +42,9 @@ const BalanceInput = ({
           onClickMax={onClickMax}
         />
       </div>
-      <BalanceComponent
+      <BalanceDisplay
         balance={balanceText}
-        className="text-xs manta-gray mt-2.5 absolute right-10 bottom-3"
+        className="text-xs manta-gray mt-2.5 absolute right-9 bottom-3"
         loaderClassName="text-manta-gray border-manta-gray bg-manta-gray"
         loader={shouldShowLoader}
       />

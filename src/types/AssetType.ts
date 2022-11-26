@@ -25,12 +25,17 @@ const CalamariAssetIds = {
 }
 
 const getAssetIds = (config) => {
-  return config.NETWORK_NAME === 'Calamari' ? CalamariAssetIds : DolphinAssetIds;
+  if (config.NETWORK_NAME === 'Calamari') {
+    return CalamariAssetIds;
+  } else if (config.NETWORK_NAME === 'Dolphin') {
+    return DolphinAssetIds;
+  } else if (config.NETWORK_NAME === 'Manta') {
+    throw new Error('Unimplemented');
+  }
 }
 
 export default class AssetType {
   constructor(
-    config,
     assetId,
     baseName,
     baseTicker,
@@ -63,7 +68,6 @@ export default class AssetType {
 
   static Dolphin(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).DOL,
       'Dolphin',
       'DOL',
@@ -77,7 +81,6 @@ export default class AssetType {
 
   static Calamari(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).KMA,
       'Calamari',
       'KMA',
@@ -92,7 +95,6 @@ export default class AssetType {
 
   static Karura(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).KAR,
       'Karura',
       'KAR',
@@ -106,7 +108,6 @@ export default class AssetType {
 
   static AcalaDollar(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).AUSD,
       'Acala Dollar',
       'aUSD',
@@ -119,7 +120,6 @@ export default class AssetType {
 
   static Kusama(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).KSM,
       'Kusama',
       'KSM',
@@ -133,7 +133,6 @@ export default class AssetType {
 
   static KaruraLiquidKusama(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).LKSM,
       'Karura Liquid Kusama',
       'LKSM',
@@ -147,7 +146,6 @@ export default class AssetType {
 
   static Rococo(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).ROC,
       'Rococo',
       'ROC',
@@ -160,7 +158,6 @@ export default class AssetType {
 
   static KintsugiBTC(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).KBTC,
       'Kintsugi BTC',
       'kBTC',
@@ -173,7 +170,6 @@ export default class AssetType {
 
   static Moonriver(config, isPrivate) {
     return new AssetType(
-      config,
       getAssetIds(config).MOVR,
       'Moonriver',
       'MOVR',
@@ -208,16 +204,15 @@ export default class AssetType {
   }
 
   static _getFullName(baseName, isPrivate) {
-    return isPrivate ? `Test Private ${baseName}` : `Test ${baseName}`;
+    return isPrivate ? `Test zk${baseName}` : `Test ${baseName}`;
   }
 
   static _getFullTicker(baseTicker, isPrivate) {
-    return isPrivate ? `p${baseTicker}` : baseTicker;
+    return isPrivate ? `zk${baseTicker}` : baseTicker;
   }
 
   toPrivate() {
     return new AssetType(
-      this.config,
       this.assetId,
       this.baseName,
       this.baseTicker,
@@ -231,7 +226,6 @@ export default class AssetType {
 
   toPublic() {
     return new AssetType(
-      this.config,
       this.assetId,
       this.baseName,
       this.baseTicker,
@@ -252,10 +246,7 @@ export default class AssetType {
   }
 
   canTransferXcm = (originChain, destinationChain) => {
-    const res = (
-      originChain.xcmAssets.find(asset => asset.name === this.name)
+    return originChain.xcmAssets.find(asset => asset.name === this.name)
       && destinationChain.xcmAssets.find(asset => asset.name === this.name)
-    );
-    return res;
   };
 }

@@ -48,14 +48,14 @@ export const StakeModal = ({ hideModal }) => {
     } else if (!balance) {
       return <DotLoader />;
     } else {
-      return balance.toString(true, 0);
+      return balance.toDisplayString(0);
     }
   };
 
   const availableBalanceText = `Available balance: ${getBalanceDisplayString(userAvailableBalance)}`;
-  const minStakeAmountString = selectedCollator.minStake.toString(true, 0);
+  const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toString(true, 0)}`
+    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
     : 'Staked: 0 KMA';
 
   const minimumStakeText = ` Minimum stake: ${minStakeAmountString}`;
@@ -134,7 +134,7 @@ export const StakeModal = ({ hideModal }) => {
   const onClickMax = async () => {
     const maxStakeableBalance = await getMaxStakeableBalance();
     if (maxStakeableBalance) {
-      onChangeStakeAmountInput(maxStakeableBalance.toString(false));
+      onChangeStakeAmountInput(maxStakeableBalance.toString());
     }
   };
 

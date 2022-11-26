@@ -46,7 +46,7 @@ export const CancelUnstakeModal = ({hideModal}) => {
     }
   };
 
-  const cancelAmountText = `Unstaking balance: ${selectedUnstakeRequest.unstakeAmount.toString(true, 0)} `;
+  const cancelAmountText = `Unstaking balance: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(0)} `;
   const notes = [
     'This will restake your tokens and allow you to earn staking rewards again.',
     'You will need to unstake again and wait seven days before you can withdraw.'

@@ -115,12 +115,10 @@ export const PrivateWalletContextProvider = (props) => {
   }, [api, externalAccountSigner, signerIsConnected, signerVersion]);
 
   const fetchSignerVersion = async () => {
-    console.log('fetchSignerVersion', fetchSignerVersion)
     try {
       const res = await axios.get(`${config.SIGNER_URL}version`, {
         timeout: 1500
       });
-      console.log('res', res);
       const signerVersion = res.data;
       const signerIsConnected = !!signerVersion;
       setSignerIsConnected(signerIsConnected);
