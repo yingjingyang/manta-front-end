@@ -1,5 +1,4 @@
 import React from 'react';
-import GradientText from 'components/GradientText';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceDisplay from 'components/Balance/BalanceDisplay';
 import { useSend } from '../SendContext';
