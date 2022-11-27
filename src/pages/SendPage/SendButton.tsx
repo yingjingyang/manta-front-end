@@ -78,7 +78,11 @@ const SendButton = () => {
       );
     } else if (txStatus?.isProcessing()) {
       // pending transaction
-      return (<MantaLoading className="py-4" />);
+      return (
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
+          Processing
+        </div>
+      );
     } else {
       // transact button
       return (

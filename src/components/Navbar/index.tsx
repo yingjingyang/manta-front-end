@@ -2,7 +2,6 @@
 import React from 'react';
 import AccountSelectMenu from 'components/Accounts/AccountSelectMenu';
 import Menu from 'components/Menu/DotMenu';
-import Navs from './Navs';
 import ChainSelector from './ChainSelector';
 import SignerConnectionStatusLabel from './SignerConnectionStatusLabel';
 

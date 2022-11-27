@@ -8,7 +8,11 @@ import Navbar from "components/Navbar";
 import DeveloperConsole from "components/Developer/DeveloperConsole";
 import { TxStatusContextProvider, useTxStatus } from "contexts/txStatusContext";
 import { useEffect } from "react";
-import { showError, showInfo, showSuccess } from "utils/ui/Notifications";
+import {
+  showError,
+  showInfo,
+  showSuccess,
+} from 'utils/ui/Notifications';
 
 const TxStatusHandler = () => {
   const config = useConfig();
@@ -21,8 +25,12 @@ const TxStatusHandler = () => {
       showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);
     } else if (txStatus?.isFailed()) {
       showError('Transaction failed');
-    } else if (txStatus?.isProcessing() && txStatus.message) {
-      showInfo(txStatus.message);
+    } else if (txStatus?.isProcessing()) {
+      if (txStatus.message) {
+        showInfo(txStatus.message);
+      } else {
+        showInfo('Processing');
+      }
     }
   }, [txStatus]);
 
