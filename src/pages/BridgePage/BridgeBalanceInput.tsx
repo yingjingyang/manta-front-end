@@ -19,7 +19,6 @@ const BridgeBalanceInput = () => {
   const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
   const balanceText = senderAssetCurrentBalance?.toString();
 
-
   const [inputValue, setInputValue] = useState('');
 
   const onChangeSendAmountInput = (value) => {

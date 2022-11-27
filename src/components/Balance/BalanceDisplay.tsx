@@ -12,9 +12,15 @@ const BalanceDisplay: React.FC<IBalanceDisplayProps> = ({
   className,
   loader
 }) => {
+
+  let balanceDisplay = balance;
+  if (!balance && !loader) {
+    balanceDisplay = '--'
+  }
+
   return (
     <div id="balanceText" className={className}>
-      Balance:&nbsp;{balance}
+      Balance:&nbsp;{balanceDisplay}
       {loader ? <DotLoader /> : <div className="w-8"></div>}
     </div>
   );
