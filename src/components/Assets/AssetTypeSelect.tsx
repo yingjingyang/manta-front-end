@@ -102,7 +102,7 @@ const EmptyIndicatorSeparator = () => {
 
 const AssetTypeSingleValue = ({ data }) => {
   return (
-    <div className="pl-2 border-0 flex items-center gap-2 mr-2">
+    <div className="border-0 flex items-center gap-2">
       <img className="w-5 h-5 rounded-full" src={data.icon} alt="icon" />
       <div className="text-black dark:text-white">{data.ticker}</div>
     </div>

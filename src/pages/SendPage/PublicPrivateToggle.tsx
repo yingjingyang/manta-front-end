@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { ReactComponent as SunIcon } from 'resources/icons/sun.svg';
 import { ReactComponent as ShieldIcon } from 'resources/icons/shield-lock.svg';
 
-const PublicPrivateToggle = ({ isPrivate, onToggle, label, prefix }) => {
+const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
@@ -22,30 +22,29 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, label, prefix }) => {
   }
 
   return (
-    <div className="flex justify-center items-center h-5">
-      <label className="text-primary">{label}</label>
-      <span
+    <>
+      <div
         id={buttonId}
         onClick={onClick}
         className={classNames(
-          'py-1 pr-1 cursor-pointer btn-hover unselectable-text',
-          'text-center rounded-full btn-primary flex items-center justify-center gap-3 w-32 text-white text-sm',
+          'flex text-center cursor-pointer place-items-center btn-hover unselectable-text',
+          'rounded-full bg-blue-button text-white',
           { disabled: disabled }
         )}
       >
         {isPrivate ? (
-          <>
-            <ShieldIcon />
-            Private
-          </>
+          <div className="flex flex-row w-24 justify-center">
+            <ShieldIcon className="w-3 h-3 place-self-center" />
+            <div className="text-xss ml-2">Private</div>
+          </div>
         ) : (
-          <>
-            <SunIcon />
-            Public
-          </>
+          <div className="flex flex-row w-24 justify-center">
+            <SunIcon className="w-3 h-3 place-self-center" />
+            <div className="text-xss ml-2">Public</div>
+          </div>
         )}
-      </span>
-    </div>
+      </div>
+    </>
   );
 };
 

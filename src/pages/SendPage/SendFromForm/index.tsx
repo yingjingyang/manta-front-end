@@ -24,22 +24,19 @@ const SendFromForm = () => {
   }
 
   return (
-    <div className="flex-y space-y-1">
-      <div className="flex flex-row justify-between items-center mb-4">
-        <div className="text-black dark:text-white">From</div>
-      <div className="flex flex-col gap-4 items-stretch mb-2">
-        <PublicPrivateToggle
-          onToggle={toggleSenderIsPrivate}
-          isPrivate={senderAssetType.isPrivate}
-          prefix="sender"
-        />
-      </div>
+    <div>
+      <div className="mb-4 items-stretch">
+        <div className="flex flex-row justify-between items-center">
+          <div className="text-black dark:text-white">From</div>
+          <PublicPrivateToggle
+            onToggle={toggleSenderIsPrivate}
+            isPrivate={senderAssetType.isPrivate}
+            prefix="sender"
+          />
+        </div>
       </div>
       <SendAssetSelect />
-      <FormErrorText
-        errorText={errorText}
-        warningText={warningText}
-      />
+      <FormErrorText errorText={errorText} warningText={warningText} />
     </div>
   );
 };

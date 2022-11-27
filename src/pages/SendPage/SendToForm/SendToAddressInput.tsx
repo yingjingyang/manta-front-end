@@ -63,7 +63,7 @@ const SendToAddressInput = () => {
       <div
         className={`flex-grow manta-bg-gray ${
           errorMessage && 'error'
-        } h-16 rounded-lg p-0.5 py-3`}
+        } h-12 rounded-lg px-0.5 py-2`}
       >
         <input
           id="recipientAddress"
@@ -73,7 +73,7 @@ const SendToAddressInput = () => {
           placeholder={'address'}
         />
       </div>
-      <div className='h-4 pt-1'>
+      <div>
         <p className='text-xss text-red-500 ml-2'>{errorMessage}</p>
       </div>
     </>

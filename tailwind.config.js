@@ -40,7 +40,8 @@ module.exports = {
         danger: 'var(--color-bg-danger)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         button: 'var(--color-bg-button)',
-        'blue-button':'#0E50FC'
+        'blue-button':'#0E50FC',
+        'gradient-button':'var(--gradient-button-secondary)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',

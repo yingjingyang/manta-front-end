@@ -41,7 +41,7 @@ const SendForm = () => {
       {warningModal}
       <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
         <Navs />
-        <div className="w-113.5 px-12 py-6 bg-secondary rounded-3xl">
+        <div className="w-113.5 px-12 py-6 bg-secondary rounded-xl">
           <SendFromForm />
           <img
             className="mx-auto pt-1 pb-4 manta-gray"

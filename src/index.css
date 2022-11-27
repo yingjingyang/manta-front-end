@@ -36,6 +36,7 @@ body {
   --color-border-secondary: #595f6d;
   --gradient-bg-primary: linear-gradient(to bottom right, #00182a, #000011);
   --gradient-button-primary: linear-gradient(to right, #26c8bf, #1fa2f9);
+  --gradient-button-secondary: linear-gradient(90.17deg, #2B49EA -7.65%, #00AFA5 103.69%);
 }
 
 .light {
@@ -59,6 +60,7 @@ body {
   --color-border-secondary: #595f6d;
   --gradient-bg-primary: linear-gradient(to bottom right, #b0d2eb, white);
   --gradient-button-primary: linear-gradient(to bottom right, #26c8bf, #1fa2f9);
+  --gradient-button-secondary: linear-gradient(90.17deg, #2B49EA -7.65%, #00AFA5 103.69%);
 }
 
 .custom-colors {
