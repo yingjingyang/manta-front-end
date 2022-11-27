@@ -20,10 +20,12 @@ const SendBalanceInput = () => {
     getMaxSendableBalance
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
-  const shouldShowLoader = !senderAssetCurrentBalance && api?.isConnected;
-  const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && senderIsPrivate();
+  const shouldShowInitialSync = isInitialSync.current && senderIsPrivate();
+  const shouldShowLoader =
+    !senderAssetCurrentBalance && api?.isConnected && !shouldShowInitialSync;
   const balanceText = shouldShowInitialSync
-    ? 'Syncing to network' : senderAssetCurrentBalance?.toString();
+    ? 'Syncing to network'
+    : senderAssetCurrentBalance?.toString();
 
   const onChangeSendAmountInput = (value) => {
     if (value === '') {
@@ -46,7 +48,7 @@ const SendBalanceInput = () => {
   };
 
   const onClickMax = () => {
-    const maxSendableBalance = getMaxSendableBalance()
+    const maxSendableBalance = getMaxSendableBalance();
     if (maxSendableBalance) {
       onChangeSendAmountInput(maxSendableBalance.toString());
     }

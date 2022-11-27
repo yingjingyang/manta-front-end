@@ -47,8 +47,8 @@ const SendForm = () => {
           <SendFromForm />
           <img
             onClick={swapSenderAndReceiverArePrivate}
-            className="mx-auto pt-1 pb-4 manta-gray cursor-pointer"
-            src={Svgs.ArrowUpDownIcon}
+            className="mx-auto pt-1 pb-4 cursor-pointer"
+            src={Svgs.UpDownArrowIcon}
             alt="arrow-up-down-icon"
           />
           <SendToForm />

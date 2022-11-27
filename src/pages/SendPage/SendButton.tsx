@@ -15,6 +15,7 @@ const SendButton = () => {
     isToPublic,
     isPublicTransfer,
     isPrivateTransfer,
+    receiverAddress,
     userCanPayFee,
     userHasSufficientFunds,
     receiverAssetType,
@@ -27,35 +28,57 @@ const SendButton = () => {
   const disabled = txStatus?.isProcessing();
 
   const DisplayButton = () => {
-    if (!signerIsConnected) {
+    if (!signerIsConnected && !isPublicTransfer) {
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
           Connect Signer
         </div>
-      ); 
+      );
     } else if (!externalAccount) {
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
           Connect Wallet
         </div>
-      ); 
-    } else if (!senderInputValue) {
+      );
+    } else if (!senderInputValue || senderInputValue <= 0 ) {
       // amount not entered
       return (
-        <div className="py-2 filter brightness-50 unselectable-text text-center text-white gradient-button rounded-lg w-full">
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
           Enter Amount
         </div>
       );
     } else if (userHasSufficientFunds() === false) {
       // insufficient balance
       return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
           Insuffient balance
+        </div>
+      );
+    } else if (
+      receiverAddress === null &&
+      (isPrivateTransfer || isPublicTransfer)
+    ) {
+      const message = `Enter Recipients ${
+        isPrivateTransfer ? 'zkAddress' : 'address'
+      }`;
+      return (
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
+          {message}
+        </div>
+      );
+    } else if (
+      receiverAddress === false &&
+      (isPrivateTransfer || isPublicTransfer)
+    ) {
+      const message = `Invalid ${isPrivateTransfer ? 'zkAddress' : 'address'}`;
+      return (
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
+          {message}
         </div>
       );
     } else if (txStatus?.isProcessing()) {
       // pending transaction
-      return <MantaLoading className="py-4" />;
+      return (<MantaLoading className="py-4" />);
     } else {
       // transact button
       return (

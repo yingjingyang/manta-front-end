@@ -104,8 +104,9 @@ const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="border-0 flex items-center gap-2">
       <img className="w-5 h-5 rounded-full" src={data.icon} alt="icon" />
-      <div className="text-black dark:text-white">{data.ticker}</div>
-
+      <div className="text-black dark:text-white w-14 place-self-center">
+        {data.ticker}
+      </div>
     </div>
   );
 };
@@ -114,11 +115,12 @@ const AssetTypeOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps}>
-      <div id={value.ticker} className="flex items-center inline w-full hover:bg-blue-100">
-        <div className="w-10 h-10 py-1 px-2 ml-3  manta-bg-secondary rounded-full flex items-center justify-center">
-          <img className="w-8 rounded-full" src={value.icon} alt="icon" />
-        </div>
-        <div className="pl-4 p-2 text-black">
+      <div
+        id={value.ticker}
+        className="flex items-center inline w-full hover:bg-blue-100"
+      >
+        <img className="ml-3 w-6 rounded-full" src={value.icon} alt="icon" />
+        <div className="p-2 pl-4 text-black">
           <components.Option {...props} />
           <div className="text-xs block manta-gray">{value.name}</div>
         </div>

@@ -1,10 +1,9 @@
 // @ts-nocheck
+import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
-import React from 'react';
 import PropTypes from 'prop-types';
-import { ReactComponent as SunIcon } from 'resources/icons/sun.svg';
-import { ReactComponent as ShieldIcon } from 'resources/icons/shield-lock.svg';
+import Svgs from 'resources/icons';
 
 const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
   const { txStatus } = useTxStatus();
@@ -33,14 +32,22 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
         )}
       >
         {isPrivate ? (
-          <div className="flex flex-row w-24 justify-center">
-            <ShieldIcon className="w-3 h-3 place-self-center" />
-            <div className="text-xss ml-2">Private</div>
+          <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
+            <img
+              className="w-3 h-3 place-self-center"
+              src={Svgs.LockIcon}
+              alt="icon"
+            />
+            Private
           </div>
         ) : (
-          <div className="flex flex-row w-24 justify-center">
-            <SunIcon className="w-3 h-3 place-self-center" />
-            <div className="text-xss ml-2">Public</div>
+          <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
+            <img
+              className="w-3 h-3 place-self-center"
+              src={Svgs.InternetIcon}
+              alt="icon"
+            />
+            Public
           </div>
         )}
       </div>

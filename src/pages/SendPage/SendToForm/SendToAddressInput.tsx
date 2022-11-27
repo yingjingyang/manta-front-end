@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React from 'react';
-import { useState } from 'react';
 import { useTxStatus } from 'contexts/txStatusContext';
 import {
   validatePrivateAddress,
@@ -9,50 +8,33 @@ import {
 import { useSend } from '../SendContext';
 
 const SendToAddressInput = () => {
-  const { setReceiver, receiverAssetType } = useSend();
+  const { setReceiver, receiverAssetType, receiverAddress } = useSend();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const [errorMessage, setErrorMessage] = useState(null);
 
   const onChangePrivateInput = (event) => {
     if (event.target.value === '') {
-      setErrorMessage(null);
       setReceiver(null);
       return;
     }
     const addressIsValid = validatePrivateAddress(event.target.value);
     if (addressIsValid) {
-      setErrorMessage(null);
       setReceiver(event.target.value);
     } else {
-      setReceiver(null);
-      const addressIsPublic = validatePublicAddress(event.target.value);
-      if (addressIsPublic) {
-        setErrorMessage('Provided address is public, not private');
-      } else {
-        setErrorMessage('Invalid address');
-      }
+      setReceiver(false);
     }
   };
 
   const onChangePublicInput = (event) => {
     if (event.target.value === '') {
-      setErrorMessage(null);
       setReceiver(null);
       return;
     }
     const addressIsValid = validatePublicAddress(event.target.value);
     if (addressIsValid) {
-      setErrorMessage(null);
       setReceiver(event.target.value);
     } else {
-      setReceiver(null);
-      const addressIsPrivate = validatePrivateAddress(event.target.value);
-      if (addressIsPrivate) {
-        setErrorMessage('Provided address is private, not public');
-      } else {
-        setErrorMessage('Invalid address');
-      }
+      setReceiver(false);
     }
   };
 
@@ -62,7 +44,7 @@ const SendToAddressInput = () => {
     <>
       <div
         className={`flex-grow manta-bg-gray ${
-          errorMessage && 'error'
+          receiverAddress === false && 'error'
         } h-12 rounded-lg px-0.5 py-2`}
       >
         <input
@@ -72,9 +54,6 @@ const SendToAddressInput = () => {
           disabled={disabled}
           placeholder={'address'}
         />
-      </div>
-      <div>
-        <p className='text-xss text-red-500 ml-2'>{errorMessage}</p>
       </div>
     </>
   );
