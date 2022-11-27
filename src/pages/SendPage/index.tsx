@@ -7,13 +7,13 @@ import SendForm from './SendForm';
 
 const SendPage = () => {
   return (
-      <PrivateWalletContextProvider>
-        <SendContextProvider>
-          <PageContent>
-            <SendForm />
-          </PageContent>
-        </SendContextProvider>
-      </PrivateWalletContextProvider>
+    <PrivateWalletContextProvider>
+      <SendContextProvider>
+        <PageContent>
+          <SendForm />
+        </PageContent>
+      </SendContextProvider>
+    </PrivateWalletContextProvider>
   );
 };
 

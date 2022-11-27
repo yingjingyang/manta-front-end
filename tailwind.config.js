@@ -23,7 +23,9 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128':'32rem'
+        '128':'32rem',
+        '108':'27rem',
+        '113.5':'28.375rem'
       },
       backgroundImage: {},
 
@@ -37,7 +39,8 @@ module.exports = {
         success: 'var(--color-bg-success)',
         danger: 'var(--color-bg-danger)',
         'manta-gray': 'var(--color-bg-manta-gray)',
-        button: 'var(--color-bg-button)'
+        button: 'var(--color-bg-button)',
+        'blue-button':'#0E50FC'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -65,7 +68,8 @@ module.exports = {
   variants: {
     extend: {
       fill: ['group-hover', 'active', 'hover'],
-      textColor: ['active']
+      textColor: ['active'],
+      fontWeight: ['hover'],
     }
   },
   plugins: []

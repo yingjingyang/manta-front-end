@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React from 'react';
+import Navs from 'components/Navbar/Navs';
 import ChainSelect from 'pages/BridgePage/ChainSelect';
 import SendButton from 'pages/BridgePage/SendButton';
 import Svgs from 'resources/icons';
@@ -28,7 +29,8 @@ const BridgeForm = () => {
   }
 
   return (
-    <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
+    <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
+      <Navs />
       <div className="px-3 py-4 sm:p-8 bg-secondary rounded-lg w-[32rem]">
         <div className="flex gap-10 flex-y mt-4 items-end">
           <ChainSelect

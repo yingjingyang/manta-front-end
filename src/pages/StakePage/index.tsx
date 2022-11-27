@@ -6,11 +6,11 @@ import { StakeTxContextProvider } from './StakeContext/StakeTxContext';
 
 const StakePage = () => {
   return (
-      <StakeDataContextProvider >
-        <StakeTxContextProvider >
-          <StakePageContent />
-        </StakeTxContextProvider>
-      </StakeDataContextProvider>
+    <StakeDataContextProvider>
+      <StakeTxContextProvider>
+        <StakePageContent />
+      </StakeTxContextProvider>
+    </StakeDataContextProvider>
   );
 };
 

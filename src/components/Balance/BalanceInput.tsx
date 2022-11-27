@@ -20,7 +20,7 @@ const BalanceInput = ({
   return (
     <div
       className={classNames(
-        'flex flex-col w-full rounded-lg manta-bg-gray content-around justify-center h-24',
+        'flex flex-col w-full rounded-lg manta-bg-gray content-around justify-center h-20',
         { disabled: disabled }
       )}
     >
@@ -29,7 +29,7 @@ const BalanceInput = ({
           id="amountInput"
           onChange={(e) => onChangeAmountInput(e.target.value)}
           className={classNames(
-            'w-1/2 absolute left-4 bottom-8 p-2 text-2xl font-bold placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray outline-none rounded-lg',
+            'w-1/2 absolute left-4 bottom-6 p-2 text-xl font-bold placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray bg-opacity-0 outline-none rounded-lg',
             { disabled: disabled }
           )}
           value={inputValue}

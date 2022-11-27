@@ -7,6 +7,7 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import NewerSignerVersionRequiredModal from 'components/Modal/newerSignerVersionRequiredModal';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
+import Navs from 'components/Navbar/Navs';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
@@ -33,15 +34,14 @@ const SendForm = () => {
     warningModal = <MobileNotSupportedModal />;
   } else if (signerIsOutOfDate(config, signerVersion)) {
     warningModal = <NewerSignerVersionRequiredModal />;
-  } else {
-    warningModal = <MissingRequiredSoftwareModal />;
   }
 
   return (
     <div>
       {warningModal}
-      <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
-        <div className="w-128 p-8 bg-secondary rounded-3xl">
+      <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
+        <Navs />
+        <div className="w-113.5 px-12 py-6 bg-secondary rounded-3xl">
           <SendFromForm />
           <img
             className="mx-auto pt-1 pb-4 manta-gray"

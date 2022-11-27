@@ -32,7 +32,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-2 top-2 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
+        '!absolute right-0 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -43,7 +43,6 @@ const AssetTypeSelect = ({
       placeholder="--"
       styles={dropdownStyles(disabled)}
       components={{
-        Control: AssetTypeControl,
         SingleValue: AssetTypeSingleValue,
         Option: AssetTypeOption,
         IndicatorSeparator: EmptyIndicatorSeparator
@@ -101,17 +100,11 @@ const EmptyIndicatorSeparator = () => {
   return <div />;
 };
 
-const AssetTypeControl = (props) => {
-  return (
-      <components.Control className="w-40" {...props} />
-  );
-};
-
 const AssetTypeSingleValue = ({ data }) => {
   return (
-    <div className="pl-2 border-0 flex items-center gap-3 mr-2">
-      <img className="w-8 h-8 rounded-full" src={data.icon} alt="icon" />
-      <div className="text-2xl font-bold text-black dark:text-white">{data.ticker}</div>
+    <div className="pl-2 border-0 flex items-center gap-2 mr-2">
+      <img className="w-5 h-5 rounded-full" src={data.icon} alt="icon" />
+      <div className="text-black dark:text-white">{data.ticker}</div>
     </div>
   );
 };

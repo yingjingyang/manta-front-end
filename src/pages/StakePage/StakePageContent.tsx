@@ -10,6 +10,7 @@ import AccountDisplay from './AccountDisplay';
 import StakingTable from './Tables/StakingTable';
 import UnstaktingTable from './Tables/UnstakingTable';
 import CollatorsTable from './Tables/CollatorsTable';
+import Navs from 'components/Navbar/Navs';
 
 const StakePageContent = () => {
   const { keyring } = useKeyring();
@@ -32,13 +33,16 @@ const StakePageContent = () => {
   }
 
   return (
-    <div className="mx-auto staking-table px-10 py-10">
-      {warningModal}
-      <AccountDisplay />
-      <StakingTable />
-      <UnstaktingTable />
-      <CollatorsTable />
-      <CalamariFooter />
+    <div className="flex flex-col gap-6 items-center">
+      <Navs />
+      <div className="mx-auto staking-table px-10 pt-2 pb-10 w-full">
+        {warningModal}
+        <AccountDisplay />
+        <StakingTable />
+        <UnstaktingTable />
+        <CollatorsTable />
+        <CalamariFooter />
+      </div>
     </div>
   );
 };
