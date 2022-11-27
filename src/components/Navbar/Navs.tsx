@@ -24,7 +24,7 @@ const Navs = () => {
             Stake
           </NavLink>
           <a
-            href="https://docs.manta.network/docs/calamari/Governance"
+            href="https://forum.manta.network/"
             className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
             target="_blank" rel="noreferrer"
           >
