@@ -64,7 +64,6 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
   try {
     const createReceipt = await contract.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight);
     await createReceipt.wait();
-    console.log(`Tx successful with hash: ${createReceipt.hash}`);
     return createReceipt.hash;
   } catch (error) {
     console.error(error);

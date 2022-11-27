@@ -38,7 +38,9 @@ const BridgeBalanceInput = () => {
         } else {
           setSenderAssetTargetBalance(null);
         }
-      } catch (error) {}
+      } catch (error) {
+        return;
+      }
     }
   };
 

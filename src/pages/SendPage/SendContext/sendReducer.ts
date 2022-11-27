@@ -107,7 +107,6 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
 
 
 const toggleSenderIsPrivate = (state) => {
-  console.log('3')
   const senderAssetType = state.senderAssetType.toggleIsPrivate();
   const senderAssetTypeOptions = AssetType.AllCurrencies(state.config, senderAssetType.isPrivate);
   const receiverAddress = getDefaultReceiver(
@@ -130,7 +129,6 @@ const toggleSenderIsPrivate = (state) => {
 };
 
 const toggleReceiverIsPrivate = (state) => {
-  console.log('2')
   const receiverAssetType = state.receiverAssetType.toggleIsPrivate();
   const receiverAddress = getDefaultReceiver(
     state.senderPrivateAddress,
