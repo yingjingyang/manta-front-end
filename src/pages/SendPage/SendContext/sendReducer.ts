@@ -46,6 +46,9 @@ const sendReducer = (state, action) => {
   case SEND_ACTIONS.TOGGLE_RECEIVER_ACCOUNT_IS_PRIVATE:
     return toggleReceiverIsPrivate(state);
 
+  case SEND_ACTIONS.SWAP_SENDER_AND_RECEIVER_ACCOUNTS_ARE_PRIVATE:
+    return swapSenderAndReceiverAccountsArePrivate(state);
+
   case SEND_ACTIONS.SET_SELECTED_ASSET_TYPE:
     return setSelectedAssetType(state, action);
 
@@ -147,6 +150,14 @@ const toggleReceiverIsPrivate = (state) => {
     receiverCurrentBalance: null
   };
 };
+
+const swapSenderAndReceiverAccountsArePrivate = (state) => {
+  if (state.senderAssetType?.isPrivate !== state.receiverAssetType?.isPrivate) {
+    const intermediateState = toggleSenderIsPrivate(state);
+    return toggleReceiverIsPrivate(intermediateState);
+  }
+  return state;
+}
 
 const setSelectedAssetType = (state, action) => {
   store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);

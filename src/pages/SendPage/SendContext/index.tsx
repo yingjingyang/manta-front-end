@@ -147,10 +147,15 @@ export const SendContextProvider = (props) => {
   // Toggles the private/public status of the receiver's account
   const toggleReceiverIsPrivate = () => {
     dispatch({
-      type: SEND_ACTIONS.TOGGLE_RECEIVER_ACCOUNT_IS_PRIVATE,
-      privateAddress: privateWallet.privateAddress
+      type: SEND_ACTIONS.TOGGLE_RECEIVER_ACCOUNT_IS_PRIVATE
     });
   };
+
+  const swapSenderAndReceiverArePrivate = () => {
+    dispatch({
+      type: SEND_ACTIONS.SWAP_SENDER_AND_RECEIVER_ACCOUNTS_ARE_PRIVATE
+    })
+  }
 
   // Sets the asset type to be transacted
   const setSelectedAssetType = (selectedAssetType) => {
@@ -566,6 +571,7 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     toggleSenderIsPrivate,
     toggleReceiverIsPrivate,
+    swapSenderAndReceiverArePrivate,
     setSelectedAssetType,
     setReceiver,
     send,

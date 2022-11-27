@@ -21,7 +21,7 @@ const SendAssetSelect = () => {
   const maxSendableBalance = getMaxSendableBalance();
 
   let balanceText = ''
-  if (isInitialSync && (isPrivateTransfer() || isToPublic())) {
+  if (isInitialSync.current && (isPrivateTransfer() || isToPublic())) {
     balanceText = 'Syncing to ledger';
   } else if (senderAssetCurrentBalance) {
     balanceText = senderAssetCurrentBalance.toDisplayString();

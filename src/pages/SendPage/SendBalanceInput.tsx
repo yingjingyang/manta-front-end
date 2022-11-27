@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
@@ -25,7 +24,6 @@ const SendBalanceInput = () => {
   const shouldShowInitialSync = shouldShowLoader && isInitialSync.current && senderIsPrivate();
   const balanceText = shouldShowInitialSync
     ? 'Syncing to network' : senderAssetCurrentBalance?.toString();
-
 
   const onChangeSendAmountInput = (value) => {
     if (value === '') {

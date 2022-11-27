@@ -13,11 +13,13 @@ import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
+import { useSend } from './SendContext';
 
 const SendForm = () => {
   const config = useConfig();
   const { keyring } = useKeyring();
   const { signerVersion } = usePrivateWallet();
+  const { swapSenderAndReceiverArePrivate } = useSend();
 
   useEffect(() => {
     if (keyring) {
@@ -44,7 +46,8 @@ const SendForm = () => {
         <div className="w-113.5 px-12 py-6 bg-secondary rounded-xl">
           <SendFromForm />
           <img
-            className="mx-auto pt-1 pb-4 manta-gray"
+            onClick={swapSenderAndReceiverArePrivate}
+            className="mx-auto pt-1 pb-4 manta-gray cursor-pointer"
             src={Svgs.ArrowUpDownIcon}
             alt="arrow-up-down-icon"
           />
