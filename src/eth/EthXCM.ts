@@ -4,6 +4,7 @@ import Xtokens from 'eth/Xtokens.json';
 import Chain from 'types/Chain';
 import { hexStripPrefix, hexAddPrefix, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
+import NETWORK from 'constants/NetworkConstants';
 
 
 // Same for Moonbeam, Moonriver, Moonbase
@@ -58,7 +59,13 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
 
   const amount = balance.valueAtomicUnits.toString();
   const accountId = addressToAccountId(address);
-  const destination = getXtokensPrecompileLocation(Chain.Calamari(config).parachainId, accountId);
+  let parachainId;
+  if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+    parachainId = Chain.Dolphin(config).parachainId
+  } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+    parachainId = Chain.Dolphin(config).parachainId
+  }
+  const destination = getXtokensPrecompileLocation(parachainId, accountId);
   const weight = CALAMARI_DESTINATION_WEIGHT;
 
   try {

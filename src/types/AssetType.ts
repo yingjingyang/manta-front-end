@@ -2,17 +2,24 @@
 import Svgs from 'resources/icons';
 import BN from 'bn.js';
 
+// const DolphinAssetIds = {
+//   DOL: 1,
+//   KAR: 8,
+//   AUSD: 9,
+//   LKSM: 10,
+//   ROC: 11,
+//   KBTC: 12,
+//   MOVR: 13,
+//   PHA: 14,
+//   RASTR: 16
+// }
+
 const DolphinAssetIds = {
   DOL: 1,
-  KAR: 8,
-  AUSD: 9,
-  LKSM: 10,
-  ROC: 11,
-  KBTC: 12,
-  MOVR: 13,
-  PHA: 14,
-  RASTR: 16
-}
+  KSM: 8,
+  MOVR: 9,
+  KAR: 10
+};
 
 const CalamariAssetIds = {
   KMA: 1,
@@ -184,10 +191,7 @@ export default class AssetType {
     if (config.NETWORK_NAME === "Dolphin") {
       return [
         AssetType.Karura(config, isPrivate),
-        AssetType.AcalaDollar(config, isPrivate),
-        AssetType.KaruraLiquidKusama(config, isPrivate),
-        AssetType.Rococo(config, isPrivate),
-        AssetType.KintsugiBTC(config, isPrivate),
+        AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate),
         AssetType.Dolphin(config, isPrivate)
       ];

@@ -2,7 +2,6 @@
     "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
     "CALAMARI_PROVIDER_SOCKET": "wss://c5.calamari.seabird.systems",
     "DEV_CONSOLE": true,
-    "DEVELOPMENT_KEYRING": true,
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",

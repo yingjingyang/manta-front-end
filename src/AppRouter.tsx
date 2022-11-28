@@ -10,7 +10,7 @@ const AppRouter = () => {
       <Routes>
         <Route
           index
-          element={<Navigate to="/calamari/bridge" replace />}
+          element={<Navigate to="/dolphin/bridge" replace />}
           exact
         />
         <Route
@@ -20,7 +20,7 @@ const AppRouter = () => {
         />
         <Route
           path="/bridge"
-          element={<Navigate to="/calamari/bridge" replace />}
+          element={<Navigate to="/dolphin/bridge" replace />}
           exact
         />
         <Route
@@ -29,12 +29,12 @@ const AppRouter = () => {
           exact
         />
         <Route path="calamari" element={<CalamariBasePage />}>
-          <Route index element={<Navigate to="bridge" />} />
-          <Route path="bridge" element={<BridgePage />} exact />
+          <Route index element={<Navigate to="stake" />} />
           <Route path="stake" element={<StakePage />} exact />
         </ Route >
         <Route path="dolphin" element={<DolphinBasePage />}>
-          <Route index element={<Navigate to="transact" />} />
+          <Route index element={<Navigate to="bridge" />} />
+          <Route path="bridge" element={<BridgePage />} exact />
           <Route path="transact" element={<SendPage />} exact />
         </ Route >
       </Routes>

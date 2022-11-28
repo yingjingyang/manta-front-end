@@ -1,8 +1,7 @@
 {
-    "DOLPHIN_PROVIDER_SOCKET": "wss://ws.rococo.dolphin.engineering",
+    "DOLPHIN_PROVIDER_SOCKET": "wss://c3.dolphin.seabird.systems",
     "CALAMARI_PROVIDER_SOCKET": "wss://c5.calamari.seabird.systems",
     "DEV_CONSOLE": true,
-    "DEVELOPMENT_KEYRING": true,
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
@@ -12,11 +11,12 @@
         {
             "name": "Dolphin",
             "path": "/dolphin",
-            "url": "wss://ws.rococo.dolphin.engineering",
+            "url": "wss://c3.dolphin.seabird.systems",
             "testnet": true,
             "explorer": "dolphin.subscan.io"
         }
     ],
+    "DOLPHIN_SOCKET": "wss://c3.dolphin.seabird.systems",
     "KUSAMA_SOCKET": "wss://v1.internal.kusama.systems/0",
     "CALAMARI_SOCKET": "wss://c5.calamari.seabird.systems",
     "KARURA_SOCKET": "wss://c1.acala.seabird.systems",
