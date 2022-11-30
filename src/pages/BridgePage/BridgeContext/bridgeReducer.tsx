@@ -65,6 +65,7 @@ export const buildInitState = (config) => {
 
     destinationChain: initDestinationChain,
     destinationChainOptions: initDestinationChainOptions,
+    destinationAddress: null,
     destinationFee: null,
   };
 }
@@ -91,6 +92,9 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
     return setDestinationChain(state, action);
+
+  case BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS:
+    return setDestinationAddress(state, action);
 
   case BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION:
     return switchOriginAndDestination(state);
@@ -226,6 +230,13 @@ const setDestinationChain = (state, { destinationChain }) => {
     destinationFee: null
   };
 };
+
+const setDestinationAddress = (state, { destinationAddress }) => {
+  return {
+    ...state,
+    destinationAddress
+  }
+}
 
 const switchOriginAndDestination = (state) => {
   const { originChain, destinationChain, senderAssetType, senderAssetTypeOptions} = state;

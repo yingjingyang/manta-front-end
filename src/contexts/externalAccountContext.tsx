@@ -29,27 +29,32 @@ export const ExternalAccountContextProvider = (props) => {
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
   const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
 
+
+  const setApiSigner = (api) => {
+    api?.setSigner(null);
+    if (!externalAccount || !api) {
+      return;
+    }
+    const {
+      meta: { source, isInjected }
+    } = externalAccount;
+    const extensions = getWallets().filter((wallet) => wallet.extension);
+    const extensionNames = extensions.map((ext) => ext.extensionName);
+    if (isInjected && extensionNames.includes(source)) {
+      const selectedWallet = getWallets().find(
+        (wallet) => wallet.extensionName === source
+      );
+      api.setSigner(selectedWallet._signer);
+    }
+    const signer = externalAccount.meta.isInjected
+      ? externalAccount.address
+      : externalAccount;
+    setExternalAccountSigner(signer);
+  }
+
   useEffect(() => {
     const setSignerOnChangeExternalAccount = async () => {
-      api?.setSigner(null);
-      if (!externalAccount || !api) {
-        return;
-      }
-      const {
-        meta: { source, isInjected }
-      } = externalAccount;
-      const extensions = getWallets().filter((wallet) => wallet.extension);
-      const extensionNames = extensions.map((ext) => ext.extensionName);
-      if (isInjected && extensionNames.includes(source)) {
-        const selectedWallet = getWallets().find(
-          (wallet) => wallet.extensionName === source
-        );
-        api.setSigner(selectedWallet._signer);
-      }
-      const signer = externalAccount.meta.isInjected
-        ? externalAccount.address
-        : externalAccount;
-      setExternalAccountSigner(signer);
+      setApiSigner(api)
     };
     setSignerOnChangeExternalAccount();
   }, [api, externalAccount]);
@@ -145,6 +150,7 @@ export const ExternalAccountContextProvider = (props) => {
   };
 
   const value = {
+    setApiSigner,
     externalAccount,
     externalAccountRef,
     externalAccountSigner,

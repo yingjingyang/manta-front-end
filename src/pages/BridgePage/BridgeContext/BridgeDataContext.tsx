@@ -32,12 +32,10 @@ export const BridgeDataContextProvider = (props) => {
     originChain,
     destinationChain,
     bridge,
+    destinationAddress
   } = state;
 
   const originAddress = originChain.xcmAdapter.chain.type === 'ethereum'
-    ? ethAddress
-    : externalAccount?.address;
-  const destinationAddress = destinationChain.xcmAdapter.chain.type === 'ethereum'
     ? ethAddress
     : externalAccount?.address;
 
@@ -58,6 +56,25 @@ export const BridgeDataContextProvider = (props) => {
     };
     initBridge();
   }, [externalAccountSigner, externalAccount, originChainOptions]);
+
+  useEffect(() => {
+    const setDestinationAddressOnChangeChain = () => {
+      const originChainIsEvm = originChain.xcmAdapter.chain.type === 'ethereum';
+      const destinationChainIsEvm = destinationChain.xcmAdapter.chain.type === 'ethereum';
+      if (originChainIsEvm || destinationChainIsEvm) {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS,
+          destinationAddress: null
+        });
+      } else {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS,
+          destinationAddress: externalAccount?.address
+        });
+      }
+    }
+    setDestinationAddressOnChangeChain();
+  }, [originChain, destinationChain, externalAccount])
 
 
   const subscribeBalanceChanges = (assetType, handler) => {
@@ -169,7 +186,7 @@ export const BridgeDataContextProvider = (props) => {
       handleInputConfigChange(inputConfig);
     }
     subscribeInputConfig();
-  },[senderAssetType, senderAssetTargetBalance, originAddress, originChain, destinationChain, bridge])
+  },[senderAssetType, senderAssetTargetBalance, originAddress, destinationAddress, originChain, destinationChain, bridge])
 
   /**
    *
@@ -211,6 +228,14 @@ export const BridgeDataContextProvider = (props) => {
     });
   };
 
+  // Sets the destination address (only used when bridging too or from EVM chains like Moonriver)
+  const setDestinationAddress = (destinationAddress) => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS,
+      destinationAddress
+    });
+  }
+
   // Switches origin and destination chain
   const switchOriginAndDestination = () => {
     dispatch({
@@ -220,11 +245,11 @@ export const BridgeDataContextProvider = (props) => {
 
   const value = {
     originAddress,
-    destinationAddress,
     setSenderAssetTargetBalance,
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,
+    setDestinationAddress,
     switchOriginAndDestination,
     ...state
   };

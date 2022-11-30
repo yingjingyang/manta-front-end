@@ -8,6 +8,7 @@ import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText';
 import { useTxStatus } from 'contexts/txStatusContext';
+import BridgeDestinationInput from './BridgeDestinationInput';
 
 const BridgeForm = () => {
   const {
@@ -27,10 +28,14 @@ const BridgeForm = () => {
     }
   }
 
+  const originChainIsEvm = originChain?.xcmAdapter.chain.type === 'ethereum';
+  const destinationChainIsEvm = destinationChain?.xcmAdapter.chain.type === 'ethereum';
+  const shouldShowDestinationInput = originChainIsEvm || destinationChainIsEvm;
+
   return (
     <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
-      <div className="px-3 py-4 sm:p-8 bg-secondary rounded-lg w-[32rem]">
-        <div className="flex gap-10 flex-y mt-4 items-end">
+      <div className="flex flex-col flex-y sm:p-8 bg-secondary rounded-lg w-[32rem] gap-6">
+        <div className="flex gap-10 flex-y items-end">
           <ChainSelect
             chain={originChain}
             chainOptions={originChainOptions}
@@ -50,14 +55,15 @@ const BridgeForm = () => {
             isOriginChain={false}
           />
         </div>
-        <div className="pt-4 flex flex-col gap-4 flex-y mt-4">
+        <div className="flex flex-col flex-y gap-4">
           <div>
             <BridgeAssetSelect />
-            <BridgeAssetErrorText />
-            <BridgeFeeDisplay />
+            {/* <BridgeAssetErrorText /> */}
           </div>
-          <SendButton />
         </div>
+        {shouldShowDestinationInput && <BridgeDestinationInput />}
+        <BridgeFeeDisplay />
+        <SendButton />
       </div>
     </div>
   );

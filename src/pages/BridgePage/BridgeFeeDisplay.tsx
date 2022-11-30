@@ -9,7 +9,7 @@ const BridgeFeeDisplay = () => {
   const destinationFeeText = destinationFee ? destinationFee.toFeeDisplayString() : '--';
 
   return (
-    <div className="flex flex-col gap-2 py-1">
+    <div className="flex flex-col gap-2">
       <div className="px-2 text-manta-gray flex flex-row justify-between">
         <div>{`Origin fee: `}</div>
         <div>{originFeeText}</div>
