@@ -93,7 +93,12 @@ export const ExternalAccountContextProvider = (props) => {
         setIsInitialAccountSet(true);
       }
     };
-    setInitialExternalAccount();
+    if (!isInitialAccountSet) {
+      const interval = setInterval(async () => {
+        setInitialExternalAccount();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [isInitialAccountSet, isKeyringInit, keyringAddresses]);
 
   useEffect(() => {

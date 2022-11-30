@@ -1,140 +1,125 @@
 // @ts-nocheck
-import React from 'react';
-import classNames from 'classnames';
-import MantaLoading from 'components/Loading';
-import { useTxStatus } from 'contexts/txStatusContext';
-import Balance from 'types/Balance';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
-import { useExternalAccount } from 'contexts/externalAccountContext';
-import { useSend } from './SendContext';
+import React, { useState } from "react";
+import classNames from "classnames";
+import MantaLoading from "components/Loading";
+import { useTxStatus } from "contexts/txStatusContext";
+import Balance from "types/Balance";
+import { usePrivateWallet } from "contexts/privateWalletContext";
+import { useExternalAccount } from "contexts/externalAccountContext";
+import { useSend } from "./SendContext";
 
 const SendButton = () => {
+  const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
+    useSend();
+  const { txStatus } = useTxStatus();
+  const disabled = txStatus?.isProcessing();
+
+  let buttonLabel;
+  if (isToPrivate()) {
+    buttonLabel = "To Private";
+  } else if (isToPublic()) {
+    buttonLabel = "To Public";
+  } else if (isPublicTransfer()) {
+    buttonLabel = "Public Transfer";
+  } else if (isPrivateTransfer()) {
+    buttonLabel = "Private Transfer";
+  }
+  const onClickHandler = () => send();
+
+  return (
+    <button
+      id="sendButton"
+      onClick={onClickHandler}
+      className={classNames(
+        "py-2 cursor-pointer unselectable-text",
+        "text-center text-white rounded-lg gradient-button w-full",
+        { disabled: disabled }
+      )}>
+      {buttonLabel}
+    </button>
+  );
+};
+
+const ValidationButton = () => {
   const {
-    isToPrivate,
-    isToPublic,
     isPublicTransfer,
     isPrivateTransfer,
     receiverAddress,
     userCanPayFee,
-    senderNativeTokenPublicBalance,
     userHasSufficientFunds,
     receiverAssetType,
-    receiverAmountIsOverExistentialBalance
+    receiverAmountIsOverExistentialBalance,
+    senderAssetTargetBalance,
+    senderNativeTokenPublicBalance,
   } = useSend();
   const { signerIsConnected } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
-  const { txStatus } = useTxStatus();
-  const { send, senderAssetTargetBalance } = useSend();
-  const disabled = txStatus?.isProcessing();
 
-  const DisplayButton = () => {
-    if (!signerIsConnected && !isPublicTransfer() && !externalAccount) {
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
-          Connect Wallet and Signer
-        </div>
-      );
-    } else if (!signerIsConnected && !isPublicTransfer()) {
-      return (
-        <div className="py-2 unselectable-text text-center text-white bg-connect-signer-button rounded-lg w-full">
-          Connect Signer
-        </div>
-      );
-    } else if (!externalAccount) {
-      return (
-        <div className="py-2 unselectable-text text-center text-white bg-connect-wallet-button rounded-lg w-full">
-          Connect Wallet
-        </div>
-      );
-    } else if (!senderAssetTargetBalance) {
-      // amount not entered
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          Enter Amount
-        </div>
-      );
-    } else if (userHasSufficientFunds() === false) {
-      // insufficient balance
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          Insuffient balance
-        </div>
-      );
-    } else if (
-      receiverAddress === null &&
-      (isPrivateTransfer() || isPublicTransfer())
-    ) {
-      const message = `Enter Recipient ${
-        isPrivateTransfer() ? 'zkAddress' : 'Substrate address'
-      }`;
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          {message}
-        </div>
-      );
-    } else if (
-      receiverAddress === false &&
-      (isPrivateTransfer() || isPublicTransfer())
-    ) {
-      const message = `Invalid ${
-        isPrivateTransfer() ? 'zkAddress' : 'Substrate address'
-      }`;
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          {message}
-        </div>
-      );
-    } else if (receiverAmountIsOverExistentialBalance() === false) {
-      const existentialDeposit = new Balance(
-        receiverAssetType,
-        receiverAssetType.existentialDeposit
-      );
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          {`min > ${existentialDeposit.toDisplayString(12, false)}`}
-        </div>
-      );
-    } else if (userCanPayFee() === false) {
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          {`Cannot pay ${senderNativeTokenPublicBalance?.assetType?.baseTicker} fee`}
-        </div>
-      );
-    } else if (txStatus?.isProcessing()) {
-      // pending transaction
-      return <MantaLoading className="py-4" />;
-    } else {
-      // transact button
-      return (
-        <button
-          id="sendButton"
-          onClick={onClick}
-          className={classNames(
-            'py-2 cursor-pointer unselectable-text',
-            'text-center text-white rounded-lg gradient-button w-full',
-            { disabled: disabled }
-          )}
-        >
-          {buttonLabel}
-        </button>
-      );
-    }
-  };
-
-  const onClick = () => send();
-
-  let buttonLabel;
-  if (isToPrivate()) {
-    buttonLabel = 'To Private';
-  } else if (isToPublic()) {
-    buttonLabel = 'To Public';
-  } else if (isPublicTransfer()) {
-    buttonLabel = 'Public Transfer';
-  } else if (isPrivateTransfer()) {
-    buttonLabel = 'Private Transfer';
+  let validationMsg = null;
+  let bgColor = "gradient-button filter brightness-50";
+  if (!signerIsConnected && !isPublicTransfer() && !externalAccount) {
+    validationMsg = "Connect Wallet and Signer";
+    bgColor = "gradient-button";
+  } else if (!signerIsConnected && !isPublicTransfer()) {
+    validationMsg = "Connect Signer";
+    bgColor = "bg-connect-signer-button";
+  } else if (!externalAccount) {
+    validationMsg = "Connect Wallet";
+    bgColor = "bg-connect-wallet-button";
+  } else if (!senderAssetTargetBalance) {
+    validationMsg = "Enter Amount";
+  } else if (userHasSufficientFunds() === false) {
+    validationMsg = "Insuffient balance";
+  } else if (
+    receiverAddress === null &&
+    (isPrivateTransfer() || isPublicTransfer())
+  ) {
+    validationMsg = `Enter Recipient ${
+      isPrivateTransfer() ? "zkAddress" : "Substrate address"
+    }`;
+  } else if (
+    receiverAddress === false &&
+    (isPrivateTransfer() || isPublicTransfer())
+  ) {
+    validationMsg = `Invalid ${
+      isPrivateTransfer() ? "zkAddress" : "Substrate address"
+    }`;
+  } else if (receiverAmountIsOverExistentialBalance() === false) {
+    const existentialDeposit = new Balance(
+      receiverAssetType,
+      receiverAssetType.existentialDeposit
+    );
+    validationMsg = `min > ${existentialDeposit.toDisplayString(12, false)}`;
+  } else if (userCanPayFee() === false) {
+    validationMsg = `Cannot pay ${senderNativeTokenPublicBalance?.assetType?.baseTicker} fee`;
   }
 
-  return <DisplayButton />;
+  return validationMsg ? (
+    <div
+      className={classNames(
+        `py-2 unselectable-text text-center text-white rounded-lg w-full ${bgColor}`
+      )}>
+      {validationMsg}
+    </div>
+  ) : (
+    <SendButton />
+  );
 };
 
-export default SendButton;
+const DisplayButton = () => {
+  const { txStatus } = useTxStatus();
+  const [validationMsg, setValidationMsg] = useState(null);
+
+  if (txStatus?.isProcessing()) {
+    return <MantaLoading className="ml-6 py-4 place-self-center" />;
+  } else {
+    return (
+      <ValidationButton
+        validationMsg={validationMsg}
+        setValidationMsg={setValidationMsg}
+      />
+    );
+  }
+};
+
+export default DisplayButton;
