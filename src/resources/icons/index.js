@@ -2,6 +2,7 @@ import Dolphin from 'resources/images/dolphin.svg';
 import Calamari from 'resources/images/calamari.png';
 import Manta from 'resources/images/manta.png';
 import Talisman from 'resources/icons/talisman.svg';
+import Metamask from 'resources/icons/metamask.svg';
 // coin icons
 import BitcoinIcon from 'resources/icons/coins/bitcoin-icon.svg';
 import EtheriumIcon from 'resources/icons/coins/etherium-icon.svg';
@@ -21,6 +22,7 @@ import PoolIcon from 'resources/icons/sidebar/pool.svg';
 import RedeemIcon from 'resources/icons/sidebar/redeem.svg';
 import SwapIcon from 'resources/icons/sidebar/swap.svg';
 import TransactIcon from 'resources/icons/sidebar/transact.svg';
+
 // widesite icons
 import TokenIcon from 'resources/icons/token-icon.svg';
 import DepositIcon from 'resources/icons/deposit-icon.svg';
@@ -39,6 +41,8 @@ import ArrowLeftIcon from 'resources/icons/arrow-left.svg';
 import LeftIcon from 'resources/icons/left.svg';
 import RightIcon from 'resources/icons/right.svg';
 import SearchIcon from 'resources/icons/search.svg';
+import GreenCheckIcon from 'resources/icons/green-check-solid.svg';
+import InformationIcon from 'resources/icons/information-solid.svg';
 
 // chain data icons
 import BlocksIcon from 'resources/icons/chain/blocks.svg';
@@ -53,6 +57,7 @@ import RateIcon from 'resources/icons/chain/rate.svg';
 // extrinsic icons
 import SuccessIcon from 'resources/icons/success.svg';
 import CopyIcon from 'resources/icons/copy.svg';
+import CopySquareIcon from 'resources/icons/copy-square.svg'
 import FlowerIcon from 'resources/icons/flower.svg';
 import PolkadotIcon from 'resources/icons/polkadot.svg';
 import DropUpIcon from 'resources/icons/drop-up.svg';
@@ -63,6 +68,7 @@ import KeyIcon from 'resources/icons/key.svg';
 import WarningIcon from 'resources/icons/warning.svg';
 import ArrowRightIcon from 'resources/icons/arrow-right.svg';
 import CancelIcon from 'resources/icons/cancel.svg';
+
 
 const Svgs = {
   BitcoinIcon,
@@ -98,6 +104,8 @@ const Svgs = {
   ArrowDownIcon,
   ArrowLeftIcon,
   SearchIcon,
+  GreenCheckIcon,
+  InformationIcon,
   BlocksIcon,
   SignIcon,
   TransferIcon,
@@ -108,6 +116,7 @@ const Svgs = {
   RateIcon,
   SuccessIcon,
   CopyIcon,
+  CopySquareIcon,
   FlowerIcon,
   PolkadotIcon,
   DropUpIcon,
@@ -121,7 +130,8 @@ const Svgs = {
   LeftIcon,
   RightIcon,
   ShieldIcon,
-  Talisman
+  Talisman,
+  Metamask
 };
 
 export default Svgs;

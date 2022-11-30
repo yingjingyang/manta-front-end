@@ -104,7 +104,7 @@ const Menu = () => {
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
         <div
-          className="hover:bg-manta-gray dark:hover:bg-blue-900 bg-secondary flex gap-3 px-4 p-3 font-black cursor-pointer rounded-xl"
+          className="bg-fifth flex gap-3 px-4 p-3 font-black border border-white border-opacity-20 cursor-pointer rounded-xl"
           onClick={() => {
             isOpen ? setIsOpen(false) : setIsOpen(true);
           }}
@@ -114,7 +114,7 @@ const Menu = () => {
             className="text-xl text-black dark:text-white"
           />
         </div>
-        {isOpen && <DotMenuContent/>}
+        {isOpen && <DotMenuContent />}
       </OutsideClickHandler>
     </div>
   );

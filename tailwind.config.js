@@ -3,6 +3,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontSize: {
+      xsss: '.70rem',
       xss: '.75rem',
       xs: '.825rem',
       sm: '.875rem',
@@ -25,19 +26,23 @@ module.exports = {
       spacing: {
         '128':'32rem'
       },
+      width: {
+        '68': '272px'
+      },
       backgroundImage: {},
-
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
         thirdry: 'var(--color-bg-thirdry)',
         fourth: 'var(--color-bg-fourth)',
+        fifth: 'var(--color-bg-fifth)',
         overlay: 'var(--color-bg-overlay)',
         'table-row': 'var(--color-bg-table-row)',
         success: 'var(--color-bg-success)',
         danger: 'var(--color-bg-danger)',
         'manta-gray': 'var(--color-bg-manta-gray)',
-        button: 'var(--color-bg-button)'
+        button: 'var(--color-bg-button-primary)',
+        'button-secondary': 'var(--color-bg-button-secondary)',
       },
       textColor: {
         accent: 'var(--color-text-accent)',

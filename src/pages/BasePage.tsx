@@ -2,6 +2,7 @@
 import { ConfigContextProvider, useConfig } from "contexts/configContext"
 import { ExternalAccountContextProvider } from "contexts/externalAccountContext"
 import { SubstrateContextProvider } from "contexts/substrateContext"
+import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { Outlet } from "react-router-dom"
 import NETWORK from 'constants/NetworkConstants';
 import Navbar from "components/Navbar";
@@ -49,20 +50,22 @@ export const CalamariBasePage = () => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
       <BasePage>
-        <Navbar />
+          <Navbar />
         <Outlet />
       </BasePage>
     </ConfigContextProvider>
-  )
+  );
 }
 
 export const DolphinBasePage = () => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <BasePage>
-        <Navbar />
+        <MetamaskContextProvider>
+          <Navbar />
+        </MetamaskContextProvider>
         <Outlet />
       </BasePage>
     </ConfigContextProvider>
-  )
+  );
 }

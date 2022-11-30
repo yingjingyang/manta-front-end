@@ -24,7 +24,6 @@ export const buildInitState = (config) => {
   return {
     config,
     senderPublicAccount: null,
-    senderPublicAccountOptions: [],
 
     senderAssetType: initSenderAssetType,
     senderAssetTypeOptions: initSenderAssetTypeOptions,
@@ -54,9 +53,6 @@ const sendReducer = (state, action) => {
 
   case SEND_ACTIONS.SET_SENDER_PUBLIC_ACCOUNT:
     return setSenderPublicAccount(state, action);
-
-  case SEND_ACTIONS.SET_SENDER_PUBLIC_ACCOUNT_OPTIONS:
-    return setSenderPublicAccountOptions(state, action);
 
   case SEND_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
     return setSenderAssetCurrentBalance(state, action);
@@ -206,13 +202,6 @@ const setSenderPublicAccount = (state, action) => {
     senderAssetCurrentBalance: null,
     senderPublicAccount: action.senderPublicAccount,
     receiverAddress
-  };
-};
-
-const setSenderPublicAccountOptions = (state, action) => {
-  return {
-    ...state,
-    senderPublicAccountOptions: action.senderPublicAccountOptions
   };
 };
 

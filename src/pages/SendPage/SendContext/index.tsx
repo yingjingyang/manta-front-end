@@ -10,7 +10,6 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import { FAILURE as WASM_WALLET_FAILURE } from 'manta-wasm-wallet-api';
-import { setLastAccessedExternalAccountAddress } from 'utils/persistence/externalAccountStorage';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useConfig } from 'contexts/configContext';
 import SEND_ACTIONS from './sendActions';
@@ -24,9 +23,7 @@ export const SendContextProvider = (props) => {
   const { setTxStatus, txStatus } = useTxStatus();
   const {
     externalAccount,
-    externalAccountSigner,
-    externalAccountOptions,
-    changeExternalAccount
+    externalAccountSigner
   } = useExternalAccount();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
@@ -44,18 +41,6 @@ export const SendContextProvider = (props) => {
   /**
    * Initialization logic
    */
-
-  // Adds the user's polkadot.js accounts to state on pageload
-  // These populate public address select dropdowns in the ui
-  useEffect(() => {
-    const initPublicAccountOptions = () => {
-      dispatch({
-        type: SEND_ACTIONS.SET_SENDER_PUBLIC_ACCOUNT_OPTIONS,
-        senderPublicAccountOptions: externalAccountOptions
-      });
-    };
-    initPublicAccountOptions();
-  }, [externalAccountOptions]);
 
   // Adds the user's default private address to state on pageload
   useEffect(() => {
@@ -104,39 +89,10 @@ export const SendContextProvider = (props) => {
     syncPublicAccountToExternalAccount();
   }, [externalAccount]);
 
-  // Sets the polkadot.js signing and fee-paying account in 'externalAccountContext'
-  // to match the user's public account as set in the send form
-  useEffect(() => {
-    const syncExternalAccountToPublicAccount = () => {
-      if (isToPublic()) {
-        const externalAccount = externalAccountOptions.find(
-          (account) => account.address === receiverAddress
-        );
-        externalAccount && changeExternalAccount(externalAccount);
-      } else if (senderIsPublic()) {
-        senderPublicAccount && changeExternalAccount(senderPublicAccount);
-      }
-    };
-    syncExternalAccountToPublicAccount();
-  }, [
-    receiverAddress,
-    senderAssetType,
-    receiverAssetType,
-    externalAccountOptions
-  ]);
-
   /**
    *
    * Mutations exposed through UI
    */
-
-  // Sets the sender's public account, exposed in the `To Public` and `Public transfer` form;
-  // State is set upstream in `externalAccountContext`, and propagates downstream here
-  // (see `syncPublicAccountToExternalAccount` above)
-  const setSenderPublicAccount = async (senderPublicAccount) => {
-    setLastAccessedExternalAccountAddress(config, senderPublicAccount.address);
-    await changeExternalAccount(senderPublicAccount);
-  };
 
   // Toggles the private/public status of the sender's account
   const toggleSenderIsPrivate = () => {
@@ -561,7 +517,6 @@ export const SendContextProvider = (props) => {
     txWouldDepleteSuggestedMinFeeBalance,
     isValidToSend,
     setSenderAssetTargetBalance,
-    setSenderPublicAccount,
     receiverAssetType,
     toggleSenderIsPrivate,
     toggleReceiverIsPrivate,
