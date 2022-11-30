@@ -28,8 +28,6 @@ const TxStatusHandler = () => {
     } else if (txStatus?.isProcessing()) {
       if (txStatus.message) {
         showInfo(txStatus.message);
-      } else {
-        showInfo('Processing');
       }
     }
   }, [txStatus]);

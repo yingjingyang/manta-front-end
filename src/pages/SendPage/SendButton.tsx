@@ -3,7 +3,6 @@ import React from 'react';
 import classNames from 'classnames';
 import MantaLoading from 'components/Loading';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { showError } from 'utils/ui/Notifications';
 import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -17,6 +16,7 @@ const SendButton = () => {
     isPrivateTransfer,
     receiverAddress,
     userCanPayFee,
+    senderNativeTokenPublicBalance,
     userHasSufficientFunds,
     receiverAssetType,
     receiverAmountIsOverExistentialBalance
@@ -84,6 +84,25 @@ const SendButton = () => {
           {message}
         </div>
       );
+    } else if (receiverAmountIsOverExistentialBalance() === false) {
+      const existentialDeposit = new Balance(
+        receiverAssetType,
+        receiverAssetType.existentialDeposit
+      );
+      return (
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
+          {`min > ${existentialDeposit.toDisplayString(12, false)}`}
+        </div>
+      );
+    } else if (userCanPayFee() === false) {
+      return (
+        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
+          {`Cannot pay ${senderNativeTokenPublicBalance?.assetType?.baseTicker} fee`}
+        </div>
+      );
+    } else if (txStatus?.isProcessing()) {
+      // pending transaction
+      return <MantaLoading className="py-4" />;
     } else {
       // transact button
       return (
@@ -100,27 +119,9 @@ const SendButton = () => {
         </button>
       );
     }
-  }
-
-  const onClick = () => {
-    if (!signerIsConnected) {
-      showError('Signer must be connected');
-    } else if (receiverAmountIsOverExistentialBalance() === false) {
-      const existentialDeposit = new Balance(
-        receiverAssetType,
-        receiverAssetType.existentialDeposit
-      );
-      showError(
-        `Minimum ${
-          receiverAssetType.ticker
-        } transaction is ${existentialDeposit.toDisplayString()}`
-      );
-    } else if (userCanPayFee() === false) {
-      showError('Cannot pay transaction fee; deposit DOL to transact');
-    } else if (!disabled) {
-      send();
-    }
   };
+
+  const onClick = () => send();
 
   let buttonLabel;
   if (isToPrivate()) {
@@ -133,7 +134,7 @@ const SendButton = () => {
     buttonLabel = 'Private Transfer';
   }
 
-  return (<DisplayButton/>)
+  return <DisplayButton />;
 };
 
 export default SendButton;
