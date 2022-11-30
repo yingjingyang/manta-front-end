@@ -13,8 +13,9 @@ import DowntimeModal from 'components/Modal/downtimeModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
-import SendFromForm from '../SendPage/SendFromForm';
-import SendToForm from '../SendPage/SendToForm';
+import CreateCollection from './CreateCollection';
+import CreateItem from './CreateItem';
+import UpdateItem from './UpdateItem';
 
 const NftCreatePageContent = () => {
   const { keyring } = useKeyring();
@@ -54,6 +55,9 @@ const NftCreatePageContent = () => {
       {warningModal}
       <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
         <div className="p-8 bg-secondary rounded-3xl">
+          <CreateCollection/>
+          <CreateItem/>
+          <UpdateItem/>
         </div>
       </div>
     </PageContent>
