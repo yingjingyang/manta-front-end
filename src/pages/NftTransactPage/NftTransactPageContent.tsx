@@ -16,7 +16,7 @@ import { useKeyring } from 'contexts/keyringContext';
 import SendFromForm from '../SendPage/SendFromForm';
 import SendToForm from '../SendPage/SendToForm';
 
-const NftPageContent = () => {
+const NftTransactPageContent = () => {
   const { keyring } = useKeyring();
   const { txStatus } = useTxStatus();
   const { signerVersion } = usePrivateWallet();
@@ -60,4 +60,4 @@ const NftPageContent = () => {
   );
 };
 
-export default NftPageContent;
+export default NftTransactPageContent;

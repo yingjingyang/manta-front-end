@@ -4,15 +4,15 @@ import React from 'react';
 import { TxStatusContextProvider } from 'contexts/txStatusContext';
 import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
-import { DolphinNavbar } from 'components/Navbar';
+import { NFTNavbar } from 'components/Navbar';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider } from 'contexts/configContext';
 import { SendContextProvider } from '../SendPage/SendContext';
-import NftPageContent from './NftPageContent';
+import NftViewPageContent from './NftViewPageContent';
 
 
-const NftPage = () => {
+const NftViewPage = () => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <SubstrateContextProvider>
@@ -21,8 +21,8 @@ const NftPage = () => {
             <PrivateWalletContextProvider>
               <SendContextProvider>
                 <div className="min-h-screen">
-                  <DolphinNavbar />
-                  <NftPageContent />
+                  <NFTNavbar />
+                  <NftViewPageContent />
                 </div>
                 <DeveloperConsole />
               </SendContextProvider>
@@ -36,4 +36,4 @@ const NftPage = () => {
 
 
 
-export default NftPage;
+export default NftViewPage;

@@ -45,4 +45,31 @@ const Navs = () => {
   );
 };
 
+export const NFTNavs = () => {
+  return (
+    <>
+        <div className="flex rounded-full bg-secondary shadow-2xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <NavLink
+            to="/dolphin/nft/create"
+            className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
+          >
+            Create
+          </NavLink>
+          <NavLink
+            to="/dolphin/nft/transact"
+            className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
+          >
+            Transact
+          </NavLink>
+          <NavLink
+            to="/dolphin/nft/view"
+            className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
+          >
+            View
+          </NavLink>
+        </div>
+    </>
+  );
+}
+
 export default Navs;
