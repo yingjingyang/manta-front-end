@@ -68,11 +68,11 @@ const MaxButton = ({ onClickMax, isDisabled }) => {
       onClick={onClick}
       className={classNames(
         'cursor-pointer',
-        'text-center rounded-lg unselectable-text absolute left-6 bottom-3 flex items-center text-xss font-semibold manta-gray',
+        'text-center rounded-lg unselectable-text absolute left-6 bottom-3 flex items-center text-xss text-manta-blue',
         { disabled: isDisabled }
       )}
     >
-      <GradientText text="Select Max" />
+      Select Max
     </span>
   );
 };

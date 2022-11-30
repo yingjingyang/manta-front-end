@@ -28,15 +28,21 @@ const SendButton = () => {
   const disabled = txStatus?.isProcessing();
 
   const DisplayButton = () => {
-    if (!signerIsConnected && !isPublicTransfer) {
+    if (!signerIsConnected && !isPublicTransfer() && !externalAccount) {
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
+          Connect Wallet and Signer
+        </div>
+      );
+    } else if (!signerIsConnected && !isPublicTransfer()) {
+      return (
+        <div className="py-2 unselectable-text text-center text-white bg-connect-signer-button rounded-lg w-full">
           Connect Signer
         </div>
       );
     } else if (!externalAccount) {
       return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button rounded-lg w-full">
+        <div className="py-2 unselectable-text text-center text-white bg-connect-wallet-button rounded-lg w-full">
           Connect Wallet
         </div>
       );
@@ -56,10 +62,10 @@ const SendButton = () => {
       );
     } else if (
       receiverAddress === null &&
-      (isPrivateTransfer || isPublicTransfer)
+      (isPrivateTransfer() || isPublicTransfer())
     ) {
-      const message = `Enter Recipients ${
-        isPrivateTransfer ? 'zkAddress' : 'address'
+      const message = `Enter Recipient ${
+        isPrivateTransfer() ? 'zkAddress' : 'Substrate address'
       }`;
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
@@ -68,9 +74,11 @@ const SendButton = () => {
       );
     } else if (
       receiverAddress === false &&
-      (isPrivateTransfer || isPublicTransfer)
+      (isPrivateTransfer() || isPublicTransfer())
     ) {
-      const message = `Invalid ${isPrivateTransfer ? 'zkAddress' : 'address'}`;
+      const message = `Invalid ${
+        isPrivateTransfer() ? 'zkAddress' : 'Substrate address'
+      }`;
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
           {message}

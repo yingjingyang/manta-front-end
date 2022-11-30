@@ -56,7 +56,7 @@ const AccountSelectMenu = () => {
           <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
             <div
               className={classNames(
-                'flex gap-3 py-3 p-6 bg-secondary text-secondary',
+                'flex gap-3 py-3 p-6 bg-fifth text-secondary',
                 'font-medium cursor-pointer rounded-xl',
                 {'disabled': disabled}
               )}
@@ -66,7 +66,7 @@ const AccountSelectMenu = () => {
               {externalAccount.meta.name}
             </div>
             {showAccountList ? (
-              <div className="mt-3 bg-secondary rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
+              <div className="mt-3 bg-fifth rounded-3xl p-6 pr-2 absolute right-0 top-full z-50 border border-manta-gray">
                 <div className="max-h-96 overflow-y-scroll pr-4">
                   {externalAccountOptions.map((account: any, index: number) => (
                     <div

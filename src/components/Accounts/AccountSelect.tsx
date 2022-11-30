@@ -56,9 +56,9 @@ const AccountSelect = () => {
           <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
             <div
               className={classNames(
-                'flex gap-3 py-3 p-6 bg-secondary text-secondary',
+                'flex gap-3 py-3 p-6 bg-fifth text-secondary',
                 'font-medium cursor-pointer rounded-xl',
-                {'disabled': disabled}
+                { disabled: disabled }
               )}
               onClick={onClickAccountSelect}
             >

@@ -34,13 +34,16 @@ module.exports = {
         secondary: 'var(--color-bg-secondary)',
         thirdry: 'var(--color-bg-thirdry)',
         fourth: 'var(--color-bg-fourth)',
+        fifth: 'var(--color-bg-fifth)',
         overlay: 'var(--color-bg-overlay)',
         'table-row': 'var(--color-bg-table-row)',
         success: 'var(--color-bg-success)',
         danger: 'var(--color-bg-danger)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         button: 'var(--color-bg-button)',
-        'blue-button':'#0E50FC',
+        'button-secondary': 'var(--color-bg-button-secondary)',
+        'connect-signer-button':'#2B49EA',
+        'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)'
       },
       textColor: {
@@ -52,6 +55,7 @@ module.exports = {
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
+        'manta-blue': 'var(--color-manta-blue)',
       },
       fill: {
         current: 'var(--color-text-secondary)',

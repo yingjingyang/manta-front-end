@@ -39,7 +39,7 @@ const SendToAddressInput = () => {
   };
 
   const onChangeInput = receiverAssetType?.isPrivate ? onChangePrivateInput : onChangePublicInput;
-
+  const placeholderMsg = receiverAssetType?.isPrivate ? 'Enter Recipient zkAddress' : 'Enter Recipient Substrate Address'
   return (
     <>
       <div
@@ -49,10 +49,10 @@ const SendToAddressInput = () => {
       >
         <input
           id="recipientAddress"
-          className="w-full h-full rounded-lg manta-bg-gray px-5 text-black dark:text-white outline-none"
+          className="w-full h-full rounded-lg manta-bg-gray px-5 text-black dark:text-white outline-none text-sm"
           onChange={(e) => onChangeInput(e)}
           disabled={disabled}
-          placeholder={'address'}
+          placeholder={placeholderMsg}
         />
       </div>
     </>

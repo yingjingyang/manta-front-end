@@ -86,7 +86,7 @@ const Menu = () => {
   };
 
   const DotMenuContent = () => (
-    <div className="w-48 h-68 flex-column flex-grow mt-3 bg-secondary rounded-3xl gap-y-4 p-5 absolute right-0 top-full z-50 border border-manta-gray">
+    <div className="w-48 h-68 flex-column flex-grow mt-3 bg-fifth rounded-3xl gap-y-4 p-5 absolute right-0 top-full z-50 border border-manta-gray">
       {/* {theme === themeType.Dark ? <ChangeThemeMenuItem theme={themeType.Light} setTheme={setTheme} name={'Light Mode'} icon={faSun} /> : <ChangeThemeMenuItem theme={themeType.Dark} setTheme={setTheme} name={'Dark Mode'} icon={faMoon} />} */}
       <MenuItem link={config.TWITTER_URL} name={'Twitter'} icon={faTwitter}/>
       <MenuItem link={links.DISCORD_URL} name={'Discord'} icon={faDiscord}/>
@@ -104,7 +104,7 @@ const Menu = () => {
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
         <div
-          className="hover:bg-manta-gray dark:hover:bg-blue-900 bg-secondary flex gap-3 px-4 p-3 font-black cursor-pointer rounded-xl"
+          className="hover:bg-manta-gray dark:hover:bg-blue-900 bg-fifth flex gap-3 px-4 p-3 font-black cursor-pointer rounded-xl"
           onClick={() => {
             isOpen ? setIsOpen(false) : setIsOpen(true);
           }}
