@@ -8,7 +8,6 @@ import BridgeForm from './BridgeForm';
 
 const BridgePage = () => {
   return (
-      <MetamaskContextProvider>
         <BridgeDataContextProvider>
           <BridgeTxContextProvider>
             <PageContent>
@@ -16,7 +15,6 @@ const BridgePage = () => {
             </PageContent>
           </BridgeTxContextProvider>
         </BridgeDataContextProvider>
-      </MetamaskContextProvider>
   );
 };
 

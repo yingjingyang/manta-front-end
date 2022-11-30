@@ -1,155 +1,136 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import Select, { components } from 'react-select';
+import { useEffect, useState } from 'react';
+import { useConfig } from 'contexts/configContext';
+import { useMetamask } from 'contexts/metamaskContext';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import Svgs from 'resources/icons';
+import Identicon from '@polkadot/react-identicon';
+import {
+  faArrowUpRightFromSquare,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { useTxStatus } from 'contexts/txStatusContext';
-import classNames from 'classnames';
+import makeBlockie from 'ethereum-blockies-base64';
+import CopyPasteIcon from 'components/CopyPasteIcon';
 
-export const substrateAccountToReactSelectOption = (account) => {
-  if (!account) {
-    return null;
-  }
-  const label =  account?.meta.name;
-  return {
-    value: { account, address: account.address },
-    label,
-  };
-};
-
-export const substrateAccountsToReactSelectOptions = (accounts) => {
-  return accounts.map(account => substrateAccountToReactSelectOption(account));
-};
-
-const AccountSelect = ({
-  options,
-  selectedOption,
-  onChangeOption
+const SingleAccountDisplay = ({
+  accountName,
+  accountAddress,
+  isAccountSelected,
+  isMetamaskSelected,
+  onClickAccountHandler
 }) => {
-  const { txStatus } = useTxStatus();
-  const disabled = txStatus?.isProcessing();
+  const config = useConfig();
+  const succinctAddress = `${accountAddress?.slice(
+    0,
+    5
+  )}...${accountAddress?.slice(-4)}`;
 
-  return (
-    <Select
-      className={classNames(
-        'w-100 flex items-center h-16 manta-bg-gray',
-        'rounded-lg p-0.5 text-black dark:text-white',
-        {'disabled': disabled})
-      }
-      isSearchable={false}
-      value={selectedOption}
-      onChange={onChangeOption}
-      options={options}
-      placeholder=""
-      styles={dropdownStyles(disabled)}
-      isDisabled={disabled}
-      components={{
-        SingleValue: AccountSelectSingleValue,
-        Option: AccountSelectOption,
-        IndicatorSeparator: EmptyIndicatorSeparator
-      }}
-      onValueClick={(e) => e.stopPropagation()}
-    />
-  );
-};
+  const succinctAccountName =
+    accountName.length > 12
+      ? `${accountName?.slice(0, 12)}...`
+      : accountName;
 
-const AccountSelectSingleValue = ({ data }) => {
-  const [addressCopied, setAddressCopied] = useState(false);
+  const blockExplorerLink = isMetamaskSelected
+    ? `${config.ETHERSCAN_URL}/address/${accountAddress}`
+    : `${config.SUBSCAN_URL}/account/${accountAddress}`;
 
-  const copyToClipboard = (e) => {
-    navigator.clipboard.writeText(data.value.address);
-    setAddressCopied(true);
-    e.stopPropagation();
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(accountAddress);
     return false;
   };
 
-  useEffect(() => {
-    const timer = setTimeout(
-      () => addressCopied && setAddressCopied(false),
-      2000
-    );
-    return () => clearTimeout(timer);
-  }, [addressCopied]);
-
-  return (
-    <div className="pl-4 pr-6 border-0 flex flex-grow items-end gap-2 relative">
-      <div className="text-lg text-black dark:text-white">
-        {data.label}
-      </div>
-      <div className="text-xs manta-gray">
-        {data.value.address.slice(0, 10)}...{data.value.address.slice(-10)}
-      </div>
-      <data id="clipBoardCopy" value={data.value.address}/>
-      {addressCopied ? (
-        <FontAwesomeIcon
-          icon={faCheck}
-          className="ml-auto cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2"
-        />
-      ) : (
-        <FontAwesomeIcon
-          icon={faCopy}
-          className="ml-auto cursor-pointer absolute right-1 top-1/2 transform -translate-y-1/2"
-          onMouseDown={(e) => copyToClipboard(e)}
-        />
-      )}
-    </div>
+  const BlockExplorerButton = () => (
+    <a
+      className="place-self-center"
+      onClick={(e) => e.stopPropagation()}
+      href={blockExplorerLink}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FontAwesomeIcon
+        className="cursor-pointer w-3 h-3"
+        icon={faArrowUpRightFromSquare}
+        href={blockExplorerLink}
+      />
+    </a>
   );
-};
 
-const AccountSelectOption = (props) => {
-  const { label, value, innerProps } = props;
-  const onClick = () => {
-    return;
-  };
+
+  const AccountIcon = () =>
+    isMetamaskSelected ? (
+      <img
+        className="ml-1 rounded-full w-6 h-6"
+        src={makeBlockie(accountAddress)}
+        alt={'blockie address icon'}
+      />
+    ) : (
+      <Identicon
+        value={accountAddress}
+        size={24}
+        theme="polkadot"
+        className="px-1"
+      />
+    );
+
   return (
-    <div {...innerProps}>
-      <div className="flex items-center hover:bg-blue-100">
-        <div onClick={onClick} className="w-full pl-4 p-2 text-black">
-          <components.Option {...props}>{label}</components.Option>
-          <div className="text-xs block manta-gray">
-            {value.address.slice(0, 10)}...{value.address.slice(-10)}
+    <div
+      key={accountAddress}
+      className="bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white border-opacity-20 rounded-lg px-3 text-green w-68 h-16"
+      onClick={onClickAccountHandler}
+    >
+      <div>
+        <div className="flex flex-row items-center gap-3">
+          <AccountIcon />
+          <div className="flex flex-col">
+            <div className="text-base">{succinctAccountName}</div>
+            <div className="flex flex-row items-center gap-2 text-white text-opacity-60 text-sm">
+              {succinctAddress}
+              <div className="w-3 h-5 flex">
+                <BlockExplorerButton />
+              </div>
+              <div className="w-5 h-5">
+                <CopyPasteIcon className='place-self-center cursor-pointer w-full h-full hover:text-link' textToCopy={accountAddress} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <div className="relative right-2">
+        {isAccountSelected && (
+          <img src={Svgs.GreenCheckIcon} alt={'green check'} />
+        )}
+      </div>
     </div>
   );
 };
 
-const EmptyIndicatorSeparator = () => {
-  return <div />;
+const AccountSelectDropdown = ({ isMetamaskSelected }) => {
+  const { ethAddress } = useMetamask();
+  const { externalAccount, externalAccountOptions, changeExternalAccount } =
+    useExternalAccount();
+
+  return isMetamaskSelected ? (
+    <SingleAccountDisplay
+      accountName={'Metamask Account'}
+      accountAddress={ethAddress}
+      isAccountSelected={true}
+      isMetamaskSelected={isMetamaskSelected}
+      onClickAccountHandler={() => {}}
+    />
+  ) : (
+    <div className="flex flex-col gap-5">
+      {externalAccountOptions.map((account: any) => (
+        <SingleAccountDisplay
+          key={account.address}
+          accountName={account.meta.name}
+          accountAddress={account.address}
+          isAccountSelected={account.address === externalAccount.address}
+          isMetamaskSelected={isMetamaskSelected}
+          onClickAccountHandler={() => changeExternalAccount(account)}
+        />
+      ))}
+    </div>
+  );
 };
 
-const dropdownStyles = (disabled) => {
-  const cursor = disabled ? 'not-allowed !important' : 'pointer';
-  return {
-    control: (provided) => ({
-      ...provided,
-      borderStyle: 'none',
-      borderWidth: '0px',
-      paddingBottom: '0.5rem',
-      paddingTop: '0.5rem',
-      boxShadow: '0 0 #0000',
-      backgroundColor: 'transparent',
-      width: '100%',
-      cursor: cursor
-    }),
-    dropdownIndicator: () => ({ paddingRight: '1rem' }),
-    option: () => ({
-      fontSize: '12pt'
-    }),
-    input: (provided) => ({
-      ...provided,
-      fontSize: '1.125rem',
-      paddingLeft: '0.6rem',
-      display: 'none',
-      minWidth: '0%',
-      maxWidth: '100%',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      cursor: cursor
-    })
-  };
-};
-
-export default AccountSelect;
+export default AccountSelectDropdown;

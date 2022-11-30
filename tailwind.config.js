@@ -3,6 +3,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontSize: {
+      xsss: '.70rem',
       xss: '.75rem',
       xs: '.825rem',
       sm: '.875rem',
@@ -27,8 +28,10 @@ module.exports = {
         '108':'27rem',
         '113.5':'28.375rem'
       },
+      width: {
+        '68': '272px'
+      },
       backgroundImage: {},
-
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
@@ -42,6 +45,7 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
+        'button-fourth': 'var(--color-bg-button-fourth)',
         'connect-signer-button':'#2B49EA',
         'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)'

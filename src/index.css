@@ -19,7 +19,7 @@ body {
   --color-bg-primary: #050d32;
   --color-bg-secondary: rgba(255, 255, 255, 0.05);
   --color-bg-thirdry: #23284e;
-  --color-bg-fourth: #61abb9;
+  --color-bg-fourth: #11193C;
   --color-bg-fifth: #12193c;
   --color-bg-overlay: #101b30;
   --color-bg-table-row: #1b1f3e;
@@ -27,9 +27,9 @@ body {
   --color-bg-danger: #fa4d56;
   --color-bg-manta-gray: #acacb4;
   --color-bg-button-primary: #0d7bc5;
-  --color-bg-button-secondary: #0E50FC;
+  --color-bg-button-secondary: #2B49EA;
   --color-bg-button-thirdry: #00AFA5;
-  --color-bg-button-fourth: #2B49EA;
+  --color-bg-button-fourth: #0E50FC;
   --color-text-primary: #ffffff;
   --color-text-secondary: #a4a3a7;
   --color-text-thirdry: #ffffff;
@@ -56,9 +56,9 @@ body {
   --color-bg-danger: #fa4d56;
   --color-bg-manta-gray: #7e7e7e;
   --color-bg-button-primary: #0d7bc5;
-  --color-bg-button-secondary: #0E50FC;
+  --color-bg-button-secondary: #2B49EA;
   --color-bg-button-thirdry: #00AFA5;
-  --color-bg-button-fourth: #2B49EA;
+  --color-bg-button-fourth: #0E50FC;
   --color-text-primary: #104ea1;
   --color-text-secondary: #212f41;
   --color-text-thirdry: #070707;
