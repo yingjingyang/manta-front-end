@@ -4,28 +4,28 @@ import { useConfig } from 'contexts/configContext';
 
 const Navs = () => {
   return (
-    <div className="flex flex-row justify-between rounded-full bg-secondary w-113.5 shadow-2xl items-center text-sm">
+    <div className="flex rounded-full bg-secondary shadow-2xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <NavLink
         to="/transact"
-        className="py-3 w-1/4 rounded-full text-secondary text-center hover:bg-button-secondary hover:text-white hover:font-bold"
+        className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
       >
-        zkTransact
+        Transact
       </NavLink>
       <NavLink
         to="/bridge"
-        className="py-3 w-1/4 rounded-full text-secondary text-center hover:bg-button-secondary hover:text-white hover:font-bold"
+        className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
       >
         Bridge
       </NavLink>
       <NavLink
         to="/stake"
-        className="py-3 w-1/4 rounded-full text-secondary text-center hover:bg-button-secondary hover:text-white hover:font-bold"
+        className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
       >
         Stake
       </NavLink>
       <a
-        href="https://docs.manta.network/docs/calamari/Governance"
-        className="py-3 w-1/4 rounded-full text-secondary text-center hover:bg-button-secondary hover:text-white hover:font-bold"
+        href="https://forum.manta.network/"
+        className="px-6 py-3 font-medium rounded-full text-secondary hover:bg-white"
         target="_blank"
         rel="noreferrer"
       >

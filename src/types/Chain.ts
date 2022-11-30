@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Svgs from 'resources/icons';
 import { KaruraAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/acala';
-import { CalamariAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/manta';
+import { CalamariAdapter, DolphinAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/manta';
 import { KusamaAdapter} from 'manta-polkawallet-bridge-dev/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge-dev/build/adapters/moonbeam';
 import { typesBundlePre900 } from "moonbeam-types-bundle"
@@ -9,6 +9,7 @@ import types from '../config/types.json';
 import AssetType from './AssetType';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import NETWORK from 'constants/NetworkConstants';
 
 export default class Chain {
   constructor(
@@ -46,13 +47,13 @@ export default class Chain {
     return new Chain(
       'dolphin',
       'Dolphin',
-      2084,
+      9997,
       Svgs.Dolphin,
       config.DOLPHIN_SOCKET,
       'https://dolphin.subscan.io',
-      [AssetType.Rococo(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Dolphin(config),
-      new CalamariAdapter(),
+      new DolphinAdapter(),
       types
     );
   }
@@ -146,15 +147,20 @@ export default class Chain {
   }
 
   static All(config) {
-    if (config.NETWORK_NAME === 'Calamari') {
+    if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         Chain.Calamari(config),
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config)
       ];
-    } else {
-      return [];
+    } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+      return [
+        Chain.Dolphin(config),
+        Chain.Kusama(config),
+        Chain.Karura(config),
+        Chain.Moonriver(config)
+      ];
     }
   }
 

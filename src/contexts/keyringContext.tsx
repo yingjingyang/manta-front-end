@@ -31,8 +31,7 @@ export const KeyringContextProvider = (props) => {
       }));
       uiKeyring.loadAll(
         {
-          ss58Format: config.SS58_FORMAT,
-          isDevelopment: config.DEVELOPMENT_KEYRING
+          ss58Format: config.SS58_FORMAT
         },
         allAccounts,
       );

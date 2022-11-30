@@ -14,9 +14,7 @@ const BridgeAssetSelect = () => {
     setSelectedAssetType,
   } = useBridgeData();
 
-  const balanceText = senderAssetCurrentBalance
-    ? senderAssetCurrentBalance.toDisplayString()
-    : '--';
+  const balanceText = senderAssetCurrentBalance?.toDisplayString();
 
   return (
     <div className="w-100 relative">
