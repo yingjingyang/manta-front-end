@@ -3,7 +3,6 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
-import GradientText from 'components/GradientText';
 import BalanceDisplay from 'components/Balance/BalanceDisplay';
 
 
@@ -44,7 +43,7 @@ const BalanceInput = ({
       </div>
       <BalanceDisplay
         balance={balanceText}
-        className="text-xs text-white mt-2.5 absolute right-0 bottom-0 w-28 h-8"
+        className="text-xs text-white mt-2.5 mr-6 absolute right-0 bottom-0 h-8"
         loader={shouldShowLoader}
       />
     </div>

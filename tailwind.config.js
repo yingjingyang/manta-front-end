@@ -40,7 +40,7 @@ module.exports = {
         success: 'var(--color-bg-success)',
         danger: 'var(--color-bg-danger)',
         'manta-gray': 'var(--color-bg-manta-gray)',
-        button: 'var(--color-bg-button)',
+        button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
         'connect-signer-button':'#2B49EA',
         'connect-wallet-button':'#00AFA5',
@@ -51,7 +51,7 @@ module.exports = {
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
-        link: 'var(--color-bg-button)',
+        link: 'var(--color-bg-button-primary)',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
@@ -66,7 +66,7 @@ module.exports = {
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)',
         primary: 'var(--color-border-primary)',
-        secondary: 'var(--color-bg-button)'
+        secondary: 'var(--color-bg-button-primary)'
       }
     }
   },

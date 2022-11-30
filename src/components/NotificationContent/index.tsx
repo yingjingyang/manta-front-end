@@ -7,7 +7,7 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons';
 export const TxSuccessNotificationContent = ({ msg, extrinsic, subscanBaseUrl }) => {
   const subscanLink = `${subscanBaseUrl}/extrinsic/${extrinsic}`;
   return (
-    <div className="bg-secondary">
+    <div>
       <a
         className=""
         href={subscanLink}

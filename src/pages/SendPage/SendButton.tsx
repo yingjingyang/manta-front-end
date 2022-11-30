@@ -24,7 +24,7 @@ const SendButton = () => {
   const { signerIsConnected } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
   const { txStatus } = useTxStatus();
-  const { send, senderInputValue } = useSend();
+  const { send, senderAssetTargetBalance } = useSend();
   const disabled = txStatus?.isProcessing();
 
   const DisplayButton = () => {
@@ -46,7 +46,7 @@ const SendButton = () => {
           Connect Wallet
         </div>
       );
-    } else if (!senderInputValue || senderInputValue <= 0 ) {
+    } else if (!senderAssetTargetBalance) {
       // amount not entered
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
@@ -82,13 +82,6 @@ const SendButton = () => {
       return (
         <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
           {message}
-        </div>
-      );
-    } else if (txStatus?.isProcessing()) {
-      // pending transaction
-      return (
-        <div className="py-2 unselectable-text text-center text-white gradient-button filter brightness-50 rounded-lg w-full cursor-not-allowed">
-          Processing
         </div>
       );
     } else {

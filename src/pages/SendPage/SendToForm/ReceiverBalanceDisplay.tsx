@@ -10,7 +10,7 @@ const ReceiverBalanceDisplay = () => {
     receiverAddress,
     isToPrivate,
     isPrivateTransfer,
-    senderInputValue,
+    senderAssetTargetBalance,
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
   const shouldShowInitialSync =
@@ -21,10 +21,13 @@ const ReceiverBalanceDisplay = () => {
   const shouldShowLoader =
     receiverAddress && !receiverCurrentBalance && !shouldShowInitialSync;
 
+  const targetBalanceString = senderAssetTargetBalance
+    ? senderAssetTargetBalance.toString()
+    : '0.00';
   return (
     <div className="relative gap-4 justify-between items-center px-4 py-2 manta-bg-gray rounded-lg h-20 mb-2">
       <div className="absolute left-4 bottom-7 p-2 cursor-default w-1/2 text-xl text-gray-500 overflow-hidden">
-        {senderInputValue || '0.00'}
+        {targetBalanceString}
       </div>
       <div className="absolute right-8 top-2 pl-2 border-0 flex flex-y items-center gap-2 mt-2">
         <div>
@@ -40,7 +43,7 @@ const ReceiverBalanceDisplay = () => {
       </div>
       <BalanceDisplay
         balance={balanceString}
-        className="absolute text-white right-0 bottom-0 mt-2.5 w-28 h-8 flex flex-row gap-1 text-sm"
+        className="absolute text-white right-0 bottom-0 mr-7 mt-2.5 h-8 flex flex-row gap-1 text-sm"
         loader={shouldShowLoader}
       />
     </div>

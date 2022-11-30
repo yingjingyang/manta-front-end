@@ -15,8 +15,6 @@ const SendBalanceInput = () => {
     setSenderAssetTargetBalance,
     senderAssetType,
     senderIsPrivate,
-    senderInputValue,
-    setSenderInputValue,
     getMaxSendableBalance
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
@@ -27,17 +25,19 @@ const SendBalanceInput = () => {
     ? 'Syncing to network'
     : senderAssetCurrentBalance?.toString();
 
+  const [inputValue, setInputValue] = useState('');
+
   const onChangeSendAmountInput = (value) => {
     if (value === '') {
       setSenderAssetTargetBalance(null);
-      setSenderInputValue('');
+      setInputValue('');
     } else {
       try {
         const targetBalance = Balance.fromBaseUnits(
           senderAssetType,
           new Decimal(value)
         );
-        setSenderInputValue(value);
+        setInputValue(value);
         if (targetBalance.valueAtomicUnits.gt(new BN(0))) {
           setSenderAssetTargetBalance(targetBalance);
         } else {
@@ -57,7 +57,7 @@ const SendBalanceInput = () => {
   return (
     <BalanceInput
       onChangeAmountInput={onChangeSendAmountInput}
-      inputValue={senderInputValue}
+      inputValue={inputValue}
       onClickMax={onClickMax}
       balanceText={balanceText}
       shouldShowLoader={shouldShowLoader}
