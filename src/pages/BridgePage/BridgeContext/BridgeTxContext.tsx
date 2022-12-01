@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
@@ -11,8 +10,6 @@ import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { useConfig } from 'contexts/configContext';
 import { useBridgeData } from './BridgeDataContext';
-import { evmToAddress, addressToEvm } from '@polkadot/util-crypto';
-
 
 const BridgeTxContext = React.createContext();
 
@@ -20,7 +17,7 @@ export const BridgeTxContextProvider = (props) => {
   const config = useConfig();
   const { provider } = useMetamask();
   const { setTxStatus } = useTxStatus();
-  const { externalAccount, externalAccountSigner } = useExternalAccount();
+  const { externalAccount, externalAccountSigner, setApiSigner } = useExternalAccount();
   const {
     senderAssetType,
     senderAssetCurrentBalance,
@@ -86,6 +83,7 @@ export const BridgeTxContextProvider = (props) => {
   const isValidToSend = () => {
     return (
       originChain?.api &&
+      destinationAddress &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
       userCanSign() &&
@@ -155,8 +153,7 @@ export const BridgeTxContextProvider = (props) => {
       address: destinationAddress,
     });
     try {
-      const injected = await web3FromSource(externalAccount.meta.source);
-      originChain.api.setSigner(injected.signer);
+      setApiSigner(originChain.api);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
@@ -168,7 +165,7 @@ export const BridgeTxContextProvider = (props) => {
   const sendEth = async () => {
     if (originChain.name === 'moonriver') {
       const txHash = await transferMovrFromMoonriverToCalamari(
-        config, provider, senderAssetTargetBalance, externalAccount.address
+        config, provider, senderAssetTargetBalance, destinationAddress
       );
       if (txHash) {
         setTxStatus(TxStatus.finalized(txHash));

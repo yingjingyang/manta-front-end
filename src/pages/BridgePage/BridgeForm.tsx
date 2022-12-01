@@ -9,6 +9,7 @@ import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
 import BridgeAssetErrorText from './BridgeAssetErrorText';
 import { useTxStatus } from 'contexts/txStatusContext';
+import BridgeDestinationInput from './BridgeDestinationInput';
 
 const BridgeForm = () => {
   const {
@@ -27,6 +28,10 @@ const BridgeForm = () => {
       switchOriginAndDestination();
     }
   }
+
+  const originChainIsEvm = originChain?.xcmAdapter.chain.type === 'ethereum';
+  const destinationChainIsEvm = destinationChain?.xcmAdapter.chain.type === 'ethereum';
+  const shouldShowDestinationInput = originChainIsEvm || destinationChainIsEvm;
 
   return (
     <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
@@ -52,14 +57,15 @@ const BridgeForm = () => {
             isOriginChain={false}
           />
         </div>
-        <div className="pt-4 flex flex-col gap-4 flex-y mt-4">
+        <div className="flex flex-col flex-y gap-4">
           <div>
             <BridgeAssetSelect />
-            <BridgeAssetErrorText />
-            <BridgeFeeDisplay />
+            {/* <BridgeAssetErrorText /> */}
           </div>
-          <SendButton />
         </div>
+        {shouldShowDestinationInput && <BridgeDestinationInput />}
+        <BridgeFeeDisplay />
+        <SendButton />
       </div>
     </div>
   );

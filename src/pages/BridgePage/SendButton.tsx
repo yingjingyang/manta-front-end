@@ -18,13 +18,13 @@ const SendButton = () => {
 
     <div >
       {disabled ? (
-        <MantaLoading className="py-4" />
+        <MantaLoading className="py-3" />
       ) : (
         <button
           onClick={onClick}
           className={
             classNames(
-              'py-3 cursor-pointer text-xl btn-hover unselectable-text',
+              'py-2 cursor-pointer text-xl btn-hover unselectable-text',
               'text-center rounded-lg btn-primary w-full',
             )}
         >

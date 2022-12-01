@@ -66,12 +66,12 @@ export const CalamariBasePage = () => {
 export const DolphinBasePage = () => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
-      <BasePage>
-        <MetamaskContextProvider>
-          <Navbar />
-        </MetamaskContextProvider>
-        <Outlet />
-      </BasePage>
+      <MetamaskContextProvider>
+        <BasePage>
+            <Navbar />
+          <Outlet />
+        </BasePage>
+      </MetamaskContextProvider>
     </ConfigContextProvider>
   );
 }
