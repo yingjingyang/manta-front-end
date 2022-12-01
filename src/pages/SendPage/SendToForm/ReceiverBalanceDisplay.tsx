@@ -29,7 +29,7 @@ const ReceiverBalanceDisplay = () => {
       <div className="absolute left-4 bottom-7 p-2 cursor-default w-1/2 text-xl text-gray-500 overflow-hidden">
         {targetBalanceString}
       </div>
-      <div className="absolute right-8 top-2 pl-2 border-0 flex flex-y items-center gap-2 mt-2">
+      <div className="absolute right-6 top-2 border-0 flex flex-y items-center gap-3 mt-2">
         <div>
           <img
             className="w-5 h-5 rounded-full"
@@ -37,13 +37,13 @@ const ReceiverBalanceDisplay = () => {
             alt="icon"
           />
         </div>
-        <div className="text-black dark:text-white w-14 place-self-center">
+        <div className="text-black dark:text-white place-self-center">
           {receiverAssetType?.ticker}
         </div>
       </div>
       <BalanceDisplay
         balance={balanceString}
-        className="absolute text-white right-0 bottom-0 mr-7 mt-2.5 h-8 flex flex-row gap-1 text-sm"
+        className="absolute text-white right-0 bottom-0 mr-6 mt-2.5 h-8 flex flex-row gap-1 text-xs"
         loader={shouldShowLoader}
       />
     </div>

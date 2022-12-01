@@ -17,10 +17,15 @@ const SendBalanceInput = () => {
     senderIsPrivate,
     getMaxSendableBalance
   } = useSend();
+  const { signerIsConnected } = usePrivateWallet();
   const { isInitialSync } = usePrivateWallet();
   const shouldShowInitialSync = isInitialSync.current && senderIsPrivate();
   const shouldShowLoader =
-    !senderAssetCurrentBalance && api?.isConnected && !shouldShowInitialSync;
+    !senderAssetCurrentBalance &&
+    api?.isConnected &&
+    !shouldShowInitialSync &&
+    signerIsConnected;
+
   const balanceText = shouldShowInitialSync
     ? 'Syncing to network'
     : senderAssetCurrentBalance?.toString();

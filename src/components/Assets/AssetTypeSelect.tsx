@@ -32,7 +32,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-0 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
+        '!absolute right-3 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -104,7 +104,7 @@ const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="border-0 flex items-center gap-2">
       <img className="w-5 h-5 rounded-full" src={data.icon} alt="icon" />
-      <div className="text-black dark:text-white w-14 place-self-center">
+      <div className="text-black dark:text-white place-self-center">
         {data.ticker}
       </div>
     </div>
