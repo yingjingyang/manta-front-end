@@ -13,6 +13,9 @@ const CreateCollection = () => {
   const { createCollection } = useNft();
 
   const onClick = async () => {
+    if (disabled) {
+      return;
+    }
     setDisabled(true);
     await createCollection();
     setDisabled(false);
@@ -25,7 +28,7 @@ const CreateCollection = () => {
         <MantaLoading className="py-4" />
       ) : (
         <button
-          id="sendButton"
+          id="createCollectionButton"
           onClick={onClick}
           className={classNames(
             'py-3 px-5 cursor-pointer text-xl btn-hover unselectable-text',

@@ -9,13 +9,37 @@ import React, {
 import { usePrivateWallet } from './privateWalletContext';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import PropTypes from 'prop-types';
+import { create } from "ipfs-http-client";
+
 
 const NftContext = createContext();
+
+const IPFS_URL = "https://ipfs.io/ipfs/";
 
 export const NftContextProvider = (props) => {
 
   const { sdk } = usePrivateWallet();
 
+  const [ipfsClient, setIpfsClient] = useState(null);
+
+  useEffect(async () => {
+
+    const projectId = "";
+    const projectSecret = "";
+    const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
+
+    const client = await create({
+      host: "ipfs.infura.io",
+      port: 5001,
+      protocol: "https",
+      apiPath: '/api/v0',
+      headers: {
+        authorization: auth,
+    },
+    });
+    setIpfsClient(client);
+
+  },[]);
 
   /// creates a new collection, broadcasts the collectionId.
   const createCollection = async () => {
@@ -48,10 +72,9 @@ export const NftContextProvider = (props) => {
 
       const assetId = await sdk.mintNFT(collectionId,itemId,address);
 
-      // @TODO: upload metadata of image to IPFS
+      const IPFS_CID = await uploadToIpfs(metadata);
+      console.log("Successfully Uploaded to IPFS at " + IPFS_URL+IPFS_CID);
 
-      // ex: https://ipfs.io/ipfs/QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE
-      const IPFS_CID = "QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE";
       await sdk.updateNFTMetadata(collectionId,itemId,IPFS_CID);
 
       showSuccess({},"AssetID: " + assetId);
@@ -62,6 +85,15 @@ export const NftContextProvider = (props) => {
     }
   }
 
+  const uploadToIpfs = async (file) => {
+    try {
+      const created = await ipfsClient.add({ content: file });
+      return created.path;   
+    } catch (e) {
+      console.log("Unable to upload image to IPFS").
+      console.error(e);
+    }
+  }
 
   const value = {
     createCollection,

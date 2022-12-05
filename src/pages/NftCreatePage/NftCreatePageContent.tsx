@@ -15,7 +15,6 @@ import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
 import CreateCollection from './CreateCollection';
 import CreateItem from './CreateItem';
-import UpdateItem from './UpdateItem';
 
 const NftCreatePageContent = () => {
   const { keyring } = useKeyring();
@@ -57,7 +56,6 @@ const NftCreatePageContent = () => {
         <div className="p-8 bg-secondary rounded-3xl">
           <CreateCollection/>
           <CreateItem/>
-          <UpdateItem/>
         </div>
       </div>
     </PageContent>
