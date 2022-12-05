@@ -471,7 +471,8 @@ export const PrivateWalletContextProvider = (props) => {
     signerVersion,
     isInitialSync,
     walletIsBusy,
-    balancesAreStale
+    balancesAreStale,
+    sdk
   };
 
   return (

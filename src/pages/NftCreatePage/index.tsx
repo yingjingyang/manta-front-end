@@ -8,24 +8,25 @@ import { NFTNavbar } from 'components/Navbar';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider } from 'contexts/configContext';
-import { SendContextProvider } from '../SendPage/SendContext';
 import NftCreatePageContent from './NftCreatePageContent';
+import { NftContextProvider } from 'contexts/nftContext';
 
+// @TODO: Remove dependence of NftContextProvider on PrivateWalletContextProvider `sdk`.
 
 const NftCreatePage = () => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <SubstrateContextProvider>
         <ExternalAccountContextProvider>
-          <TxStatusContextProvider >
+          <TxStatusContextProvider>
             <PrivateWalletContextProvider>
-              <SendContextProvider>
+              <NftContextProvider>
                 <div className="min-h-screen">
                   <NFTNavbar />
                   <NftCreatePageContent />
                 </div>
                 <DeveloperConsole />
-              </SendContextProvider>
+              </NftContextProvider>
             </PrivateWalletContextProvider>
           </TxStatusContextProvider>
         </ExternalAccountContextProvider>
