@@ -21,6 +21,7 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import NETWORK from '../constants/NetworkConstants';
 import { useConfig } from './configContext';
+import { MantaSdk, init, Network, Environment } from 'manta.js';
 
 const PrivateWalletContext = createContext();
 
@@ -37,9 +38,9 @@ export const PrivateWalletContextProvider = (props) => {
 
   // wasm wallet
   const [privateAddress, setPrivateAddress] = useState(null);
-  const [wallet, setWallet] = useState(null);
-  const [wasm, setWasm] = useState(null);
-  const [wasmApi, setWasmApi] = useState(null);
+  //const [wallet, setWallet] = useState(null);
+  //const [wasm, setWasm] = useState(null);
+  //const [wasmApi, setWasmApi] = useState(null);
 
   // signer connection
   const [signerIsConnected, setSignerIsConnected] = useState(null);
@@ -47,6 +48,9 @@ export const PrivateWalletContextProvider = (props) => {
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
   const walletIsBusy = useRef(false);
+
+  // manta SDK
+  const [sdk, setSdk] = useState(null);
 
   // transaction state
   const txQueue = useRef([]);
@@ -59,8 +63,8 @@ export const PrivateWalletContextProvider = (props) => {
   const [currentNetwork, _setCurrentNetwork] = useState(DolphinNetwork);
 
   useEffect(() => {
-    setIsReady(wallet && signerIsConnected);
-  }, [wallet, signerIsConnected]);
+    setIsReady(sdk && signerIsConnected);
+  }, [sdk, signerIsConnected]);
 
   // WASM wallet must be reinitialized when socket changes
   // because the old api will have been disconnected
@@ -69,9 +73,9 @@ export const PrivateWalletContextProvider = (props) => {
   }, [socket]);
 
   useEffect(() => {
+    /*
     const getPrivateAddress = async (wasm, wallet) => {
-      const keys = await wallet.receiving_keys(
-        new wasm.ReceivingKeyRequest('GetAll'),
+      const keys = await wallet.address(
         wasm.Network.from_string(`"${currentNetwork}"`)
       );
       const privateAddressRaw = keys[0];
@@ -81,6 +85,7 @@ export const PrivateWalletContextProvider = (props) => {
       ];
       return base58Encode(privateAddressBytes);
     };
+    */
 
     const canInitWallet = () => {
       return (
@@ -96,6 +101,7 @@ export const PrivateWalletContextProvider = (props) => {
     const initWallet = async () => {
       console.log('INITIALIZING WALLET');
       isInitialSync.current = true;
+      /*
       const wasm = await import('manta-wasm-wallet');
       const wasmSigner = new wasm.Signer(config.SIGNER_URL);
       const DEFAULT_PULL_SIZE = 4096;
@@ -105,9 +111,17 @@ export const PrivateWalletContextProvider = (props) => {
       const wasmApi = new Api(wasmApiConfig);
       const wasmLedger = new wasm.PolkadotJsLedger(wasmApi);
       const wasmWallet = new wasm.Wallet(wasmLedger, wasmSigner);
-      const privateAddress = await getPrivateAddress(wasm, wasmWallet);
       const networkType = wasm.Network.from_string(`"${currentNetwork}"`);
+      */
+      // @TODO: Handle network type properlly for sdk.
+      // Currently hard coding it as Dolphin upon initialization.
+      
+      const mantaSdk = await init(Environment.Development, Network.Dolphin);
+      const privateAddress = await mantaSdk.privateAddress();
+      console.log("The private address is: ", privateAddress);
       setPrivateAddress(privateAddress);
+      await mantaSdk.initalWalletSync();
+      /*
       console.log('Beginning initial sync');
       const startTime = performance.now();
       await wasmWallet.restart(networkType);
@@ -115,9 +129,12 @@ export const PrivateWalletContextProvider = (props) => {
       console.log(
         `Initial sync finished in ${(endTime - startTime) / 1000} seconds`
       );
+      
       setWasm(wasm);
       setWasmApi(wasmApi);
       setWallet(wasmWallet);
+      */
+      setSdk(mantaSdk);
       isInitialSync.current = false;
     };
 
@@ -139,20 +156,22 @@ export const PrivateWalletContextProvider = (props) => {
       } else {
         setSignerIsConnected(signerIsConnected);
         setSignerVersion(null);
-        setWasm(null);
+        setSdk(null);
+        //setWasm(null);
         setPrivateAddress(null);
-        setWasmApi(null);
-        setWallet(null);
+        //setWasmApi(null);
+        //setWallet(null);
         isInitialSync.current = false;
       }
     } catch (err) {
       console.error(err);
       setSignerIsConnected(false);
       setSignerVersion(null);
-      setWasm(null);
+      setSdk(null);
+      //setWasm(null);
       setPrivateAddress(null);
-      setWasmApi(null);
-      setWallet(null);
+      //setWasmApi(null);
+      //setWallet(null);
       isInitialSync.current = false;
     }
   };
@@ -162,7 +181,7 @@ export const PrivateWalletContextProvider = (props) => {
       fetchSignerVersion();
     }, 2000);
     return () => clearInterval(interval);
-  }, [api, wallet]);
+  }, [api, sdk]);
 
   // WASM wallet doesn't allow you to call two methods at once, so before
   // calling methods it is necessary to wait for a pending call to finish
@@ -181,12 +200,16 @@ export const PrivateWalletContextProvider = (props) => {
     }
     walletIsBusy.current = true;
     try {
+      console.log("syncing");
+      /*
       console.log('Beginning sync');
       const startTime = performance.now();
       const networkType = wasm.Network.from_string(`"${currentNetwork}"`);
       await wallet.sync(networkType);
       const endTime = performance.now();
       console.log(`Sync finished in ${(endTime - startTime) / 1000} seconds`);
+      */
+      await sdk.walletSync();
       balancesAreStale.current = false;
     } catch (error) {
       console.error('Sync failed', error);
@@ -208,14 +231,17 @@ export const PrivateWalletContextProvider = (props) => {
       return null;
     }
     await waitForWallet();
-    const balanceRaw = wallet.balance(new wasm.AssetId(assetType.assetId));
+
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetType.assetId);
+    const balanceRaw = await sdk.privateBalance(assetIdAsU8Array);
+    //const balanceRaw = wallet.balance(new wasm.AssetId(assetType.assetId));
     return new Balance(assetType, new BN(balanceRaw));
   };
 
   const handleInternalTxRes = async ({ status, events }) => {
     if (status.isInBlock) {
       for (const event of events) {
-        if (api.events.utility.BatchInterrupted.is(event.event)) {
+        if (sdk.api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
           txQueue.current = [];
           console.error('Internal transaction failed', event);
@@ -263,6 +289,7 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
+  /*
   const convertToOldPost = (post) => {
     // need to iterate over all receiverPosts and convert EncryptedNote from new
     // format of EncryptedNote { header: (), Ciphertext {...} } to old format:
@@ -272,6 +299,7 @@ export const PrivateWalletContextProvider = (props) => {
     postCopy.receiver_posts.map(x => {x.encrypted_note = x.encrypted_note.ciphertext});
     return postCopy
   }
+
 
   async function buildExtrinsics(transaction, assetMetadata, networkType) {
     const posts = await wallet.sign(transaction, assetMetadata, networkType);
@@ -312,8 +340,11 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
+  */
+
   const toPublic = async (balance, txResHandler, network=currentNetwork) => {
     // build wasm params
+    /*
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Reclaim": { "id": ${assetId}, "value": "${value}" }}`;
@@ -321,16 +352,26 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
     const networkType = wasm.Network.from_string(`"${network}"`);
-
+    */
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    const value = parseInt(balance.valueAtomicUnits.toString());
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
+      //const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
+      const res = await sdk.toPublic(assetIdAsU8Array, value);
       walletIsBusy.current = false;
-      const res = await publishBatchesSequentially(transactions, txResHandler);
+      //const res = await publishBatchesSequentially(transactions, txResHandler);
+
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
       return res;
     } catch (error) {
       console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
       walletIsBusy.current = false;
       return false;
     }
@@ -338,6 +379,7 @@ export const PrivateWalletContextProvider = (props) => {
 
   const privateTransfer = async (balance, recipient, txResHandler, network=currentNetwork) => {
     // build wasm params
+    /*
     const addressJson = privateAddressToJson(recipient);
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
@@ -346,16 +388,27 @@ export const PrivateWalletContextProvider = (props) => {
     const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
     const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);;
     const networkType = wasm.Network.from_string(`"${network}"`);
-
+    */
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    const value = parseInt(balance.valueAtomicUnits.toString());
+    const addressJson = sdk.convertPrivateAddressToJson(recipient);
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
+      const res = await sdk.privateTransfer(assetIdAsU8Array, value, addressJson);
+      //const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
-      const res = await publishBatchesSequentially(transactions, txResHandler);
+      //const res = await publishBatchesSequentially(transactions, txResHandler);
+
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
       return res;
     } catch (error) {
       console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
       walletIsBusy.current = false;
       return false;
     }
@@ -364,24 +417,39 @@ export const PrivateWalletContextProvider = (props) => {
   const toPrivate = async (balance, txResHandler, network=currentNetwork) => {
     await waitForWallet();
     walletIsBusy.current = true;
+    /*
     const value = balance.valueAtomicUnits.toString();
     const assetId = balance.assetType.assetId;
     const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
     const transaction = wasm.Transaction.from_string(txJson);
     const networkType = wasm.Network.from_string(`"${network}"`);
-    wasmApi.txResHandler = txResHandler;
-    wasmApi.externalAccountSigner = externalAccountSigner;
+    */
+    sdk.wasmApi.txResHandler = txResHandler;
+    sdk.wasmApi.externalAccountSigner = externalAccountSigner;
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    const value = parseInt(balance.valueAtomicUnits.toString());
     try {
-      const res = await wallet.post(transaction, null, networkType);
-      walletIsBusy.current = false;
+      const res = await sdk.toPrivateSign(assetIdAsU8Array,value);
+      //const res = await wallet.post(transaction, null, networkType);
+      walletIsBusy.current = false;        
+      
+      
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
+  
       return res;
     } catch (error) {
       console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
       walletIsBusy.current = false;
       return false;
     }
   };
 
+  /*
   const privateAddressToJson = (privateAddress) => {
     const bytes = base58Decode(privateAddress);
     return JSON.stringify({
@@ -389,6 +457,7 @@ export const PrivateWalletContextProvider = (props) => {
       view: Array.from(bytes.slice(32))
     });
   };
+  */
 
   const value = {
     isReady,
