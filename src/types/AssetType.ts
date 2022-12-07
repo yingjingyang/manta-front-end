@@ -34,6 +34,18 @@ export default class AssetType {
     }
   }
 
+  static Nft(isPrivate, assetId) {
+    return new AssetType(
+      assetId,
+      'NFT',
+      "NFT",
+      null,
+      12,
+      new BN('1000000000000'),
+      isPrivate
+    )
+  }
+
   static Dolphin(isPrivate) {
     return new AssetType(
       1,
@@ -134,13 +146,7 @@ export default class AssetType {
 
   static AllCurrencies(isPrivate) {
     return [
-      AssetType.Karura(isPrivate),
-      AssetType.AcalaDollar(isPrivate),
-      AssetType.Kusama(isPrivate),
-      AssetType.Rococo(isPrivate),
-      AssetType.KintsugiBTC(isPrivate),
-      AssetType.Moonriver(isPrivate),
-      AssetType.Dolphin(isPrivate)
+      AssetType.Nft(isPrivate,0)
     ];
   }
 

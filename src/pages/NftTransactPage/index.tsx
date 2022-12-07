@@ -8,9 +8,8 @@ import { NFTNavbar } from 'components/Navbar';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider } from 'contexts/configContext';
-import { SendContextProvider } from '../SendPage/SendContext';
+import { SendContextProvider } from './SendContext';
 import NftTransactPageContent from './NftTransactPageContent';
-
 
 const NftTransactPage = () => {
   return (
@@ -31,9 +30,7 @@ const NftTransactPage = () => {
         </ExternalAccountContextProvider>
       </SubstrateContextProvider>
     </ConfigContextProvider>
-  )
-}
-
-
+  );
+};
 
 export default NftTransactPage;

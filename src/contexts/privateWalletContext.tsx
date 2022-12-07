@@ -377,6 +377,41 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
+  const toPublicNFT = async (balance, txResHandler, network=currentNetwork) => {
+    // build wasm params
+    /*
+    const value = balance.valueAtomicUnits.toString();
+    const assetId = balance.assetType.assetId;
+    const txJson = `{ "Reclaim": { "id": ${assetId}, "value": "${value}" }}`;
+    const transaction = wasm.Transaction.from_string(txJson);
+    const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
+    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);
+    const networkType = wasm.Network.from_string(`"${network}"`);
+    */
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    const value = parseInt(balance.valueAtomicUnits.toString());
+    try {
+      await waitForWallet();
+      walletIsBusy.current = true;
+      //const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
+      const res = await sdk.toPublicNFT(assetIdAsU8Array);
+      walletIsBusy.current = false;
+      //const res = await publishBatchesSequentially(transactions, txResHandler);
+
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
+      walletIsBusy.current = false;
+      return false;
+    }
+  };
+
   const privateTransfer = async (balance, recipient, txResHandler, network=currentNetwork) => {
     // build wasm params
     /*
@@ -392,11 +427,46 @@ export const PrivateWalletContextProvider = (props) => {
     const assetId = balance.assetType.assetId;
     const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
     const value = parseInt(balance.valueAtomicUnits.toString());
-    const addressJson = sdk.convertPrivateAddressToJson(recipient);
     try {
       await waitForWallet();
       walletIsBusy.current = true;
-      const res = await sdk.privateTransfer(assetIdAsU8Array, value, addressJson);
+      const res = await sdk.privateTransfer(assetIdAsU8Array, value, recipient);
+      //const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
+      walletIsBusy.current = false;
+      //const res = await publishBatchesSequentially(transactions, txResHandler);
+
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
+      walletIsBusy.current = false;
+      return false;
+    }
+  };
+
+  const privateTransferNFT = async (balance, recipient, txResHandler, network=currentNetwork) => {
+    // build wasm params
+    /*
+    const addressJson = privateAddressToJson(recipient);
+    const value = balance.valueAtomicUnits.toString();
+    const assetId = balance.assetType.assetId;
+    const txJson = `{ "PrivateTransfer": [{ "id": ${assetId}, "value": "${value}" }, ${addressJson} ]}`;
+    const transaction = wasm.Transaction.from_string(txJson);
+    const assetMetadataJson = `{ "decimals": ${balance.assetType.numberOfDecimals} , "symbol": "${balance.assetType.ticker}" }`;
+    const assetMetadata = wasm.AssetMetadata.from_string(assetMetadataJson);;
+    const networkType = wasm.Network.from_string(`"${network}"`);
+    */
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    const value = parseInt(balance.valueAtomicUnits.toString());
+    try {
+      await waitForWallet();
+      walletIsBusy.current = true;
+      const res = await sdk.privateTransferNFT(assetIdAsU8Array, recipient);
       //const transactions = await buildExtrinsics(transaction, assetMetadata, networkType);
       walletIsBusy.current = false;
       //const res = await publishBatchesSequentially(transactions, txResHandler);
@@ -449,6 +519,40 @@ export const PrivateWalletContextProvider = (props) => {
     }
   };
 
+  const toPrivateNFT = async (balance, txResHandler, network=currentNetwork) => {
+    await waitForWallet();
+    walletIsBusy.current = true;
+    /*
+    const value = balance.valueAtomicUnits.toString();
+    const assetId = balance.assetType.assetId;
+    const txJson = `{ "Mint": { "id": ${assetId}, "value": "${value}" }}`;
+    const transaction = wasm.Transaction.from_string(txJson);
+    const networkType = wasm.Network.from_string(`"${network}"`);
+    */
+    sdk.wasmApi.txResHandler = txResHandler;
+    sdk.wasmApi.externalAccountSigner = externalAccountSigner;
+    const assetId = balance.assetType.assetId;
+    const assetIdAsU8Array = await sdk.numberToAssetIdArray(assetId);
+    try {
+      const res = await sdk.toPrivateNFT(assetIdAsU8Array);
+      //const res = await wallet.post(transaction, null, networkType);
+      walletIsBusy.current = false;        
+      
+      
+      // @TODO: Implement proper transaction response handling using txResHandler functions
+      // Remove this temporary solution
+      setTxStatus(TxStatus.finalized(""));
+      balancesAreStale.current = true;
+  
+      return res;
+    } catch (error) {
+      console.error('Transaction failed', error);
+      setTxStatus(TxStatus.failed());
+      walletIsBusy.current = false;
+      return false;
+    }
+  };
+
   /*
   const privateAddressToJson = (privateAddress) => {
     const bytes = base58Decode(privateAddress);
@@ -466,6 +570,9 @@ export const PrivateWalletContextProvider = (props) => {
     toPrivate,
     toPublic,
     privateTransfer,
+    toPrivateNFT,
+    toPublicNFT,
+    privateTransferNFT,
     sync,
     signerIsConnected,
     signerVersion,
