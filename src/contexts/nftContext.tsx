@@ -21,11 +21,50 @@ export const NftContextProvider = (props) => {
   const { sdk } = usePrivateWallet();
 
   const [ipfsClient, setIpfsClient] = useState(null);
+  const [allNFTs, setAllNFTS] = useState([]);
+  const [currentlyFetching,setCurrentlyFetching] = useState(false);
+
+  /*
+  useEffect(async () => {
+
+    const fetchAllNFTs = async () => {
+
+      const nextCollectionId = await sdk.api.query.uniques.nextCollectionId();
+
+      if (nextCollectionId == "0") return;
+
+      let ownedNFTs = [];
+
+      for (let i = 0; i < nextCollectionId; i++) {
+
+        const collectionItems = await getAllNFTsForCollection(i);
+        /// @TODO: check if collectionItems is empty or not.
+
+        
+
+        setAllNFTS([])
+
+
+      }
+
+
+      setCurrentlyFetching(false);
+    }
+
+
+    if (sdk && !currentlyFetching) {
+      setCurrentlyFetching(true);
+      await fetchAllNFTs();
+    }
+
+  },[sdk]);
+
+  */
 
   useEffect(async () => {
 
-    const projectId = "";
-    const projectSecret = "";
+    const projectId = "2IU3wF36dnWAd9Gz7ey7TfyUJTa";
+    const projectSecret = "990b2955dca4f42822ddc53c1769874f";
     const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
 
     const client = await create({
@@ -70,13 +109,9 @@ export const NftContextProvider = (props) => {
     }
     try {
 
-      const assetId = await sdk.mintNFT(collectionId,itemId,address);
-
       const IPFS_CID = await uploadToIpfs(metadata);
       console.log("Successfully Uploaded to IPFS at " + IPFS_URL+IPFS_CID);
-
-      await sdk.updateNFTMetadata(collectionId,itemId,IPFS_CID);
-
+      const assetId = await sdk.mintNFTAndSetMetadata(collectionId,itemId,address,IPFS_CID);
       showSuccess({},"AssetID: " + assetId);
       console.log("NFT created with AssetID: ", assetId);
     } catch (e) {
@@ -90,7 +125,17 @@ export const NftContextProvider = (props) => {
       const created = await ipfsClient.add({ content: file });
       return created.path;   
     } catch (e) {
-      console.log("Unable to upload image to IPFS").
+      console.log("Unable to upload image to IPFS");
+      console.error(e);
+    }
+  }
+
+  const getAllNFTsForCollection = async (collectionId) => {
+    try {
+      const allNFTs = await sdk.viewAllNFTsInCollection(collectionId);
+      return allNFTs;
+    } catch (e) {
+      console.log("Unable to get all NFTs for the Collection ID: ", collectionId);
       console.error(e);
     }
   }

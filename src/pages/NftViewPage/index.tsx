@@ -8,7 +8,7 @@ import { NFTNavbar } from 'components/Navbar';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider } from 'contexts/configContext';
-import { SendContextProvider } from '../SendPage/SendContext';
+import { NftContextProvider } from 'contexts/nftContext';
 import NftViewPageContent from './NftViewPageContent';
 
 
@@ -19,13 +19,13 @@ const NftViewPage = () => {
         <ExternalAccountContextProvider>
           <TxStatusContextProvider >
             <PrivateWalletContextProvider>
-              <SendContextProvider>
+              <NftContextProvider>
                 <div className="min-h-screen">
                   <NFTNavbar />
                   <NftViewPageContent />
                 </div>
                 <DeveloperConsole />
-              </SendContextProvider>
+              </NftContextProvider>
             </PrivateWalletContextProvider>
           </TxStatusContextProvider>
         </ExternalAccountContextProvider>

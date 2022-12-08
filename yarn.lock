@@ -9864,8 +9864,8 @@ makeerror@1.0.12:
     "@polkadot/util-crypto" "8.1.2"
     axios "^0.27.2"
     bn.js "^5.2.0"
-    manta-wasm-wallet "file:../../../Library/Caches/Yarn/v6/npm-manta-js-1.0.0-4fa4253d-ab6a-405f-aae8-1111a003ab68-1670397491091/wallet/crate/pkg"
-    manta-wasm-wallet-api "file:../../../Library/Caches/Yarn/v6/npm-manta-js-1.0.0-4fa4253d-ab6a-405f-aae8-1111a003ab68-1670397491091/wallet/api"
+    manta-wasm-wallet "file:../../../Library/Caches/Yarn/v6/npm-manta-js-1.0.0-279830a3-4a42-4904-870a-601c26e1e1f2-1670522531508/wallet/crate/pkg"
+    manta-wasm-wallet-api "file:../../../Library/Caches/Yarn/v6/npm-manta-js-1.0.0-279830a3-4a42-4904-870a-601c26e1e1f2-1670522531508/wallet/api"
 
 map-cache@^0.2.2:
   version "0.2.2"
