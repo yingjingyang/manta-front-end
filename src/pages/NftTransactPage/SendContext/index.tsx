@@ -548,20 +548,27 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction to some public account
   const publicTransfer = async () => {
-    const { senderAssetTargetBalance, receiverAddress } = state;
-    const assetId = senderAssetTargetBalance.assetType.assetId;
-    /*
-    const valueAtomicUnits = senderAssetTargetBalance.valueAtomicUnits;
-    const tx = api.tx.mantaPay.publicTransfer(
-      { id: assetId, value: valueAtomicUnits },
-      receiverAddress
-    );
-    const batchTx = api.tx.utility.batch([tx]);
-    const res = await batchTx.signAndSend(externalAccountSigner, handleTxRes);
-    */
-    const assetIdArray = await privateWallet.sdk.numberToAssetIdArray(parseInt(assetId));
-    const res = await privateWallet.sdk.publicTransferNFT(assetIdArray, receiverAddress)
-    return res;
+    try {
+      const { senderAssetTargetBalance, receiverAddress } = state;
+      const assetId = senderAssetTargetBalance.assetType.assetId;
+      /*
+      const valueAtomicUnits = senderAssetTargetBalance.valueAtomicUnits;
+      const tx = api.tx.mantaPay.publicTransfer(
+        { id: assetId, value: valueAtomicUnits },
+        receiverAddress
+      );
+      const batchTx = api.tx.utility.batch([tx]);
+      const res = await batchTx.signAndSend(externalAccountSigner, handleTxRes);
+      */
+      const assetIdArray = await privateWallet.sdk.numberToAssetIdArray(parseInt(assetId));
+      console.log(assetIdArray);
+      const res = await privateWallet.sdk.publicTransferNFT(assetIdArray, receiverAddress);
+      setTxStatus(TxStatus.finalized("")); 
+      return res;
+    } catch (e) {
+      console.error(e);
+      setTxStatus(TxStatus.failed()); 
+    }
   };
 
   const isToPrivate = () => {

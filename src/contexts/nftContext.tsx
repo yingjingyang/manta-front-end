@@ -21,45 +21,17 @@ export const NftContextProvider = (props) => {
   const { sdk } = usePrivateWallet();
 
   const [ipfsClient, setIpfsClient] = useState(null);
-  const [allNFTs, setAllNFTS] = useState([]);
+  const [allOwnedPublicNFTs, setAllOwnedPublicNFTs] = useState([]);
+  const [allOwnedPrivateNFTs, setAllOwnedPrivateNFTs] = useState([]);
   const [currentlyFetching,setCurrentlyFetching] = useState(false);
-
-  /*
+  
   useEffect(async () => {
 
-    const fetchAllNFTs = async () => {
-
-      const nextCollectionId = await sdk.api.query.uniques.nextCollectionId();
-
-      if (nextCollectionId == "0") return;
-
-      let ownedNFTs = [];
-
-      for (let i = 0; i < nextCollectionId; i++) {
-
-        const collectionItems = await getAllNFTsForCollection(i);
-        /// @TODO: check if collectionItems is empty or not.
-
-        
-
-        setAllNFTS([])
-
-
-      }
-
-
-      setCurrentlyFetching(false);
-    }
-
-
     if (sdk && !currentlyFetching) {
-      setCurrentlyFetching(true);
-      await fetchAllNFTs();
+      await getAllOwnedNFTs();
     }
 
   },[sdk]);
-
-  */
 
   useEffect(async () => {
 
@@ -140,9 +112,108 @@ export const NftContextProvider = (props) => {
     }
   }
 
+  // converting each collectionId, itemId => assetId and then checking the
+  // private balance of given assetId to see if we own the NFT.
+  const checkPrivateNFTsForOwnership = async (privateNFTS) => {
+    try {
+
+      if (privateNFTS.length == "0") {
+        return privateNFTS;
+      }
+
+      const owned = [];
+
+      for (let i = 0; i < privateNFTS.length; i++) {
+
+        const currentPrivateNFT = privateNFTS[i];
+        const assetId = await sdk.assetIdFromCollectionAndItemId(currentPrivateNFT.collectionId, currentPrivateNFT.itemId);
+        const assetIdArray = await sdk.numberToAssetIdArray(assetId);
+        const privateBalance = await sdk.privateBalance(assetIdArray);
+
+        /// account owns the private NFT
+        if (privateBalance == "1000000000000") {
+
+          const nftWithAssetId = {...currentPrivateNFT, assetId};
+          owned.push(nftWithAssetId);
+        }
+
+      }
+      return owned;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // iterates over every single collection, gets all publicly owned items, and checks
+  // if there is a private balance on all private items in collection. If there is a private
+  // balance that means the account owns it so it will be added to the privateOwnedNFTs state.
+  const getAllOwnedNFTs = async () => {
+    try {
+
+      if (currentlyFetching) {
+        return;
+      }
+      setCurrentlyFetching(true);
+      // if no collections exist we exit.
+      const nextCollectionId = await sdk.api.query.uniques.nextCollectionId();
+      if (nextCollectionId.toHuman() == "0") return;
+
+      const allPublicOwnedNFTs = [];
+      const allPrivateOwnedNFTs = [];
+
+      for (let i = 0; i < nextCollectionId.toHuman(); i++) {
+
+        const allNFTsInCollection = await getAllNFTsForCollection(i);
+        // add public NFTs if they exist
+
+        if (allNFTsInCollection.publicOwnedNFTs.length) {
+
+          // add assetId to each NFT item
+          // also adds each item directly to allPublicOwnedNFTs, which flattens the 2D array making
+          // it easier to display in the UI.
+          for (let j = 0; j < allNFTsInCollection.publicOwnedNFTs.length; j++) {
+
+            const currentPublicNft = allNFTsInCollection.publicOwnedNFTs[j];
+            const currentAssetId = await sdk.assetIdFromCollectionAndItemId(currentPublicNft.collectionId, currentPublicNft.itemId);
+            const currentPublicNftWithAssetId = {...currentPublicNft, assetId:currentAssetId};
+            allPublicOwnedNFTs.push(currentPublicNftWithAssetId);
+
+          }
+        }
+
+        const ownedPrivateNFTs = await checkPrivateNFTsForOwnership(allNFTsInCollection.privateNFTsInCollection);
+      
+        // add pricate NFTs if account owns them
+        // add individually to avoid 2D array. 
+        if (ownedPrivateNFTs.length) {
+
+          for (let j = 0; j < ownedPrivateNFTs.length; j++) {
+            allPrivateOwnedNFTs.push(ownedPrivateNFTs[j]);
+          }
+        }
+
+      }
+
+      // flatten 2D arrays for easier displaying in front end
+
+
+      console.log("PUBLIC OWNED", allPublicOwnedNFTs);
+      console.log("PRIVATE OWNED", allPrivateOwnedNFTs);
+
+      setAllOwnedPublicNFTs(allPublicOwnedNFTs);
+      setAllOwnedPrivateNFTs(allPrivateOwnedNFTs);
+      setCurrentlyFetching(false);
+    } catch (e) {
+      setCurrentlyFetching(false);
+      console.error(e);
+    }
+  }
+
   const value = {
     createCollection,
-    mintNFT
+    mintNFT,
+    allOwnedPublicNFTs,
+    allOwnedPrivateNFTs
   };
 
   return (
