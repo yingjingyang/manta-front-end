@@ -10,7 +10,7 @@ import { usePrivateWallet } from './privateWalletContext';
 import { showError, showSuccess } from 'utils/ui/Notifications';
 import PropTypes from 'prop-types';
 import { create } from "ipfs-http-client";
-
+import { useTxStatus } from 'contexts/txStatusContext';
 
 const NftContext = createContext();
 
@@ -24,14 +24,16 @@ export const NftContextProvider = (props) => {
   const [allOwnedPublicNFTs, setAllOwnedPublicNFTs] = useState([]);
   const [allOwnedPrivateNFTs, setAllOwnedPrivateNFTs] = useState([]);
   const [currentlyFetching,setCurrentlyFetching] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState("CREATE");
   
   useEffect(async () => {
 
-    if (sdk && !currentlyFetching) {
+    if (sdk && !currentlyFetching && currentPage === "VIEW") {
       await getAllOwnedNFTs();
     }
 
-  },[sdk]);
+  },[sdk,currentPage]);
 
   useEffect(async () => {
 
@@ -213,7 +215,9 @@ export const NftContextProvider = (props) => {
     createCollection,
     mintNFT,
     allOwnedPublicNFTs,
-    allOwnedPrivateNFTs
+    allOwnedPrivateNFTs,
+    currentPage,
+    setCurrentPage
   };
 
   return (

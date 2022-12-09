@@ -17,6 +17,7 @@ import SEND_ACTIONS from './sendActions';
 import sendReducer, { SEND_INIT_STATE } from './sendReducer';
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { u8aToHex } from "@polkadot/util";
+import { useNft } from 'contexts/nftContext';
 
 const SendContext = React.createContext();
 
@@ -33,6 +34,8 @@ export const SendContextProvider = (props) => {
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
 
+  const {currentPage} = useNft();
+
   const initState = { ...SEND_INIT_STATE };
   const [state, dispatch] = useReducer(sendReducer, initState);
   const {
@@ -45,7 +48,7 @@ export const SendContextProvider = (props) => {
     receiverAddress,
   } = state;
 
-  /**
+  /**fe
    * Initialization logic
    */
 
@@ -78,6 +81,17 @@ export const SendContextProvider = (props) => {
   /**
    * External state
    */
+
+  useEffect(() => {
+
+    if (currentPage !== "TRANSACT") {
+      const targetAsset = AssetType.Nft(senderAssetType.isPrivate, 0);
+      setSelectedAssetType(targetAsset);
+      setSenderAssetTargetBalance(null);
+    }
+
+  },[currentPage])
+
 
   // Synchronizes the user's current 'active' public account in local state
   // to macth its upstream source of truth in `externalAccountContext`

@@ -1,8 +1,6 @@
 // @ts-nocheck
 import SendPage from './SendPage';
 import StakePage from './StakePage';
-import NftCreatePage from './NftCreatePage';
-import NftTransactPage from './NftTransactPage';
-import NftViewPage from './NftViewPage';
+import NftPage from './NftPage';
 
-export { SendPage, StakePage, NftCreatePage, NftTransactPage, NftViewPage };
+export { SendPage, StakePage, NftPage };

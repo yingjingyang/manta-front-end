@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { SendPage, StakePage, NftCreatePage, NftViewPage, NftTransactPage } from 'pages';
+import { SendPage, StakePage, NftPage } from 'pages';
 
 function MainApp() {
   return (
@@ -35,19 +35,12 @@ function MainApp() {
           />
           <Route
             path="/nft"
-            element={<Navigate to="/dolphin/nft/create" replace />}
-            exact
-          />
-          <Route
-            path="/dolphin/nft"
-            element={<Navigate to="/dolphin/nft/create" replace />}
+            element={<Navigate to="/dolphin/nft/" replace />}
             exact
           />
           <Route path="/dolphin/transact" element={<SendPage />} exact />
           <Route path="/calamari/stake" element={<StakePage />} exact />
-          <Route path="/dolphin/nft/create" element={<NftCreatePage />} exact />
-          <Route path="/dolphin/nft/transact" element={<NftTransactPage />} exact />
-          <Route path="/dolphin/nft/view" element={<NftViewPage />} exact />
+          <Route path="/dolphin/nft" element={<NftPage />} exact />
         </Routes>
       </div>
     </div>
