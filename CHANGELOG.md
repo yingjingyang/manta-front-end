@@ -84,4 +84,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [3.1.1] - 2022-12-02
 
+### Changed
 - [\#310](https://github.com/Manta-Network/manta-front-end/pull/310) Added name for a collator
+
+## [3.1.1] - 2022-12-15
+### Changed
+- [\#331](https://github.com/Manta-Network/manta-front-end/pull/310) Added or changed names for several collators
