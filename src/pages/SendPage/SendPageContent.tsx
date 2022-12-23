@@ -38,20 +38,20 @@ const SendPageContent = () => {
     }
   }, [txStatus]);
 
-  let warningModal = <div />;
-  if (config.DOWNTIME) {
-    warningModal = <DowntimeModal />;
-  } else if (userIsMobile()) {
-    warningModal = <MobileNotSupportedModal />;
-  } else if (signerIsOutOfDate(config, signerVersion)) {
-    warningModal = <NewerSignerVersionRequiredModal />;
-  } else {
-    warningModal = <MissingRequiredSoftwareModal />;
-  }
+  // let warningModal = <div />;
+  // if (config.DOWNTIME) {
+  //   warningModal = <DowntimeModal />;
+  // } else if (userIsMobile()) {
+  //   warningModal = <MobileNotSupportedModal />;
+  // } else if (signerIsOutOfDate(config, signerVersion)) {
+  //   warningModal = <NewerSignerVersionRequiredModal />;
+  // } else {
+  //   warningModal = <MissingRequiredSoftwareModal />;
+  // }
 
   return (
     <PageContent>
-      {warningModal}
+      <DowntimeModal />
       <div className="2xl:inset-x-0 mt-4 justify-center min-h-full flex items-center pb-2">
         <div className="p-8 bg-secondary rounded-3xl">
           <SendFromForm />
