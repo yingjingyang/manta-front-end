@@ -17,7 +17,7 @@ module.exports = {
       '6xl': '4rem'
     },
     letterSpacing: {
-      tightest: '-.075em',
+      tightest: '-.075em'
     },
     minWidth: {
       layout: 'var(--min-width-layout)',
@@ -27,13 +27,13 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128':'32rem',
-        '108':'27rem',
-        '113.5':'28.375rem',
-        '21':'5.375rem'
+        128: '32rem',
+        108: '27rem',
+        113.5: '28.375rem',
+        21: '5.375rem'
       },
       width: {
-        '68': '272px'
+        68: '272px'
       },
       backgroundImage: {},
       backgroundColor: {
@@ -42,6 +42,7 @@ module.exports = {
         thirdry: 'var(--color-bg-thirdry)',
         fourth: 'var(--color-bg-fourth)',
         fifth: 'var(--color-bg-fifth)',
+        sixth: 'var(--color-bg-sixth)',
         overlay: 'var(--color-bg-overlay)',
         'table-row': 'var(--color-bg-table-row)',
         success: 'var(--color-bg-success)',
@@ -50,9 +51,9 @@ module.exports = {
         button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
         'button-fourth': 'var(--color-bg-button-fourth)',
-        'connect-signer-button':'#2B49EA',
-        'connect-wallet-button':'#00AFA5',
-        'gradient-button':'var(--gradient-button-secondary)'
+        'connect-signer-button': '#2B49EA',
+        'connect-wallet-button': '#00AFA5',
+        'gradient-button': 'var(--gradient-button-secondary)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -64,6 +65,9 @@ module.exports = {
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
+        'manta-register': 'var(--color-manta-register)',
+        'manta-success': 'var(--color-manta-success)',
+        'manta-error': 'var(--color-manta-error)'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -75,7 +79,11 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
-        secondary: 'var(--color-bg-button-primary)'
+        secondary: 'var(--color-bg-button-primary)',
+        third: 'var(--color-bg-primary)',
+        'manta-register': 'var(--color-manta-register)',
+        'manta-success': 'var(--color-manta-success)',
+        'manta-error': 'var(--color-manta-error)'
       }
     }
   },
@@ -83,7 +91,7 @@ module.exports = {
     extend: {
       fill: ['group-hover', 'active', 'hover'],
       textColor: ['active'],
-      fontWeight: ['hover'],
+      fontWeight: ['hover']
     }
   },
   plugins: []
