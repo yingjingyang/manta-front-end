@@ -61,7 +61,7 @@ const ValidationSendButton = ({ showModal }) => {
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
-  const { signerIsConnected, signerVersion } = usePrivateWallet();
+  const { privateAddress, signerVersion } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
 
   let validationMsg = null;
@@ -69,7 +69,7 @@ const ValidationSendButton = ({ showModal }) => {
   let shouldShowSignerMissingValidation = false;
   let shouldShowWalletSignerMissingValidation = false;
 
-  if (!signerIsConnected && !isPublicTransfer() && !externalAccount) {
+  if (!privateAddress && !isPublicTransfer() && !externalAccount) {
     shouldShowWalletSignerMissingValidation = true;
   } else if (!signerIsConnected && !isPublicTransfer()) {
     shouldShowSignerMissingValidation = true;
