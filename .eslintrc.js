@@ -3,7 +3,11 @@ module.exports = {
     browser: true,
     es2021: true
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:@typescript-eslint/recommended'
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -32,6 +36,12 @@ module.exports = {
       { groups: ['builtin', 'external', 'parent', 'sibling', 'index'] }
     ],
     'jsx-quotes': ['error', 'prefer-double'],
-    'no-useless-escape': 'off'
+    'no-useless-escape': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
+    'react/jsx-filename-extension': [
+      1,
+      { extensions: ['.js', '.jsx', '.ts', '.tsx'] }
+    ]
   }
 };
