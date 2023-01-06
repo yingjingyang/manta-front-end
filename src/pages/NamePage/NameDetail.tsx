@@ -26,6 +26,13 @@ const NameDetail = () => {
           <div className="w-max bg-secondary rounded-xl py-12 px-20">
             <img src={mnsLogo} className="w-48 h-48 rounded-xl" />
           </div>
+          <div className="flex flex-col mt-4">
+            <div className="bg-primary h-1 w-full rounded-xl">
+              <div className="gradient-button rounded-xl h-1 w-1/2"></div>
+            </div>
+            <h3 className="text-white text-sm mt-2 mb-1">2.Wait...</h3>
+            <p className="text-white text-opacity-40 text-xs">Ensuring time</p>
+          </div>
           <button
             className="px-8 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-4"
             onClick={showConfirmModal}>
@@ -69,7 +76,7 @@ const NameDetail = () => {
               <span className="text-opacity-100 text-white">000</span>
             </p>
             <p className="text-manta-register flex justify-end m-4">
-              <button className="flex items-center" onClick={() => showModal()}>
+              <button className="flex items-center" onClick={showModal}>
                 Transfer
                 <img src={arrowRight} className="w-3.5 h-3.5 ml-2.5" />
               </button>
