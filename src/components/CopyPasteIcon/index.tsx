@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, RefObject, MouseEvent } from 'react';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -7,15 +7,17 @@ import Svgs from 'resources/icons';
 type ICopyPastIconProps = {
   className?: string;
   textToCopy: string;
+  copyRef?: RefObject<HTMLImageElement>;
 };
 
 const CopyPasteIcon: React.FC<ICopyPastIconProps> = ({
   className,
-  textToCopy
+  textToCopy,
+  copyRef
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const copyToClipboard = (e: any) => {
+  const copyToClipboard = (e: MouseEvent<HTMLImageElement>) => {
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     e.stopPropagation();
@@ -33,6 +35,7 @@ const CopyPasteIcon: React.FC<ICopyPastIconProps> = ({
       className={classNames(`${className} cursor-pointer hover:text-link`)}
       src={Svgs.CopySquareIcon}
       onClick={(e) => copyToClipboard(e)}
+      ref={copyRef}
     />
   );
 };
