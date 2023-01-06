@@ -46,7 +46,7 @@ const NameDetail = () => {
             qwertyuiop...fghjklzxcvb.zk
             <CopyPasteIcon
               textToCopy="qwertyuiop"
-              className="border border-1 border-forth rounded-lg p-1 ml-6 w-6 h-6 box-content"
+              className="border border-1 border-fourth rounded-lg p-1 ml-6 w-6 h-6 box-content"
               copyRef={copyRef}
             />
           </h2>

@@ -81,7 +81,7 @@ module.exports = {
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         third: 'var(--color-bg-primary)',
-        forth: 'var(--color-bg-secondary)',
+        fourth: 'var(--color-bg-secondary)',
         'manta-register': 'var(--color-manta-register)',
         'manta-success': 'var(--color-manta-success)',
         'manta-error': 'var(--color-manta-error)'
