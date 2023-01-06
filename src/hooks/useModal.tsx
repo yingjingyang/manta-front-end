@@ -22,8 +22,7 @@ const ModalContainer: React.FC<{ children: React.ReactNode }> = ({
       right: 0,
       bottom: 0,
       zIndex: 50
-    }}
-  >
+    }}>
     {children}
   </div>
 );
@@ -92,11 +91,10 @@ export const useModal: (options?: IUseModal) => any = (
               }}
             />
             {!closeDisabled ? (
-              <div className="relative inline-block p-6 bg-fourth rounded-lg text-black">
+              <div className="relative inline-block p-6 bg-fourth rounded-lg text-black z-0">
                 <div
                   className="absolute top-5 right-7 text-black dark:text-white cursor-pointer text-lg"
-                  onClick={() => hideModal()}
-                >
+                  onClick={() => hideModal()}>
                   <FontAwesomeIcon icon={faTimes} />
                 </div>
                 {children}

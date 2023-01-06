@@ -30,6 +30,28 @@
   cursor: not-allowed;
 }
 
+.btn-secondary-grident {
+  position: relative;
+  background-clip: padding-box;
+  &::before {
+    content: '';
+    position: absolute;
+    border-radius: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: -1px;
+    z-index: -1;
+    background-image: var(--gradient-button-secondary);
+  }
+  .gradient-text {
+    background: var(--gradient-button-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
 .public-private-toggle {
   display: flex;
   justify-content: center;

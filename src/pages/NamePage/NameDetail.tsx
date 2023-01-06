@@ -2,10 +2,19 @@ import CopyPasteIcon from 'components/CopyPasteIcon';
 import mnsLogo from 'resources/images/mnsLogo.png';
 import arrowRight from 'resources/icons/arrow-right.svg';
 import { useRef } from 'react';
+import { useModal } from 'hooks';
 import SearchHeader from './components/SearchHeader';
 import StatusButton from './components/StatusButton';
+import TransferModal from './components/TransferModal';
+import RegisterConfirmModal from './components/RegisterConfirmModal';
 const NameDetail = () => {
   const copyRef = useRef<HTMLImageElement>(null);
+  const { ModalWrapper, showModal, hideModal } = useModal();
+  const {
+    ModalWrapper: ConfirmModalWrapper,
+    showModal: showConfirmModal,
+    hideModal: hideConfirmModal
+  } = useModal();
   const handleCopy = () => {
     copyRef?.current?.click();
   };
@@ -17,7 +26,9 @@ const NameDetail = () => {
           <div className="w-max bg-secondary rounded-xl py-12 px-20">
             <img src={mnsLogo} className="w-48 h-48 rounded-xl" />
           </div>
-          <button className="px-8 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-4">
+          <button
+            className="px-8 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-4"
+            onClick={showConfirmModal}>
             Register
           </button>
         </div>
@@ -58,7 +69,7 @@ const NameDetail = () => {
               <span className="text-opacity-100 text-white">000</span>
             </p>
             <p className="text-manta-register flex justify-end m-4">
-              <button className="flex items-center">
+              <button className="flex items-center" onClick={() => showModal()}>
                 Transfer
                 <img src={arrowRight} className="w-3.5 h-3.5 ml-2.5" />
               </button>
@@ -66,6 +77,12 @@ const NameDetail = () => {
           </div>
         </div>
       </div>
+      <ModalWrapper>
+        <TransferModal hideModal={hideModal} />
+      </ModalWrapper>
+      <ConfirmModalWrapper>
+        <RegisterConfirmModal hideModal={hideConfirmModal} />
+      </ConfirmModalWrapper>
     </div>
   );
 };
