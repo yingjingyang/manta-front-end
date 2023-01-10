@@ -60,6 +60,7 @@ module.exports = {
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        fourth: 'var(--color-text-fourth)',
         link: 'var(--color-bg-button-primary)',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',

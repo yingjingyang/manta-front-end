@@ -34,6 +34,7 @@ body {
   --color-text-primary: #ffffff;
   --color-text-secondary: #a4a3a7;
   --color-text-thirdry: #ffffff;
+  --color-text-fourth: #00e3d6;
   --color-text-accent: #ffffff;
   --color-text-warning: #e96e79;
   --color-manta-blue: #239cff;
@@ -72,6 +73,7 @@ body {
   --color-text-thirdry: #070707;
   --color-text-accent: #33385f;
   --color-text-warning: #ef9f9f;
+  --color-text-fourth: #00e3d6;
   --color-manta-blue: #239cff;
   --color-fill-secondary: #889ebc;
   --color-border-primary: #6eaed7;
