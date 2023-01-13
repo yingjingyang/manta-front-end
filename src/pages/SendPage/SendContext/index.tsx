@@ -412,6 +412,8 @@ export const SendContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
+    console.log('status object json:', JSON.stringify(status));
+    console.log('events object json:', JSON.stringify(events));
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
@@ -422,6 +424,7 @@ export const SendContextProvider = (props) => {
       }
     } else if (status.isFinalized) {
       try {
+        console.log('status.asFinalized:', status.asFinalized);
         const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
         const extrinsics = signedBlock.block.extrinsics;
         const extrinsic = extrinsics.find((extrinsic) =>
@@ -453,6 +456,7 @@ export const SendContextProvider = (props) => {
           isPrivateTransfer,
           isToPrivate,
           senderAssetTargetBalance,
+          senderPublicAccount.address,
           TX_STATUS.PENDING,
           ''
         );

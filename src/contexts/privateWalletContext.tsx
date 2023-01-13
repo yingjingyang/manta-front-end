@@ -22,7 +22,11 @@ import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
-import { removePendingPrivateTransaction } from 'utils/persistence/privateTransactionHistory';
+import {
+  getPrivateTransactionHistory,
+  removePendingPrivateTransaction
+} from 'utils/persistence/privateTransactionHistory';
+import TxStatusConstants from 'constants/TxStatusConstants';
 
 const PrivateWalletContext = createContext();
 
@@ -64,6 +68,42 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     setIsReady(false);
   }, [socket]);
+
+
+  useEffect(() => {
+    // retrieve pending transaction
+    const pendingPrivateTransactions = getPrivateTransactionHistory().filter(
+      (tx) => tx.status === TxStatusConstants.Pending
+    );
+
+    // update pending transaction status
+    const pendingAddress = pendingPrivateTransactions.map((tx) => tx.address)[
+      -1
+    ];
+
+    // fetch data
+    fetch(`https://dolphin.api.subscan.io/api/scan/extrinsics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'bd-test-API-Key': 'd99ce5aa92b04a709988064f9a9db926',
+      },
+      body: JSON.stringify({
+        row: 1,
+        page: 0,
+        address: pendingAddress
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(`data | ${data}`);
+      });
+      console.log(`
+      pendingPrivateTransactions json | ${JSON.stringify(pendingPrivateTransactions)}
+      pendingAddress | ${pendingAddress}
+      `);
+
+  }, []);
 
   useEffect(() => {
     const canInitWallet = () => {
@@ -158,10 +198,13 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const handleInternalTxRes = async ({ status, events }) => {
+    console.log('status object json internal:', JSON.stringify(status));
+    console.log('events object json:', JSON.stringify(events));
     if (status.isInBlock) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
+          removePendingPrivateTransaction();
           txQueue.current = [];
           console.error('Internal transaction failed', event);
         }
@@ -176,10 +219,12 @@ export const PrivateWalletContextProvider = (props) => {
     const sendExternal = async () => {
       try {
         const lastTx = txQueue.current.shift();
-        await lastTx.signAndSend(
+        console.log(`lastTx json: ${JSON.stringify(lastTx)}`);
+        const info = await lastTx.signAndSend(
           externalAccountSigner,
           finalTxResHandler.current
         );
+        console.log(`info json: ${JSON.stringify(info)}`);
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed());
@@ -191,12 +236,14 @@ export const PrivateWalletContextProvider = (props) => {
     const sendInternal = async () => {
       try {
         const internalTx = txQueue.current.shift();
+        console.log(`internalTx json: ${JSON.stringify(internalTx)}`);
         await internalTx.signAndSend(
           externalAccountSigner,
           handleInternalTxRes
         );
       } catch (e) {
         setTxStatus(TxStatus.failed());
+        removePendingPrivateTransaction();
         txQueue.current = [];
       }
     };

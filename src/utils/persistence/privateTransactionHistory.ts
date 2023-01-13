@@ -60,6 +60,7 @@ export const privateTransactionBuilder = (
     isPrivateTransfer,
     isToPrivate,
     senderAssetTargetBalance,
+    senderAddress,
     status,
     subscanUrl
   ) => {
@@ -81,6 +82,7 @@ export const privateTransactionBuilder = (
       transactionType,
       toPrivate,
       assetBaseType,
+      senderAddress,
       amount,
       date,
       status,
