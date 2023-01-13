@@ -21,7 +21,9 @@ const DisplayAccountsButton = () => {
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
 
   const isMetamaskEnabled =
-    !!ethAddress && window?.location?.pathname?.includes('dolphin/bridge');
+    !!ethAddress &&
+    (window?.location?.pathname?.includes('dolphin/bridge') ||
+      window?.location?.pathname?.includes('dolphin/sbt'));
 
   const succinctAccountName =
     externalAccount?.meta.name.length > 8

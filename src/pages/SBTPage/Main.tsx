@@ -1,3 +1,4 @@
+import Generating from './components/Generating';
 import Home from './components/Home';
 import ThemePanel from './components/ThemePanel';
 import UploadPanel from './components/UploadPanel';
@@ -13,6 +14,9 @@ const Main = () => {
   }
   if (currentStep === Step.Theme) {
     return <ThemePanel />;
+  }
+  if (currentStep === Step.Generating) {
+    return <Generating />;
   }
   return <Home />;
 };

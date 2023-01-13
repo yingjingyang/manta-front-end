@@ -1,9 +1,12 @@
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 
-const ThemeCheckModal = () => {
+const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const { setCurrentStep } = useSBT();
   const toGeneratingPage = () => {
-    setCurrentStep(Step.Generating);
+    hideModal();
+    setTimeout(() => {
+      setCurrentStep(Step.Generating);
+    });
   };
   return (
     <div className="text-white w-128 text-center">

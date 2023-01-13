@@ -14,8 +14,11 @@ const ThemePanel = () => {
   const { checkedThemeItems, toggleCheckedThemeItem } = useSBT();
   const { externalAccount } = useExternalAccount();
   const { ModalWrapper, showModal } = useModal();
-  const { ModalWrapper: ThemeModalWrapper, showModal: showThemeModal } =
-    useModal();
+  const {
+    ModalWrapper: ThemeModalWrapper,
+    showModal: showThemeModal,
+    hideModal
+  } = useModal();
   const btnDisabled = useMemo(() => {
     return (
       checkedThemeItems.size <= 0 || checkedThemeItems.size > MAX_THEME_LEN
@@ -89,7 +92,7 @@ const ThemePanel = () => {
         <ConnectWalletModal setIsMetamaskSelected={null} />
       </ModalWrapper>
       <ThemeModalWrapper>
-        <ThemeCheckModal />
+        <ThemeCheckModal hideModal={hideModal} />
       </ThemeModalWrapper>
     </div>
   );
