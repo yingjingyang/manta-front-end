@@ -48,7 +48,7 @@ const UploadPanel = () => {
     setImgList(newArr);
   };
   return (
-    <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative">
+    <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
         <img src={MantaIcon} className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">SBT</h2>

@@ -8,7 +8,7 @@ import SendForm from './SendForm';
 const SendPage = () => {
   return (
     <SendContextProvider>
-      <Navbar />
+      <Navbar showZkBtn={true} />
       <PageContent>
         <SendForm />
       </PageContent>

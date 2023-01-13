@@ -59,14 +59,16 @@ const MetamaskWallet = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
 
 const WalletSelectIconBar = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   const { ethAddress } = useMetamask();
-  const isBridgePage = window?.location?.pathname?.includes('dolphin/bridge');
+  const showMetamaskWallet =
+    window?.location?.pathname?.includes('dolphin/bridge') ||
+    window?.location?.pathname?.includes('dolphin/sbt');
   return (
     <>
       <SubstrateWallets
         isMetamaskSelected={isMetamaskSelected}
         setIsMetamaskSelected={setIsMetamaskSelected}
       />
-      {isBridgePage && ethAddress && (
+      {showMetamaskWallet && ethAddress && (
         <MetamaskWallet
           isMetamaskSelected={isMetamaskSelected}
           setIsMetamaskSelected={setIsMetamaskSelected}

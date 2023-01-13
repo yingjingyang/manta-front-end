@@ -1,4 +1,5 @@
 import Home from './components/Home';
+import ThemePanel from './components/ThemePanel';
 import UploadPanel from './components/UploadPanel';
 import { Step, useSBT } from './SBTContext';
 
@@ -9,6 +10,9 @@ const Main = () => {
   }
   if (currentStep === Step.Upload) {
     return <UploadPanel />;
+  }
+  if (currentStep === Step.Theme) {
+    return <ThemePanel />;
   }
   return <Home />;
 };

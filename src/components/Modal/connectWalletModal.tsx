@@ -112,7 +112,7 @@ const ConnectWalletBlock = ({
   }
 };
 
-const MetamaskConnectWalletBlock = ({hideModal}) => {
+const MetamaskConnectWalletBlock = ({ hideModal }) => {
   const { configureMoonRiver, ethAddress } = useMetamask();
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
@@ -137,7 +137,10 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   );
 };
 
-export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
+export const SubstrateConnectWalletBlock = ({
+  setIsMetamaskSelected,
+  hideModal
+}) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
 
   const handleConnectWallet = (walletName) => async () => {
@@ -167,7 +170,9 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
-  const isBridgePage = window?.location?.pathname?.includes('dolphin/bridge');
+  const showMetamaskWallet =
+    window?.location?.pathname?.includes('dolphin/bridge') ||
+    window?.location?.pathname?.includes('dolphin/sbt');
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>
@@ -175,7 +180,9 @@ const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
         setIsMetamaskSelected={setIsMetamaskSelected}
         hideModal={hideModal}
       />
-      {isBridgePage && <MetamaskConnectWalletBlock hideModal={hideModal} />}
+      {showMetamaskWallet && (
+        <MetamaskConnectWalletBlock hideModal={hideModal} />
+      )}
       <p className="flex flex-row gap-2 mt-5 text-secondary text-xsss">
         <Icon name="information" />
         Already installed? Try refreshing this page

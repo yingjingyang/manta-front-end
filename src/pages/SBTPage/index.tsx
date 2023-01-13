@@ -6,7 +6,7 @@ const SBT = () => {
   return (
     <SBTContextProvider>
       <div className="text-white min-h-screen flex flex-col">
-        <Navbar />
+        <Navbar showZkBtn={true} />
         <Main />
       </div>
     </SBTContextProvider>
