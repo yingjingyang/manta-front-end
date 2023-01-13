@@ -17,8 +17,7 @@ const ValidationButton = () => {
     senderAssetType,
     minInput,
     originChain,
-    originChainIsEvm,
-    destinationChainIsEvm,
+    destinationChain,
     destinationAddress,
     senderAssetTargetBalance
   } = useBridgeData();
@@ -28,6 +27,8 @@ const ValidationButton = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
+  const originChainIsEvm = originChain?.xcmAdapter?.chain?.type === 'ethereum';
+  const destinationChainIsEvm = destinationChain?.xcmAdapter?.chain?.type === 'ethereum';
   const evmIsEnabled = originChainIsEvm || destinationChainIsEvm;
 
   let validationMsg = null;

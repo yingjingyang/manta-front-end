@@ -49,8 +49,6 @@ export const buildInitState = (config) => {
   return {
     config,
     bridge: null,
-    api: null,
-    isApiReady: false,
 
     senderEthAccount: null,
     senderAssetType: initSenderAssetType,
@@ -74,9 +72,6 @@ export const buildInitState = (config) => {
 
 const bridgeReducer = (state, action) => {
   switch (action.type) {
-  case BRIDGE_ACTIONS.SET_IS_API_READY:
-    return setIsApiReady(state, action);
-
   case BRIDGE_ACTIONS.SET_BRIDGE:
     return setBridge(state, action);
 
@@ -102,7 +97,7 @@ const bridgeReducer = (state, action) => {
     return setDestinationAddress(state, action);
 
   case BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION:
-    return switchOriginAndDestination(state, action);
+    return switchOriginAndDestination(state);
 
   case BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE:
     return setSenderNativeAssetCurrentBalance(state, action);
@@ -117,16 +112,6 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
     return false;
   }
   return stateAssetType?.assetId !== updateAssetType.assetId;
-};
-
-const setIsApiReady = (state, { isApiReady, chain}) => {
-  if (chain.name === state.originChain.name) {
-    return {
-      ...state,
-      isApiReady
-    };
-  }
-  return state;
 };
 
 const setBridge = (state, { bridge }) => {
@@ -195,7 +180,7 @@ const setFeeEstimates = (state, action) => {
   };
 };
 
-const setOriginChain = (state, { originChain, isApiReady }) => {
+const setOriginChain = (state, { originChain }) => {
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (!originChain.canTransferXcm(destinationChain)) {
@@ -212,7 +197,6 @@ const setOriginChain = (state, { originChain, isApiReady }) => {
   return {
     ...state,
     originChain,
-    isApiReady,
     destinationChain,
     destinationChainOptions,
     senderAssetType,
@@ -254,15 +238,13 @@ const setDestinationAddress = (state, { destinationAddress }) => {
   };
 };
 
-const switchOriginAndDestination = (state, { isApiReady }) => {
+const switchOriginAndDestination = (state) => {
   const { originChain, originChainOptions, destinationChain, senderAssetType, senderAssetTypeOptions} = state;
   if (destinationChain.canTransferXcm(originChain)) {
     const newDestinationChain = originChain;
     const newOriginChain = destinationChain;
-
     return {
       ...state,
-      isApiReady,
       originChain: newOriginChain,
       destinationChain: newDestinationChain,
       destinationChainOptions: getDestinationChainOptions(newOriginChain, originChainOptions),

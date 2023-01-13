@@ -25,7 +25,6 @@ export const BridgeDataContextProvider = (props) => {
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
   const {
-    isApiReady,
     senderAssetType,
     senderAssetTargetBalance,
     senderAssetCurrentBalance,
@@ -36,65 +35,30 @@ export const BridgeDataContextProvider = (props) => {
     destinationAddress
   } = state;
 
-  const originAddress = originChain?.getXcmAdapter().chain.type === 'ethereum'
+  const originAddress = originChain?.xcmAdapter.chain.type === 'ethereum'
     ? ethAddress
     : externalAccount?.address;
 
-  const originXcmAdapter = bridge?.adapters.find(
-    (adapter) => adapter.chain.id === originChain?.name
-  );
-
-  const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
-  const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
-
-  /**
-   *
-   * Initialization logic
-   *
-   */
-
+  const originChainIsEvm = originChain?.xcmAdapter.chain.type === 'ethereum';
+  const destinationChainIsEvm = destinationChain?.xcmAdapter.chain.type === 'ethereum';
 
   useEffect(() => {
-    const initBridge = () => {
-      if (bridge || !externalAccount || !externalAccountSigner || !originChainOptions) {
+    const initBridge = async () => {
+      if (state.bridge || !externalAccount || !externalAccountSigner || !originChainOptions) {
         return;
       }
-      const adapters = originChainOptions.map((chain) => chain.getXcmAdapter());
+      const adapters = originChainOptions.map(chain => chain.xcmAdapter);
+      const bridge = new Bridge({ adapters });
+      for await (const chain of originChainOptions) {
+        await chain.initXcmAdapter();
+      }
       dispatch({
         type: BRIDGE_ACTIONS.SET_BRIDGE,
-        bridge: new Bridge({ adapters }),
+        bridge,
       });
     };
     initBridge();
   }, [externalAccountSigner, externalAccount, originChainOptions]);
-
-
-  useEffect(() => {
-    const initBridgeApis = () => {
-      if (!bridge) {
-        return;
-      }
-      for (const chain of originChainOptions) {
-        const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
-        chain.getXcmApi().then(api => {
-          adapter.setApi(api);
-          dispatch({
-            type: BRIDGE_ACTIONS.SET_IS_API_READY,
-            isApiReady: true,
-            chain
-          });
-        });
-      }
-    };
-    initBridgeApis();
-  }, [bridge, originChainOptions]);
-
-
-  /**
-   *
-   * Destination address logic
-   *
-   */
 
   useEffect(() => {
     const setDestinationAddressOnChangeChain = () => {
@@ -126,17 +90,11 @@ export const BridgeDataContextProvider = (props) => {
     setDestinationAddressOnChangeExternalAccount();
   }, [externalAccount]);
 
-  /**
-   *
-   * Subscriptions
-   *
-   */
-
   const subscribeBalanceChanges = (assetType, handler) => {
-    if (!assetType || !originAddress || !isApiReady) {
+    if (!assetType || !originAddress || !bridge || !originChain) {
       return;
     }
-    const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
+    const balanceObserveable = originChain.xcmAdapter.subscribeTokenBalance(
       assetType.logicalTicker, originAddress
     );
     return balanceObserveable.subscribe(handler);
@@ -144,9 +102,6 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const handleSenderNativeAssetBalanceChange = (balanceData) => {
-      if (!isApiReady) {
-        return;
-      }
       const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
         originChain.nativeAsset,
         balanceData.free
@@ -160,13 +115,10 @@ export const BridgeDataContextProvider = (props) => {
       originChain.nativeAsset, handleSenderNativeAssetBalanceChange
     );
     return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiReady]);
+  }, [senderAssetType, originAddress, originChain, bridge]);
 
   useEffect(() => {
     const handleBalanceChange = (balanceData) => {
-      if (!isApiReady) {
-        return;
-      }
       const senderAssetCurrentBalance = Balance.fromBaseUnits(
         senderAssetType,
         balanceData.free
@@ -178,7 +130,7 @@ export const BridgeDataContextProvider = (props) => {
     };
     const subscription = subscribeBalanceChanges(senderAssetType, handleBalanceChange);
     return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiReady]);
+  }, [senderAssetType, originAddress, originChain, bridge]);
 
 
   useEffect(() => {
@@ -224,7 +176,7 @@ export const BridgeDataContextProvider = (props) => {
 
       let address = destinationAddress;
       // allows us to get fee estimates for EVM chains even when destination address not set
-      if (destinationChainIsEvm) {
+      if (destinationChain.xcmAdapter.chain.type === 'ethereum') {
         const ARBITRARY_EVM_ADDRESS = '0x000000000000000000000000000000000000dead';
         address = ARBITRARY_EVM_ADDRESS;
       }
@@ -241,20 +193,20 @@ export const BridgeDataContextProvider = (props) => {
       if (
         !senderAssetType
         || !originAddress
-        || !isApiReady
+        || !bridge
         || !originChain
       ) {
         return;
       }
       const inputConfigParams = getInputConfigParams();
-      const inputConfigObservable = originXcmAdapter.subscribeInputConfigs(inputConfigParams);
+      const inputConfigObservable = originChain.xcmAdapter.subscribeInputConfigs(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };
     subscribeInputConfig();
   },[
     senderAssetType, senderAssetCurrentBalance, senderAssetTargetBalance,
-    originAddress, destinationAddress, originChain, destinationChain, isApiReady
+    originAddress, destinationAddress, originChain, destinationChain, bridge
   ]);
 
   /**
@@ -279,8 +231,7 @@ export const BridgeDataContextProvider = (props) => {
   const setOriginChain = (originChain) => {
     dispatch({
       type: BRIDGE_ACTIONS.SET_ORIGIN_CHAIN,
-      originChain,
-      isApiReady: getIsApiReady(bridge, originChain)
+      originChain
     });
   };
 
@@ -305,23 +256,12 @@ export const BridgeDataContextProvider = (props) => {
     if (originChain && destinationChain) {
       dispatch({
         type: BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION,
-        isApiReady: getIsApiReady(bridge, destinationChain)
       });
     }
   };
 
-  // Returns true if the given chain's api is ready
-  const getIsApiReady = (bridge, chain) => {
-    const originXcmAdapter = bridge?.adapters.find(
-      (adapter) => adapter.chain.id === chain?.name
-    );
-    return !!originXcmAdapter?.api?.isReady;
-  };
-
   const value = {
     originAddress,
-    originChainIsEvm,
-    destinationChainIsEvm,
     setSenderAssetTargetBalance,
     setSelectedAssetType,
     setOriginChain,

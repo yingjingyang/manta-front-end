@@ -12,7 +12,7 @@ import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const BridgeDestinationInput = () => {
   const { ethAddress } = useMetamask();
-  const { setDestinationAddress, destinationAddress, destinationChain, originChain, destinationChainIsEvm, originChainIsEvm } = useBridgeData();
+  const { setDestinationAddress, destinationAddress, destinationChain, originChain } = useBridgeData();
   const { selectedWallet } = useKeyring();
   const { externalAccount } = useExternalAccount();
   const { txStatus } = useTxStatus();
@@ -24,8 +24,10 @@ const BridgeDestinationInput = () => {
     setInputValue('');
   }, [originChain, destinationChain]);
 
+  const destinationIsEvmChain = destinationChain.xcmAdapter.chain.type === 'ethereum';
+
   const validateAddress = (maybeAddress) => {
-    if (destinationChainIsEvm) {
+    if (destinationIsEvmChain) {
       return ethers.utils.isAddress(maybeAddress);
     }
     return validatePublicAddress(maybeAddress);
@@ -47,7 +49,7 @@ const BridgeDestinationInput = () => {
   const onClickGetAddress = () => {
     if (disabled) {
       return;
-    } else if (destinationChainIsEvm) {
+    } else if (destinationIsEvmChain) {
       onChangeDestinationtInput(ethAddress);
     } else {
       onChangeDestinationtInput(externalAccount?.address);
@@ -55,7 +57,7 @@ const BridgeDestinationInput = () => {
   };
 
   const getAddressIcon = () => {
-    if (destinationChainIsEvm) {
+    if (destinationIsEvmChain) {
       return <img className="w-6 h-6" src={Svgs.Metamask} alt={'metamask'} />;
     } else {
       return <img className="w-6 h-6" src={selectedWallet.logo.src} alt={selectedWallet.logo.alt} />;
@@ -63,7 +65,7 @@ const BridgeDestinationInput = () => {
   };
 
   const getAccountName = () => {
-    if (destinationChainIsEvm) {
+    if (destinationIsEvmChain) {
       return 'Metamask';
     } else {
       return externalAccount?.meta.name;
@@ -90,7 +92,7 @@ const BridgeDestinationInput = () => {
   };
 
   const placeholderMsg = `Enter ${
-    originChainIsEvm ? 'substrate' : 'EVM'} address`;
+    originChain?.xcmAdapter?.chain?.type === 'ethereum' ? 'substrate' : 'EVM'} address`;
 
   return (
     <div

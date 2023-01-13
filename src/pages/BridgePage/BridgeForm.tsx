@@ -25,9 +25,7 @@ const BridgeForm = () => {
     destinationChain,
     destinationChainOptions,
     setDestinationChain,
-    switchOriginAndDestination,
-    originChainIsEvm,
-    destinationChainIsEvm
+    switchOriginAndDestination
   } = useBridgeData();
 
   useEffect(() => {
@@ -42,6 +40,8 @@ const BridgeForm = () => {
     }
   };
 
+  const originChainIsEvm = originChain?.xcmAdapter.chain.type === 'ethereum';
+  const destinationChainIsEvm = destinationChain?.xcmAdapter.chain.type === 'ethereum';
   const shouldShowDestinationInput = originChainIsEvm || destinationChainIsEvm;
 
   return (
