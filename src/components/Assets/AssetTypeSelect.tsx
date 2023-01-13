@@ -88,7 +88,8 @@ const dropdownStyles = (disabled) => {
     }),
     menu: (provided) => ({
       ...provided,
-      width: '200%'
+      width: '200%',
+      backgroundColor: '#050D32'
     }),
     container: () => ({
       position: 'absolute'
@@ -117,10 +118,9 @@ const AssetTypeOption = (props) => {
     <div {...innerProps}>
       <div
         id={value.ticker}
-        className="flex items-center inline w-full hover:bg-blue-100"
-      >
-        <img className="ml-3 w-6 rounded-full" src={value.icon} alt="icon" />
-        <div className="p-2 pl-4 text-black">
+        className="flex items-center inline border border-white border-opacity-10 w-full bg-primary hover:bg-blue-100">
+        <img className="ml-6 w-6 rounded-full" src={value.icon} alt="icon" />
+        <div className="p-2 pl-4 text-white">
           <components.Option {...props} />
           <div className="text-xs block manta-gray">{value.name}</div>
         </div>

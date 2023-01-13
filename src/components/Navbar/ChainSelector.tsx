@@ -113,7 +113,7 @@ const ChainSelector = () => {
             { disabled: disabled }
           )}
         >
-          <div className="logo border-white w-14 h-14">
+          <div className="logo border-white w-10 h-10">
             <img
               className={classNames({'rounded-full': activeNode.name === 'Calamari'})}
               src={Svgs[activeNode.name]}

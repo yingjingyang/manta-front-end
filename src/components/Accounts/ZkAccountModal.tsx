@@ -52,7 +52,7 @@ const ZkAccountModalContent = () => {
     <>
       <div className="w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
         <div className="flex flex-col gap-3">
-          <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
+          <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <img className="w-6 h-6" src={MantaIcon} alt="Manta" />
               <span className="text-white font-light">
@@ -62,14 +62,14 @@ const ZkAccountModalContent = () => {
             </div>
             <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
           </div>
-          <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
+          <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
             <span className="pt-3 pb-1 text-base text-white">
               Total Balance
             </span>
             <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
           </div>
         </div>
-        <div className="flex flex-col border border-secondary rounded-lg px-6 py-4 mt-3 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
+        <div className="flex flex-col border border-white border-opacity-20 rounded-lg px-6 py-4 mt-3 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
           <PrivateTokenTableContent balances={balances} />
         </div>
       </div>
