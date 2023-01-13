@@ -76,15 +76,15 @@ const ChainOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps} className="w-full cursor-pointer">
-      <div className="flex items-center inline hover:bg-blue-100">
+      <div className="h-full flex items-center inline border border-white border-opacity-10 bg-primary hover:bg-blue-100">
         <div>
           <img
-            className="w-9 h-9 ml-3 my-2 manta-bg-secondary rounded-full"
+            className="w-8 h-8 ml-6 my-2 rounded-full"
             src={value?.icon}
             alt="icon"
           />
         </div>
-        <div className="pl-4 p-2 text-black">
+        <div className="pl-4 p-2 text-white">
           <components.Option {...props} />
         </div>
       </div>
@@ -106,7 +106,7 @@ const dropdownStyles = {
     marginRight: '10px'
   }),
   option: () => ({
-    fontSize: '12pt'
+    fontSize: '12pt',
   }),
   valueContainer: () => ({
     minHeight: '2rem',
@@ -114,7 +114,8 @@ const dropdownStyles = {
     display: 'flex',
   }),
   menu: (provided) => ({
-    ...provided
+    ...provided,
+    backgroundColor: 'transparent',
   })
 };
 

@@ -88,8 +88,8 @@ const dropdownStyles = (disabled) => {
     }),
     menu: (provided) => ({
       ...provided,
-      width: '200%',
-      backgroundColor: '#050D32'
+      width: '185%',
+      backgroundColor: 'transparent'
     }),
     container: () => ({
       position: 'absolute'
