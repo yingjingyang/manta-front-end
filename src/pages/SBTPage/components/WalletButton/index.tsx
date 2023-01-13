@@ -1,9 +1,12 @@
+import ConnectWalletModal from 'components/Modal/connectWalletModal';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
+import { useModal } from 'hooks';
 
 const WalletButton = () => {
   const { externalAccount } = useExternalAccount();
   const { selectedWallet } = useKeyring();
+  const { ModalWrapper, showModal } = useModal();
   const succinctAccountName =
     externalAccount?.meta.name.length > 8
       ? `${externalAccount?.meta.name.slice(0, 8)}...`
@@ -23,9 +26,16 @@ const WalletButton = () => {
     );
   }
   return (
-    <button className="bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-64">
-      Connect Wallet
-    </button>
+    <>
+      <button
+        className="bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-64"
+        onClick={showModal}>
+        Connect Wallet
+      </button>
+      <ModalWrapper>
+        <ConnectWalletModal setIsMetamaskSelected={null} />
+      </ModalWrapper>
+    </>
   );
 };
 export default WalletButton;
