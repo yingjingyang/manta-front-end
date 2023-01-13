@@ -16,7 +16,12 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module'
   },
-  plugins: ['react', 'eslint-plugin-import', '@typescript-eslint'],
+  plugins: [
+    'react',
+    'react-hooks',
+    'eslint-plugin-import',
+    '@typescript-eslint'
+  ],
   globals: {
     process: true,
     require: true
@@ -27,7 +32,8 @@ module.exports = {
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
-    'no-unused-vars': [
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
       'error',
       { vars: 'all', args: 'after-used', ignoreRestSiblings: false }
     ],
@@ -37,6 +43,8 @@ module.exports = {
     ],
     'jsx-quotes': ['error', 'prefer-double'],
     'no-useless-escape': 'off',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-uses-react': 'off',
     'react/jsx-filename-extension': [

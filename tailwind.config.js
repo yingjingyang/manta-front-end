@@ -17,7 +17,7 @@ module.exports = {
       '6xl': '4rem'
     },
     letterSpacing: {
-      tightest: '-.075em',
+      tightest: '-.075em'
     },
     minWidth: {
       layout: 'var(--min-width-layout)',
@@ -27,13 +27,14 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128':'32rem',
-        '108':'27rem',
-        '113.5':'28.375rem',
-        '21':'5.375rem'
+        128: '32rem',
+        108: '27rem',
+        113.5: '28.375rem',
+        21: '5.375rem'
       },
       width: {
-        '68': '272px'
+        68: '272px',
+        75: '75rem'
       },
       backgroundImage: {},
       backgroundColor: {
@@ -50,9 +51,9 @@ module.exports = {
         button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
         'button-fourth': 'var(--color-bg-button-fourth)',
-        'connect-signer-button':'#2B49EA',
-        'connect-wallet-button':'#00AFA5',
-        'gradient-button':'var(--gradient-button-secondary)',
+        'connect-signer-button': '#2B49EA',
+        'connect-wallet-button': '#00AFA5',
+        'gradient-button': 'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020'
       },
       textColor: {
@@ -79,6 +80,9 @@ module.exports = {
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00'
+      },
+      scale: {
+        200: '2'
       }
     }
   },
@@ -87,6 +91,8 @@ module.exports = {
       fill: ['group-hover', 'active', 'hover'],
       textColor: ['active'],
       fontWeight: ['hover'],
+      zIndex: ['hover'],
+      display: ['group-hover']
     }
   },
   plugins: []

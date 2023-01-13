@@ -1,11 +1,15 @@
 import Navbar from 'components/Navbar';
+import Main from './Main';
+import { SBTContextProvider } from './SBTContext';
 
 const SBT = () => {
   return (
-    <div className="text-white">
-      <Navbar />
-      <h2>SBT</h2>
-    </div>
+    <SBTContextProvider>
+      <div className="text-white min-h-screen flex flex-col">
+        <Navbar />
+        <Main />
+      </div>
+    </SBTContextProvider>
   );
 };
 export default SBT;
