@@ -13,7 +13,7 @@ const Generated = () => {
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
         <img src={MantaIcon} className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">SBT</h2>
+        <h2 className="text-2xl">zkSBT</h2>
       </div>
       <h1 className="text-3xl my-6">Generated</h1>
       <GeneratedImgs />

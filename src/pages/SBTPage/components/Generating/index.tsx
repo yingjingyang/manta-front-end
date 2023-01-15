@@ -10,7 +10,7 @@ const Generating = () => {
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
         <img src={MantaIcon} className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">SBT</h2>
+        <h2 className="text-2xl">zkSBT</h2>
       </div>
       <h1 className="text-3xl my-6">Analyzing...</h1>
       <div className="relative w-full h-60">
@@ -31,19 +31,16 @@ const Generating = () => {
         })}
       </div>
       <p className="text-sm text-opacity-60 text-white my-6">
-        It will normally take 20 mins. Please leave this page open.
-        <br />
-        And Feel free to have a cup of coffee and see you in 20 mins.
+        It will normally take 20 mins.
       </p>
       <div className="flex border border-dashed w-max p-4">
         <div className="flex flex-col">
           <p className="text-xl">While you are waiting...</p>
           <div className="text-warning border border-warning bg-light-warning rounded-xl px-4 py-1 my-4">
-            You will need Manta Wallet and Signer to mint your SBTs
+            You will need Manta Signer to mint your SBTs
           </div>
           <p className="text-white text-opacity-60">
-            Have not signed in your Manta Wallet/Signer yet? <br />
-            Connect now
+            Please start your Manta Signer to connect.
           </p>
           <SignerButton />
           <WalletButton />

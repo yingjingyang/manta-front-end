@@ -51,12 +51,15 @@ const UploadPanel = () => {
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
         <img src={MantaIcon} className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">SBT</h2>
+        <h2 className="text-2xl">zkSBT</h2>
       </div>
       <h1 className="text-3xl my-6">Upload Photos</h1>
       <p className="text-sm text-opacity-60 text-white">
-        Please upload at least 5 selfies. More pictures are preferred to present
-        a better output.
+        Please upload at least 5 selfies. Adding more photos will produce a
+        better zkSBT. Please make sure the image clearly depicts your face.
+        Avoid using any images that have other faces in them. Please also make
+        sure the background is clean. This will ensure the best generation of
+        your zkSBT.
       </p>
       <div className="grid w-full gap-6 grid-cols-5 pb-24 mt-6">
         {imgList?.map((img, index) => {

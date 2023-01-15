@@ -13,7 +13,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
       <h2 className="text-2xl">Checkout</h2>
       <div className="bg-secondary rounded-lg mt-6 mb-4">
         <div className="flex justify-between p-4">
-          <p>10 Avatars + ONE Free Mint SBT PLAN</p>
+          <p>10 Avatars + ONE Free Mint zkSBT PLAN</p>
           <div className="flex flex-col">
             <span className="text-check">179.48 MANTA</span>
             <span className="text-white text-opacity-60">$30.9 USD</span>

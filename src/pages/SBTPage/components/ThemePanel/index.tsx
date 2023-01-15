@@ -52,9 +52,9 @@ const ThemePanel = () => {
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
         <img src={MantaIcon} className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">SBT</h2>
+        <h2 className="text-2xl">zkSBT</h2>
       </div>
-      <h1 className="text-3xl my-6">Select Theme</h1>
+      <h1 className="text-3xl my-6">Select Themes</h1>
       <p className="text-sm text-opacity-60 text-white">
         You can select up to 10 types of themes
       </p>
