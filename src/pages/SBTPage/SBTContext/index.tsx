@@ -26,6 +26,8 @@ type SBTContextValue = {
   setImgList: (imgList: Array<File>) => void;
   checkedThemeItems: Map<string, ThemeItem>;
   toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
+  mintSet: Set<File>;
+  setMintSet: (set: Set<File>) => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -36,6 +38,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [checkedThemeItems, toggleCheckedThemeItem] = useState<
     Map<string, ThemeItem>
   >(new Map<string, ThemeItem>());
+  const [mintSet, setMintSet] = useState<Set<File>>(new Set());
 
   const value: SBTContextValue = useMemo(() => {
     return {
@@ -44,9 +47,11 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       imgList,
       setImgList,
       checkedThemeItems,
-      toggleCheckedThemeItem
+      toggleCheckedThemeItem,
+      mintSet,
+      setMintSet
     };
-  }, [currentStep, imgList, checkedThemeItems]);
+  }, [currentStep, imgList, checkedThemeItems, mintSet]);
 
   return (
     <SBTContext.Provider value={value}>{props.children}</SBTContext.Provider>

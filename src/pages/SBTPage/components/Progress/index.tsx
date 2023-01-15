@@ -1,13 +1,14 @@
+import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useState, useEffect } from 'react';
 
 const PROGRESS_MAX = 251.327;
 
 const Progress = () => {
-  useState;
   const [progress, setProgress] = useState(0);
-
+  const { setCurrentStep } = useSBT();
   useEffect(() => {
     if (progress >= PROGRESS_MAX) {
+      setCurrentStep(Step.Generated);
       return;
     }
     const timer = setInterval(() => {
@@ -16,7 +17,7 @@ const Progress = () => {
     return () => {
       clearInterval(timer);
     };
-  }, [progress]);
+  }, [progress, setCurrentStep]);
 
   return (
     <div className="relative w-72 h-72 mt-6 leading-6 text-center">

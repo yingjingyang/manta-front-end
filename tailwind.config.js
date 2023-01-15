@@ -53,6 +53,7 @@ module.exports = {
         button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
         'button-fourth': 'var(--color-bg-button-fourth)',
+        'button-fourth-light': '#0e50fc50',
         'connect-signer-button': '#2B49EA',
         'connect-wallet-button': '#00AFA5',
         'gradient-button': 'var(--gradient-button-secondary)',
@@ -83,6 +84,7 @@ module.exports = {
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
+        thirdry: 'var(--color-bg-button-secondary)',
         warning: '#FF8A00',
         check: '#29CCB9',
         split: 'var(--color-bg-primary)'
