@@ -52,7 +52,8 @@ module.exports = {
         'button-fourth': 'var(--color-bg-button-fourth)',
         'connect-signer-button':'#2B49EA',
         'connect-wallet-button':'#00AFA5',
-        'gradient-button':'var(--gradient-button-secondary)'
+        'gradient-button':'var(--gradient-button-secondary)',
+        'light-warning': '#FF8A0020'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -64,6 +65,7 @@ module.exports = {
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
+        warning: '#FF8A00'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -75,7 +77,8 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
-        secondary: 'var(--color-bg-button-primary)'
+        secondary: 'var(--color-bg-button-primary)',
+        warning: '#FF8A00'
       }
     }
   },

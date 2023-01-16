@@ -44,6 +44,8 @@ export const BridgeDataContextProvider = (props) => {
     (adapter) => adapter.chain.id === originChain?.name
   );
 
+  const originApi = originXcmAdapter?.api;
+
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
@@ -280,7 +282,7 @@ export const BridgeDataContextProvider = (props) => {
     dispatch({
       type: BRIDGE_ACTIONS.SET_ORIGIN_CHAIN,
       originChain,
-      isApiReady: getIsApiReady(bridge, originChain)
+      isApiReady: getIsApiReady(originChain)
     });
   };
 
@@ -305,21 +307,23 @@ export const BridgeDataContextProvider = (props) => {
     if (originChain && destinationChain) {
       dispatch({
         type: BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION,
-        isApiReady: getIsApiReady(bridge, destinationChain)
+        isApiReady: getIsApiReady(destinationChain)
       });
     }
   };
 
   // Returns true if the given chain's api is ready
-  const getIsApiReady = (bridge, chain) => {
-    const originXcmAdapter = bridge?.adapters.find(
+  const getIsApiReady = (chain) => {
+    const targetAdapter = bridge?.adapters.find(
       (adapter) => adapter.chain.id === chain?.name
     );
-    return !!originXcmAdapter?.api?.isReady;
+    return !!targetAdapter?.api?.isReady;
   };
 
   const value = {
     originAddress,
+    originApi,
+    originXcmAdapter,
     originChainIsEvm,
     destinationChainIsEvm,
     setSenderAssetTargetBalance,
