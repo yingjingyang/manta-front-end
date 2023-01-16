@@ -171,8 +171,7 @@ export const SubstrateConnectWalletBlock = ({
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
   const showMetamaskWallet =
-    window?.location?.pathname?.includes('dolphin/bridge') ||
-    window?.location?.pathname?.includes('dolphin/sbt');
+    window?.location?.pathname?.includes('dolphin/bridge');
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>

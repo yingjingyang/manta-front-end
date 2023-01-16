@@ -60,8 +60,7 @@ const MetamaskWallet = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
 const WalletSelectIconBar = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   const { ethAddress } = useMetamask();
   const showMetamaskWallet =
-    window?.location?.pathname?.includes('dolphin/bridge') ||
-    window?.location?.pathname?.includes('dolphin/sbt');
+    window?.location?.pathname?.includes('dolphin/bridge');
   return (
     <>
       <SubstrateWallets
