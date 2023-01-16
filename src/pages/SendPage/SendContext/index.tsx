@@ -314,16 +314,15 @@ export const SendContextProvider = (props) => {
   };
 
   // Returns true if the current tx would cause the user to go below a
-  // recommended min fee balance of 1. This helps prevent users from
+  // recommended min fee balance of 150. This helps prevent users from
   // accidentally becoming unable to transact because they cannot pay fees
   const txWouldDepleteSuggestedMinFeeBalance = () => {
     if (
       senderAssetCurrentBalance?.assetType.isNativeToken &&
-      !senderAssetCurrentBalance?.assetType.isPrivate &&
       senderAssetTargetBalance?.assetType.isNativeToken &&
-      !senderAssetTargetBalance?.assetType.isPrivate
+      isToPrivate()
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Native(config), 1);
+      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Native(config), 150);
       const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);
       return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
     }
