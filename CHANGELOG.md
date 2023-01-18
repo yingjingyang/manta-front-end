@@ -51,3 +51,65 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.0.3] - 2022-10-19
 ### Fixed
 - [\#275](https://github.com/Manta-Network/manta-front-end/pull/275) Fix display issue on widescreens; fix failure to connect to Talisman wallet
+
+## [3.0.4] - 2022-10-22
+### Fixed
+- [\#281](https://github.com/Manta-Network/manta-front-end/pull/281) Prevent excess api calls when initializing wallet
+
+## [3.1.0] - 2022-10-28
+
+### Added
+- [\#249](https://github.com/Manta-Network/manta-front-end/pull/249) Add FAQ links to missing required software modal
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Display user balance in staking modal; add APY estimates to staking table; add link to collator onboarding docs to staking UI
+- [\#273](https://github.com/Manta-Network/manta-front-end/pull/273) Add secondary menu containing social and documentation links + theme toggle
+
+### Changed
+- [\#208](https://github.com/Manta-Network/manta-front-end/pull/208) Display transaction success modal when transaction is in block instead of finalized
+- [\#210](https://github.com/Manta-Network/manta-front-end/pull/210) Add ids for e2e automation
+- [\#235](https://github.com/Manta-Network/manta-front-end/pull/235) Change text displayed while node is syncing
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Show only active collators by default on staking page; reduce staking page width to improve UX on smaller screens
+
+### Removed
+- [\#227](https://github.com/Manta-Network/manta-front-end/pull/227) Remove gh-pages dependency target
+
+### Fixed
+- [\#228](https://github.com/Manta-Network/manta-front-end/pull/228) Prevent loader and initial sync text from displaying if polkadot.js api becomes disconnected
+- [\#259](https://github.com/Manta-Network/manta-front-end/pull/259) Fix typescript type annotation compilation for files with `.ts` extension
+- [\#271](https://github.com/Manta-Network/manta-front-end/pull/271) Fix issue with URL parameters being ignored before '#'
+
+### Security
+- [\#198](https://github.com/Manta-Network/manta-front-end/pull/198) Bump react-router-dom from 5.3.3 to 6.3.0 (required refactoring of breaking API changes)
+- [\#201](https://github.com/Manta-Network/manta-front-end/pull/201) Bump @craco/craco from 6.4.3 to 6.4.5
+- [\#117](https://github.com/Manta-Network/manta-front-end/pull/117) Bump node-sass from 6.0.1 to 7.0.1
+
+## [3.1.1] - 2022-12-02
+
+### Added
+- [\#310](https://github.com/Manta-Network/manta-front-end/pull/310) Added name for a collator
+
+## [3.1.2] - 2022-12-15
+### Changed
+- [\#331](https://github.com/Manta-Network/manta-front-end/pull/331) Added or changed names for several collators
+
+## [4.0.0] - 2022-12-21
+### Added
+- [\#318](https://github.com/Manta-Network/manta-front-end/pull/318) Bridge page; support testnet v3 private payments
+- [\#304](https://github.com/Manta-Network/manta-front-end/pull/304) New public wallet connection workflow; support for Talisman, SubWallet, and Metamask (on bridge page only)
+- [\#242](https://github.com/Manta-Network/manta-front-end/pull/242) zkAccount display
+
+### Changed
+- [\#320](https://github.com/Manta-Network/manta-front-end/pull/320) UI redesign
+
+## [4.0.0] - 2023-1-12
+
+### Added
+- [\#342](https://github.com/Manta-Network/manta-front-end/pull/342) Add link to web3go on the staking page
+- [\#332](https://github.com/Manta-Network/manta-front-end/pull/332) Add name for a collator
+- [\#349](https://github.com/Manta-Network/manta-front-end/pull/349) Add warning when users are about to send so much Dolphin to private that they will be unable to pay transaction fees
+
+### Fixed
+- [\#340](https://github.com/Manta-Network/manta-front-end/pull/340) Give wallets in connect wallet modal more accurate names
+- [\#351](https://github.com/Manta-Network/manta-front-end/pull/351) Allow wallets and Manta Signer to connect even when user is not connected to a node.
+- [\#354](https://github.com/Manta-Network/manta-front-end/pull/354) Change text to clarify what is happening when private balances are loading; add text to clarify what Metamask is for
+- [\#352](https://github.com/Manta-Network/manta-front-end/pull/352) Fix long load times for bridge page balances
+

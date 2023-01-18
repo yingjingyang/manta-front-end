@@ -38,7 +38,8 @@ const UnstakingTable = () => {
   });
 
   const amountTooltip = 'Your balance scheduled for unstaking';
-  const timeRemainingTooltip = 'Time until you can withdraw your unstaking balance';
+  const timeRemainingTooltip =
+    'Time until you can withdraw your unstaking balance';
 
   const columnDefs: ColDef[] = [
     {
@@ -54,10 +55,10 @@ const UnstakingTable = () => {
       field: 'Amount',
       unSortIcon: true,
       headerTooltip: amountTooltip,
-      width: 230,
+      width: 195,
       suppressMovable: true,
       cellRenderer: (params: any) => {
-        return params.data['Amount'].toString(true, 0);
+        return params.data['Amount'].toDisplayString(0);
       },
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
         valueA.gt(valueB) ? 1 : -1
@@ -66,13 +67,13 @@ const UnstakingTable = () => {
       field: 'Time remaining',
       unSortIcon: true,
       headerTooltip: timeRemainingTooltip,
-      width: 230,
+      width: 195,
       suppressMovable: true
     },
     {
       field: '',
       sortable: false,
-      width: 690,
+      width: 600,
       suppressMovable: true,
       cellRenderer: (params) => {
         const unstakeRequest = params.data.data;
@@ -111,8 +112,8 @@ const UnstakingTable = () => {
     return <div />;
   }
   return (
-    <div className="mt-8">
-      <h1 className="text-base font-semibold text-black dark:text-white">
+    <div className="mt-8 mx-auto sortable-table-wrapper">
+      <h1 className="text-base font-semibold text-white">
         Unstaking
       </h1>
       <div className="w-full mt-4">

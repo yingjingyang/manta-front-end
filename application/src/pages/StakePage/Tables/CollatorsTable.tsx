@@ -49,7 +49,7 @@ const dropdownStyles = () => {
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: 'var(--color-text-secondary)'
+      color: 'var(--color-text-thirdry)'
     })
   };
 };
@@ -77,7 +77,7 @@ const CollatorsTable = () => {
     apiState === 'ERROR' || apiState === 'DISCONNECTED';
 
   const [filterText, setFilterText] = useState('');
-  const [filterOption, setFilterOption] = useState(collatorStatusOptions[0]);
+  const [filterOption, setFilterOption] = useState(collatorStatusOptions[1]);
 
   const getApyEstimateString = (collator) => {
     if (!collator.apy) {
@@ -118,19 +118,20 @@ const CollatorsTable = () => {
       };
     });
 
-  const amountStakedTooltip = 'Total balance staked for this collator across all delegations';
+  const amountStakedTooltip =
+    'Total balance staked for this collator across all delegations';
   const minStakeTooltip =
     'Minimum stake required to earn staking rewards for this collator';
   const delegationTooltip =
     'Total stakers delegating to this node; only the top 100 stakers earn rewards';
-  const apyEstimateTooltip = 'APY estimates are based on collator performance last round';
-  const statusTooltip = 'Whether this collator is producing blocks and earning yield';
+  const apyEstimateTooltip =
+    'APY estimates are based on collator performance last round';
 
   const columnDefs: ColDef[] = [
     {
       field: 'Collator',
       sortable: false,
-      width: 250,
+      width: 270,
       cellRenderer: (params: any) => {
         return <CollatorDisplayCell collator={params.data.Collator} />;
       },
@@ -138,28 +139,31 @@ const CollatorsTable = () => {
     },
     {
       field: 'Amount Staked',
+      width: 195,
       unSortIcon: true,
       headerTooltip: amountStakedTooltip,
       suppressMovable: true,
       cellRenderer: (params: any) => {
-        return params.data['Amount Staked'].toString(true, 0);
+        return params.data['Amount Staked'].toDisplayString(0);
       },
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
         valueA.gt(valueB) ? 1 : -1
     },
     {
       field: 'Minimum Stake',
+      width: 195,
       unSortIcon: true,
       headerTooltip: minStakeTooltip,
       suppressMovable: true,
       cellRenderer: (params: any) => {
-        return params.data['Minimum Stake'].toString(true, 0);
+        return params.data['Minimum Stake'].toDisplayString(0);
       },
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
         valueA.gt(valueB) ? 1 : -1
     },
     {
       field: 'APY Estimate',
+      width: 195,
       unSortIcon: true,
       headerTooltip: apyEstimateTooltip,
       suppressMovable: true,
@@ -170,17 +174,10 @@ const CollatorsTable = () => {
         valueA.apy.toNumber() > valueB.apy.toNumber() ? 1 : -1
     },
     {
-      field: 'Status',
-      unSortIcon: true,
-      headerTooltip: statusTooltip,
-      width: 175,
-      suppressMovable: true
-    },
-    {
       field: 'Delegations',
       unSortIcon: true,
       headerTooltip: delegationTooltip,
-      width: 175,
+      width: 195,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         return `${params.data['Delegations']} / 100`;
@@ -192,7 +189,7 @@ const CollatorsTable = () => {
       field: '',
       sortable: false,
       suppressMovable: true,
-      width: 220,
+      width: 215,
       cellRenderer: (params: any) => {
         const collator = params.data.data;
         const unstakeRequest = unstakeRequests.find(
@@ -210,7 +207,7 @@ const CollatorsTable = () => {
           return delegation.collator.address === collator.address;
         });
         return (
-          <div className="flex gap-6">
+          <div className="flex pr-2 justify-end w-full gap-6">
             {!unstakeRequest && (
               <Button
                 className="btn-secondary flex items-center justify-start h-12"
@@ -239,14 +236,14 @@ const CollatorsTable = () => {
   };
 
   return (
-    <div className="mt-20" id="collatorsTable">
-      <h1 className="text-base font-semibold text-black dark:text-white">
+    <div className="mt-20 mx-auto sortable-table-wrapper" id="collatorsTable">
+      <h1 className="text-base font-semibold text-white flex items-end gap-10">
         Collators
       </h1>
-      <div className="mt-6 flex space-x-5">
+      <div className="mt-6 flex gap-5">
         <div className="p-3 rounded-md border border-manta-gray flex items-center gap-2 text-secondary bg-secondary">
           <input
-            className="bg-transparent text-black dark:text-white outline-none"
+            className="bg-transparent text-thirdry outline-none"
             placeholder="Search Collators"
             onChange={(e) => setFilterText(e.target.value)}
             value={filterText}
@@ -261,7 +258,20 @@ const CollatorsTable = () => {
             placeholder=""
             value={filterOption}
             onChange={onChangeOption}
+            isSearchable={false}
           />
+        </div>
+        <div className="ml-auto flex items-center">
+          <a
+            href="https://docs.manta.network/docs/calamari/Staking/Collation/Overview"
+            target="_blank"
+            className={
+              'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white'
+            }
+            rel="noreferrer"
+          >
+            Launch your own collator
+          </a>
         </div>
       </div>
       <div className="w-full mt-4">

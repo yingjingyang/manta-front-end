@@ -11,6 +11,7 @@ import ErrorText from 'components/Error/ErrorText';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
+import DotLoader from 'components/Loaders/DotLoader';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import { MAX_DELEGATIONS } from '../StakeConstants';
@@ -38,23 +39,31 @@ export const StakeModal = ({ hideModal }) => {
   const { txStatus } = useTxStatus();
   const { externalAccount } = useExternalAccount();
 
-
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const minStakeAmountString = selectedCollator.minStake.toString(
-    true,
-    0
-  );
+  const getBalanceDisplayString = (balance) => {
+    if (!externalAccount) {
+      return '';
+    } else if (!balance) {
+      return <DotLoader />;
+    } else {
+      return balance.toDisplayString(0);
+    }
+  };
+
+  const availableBalanceText = `Available balance: ${getBalanceDisplayString(userAvailableBalance)}`;
+  const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toString(true, 0)}`
+    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
     : 'Staked: 0 KMA';
 
   const minimumStakeText = ` Minimum stake: ${minStakeAmountString}`;
 
-  const usdValueText = (stakeTargetBalance && usdPerKma)
-    ? stakeTargetBalance.toUsdString(usdPerKma)
-    : '';
+  const usdValueText =
+    stakeTargetBalance && usdPerKma
+      ? stakeTargetBalance.toUsd(usdPerKma).toString()
+      : '';
 
   const notes = [
     'Staking rewards are paid to your address every six hours.',
@@ -70,7 +79,11 @@ export const StakeModal = ({ hideModal }) => {
         setErrorMessage('Transaction in progress');
       } else if (getUserWouldExceedMaxDelegations()) {
         setErrorMessage(`Max number of delegations is ${MAX_DELEGATIONS}`);
-      } else if (!stakeTargetBalance || !selectedCollator || !userAvailableBalance) {
+      } else if (
+        !stakeTargetBalance ||
+        !selectedCollator ||
+        !userAvailableBalance
+      ) {
         setErrorMessage(null);
       } else if (!(await getUserHasSufficientFundsToStake())) {
         setErrorMessage('Insufficient balance');
@@ -121,12 +134,12 @@ export const StakeModal = ({ hideModal }) => {
   const onClickMax = async () => {
     const maxStakeableBalance = await getMaxStakeableBalance();
     if (maxStakeableBalance) {
-      onChangeStakeAmountInput(maxStakeableBalance.toString(false));
+      onChangeStakeAmountInput(maxStakeableBalance.toString());
     }
   };
 
   return (
-    <div className="w-96 py-4 bg-secondary rounded-2xl">
+    <div className="w-96 py-4 bg-fifth rounded-2xl">
       <div className="flex items-center gap-2">
         <h1 className="font-semibold text-secondary text-lg">
           {selectedCollator.name}
@@ -139,8 +152,11 @@ export const StakeModal = ({ hideModal }) => {
         <h1 className="text-secondary text-left text-sm font-medium">
           {minimumStakeText}
         </h1>
+        <h1 className="text-secondary text-left text-sm font-medium">
+          {availableBalanceText}
+        </h1>
         <div
-          className={`mt-6 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
+          className={`mt-2 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
             errorMessage ? 'border-red-500' : ''
           }`}
         >
@@ -150,7 +166,7 @@ export const StakeModal = ({ hideModal }) => {
             alt="Calamari(KMA)"
           />
           <input
-            className="bg-secondary pl-1 flex-grow h-10 outline-none dark:text-white"
+            className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
             placeholder="Amount"
             onChange={(e) => onChangeStakeAmountInput(e.target.value)}
             value={inputValue}
@@ -160,8 +176,10 @@ export const StakeModal = ({ hideModal }) => {
               <GradientText className="text-link text-base" text="MAX" />
             </span>
           </div>
-          <div className="w-full mb-2 text-xss pl-14 text-secondary">{usdValueText}</div>
-          <br/>
+          <div className="w-full mb-2 text-xss pl-14 text-secondary">
+            {usdValueText}
+          </div>
+          <br />
         </div>
       </div>
       <ErrorText errorMessage={errorMessage} />
@@ -170,7 +188,7 @@ export const StakeModal = ({ hideModal }) => {
           Stake
         </Button>
       </div>
-      <ModalNotes notes={notes}/>
+      <ModalNotes notes={notes} />
     </div>
   );
 };

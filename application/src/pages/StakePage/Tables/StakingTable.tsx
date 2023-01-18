@@ -23,7 +23,7 @@ const NothingStakedDisplay = () => {
   if (!externalAccount) {
     primaryText = 'Please connect your wallet';
     secondaryText =
-      'polkadot.js or Talisman wallet must be connected to see your balaces and rewards';
+      'polkadot.js, SubWallet, or Talisman wallet must be connected to see your balaces and rewards';
   } else {
     primaryText = 'You are not currently staking KMA';
     secondaryText = 'Select a collator below to begin staking';
@@ -48,7 +48,6 @@ const StakingTable = () => {
     userDelegations,
     unstakeRequests
   } = useStakeData();
-
   const nodeIsDisconnected =
     apiState === 'ERROR' || apiState === 'DISCONNECTED';
 
@@ -91,19 +90,35 @@ const StakingTable = () => {
     }
   };
 
+  const getApyEstimateString = (collator) => {
+    if (!collator) {
+      return 0;
+    } else if (!collator.apy) {
+      return '-';
+    } else {
+      return `${collator.apy.toNumber().toLocaleString(undefined)} %`;
+    }
+  };
+
   const rowData = userDelegations.map((delegation: Delegation) => {
     return {
       Collator: delegation.collator,
       Amount: delegation.delegatedBalance,
       Status: getIsEarningString(delegation),
       Rank: delegation.rank,
+      'APY Estimate': collatorCandidates.find(
+        (collator) => collator.address === delegation.collator.address
+      ),
       data: delegation
     };
   });
 
   const amountTooltip = 'Your balance staked with this collator';
   const statusTooltip = 'Whether this delegation is earning yield';
-  const rankTooltip = 'Your rank among the top 100 delegations to this collator';
+  const rankTooltip =
+    'Your rank among the top 100 delegations to this collator';
+  const apyEstimateTooltip =
+    'APY estimates are based on collator performance last round';
 
   const columnDefs: ColDef[] = [
     {
@@ -118,11 +133,11 @@ const StakingTable = () => {
     {
       field: 'Amount',
       unSortIcon: true,
-      width: 230,
+      width: 195,
       suppressMovable: true,
       headerTooltip: amountTooltip,
       cellRenderer: (params: any) => {
-        return params.data['Amount'].toString(true, 0);
+        return params.data['Amount'].toDisplayString(0);
       },
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
         valueA.gt(valueB) ? 1 : -1
@@ -131,14 +146,26 @@ const StakingTable = () => {
       field: 'Status',
       unSortIcon: true,
       headerTooltip: statusTooltip,
-      width: 230,
+      width: 195,
       suppressMovable: true
+    },
+    {
+      field: 'APY Estimate',
+      width: 195,
+      suppressMovable: true,
+      unSortIcon: true,
+      headerTooltip: apyEstimateTooltip,
+      cellRenderer: (params: any) => {
+        return getApyEstimateString(params.data['APY Estimate']);
+      },
+      comparator: (valueA, valueB, nodeA, nodeB, isDescending) =>
+        valueA.apy.toNumber() > valueB.apy.toNumber() ? 1 : -1
     },
     {
       field: 'Rank',
       unSortIcon: true,
       headerTooltip: rankTooltip,
-      width: 230,
+      width: 195,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         return getRankString(params.data['Rank']);
@@ -149,7 +176,7 @@ const StakingTable = () => {
     {
       field: '',
       sortable: false,
-      width: 460,
+      width: 215,
       suppressMovable: true,
       cellRenderer: (params: any) => {
         const delegation = params.data.data;
@@ -206,8 +233,8 @@ const StakingTable = () => {
 
   return (
     <>
-      <div className="mt-20">
-        <h1 className="text-base font-semibold text-black dark:text-white">
+      <div className="mt-20 mx-auto sortable-table-wrapper">
+        <h1 className="text-base font-semibold text-white">
           Staking
         </h1>
         <div className="w-full mt-4">{mainComponent}</div>
