@@ -36,6 +36,8 @@ SELENIUM_TESTS_DIR=$(pwd)
 
 # out from selenium tests
 cd ..
+# source version env vars
+source test_config.env
 TESTS_DIR=$(pwd)
 # check if extension has been checked out and if it doesnt execute second command
 [ ! -d "extension" ] && git clone https://github.com/polkadot-js/extension.git
@@ -48,14 +50,16 @@ yarn build
 
 #Build manta
 cd ${MANTA}
+git fetch origin
+git checkout ${MANTA_NODE_REF}
 cargo install
 cargo b -r
 
 # build and start dolphin / signer/ front end
-cd ${BACKENDPATH}/ui
-source ~/.nvm/nvm.sh
-nvm install 16.0.0
-cargo tauri build
+cd ${BACKENDPATH}
+git fetch origin
+git checkout ${MANTA_SIGNER_REF}
+# cargo tauri build
 # fail bash on error, dont do on tauri build because of the appindicator
 set -e
 
