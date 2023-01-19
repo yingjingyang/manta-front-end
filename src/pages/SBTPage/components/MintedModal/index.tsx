@@ -1,7 +1,12 @@
 import CopyPasteIcon from 'components/CopyPasteIcon';
-import GeneratedImgs from '../GeneratedImgs';
+import { useSBT } from 'pages/SBTPage/SBTContext';
 
 const MintedModal = () => {
+  const { mintSet } = useSBT();
+  const copyAll = () => {
+    const textToCopy = [...mintSet].map(({ proofId }) => proofId).join(',');
+    navigator.clipboard.writeText(textToCopy);
+  };
   return (
     <div className="text-white w-max">
       <h2 className="text-2xl">MINTED！</h2>
@@ -12,14 +17,30 @@ const MintedModal = () => {
         <br /> zkSBTs. Begin by copying your zkSBT ID or by copying all zkSBT
         IDs.
       </p>
-      <GeneratedImgs />
+      <div className="grid w-full gap-6 grid-cols-5 pb-12 mt-6">
+        {[...mintSet]?.map(({ file, proofId }, index) => {
+          return (
+            <div className="relative w-max group" key={index}>
+              <img
+                src={URL.createObjectURL(file)}
+                className="rounded-lg w-48 h-48"
+              />
+              <div className="bg-primary px-4 py-2 flex items-center mt-6 w-48 justify-between text-xs rounded-lg">
+                <p className="text-white text-opacity-60">SBT ID</p>
+                <p className="text-white">{`${proofId?.slice(
+                  0,
+                  6
+                )}..${proofId?.slice(-4)}`}</p>
+                <CopyPasteIcon textToCopy={proofId ?? ''} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
       <div className="flex flex-col items-center">
-        <div className="bg-primary px-4 py-2 flex items-center mt-6 w-96 justify-between">
-          <p className="text-white text-opacity-60">SBT ID</p>
-          <p className="text-white">p9ijwpr09up0q3jrbpioqjpoijfqef</p>
-          <CopyPasteIcon textToCopy="p9ijwpr09up0q3jrbpioqjpoijfqef" />
-        </div>
-        <button className="w-56 px-4 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6">
+        <button
+          className="w-56 px-4 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
+          onClick={copyAll}>
           Click to copy all SBT IDs
         </button>
       </div>

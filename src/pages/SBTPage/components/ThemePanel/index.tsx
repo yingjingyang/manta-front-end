@@ -1,3 +1,4 @@
+import DotLoader from 'components/Loaders/DotLoader';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useModal } from 'hooks';
@@ -15,8 +16,8 @@ const ThemePanel = () => {
   const { externalAccount } = useExternalAccount();
   const { ModalWrapper, showModal } = useModal();
   const {
-    ModalWrapper: ThemeModalWrapper,
-    showModal: showThemeModal,
+    ModalWrapper: ThemeCheckModalWrapper,
+    showModal: showThemeCheckModal,
     hideModal
   } = useModal();
   const btnDisabled = useMemo(() => {
@@ -24,7 +25,7 @@ const ThemePanel = () => {
       checkedThemeItems.size <= 0 || checkedThemeItems.size > MAX_THEME_LEN
     );
   }, [checkedThemeItems]);
-  const toMintPage = () => {
+  const handleGenerate = async () => {
     if (btnDisabled) {
       return;
     }
@@ -32,7 +33,7 @@ const ThemePanel = () => {
       showModal();
       return;
     }
-    showThemeModal();
+    showThemeCheckModal();
   };
 
   const toggleCheckImg = (name: string) => {
@@ -82,7 +83,7 @@ const ThemePanel = () => {
         </div>
       </div>
       <button
-        onClick={toMintPage}
+        onClick={handleGenerate}
         className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${
           btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
         }`}>
@@ -91,9 +92,9 @@ const ThemePanel = () => {
       <ModalWrapper>
         <ConnectWalletModal setIsMetamaskSelected={null} />
       </ModalWrapper>
-      <ThemeModalWrapper>
+      <ThemeCheckModalWrapper>
         <ThemeCheckModal hideModal={hideModal} />
-      </ThemeModalWrapper>
+      </ThemeCheckModalWrapper>
     </div>
   );
 };

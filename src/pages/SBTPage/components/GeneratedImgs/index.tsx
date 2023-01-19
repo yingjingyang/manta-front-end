@@ -2,35 +2,39 @@
 import { Carousel } from 'element-react';
 import { useSBT } from 'pages/SBTPage/SBTContext';
 
+const MAX_MINT_LEN = 8;
 const GeneratedImgs = () => {
   const { imgList } = useSBT();
   const { mintSet, setMintSet } = useSBT();
-  const toggleMint = (img) => {
-    if (mintSet.has(img)) {
-      mintSet.delete(img);
+  const toggleMint = (uploadFile) => {
+    if (mintSet.has(uploadFile)) {
+      mintSet.delete(uploadFile);
     } else {
-      mintSet.add(img);
+      if (mintSet.size >= MAX_MINT_LEN) {
+        return;
+      }
+      mintSet.add(uploadFile);
     }
     setMintSet(new Set(mintSet));
   };
   return (
     <div className="w-128 mx-auto">
       <Carousel
-        interval={2000}
+        autoplay={false}
         type="card"
         height="256px"
         indicatorPosition="none">
-        {imgList.map((img, index) => {
+        {imgList.map((uploadFile, index) => {
           return (
             <Carousel.Item key={index} className="relative">
               <img
-                src={URL.createObjectURL(img)}
+                src={URL.createObjectURL(uploadFile?.file)}
                 className={`rounded-xl cursor-pointer ${
-                  mintSet.has(img) ? 'border-4 border-check' : ''
+                  mintSet.has(uploadFile) ? 'border-4 border-check' : ''
                 }`}
-                onClick={() => toggleMint(img)}
+                onClick={() => toggleMint(uploadFile)}
               />
-              {mintSet.has(img) && (
+              {mintSet.has(uploadFile) && (
                 <svg
                   className="absolute bottom-4 left-4"
                   xmlns="http://www.w3.org/2000/svg"

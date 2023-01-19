@@ -10,7 +10,7 @@ const MintPanel = () => {
   const { ModalWrapper: MintedModalWrapper, showModal: showMintedModal } =
     useModal();
 
-  const firstMintedImg = [...mintSet][0];
+  const firstMintedFile = [...mintSet][0];
   return (
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
@@ -20,7 +20,7 @@ const MintPanel = () => {
       <h1 className="text-3xl my-6">Mint Your zkSBT</h1>
       <div className="flex ml-6">
         <img
-          src={URL.createObjectURL(firstMintedImg)}
+          src={URL.createObjectURL(firstMintedFile.file)}
           className="w-80 h-80 rounded-2xl"
         />
         <div className="bg-primary rounded-lg w-max ml-6 pb-4">

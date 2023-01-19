@@ -1,19 +1,22 @@
-import { useSBT } from 'pages/SBTPage/SBTContext';
+import DotLoader from 'components/Loaders/DotLoader';
+import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
+import { UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
+import { useState } from 'react';
 
 const MintImgs = () => {
   const { mintSet } = useSBT();
   return (
     <div className="max-w-xs overflow-hidden overflow-x-auto">
       <div className="w-max flex gap-4">
-        {[...mintSet].map((img, index) => {
+        {[...mintSet].map(({ file }, index) => {
           return (
             <div className="relative" key={index}>
               <img
-                src={URL.createObjectURL(img)}
+                src={URL.createObjectURL(file)}
                 className="w-24 h-24 rounded-2xl"
               />
               {index === 0 && (
-                <span className="absolute bg-button-fourth-light px-4 py-0.5 rounded-2xl border border-thirdry bottom-2 left-1/2 transform -translate-x-1/2">
+                <span className="absolute bg-button-fourth-light px-4 rounded-2xl border border-thirdry bottom-2 left-1/2 transform -translate-x-1/2">
                   Free
                 </span>
               )}
@@ -31,8 +34,24 @@ const MintCheckModal = ({
   hideModal: () => void;
   showMintedModal: () => void;
 }) => {
-  const { mintSet } = useSBT();
-  const toMintedModal = () => {
+  const [loading, toggleLoading] = useState(false);
+
+  const { mintSet, setMintSet } = useSBT();
+  const { mintSBT } = useSBTPrivateWallet();
+
+  const mintSBTConfirm = async () => {
+    toggleLoading(true);
+    const proofIds = await mintSBT();
+    const newMintSet = new Set<UploadFile>();
+    [...mintSet].forEach((mintFile, index) => {
+      newMintSet.add({
+        ...mintFile,
+        proofId: proofIds[index]
+      });
+    });
+    setMintSet(newMintSet);
+
+    toggleLoading(false);
     hideModal();
     setTimeout(() => {
       showMintedModal();
@@ -71,11 +90,13 @@ const MintCheckModal = ({
         </div>
       </div>
       <button
-        onClick={toMintedModal}
-        className={
-          'px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6'
-        }>
+        onClick={mintSBTConfirm}
+        disabled={loading}
+        className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6 ${
+          loading ? 'brightness-50 cursor-not-allowed' : ''
+        }`}>
         Confirm
+        {loading && <DotLoader />}
       </button>
     </div>
   );

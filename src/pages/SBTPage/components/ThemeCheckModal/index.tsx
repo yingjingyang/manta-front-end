@@ -1,8 +1,54 @@
+import { useState } from 'react';
+import axios from 'axios';
+
+import DotLoader from 'components/Loaders/DotLoader';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
+import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
 
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
-  const { setCurrentStep } = useSBT();
-  const toGeneratingPage = () => {
+  const [loading, toggleLoading] = useState(false);
+
+  const { setCurrentStep, imgList, setImgList } = useSBT();
+  const { externalAccount } = useExternalAccount();
+  const { reserveSBT } = useSBTPrivateWallet();
+
+  const uploadImgs = async () => {
+    const formData = new FormData();
+    formData.append('address', externalAccount.address);
+    imgList.forEach(({ file }) => {
+      formData.append('files', file);
+    });
+    formData.append('target', 'core');
+    const ret = await axios.post(
+      'http://47.100.96.241:3000/uploader/ipfs-files',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+    if (ret.status === 200 || ret.status === 201) {
+      const newImgList = [...imgList];
+
+      ret?.data?.map((metadata: string, index: number) => {
+        newImgList[index].metadata = metadata;
+      });
+      setImgList(newImgList);
+    }
+  };
+  const toGeneratingPage = async () => {
+    if (loading) {
+      return;
+    }
+    toggleLoading(true);
+
+    await uploadImgs();
+    await reserveSBT();
+
+    toggleLoading(false);
+
     hideModal();
     setTimeout(() => {
       setCurrentStep(Step.Generating);
@@ -37,10 +83,12 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
       <p className="text-sm text-left">Balance: $8098.88 Manta</p>
       <button
         onClick={toGeneratingPage}
-        className={
-          'px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6'
-        }>
+        disabled={loading}
+        className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6 ${
+          loading ? 'brightness-50 cursor-not-allowed' : ''
+        }`}>
         Confirm
+        {loading && <DotLoader />}
       </button>
     </div>
   );

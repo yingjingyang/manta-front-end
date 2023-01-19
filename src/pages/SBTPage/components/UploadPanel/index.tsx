@@ -1,4 +1,4 @@
-import { Step, useSBT } from 'pages/SBTPage/SBTContext';
+import { Step, UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
 import MantaIcon from 'resources/images/manta.png';
 import { ChangeEvent } from 'react';
 
@@ -6,7 +6,11 @@ const Upload = () => {
   const { imgList, setImgList } = useSBT();
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.files?.length) {
-      setImgList([...imgList, ...e.target.files]);
+      const addedImgList: UploadFile[] = [...e.target.files].map((file) => ({
+        file,
+        metadata: ''
+      }));
+      setImgList([...imgList, ...addedImgList]);
     }
   };
   return (
@@ -62,11 +66,11 @@ const UploadPanel = () => {
         your zkSBT.
       </p>
       <div className="grid w-full gap-6 grid-cols-5 pb-24 mt-6">
-        {imgList?.map((img, index) => {
+        {imgList?.map(({ file }, index) => {
           return (
             <div className="relative w-max group" key={index}>
               <img
-                src={URL.createObjectURL(img)}
+                src={URL.createObjectURL(file)}
                 className="rounded-lg w-48 h-48"
               />
               <svg

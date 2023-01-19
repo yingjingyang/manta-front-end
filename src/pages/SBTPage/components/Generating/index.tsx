@@ -14,10 +14,10 @@ const Generating = () => {
       </div>
       <h1 className="text-3xl my-6">Analyzing...</h1>
       <div className="relative w-full h-60">
-        {imgList.map((img, index) => {
+        {imgList.map(({ file }, index) => {
           return (
             <img
-              src={URL.createObjectURL(img)}
+              src={URL.createObjectURL(file)}
               className={'w-60 h-60 rounded-lg transform absolute'}
               style={{
                 transform: `scale(${Math.pow(0.9, index)})`,
