@@ -72,7 +72,7 @@ const MintPanel = () => {
         </div>
         <button
           onClick={showModal}
-          className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ">
+          className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-8 left-1/2 -translate-x-1/2 transform ">
           Mint
         </button>
       </div>

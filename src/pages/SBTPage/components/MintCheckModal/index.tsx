@@ -1,26 +1,20 @@
 import DotLoader from 'components/Loaders/DotLoader';
 import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
 import { UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const MintImgs = () => {
   const { mintSet } = useSBT();
   return (
-    <div className="max-w-xs overflow-hidden overflow-x-auto">
+    <div className="w-full p-4 overflow-hidden overflow-x-auto">
       <div className="w-max flex gap-4">
         {[...mintSet].map(({ file }, index) => {
           return (
-            <div className="relative" key={index}>
-              <img
-                src={URL.createObjectURL(file)}
-                className="w-24 h-24 rounded-2xl"
-              />
-              {index === 0 && (
-                <span className="absolute bg-button-fourth-light px-4 rounded-2xl border border-thirdry bottom-2 left-1/2 transform -translate-x-1/2">
-                  Free
-                </span>
-              )}
-            </div>
+            <img
+              src={URL.createObjectURL(file)}
+              className="w-24 h-24 rounded-2xl"
+              key={index}
+            />
           );
         })}
       </div>
@@ -57,22 +51,32 @@ const MintCheckModal = ({
       showMintedModal();
     });
   };
+  const mintInfo = useMemo(() => {
+    if (mintSet.size === 1) {
+      return {
+        txt: '1 Free zkSTB',
+        cost: 'Free'
+      };
+    }
+    if (mintSet.size > 1) {
+      return {
+        txt: `1 Free + ${mintSet.size - 1} Extra Mint`,
+        cost: `88.33 MANTA x ${mintSet.size - 1}`
+      };
+    }
+  }, [mintSet]);
+
   return (
     <div className="text-white w-128 text-center">
-      <h2 className="text-2xl">Checkout</h2>
+      <h2 className="text-2xl text-left">Checkout</h2>
       <div className="bg-secondary rounded-lg mt-6 mb-4">
-        <div className="flex justify-between p-4">
-          <MintImgs />
-          <div className="flex flex-col items-center">
-            {mintSet.size === 1 ? (
-              <span className="text-check">FREE</span>
-            ) : (
-              <>
-                <span className="text-check">179.48 MANTA</span>
-                <span className="text-white text-opacity-60">$30.9 USD</span>
-              </>
-            )}
-          </div>
+        <MintImgs />
+        <div className="flex justify-between border-b border-split p-4">
+          <p>{mintInfo?.txt}</p>
+          <span
+            className={` ${mintSet.size === 1 ? 'text-check' : 'text-white'}`}>
+            {mintInfo?.cost}
+          </span>
         </div>
         <div className="flex justify-between border-b border-split p-4">
           <p>Gas Fee</p>
@@ -89,6 +93,7 @@ const MintCheckModal = ({
           </div>
         </div>
       </div>
+      <p className="text-sm text-left">Balance: $8098.88 Manta</p>
       <button
         onClick={mintSBTConfirm}
         disabled={loading}

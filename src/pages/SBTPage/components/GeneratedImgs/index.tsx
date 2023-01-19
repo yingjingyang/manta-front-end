@@ -1,8 +1,8 @@
 //@ts-nocheck
 import { Carousel } from 'element-react';
 import { useSBT } from 'pages/SBTPage/SBTContext';
+import { MAX_MINT_SIZE } from '../Generated';
 
-const MAX_MINT_LEN = 8;
 const GeneratedImgs = () => {
   const { imgList } = useSBT();
   const { mintSet, setMintSet } = useSBT();
@@ -10,7 +10,7 @@ const GeneratedImgs = () => {
     if (mintSet.has(uploadFile)) {
       mintSet.delete(uploadFile);
     } else {
-      if (mintSet.size >= MAX_MINT_LEN) {
+      if (mintSet.size >= MAX_MINT_SIZE) {
         return;
       }
       mintSet.add(uploadFile);
@@ -29,8 +29,12 @@ const GeneratedImgs = () => {
             <Carousel.Item key={index} className="relative">
               <img
                 src={URL.createObjectURL(uploadFile?.file)}
-                className={`rounded-xl cursor-pointer ${
+                className={`rounded-xl ${
                   mintSet.has(uploadFile) ? 'border-4 border-check' : ''
+                } ${
+                  mintSet.size >= MAX_MINT_SIZE && !mintSet.has(uploadFile)
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
                 }`}
                 onClick={() => toggleMint(uploadFile)}
               />

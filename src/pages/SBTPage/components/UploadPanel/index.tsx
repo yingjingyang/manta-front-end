@@ -1,6 +1,6 @@
 import { Step, UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
 import MantaIcon from 'resources/images/manta.png';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useMemo } from 'react';
 
 const Upload = () => {
   const { imgList, setImgList } = useSBT();
@@ -10,7 +10,8 @@ const Upload = () => {
         file,
         metadata: ''
       }));
-      setImgList([...imgList, ...addedImgList]);
+      const newImgList = [...imgList, ...addedImgList].slice(0, MAX_UPLOAD_LEN);
+      setImgList(newImgList);
     }
   };
   return (
@@ -40,7 +41,8 @@ const Upload = () => {
     </div>
   );
 };
-
+const MAX_UPLOAD_LEN = 20;
+const MIN_UPLOAD_LEN = 5;
 const UploadPanel = () => {
   const { setCurrentStep, imgList, setImgList } = useSBT();
   const toThemePage = () => {
@@ -51,6 +53,10 @@ const UploadPanel = () => {
     newArr.splice(index, 1);
     setImgList(newArr);
   };
+  const btnDisabled = useMemo(() => {
+    return imgList.length < MIN_UPLOAD_LEN || imgList.length > MAX_UPLOAD_LEN;
+  }, [imgList]);
+
   return (
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
@@ -90,11 +96,14 @@ const UploadPanel = () => {
             </div>
           );
         })}
-        <Upload />
+        {imgList.length < MAX_UPLOAD_LEN ? <Upload /> : null}
       </div>
       <button
+        disabled={btnDisabled}
         onClick={toThemePage}
-        className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform">
+        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${
+          btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
+        }`}>
         Confirm
       </button>
     </div>

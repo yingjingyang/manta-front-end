@@ -1,4 +1,3 @@
-import DotLoader from 'components/Loaders/DotLoader';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useModal } from 'hooks';
@@ -40,6 +39,9 @@ const ThemePanel = () => {
     if (checkedThemeItems.has(name)) {
       checkedThemeItems.delete(name);
     } else {
+      if (checkedThemeItems.size >= MAX_THEME_LEN) {
+        return;
+      }
       checkedThemeItems.set(name, {
         name,
         img: themeMap[name]
@@ -57,7 +59,7 @@ const ThemePanel = () => {
       </div>
       <h1 className="text-3xl my-6">Select Themes</h1>
       <p className="text-sm text-opacity-60 text-white">
-        You can select up to 10 types of themes
+        You can select up to {MAX_THEME_LEN} types of themes
       </p>
       <div className="flex pb-48 mt-6">
         <ThemeChecked />
@@ -71,7 +73,12 @@ const ThemePanel = () => {
                   checkedThemeItems.has(name)
                     ? 'bg-light-check border border-check'
                     : 'bg-primary'
-                } rounded-xl w-28 h-28 flex-col items-center justify-center cursor-pointer`}>
+                } ${
+                  checkedThemeItems.size >= MAX_THEME_LEN &&
+                  !checkedThemeItems.has(name)
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
+                } rounded-xl w-28 h-28 flex-col items-center justify-center `}>
                 <img
                   src={themeMap[name]}
                   className="w-14 h-14 rounded-full mb-2"
@@ -87,7 +94,7 @@ const ThemePanel = () => {
         className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${
           btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
         }`}>
-        Generate
+        {externalAccount ? 'Generate' : 'Connect Wallet to Generate'}
       </button>
       <ModalWrapper>
         <ConnectWalletModal setIsMetamaskSelected={null} />
