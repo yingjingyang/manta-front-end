@@ -1,34 +1,70 @@
-//@ts-nocheck
+// @ts-nocheck
 import React from 'react';
-import MantaIcon from 'resources/images/manta.png';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
+import Icon from 'components/Icon';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 
-const PrivateTokenTableContent = ({ balances }) => {
+
+const ZkAddressDisplay = () => {
+  const { privateAddress } = usePrivateWallet();
+  const privateAddressDisplayString = `zkAddress ${privateAddress.slice(0,6)}..${privateAddress.slice(-4)}`;
+  return (
+    <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
+      <div className="flex items-center gap-2">
+        <Icon className="w-6 h-6" name="manta" />
+        <span className="text-white font-light">
+          {privateAddressDisplayString}
+        </span>
+      </div>
+      <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
+    </div>
+  );
+};
+
+const UsdBalanceDisplay = () => {
+  return (
+    <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
+      <span className="pt-3 pb-1 text-base text-white">
+      Total Balance
+      </span>
+      <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
+    </div>
+  );
+};
+
+const PrivateTokenBalancesDisplay = () => {
+  const { balances } = useZkAccountBalances();
   const privateWallet = usePrivateWallet();
-  if (balances && balances.length > 0) {
-    return balances.map((balance, _) => (
-      <PrivateTokenItem balance={balance} key={balance.assetType.assetId} />
+
+  let contents = null;
+  if (balances?.length > 0) {
+    contents = balances.map((balance) => (
+      <PrivateTokenBalancesDisplayItem balance={balance} key={balance.assetType.assetId} />
     ));
-  } else if (
-    privateWallet?.balancesAreStaleRef.current
-  ) {
-    return <div className="whitespace-nowrap text-center">Syncing...</div>;
+  } else if (privateWallet?.balancesAreStaleRef.current) {
+    contents = <div className="whitespace-nowrap text-center">Syncing...</div>;
   } else {
-    return (
+    contents = (
       <div className="whitespace-nowrap text-center">
         You have no zkAssets yet.
       </div>
     );
   }
+
+  return (
+    <div className="border border-white border-opacity-20 rounded-lg px-6 py-4 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
+      {contents}
+    </div>
+  );
 };
 
-const PrivateTokenItem = ({ balance }) => {
+const PrivateTokenBalancesDisplayItem = ({ balance }) => {
   return (
     <div className="flex items-center justify-between mb-2">
       <div className="flex gap-3 items-center">
-        <img className="w-8 h-8 rounded-full" src={balance.assetType.icon} />
+        <Icon className="w-8 h-8 rounded-full" name={balance.assetType.icon} />
         <div>
           <div className="text-white">{balance.assetType.ticker}</div>
           <div className="text-secondary">
@@ -41,37 +77,38 @@ const PrivateTokenItem = ({ balance }) => {
   );
 };
 
-const ZkAccountModalContent = () => {
-  const { privateAddress } = usePrivateWallet();
-  const { balances } = useZkAccountBalances();
-  const succinctAddress = `${privateAddress.slice(
-    0,
-    6
-  )}..${privateAddress.slice(-4)}`;
+const NetworkDisconnectedDisplay = () => {
+  return (
+    <div className="border border-secondary rounded-lg px-6 py-6 text-secondary overflow-y-auto bg-white bg-opacity-5">
+      <div className="flex flex-col items-center justify-center gap-3">
+        <div className="text-white text-center">
+        Cannot connect to the network
+        </div>
+        <div className="text-secondary text-xss">
+        Please check your internet connection and wait to reconnect.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BalancesDisplay = () => {
   return (
     <>
-      <div className="w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
-        <div className="flex flex-col gap-3">
-          <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <img className="w-6 h-6" src={MantaIcon} alt="Manta" />
-              <span className="text-white font-light">
-                zkAddress&nbsp;
-                {succinctAddress}
-              </span>
-            </div>
-            <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
-          </div>
-          <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
-            <span className="pt-3 pb-1 text-base text-white">
-              Total Balance
-            </span>
-            <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
-          </div>
-        </div>
-        <div className="flex flex-col border border-white border-opacity-20 rounded-lg px-6 py-4 mt-3 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
-          <PrivateTokenTableContent balances={balances} />
-        </div>
+      <UsdBalanceDisplay />
+      <PrivateTokenBalancesDisplay />
+    </>
+  );
+};
+
+const ZkAccountModalContent = () => {
+  const { apiState } = useSubstrate();
+  const isDisconnected = apiState === API_STATE.DISCONNECTED  || apiState === API_STATE.ERROR;
+  return (
+    <>
+      <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
+        <ZkAddressDisplay />
+        {isDisconnected ?  <NetworkDisconnectedDisplay /> : <BalancesDisplay /> }
       </div>
     </>
   );

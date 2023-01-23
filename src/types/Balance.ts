@@ -1,20 +1,22 @@
-// @ts-nocheck
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import AssetType from './AssetType';
 import Usd from './Usd';
 
 export default class Balance {
-  constructor(assetType, valueAtomicUnits) {
+  assetType: AssetType;
+  valueAtomicUnits: BN;
+
+  constructor(assetType: AssetType, valueAtomicUnits: BN) {
     this.assetType = assetType;
     this.valueAtomicUnits = valueAtomicUnits;
   }
 
-  static Native(config, valueAtomicUnits) {
+  static Native(config: object, valueAtomicUnits: BN) {
     return new Balance(AssetType.Native(config), valueAtomicUnits);
   }
 
-  valueOverExistentialDeposit() {
+  valueOverExistentialDeposit(): Balance {
     const existentialDeposit = new Balance(
       this.assetType,
       this.assetType.existentialDeposit
@@ -24,7 +26,7 @@ export default class Balance {
     return Balance.max(value, zero);
   }
 
-  static fromBaseUnits(assetType, valueBaseUnits) {
+  static fromBaseUnits(assetType: AssetType, valueBaseUnits: Decimal): Balance {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(assetType.numberOfDecimals)
     );
@@ -35,7 +37,7 @@ export default class Balance {
     return new Balance(assetType, new BN(valueAtomicUnits.toString()));
   }
 
-  valueBaseUnits() {
+  valueBaseUnits(): Decimal {
     const balanceAtomicUnitsDecimal = new Decimal(
       this.valueAtomicUnits.toString()
     );
@@ -48,11 +50,11 @@ export default class Balance {
     return valueBaseUnits;
   }
 
-  toString(decimals = 3) {
+  toString(decimals = 3): string {
     return this.valueBaseUnits().toDecimalPlaces(decimals, Decimal.ROUND_DOWN).toString();
   }
 
-  toDisplayString(decimals = 3, roundDown = true) {
+  toDisplayString(decimals = 3, roundDown = true): string {
     const rounding = roundDown ? Decimal.ROUND_DOWN : Decimal.ROUND_UP;
     return `${this.valueBaseUnits()
       .toDecimalPlaces(decimals, rounding)
@@ -63,50 +65,50 @@ export default class Balance {
       })} ${this.assetType.ticker}`;
   }
 
-  toFeeDisplayString() {
+  toFeeDisplayString(): string {
     return this.toDisplayString(6, false);
   }
 
-  toUsd(usdPerToken: Usd) {
+  toUsd(usdPerToken: Usd): Usd {
     return new Usd(this.valueBaseUnits().mul(usdPerToken.value));
   }
 
-  eq(other) {
+  eq(other: Balance): boolean {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.eq(other.valueAtomicUnits);
   }
 
-  gt(other) {
+  gt(other: Balance): boolean {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.gt(other.valueAtomicUnits);
   }
 
-  gte(other) {
+  gte(other: Balance): boolean {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.gte(other.valueAtomicUnits);
   }
 
-  lt(other) {
+  lt(other: Balance): boolean {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.lt(other.valueAtomicUnits);
   }
 
-  lte(other) {
+  lte(other: Balance): boolean {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }
     return this.valueAtomicUnits.lte(other.valueAtomicUnits);
   }
 
-  sub(other) {
+  sub(other: Balance): Balance {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot subtract different asset types');
     }
@@ -114,7 +116,7 @@ export default class Balance {
     return new Balance(this.assetType, value);
   }
 
-  add(other) {
+  add(other: Balance): Balance {
     if (this.assetType.assetId !== other.assetType.assetId) {
       throw new Error('Cannot add different asset types');
     }
@@ -122,17 +124,17 @@ export default class Balance {
     return new Balance(this.assetType, value);
   }
 
-  mul(num) {
+  mul(num: BN): Balance {
     const value = this.valueAtomicUnits.mul(num);
     return new Balance(this.assetType, value);
   }
 
-  div(num) {
+  div(num: BN): Balance {
     const value = this.valueAtomicUnits.div(num);
     return new Balance(this.assetType, value);
   }
 
-  static max(a, b) {
+  static max(a: Balance, b: Balance): Balance {
     if (a.assetType.assetId !== b.assetType.assetId) {
       throw new Error('Cannot compare different asset types');
     }

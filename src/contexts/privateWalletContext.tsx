@@ -172,7 +172,7 @@ export const PrivateWalletContextProvider = (props) => {
         );
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
-        setTxStatus(TxStatus.failed());
+        setTxStatus(TxStatus.failed('Transaction declined'));
         txQueue.current = [];
       }
     };
@@ -219,11 +219,11 @@ export const PrivateWalletContextProvider = (props) => {
       externalAccount.address
     );
     if (signResult === null) {
-      return false;
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
     }
     const batches = signResult.txs;
-    const res = await publishBatchesSequentially(batches, txResHandler);
-    return res;
+    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
@@ -235,11 +235,11 @@ export const PrivateWalletContextProvider = (props) => {
       externalAccount.address
     );
     if (signResult === null) {
-      return false;
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
     }
     const batches = signResult.txs;
-    const res = await publishBatchesSequentially(batches, txResHandler);
-    return res;
+    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const toPrivate = async (balance, txResHandler) => {
@@ -250,11 +250,11 @@ export const PrivateWalletContextProvider = (props) => {
       externalAccount.address
     );
     if (signResult === null) {
-      return false;
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
     }
     const batches = signResult.txs;
-    const res = await publishBatchesSequentially(batches, txResHandler);
-    return res;
+    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const value = {
