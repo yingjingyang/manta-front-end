@@ -22,8 +22,8 @@ export default class TxStatus {
     return new TxStatus(FINALIZED, extrinsic, subscanUrl);
   }
 
-  static failed() {
-    return new TxStatus(FAILED);
+  static failed(message) {
+    return new TxStatus(FAILED, null, null, message);
   }
 
   isProcessing() {

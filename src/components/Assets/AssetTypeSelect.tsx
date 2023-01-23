@@ -5,6 +5,7 @@ import Select, { components } from 'react-select';
 import { useTxStatus } from 'contexts/txStatusContext';
 import AssetType from 'types/AssetType';
 import classNames from 'classnames';
+import Icon from 'components/Icon';
 
 const AssetTypeSelect = ({
   assetType,
@@ -104,7 +105,7 @@ const EmptyIndicatorSeparator = () => {
 const AssetTypeSingleValue = ({ data }) => {
   return (
     <div className="border-0 flex items-center gap-2">
-      <img className="w-6 h-6 rounded-full" src={data.icon} alt="icon" />
+      <Icon className="w-6 h-6 rounded-full" name={data.icon} />
       <div className="text-black dark:text-white place-self-center">
         {data.ticker}
       </div>
@@ -119,8 +120,8 @@ const AssetTypeOption = (props) => {
       <div
         id={value.ticker}
         className="flex items-center inline border border-white border-opacity-10 w-full bg-primary hover:bg-blue-100">
-        <img className="ml-6 w-6 rounded-full" src={value.icon} alt="icon" />
-        <div className="p-2 pl-4 text-white">
+        <Icon className="ml-3 w-6 rounded-full" name={value?.icon} />
+        <div className="p-2 pl-4 text-black">
           <components.Option {...props} />
           <div className="text-xs block manta-gray">{value.name}</div>
         </div>
