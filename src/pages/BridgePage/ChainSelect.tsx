@@ -79,11 +79,7 @@ const ChainOption = (props) => {
       <div className="h-full flex items-center inline border border-white border-opacity-10 bg-primary hover:bg-blue-100">
         <div>
           <Icon
-<<<<<<< HEAD
             className="w-8 h-8 ml-3 my-2 manta-bg-secondary rounded-full"
-=======
-            className="w-9 h-9 ml-3 my-2 manta-bg-secondary rounded-full"
->>>>>>> 105584e3e4772cdf29e94e80b7e1090c6ff2e33e
             name={value?.icon}
           />
         </div>
