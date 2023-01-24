@@ -23,7 +23,7 @@ function DowntimeModal() {
         Scheduled Downtime
       </Header>
       <Modal.Content>
-        <p className="pl-16">
+        <p className="pl-16 text-sm">
           A network update is currently in progress. {config.PAGE_TITLE} will be
           back online shortly.
         </p>
