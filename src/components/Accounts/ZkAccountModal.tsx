@@ -104,7 +104,7 @@ const ZkAccountModalContent = () => {
   const isDisconnected = apiState === API_STATE.DISCONNECTED  || apiState === API_STATE.ERROR;
   return (
     <>
-      <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-#FFFFFF1A text-secondary ">
+      <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-#FFFFFF1A text-secondary">
         <ZkAddressDisplay />
         {isDisconnected ? <NetworkDisconnectedDisplay /> : <BalancesDisplay />}
       </div>
