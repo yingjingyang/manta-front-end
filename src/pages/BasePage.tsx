@@ -70,6 +70,7 @@ CalamariBasePage.propTypes = {
 };
 
 export const DolphinBasePage = ({children}) => {
+
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <BasePage>
