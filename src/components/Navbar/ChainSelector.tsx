@@ -116,7 +116,7 @@ const ChainSelector = () => {
             'logo-content flex items-center lg:flex relative cursor-pointer',
             { disabled: disabled }
           )}>
-          <div className="logo border-white w-10 h-10 flex items-center justify-center">
+          <div className="logo border-white w-7 h-7 flex items-center justify-center">
             <Icon
               className={classNames({
                 'rounded-full': activeNode.name === 'Calamari'
@@ -125,8 +125,8 @@ const ChainSelector = () => {
             />
           </div>
           <div>
-            <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
-              {activeNode.name}&nbsp;{activeNode.testnet ? 'testnet' : ''}
+            <h1 className="text-xl mb-0 pl-4 font-semibold text-accent">
+              {activeNode.name}&nbsp;{activeNode.testnet ? 'Testnet' : ''}
             </h1>
           </div>
           <div className="text-white text-lg ml-4">

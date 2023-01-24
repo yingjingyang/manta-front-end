@@ -139,7 +139,7 @@ const AssetTypeOption = (props) => {
 const AssetTypeMenuList = (props) => {
   return (
     <components.MenuList {...props}>
-      <div className="rounded-lg divide-y divide-#FFFFFF33 border border-#FFFFFF33 bg-primary">
+      <div className="rounded-lg divide-y divide-#FFFFFF1A border border-#FFFFFF1A bg-primary">
         {props.children}
       </div>
     </components.MenuList>

@@ -76,14 +76,13 @@ module.exports = {
       },
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)',
-        'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
-        '#FFFFFF33': '#FFFFFF33'
+        '#FFFFFF1A': '#FFFFFF1A'
       },
       divideColor: {
-        '#FFFFFF33': '#FFFFFF33'
+        '#FFFFFF1A': '#FFFFFF1A'
       },
     }
   },
