@@ -36,6 +36,7 @@ const ChainSelect = ({ chain, chainOptions, setChain, isOriginChain }) => {
         components={{
           Control: ChainControl,
           SingleValue: ChainSingleValue,
+          MenuList: ChainMenuList,
           Option: ChainOption,
           IndicatorSeparator: EmptyIndicatorSeparator
         }}></Select>
@@ -76,18 +77,25 @@ const ChainOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps} className="w-full cursor-pointer">
-      <div className="h-full flex items-center inline border border-white border-opacity-10 bg-primary hover:bg-blue-100">
+      <div className="h-full flex items-center rounded-lg inline bg-primary hover:bg-#00AFA580 z-50 py-1">
         <div>
-          <Icon
-            className="w-8 h-8 ml-3 my-2 manta-bg-secondary rounded-full"
-            name={value?.icon}
-          />
+          <Icon className="w-6 h-6 ml-5 my-2 rounded-full" name={value?.icon} />
         </div>
         <div className="pl-4 p-2 text-white">
           <components.Option {...props} />
         </div>
       </div>
     </div>
+  );
+};
+
+const ChainMenuList = (props) => {
+  return (
+    <components.MenuList {...props}>
+      <div className="rounded-lg divide-y divide-#FFFFFF33 border border-#FFFFFF33 bg-primary">
+        {props.children}
+      </div>
+    </components.MenuList>
   );
 };
 
@@ -105,7 +113,7 @@ const dropdownStyles = {
     marginRight: '10px'
   }),
   option: () => ({
-    fontSize: '12pt',
+    fontSize: '12pt'
   }),
   valueContainer: () => ({
     minHeight: '2rem',
