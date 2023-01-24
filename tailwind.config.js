@@ -30,7 +30,8 @@ module.exports = {
         '128':'32rem',
         '108':'27rem',
         '113.5':'28.375rem',
-        '21':'5.375rem'
+        '21':'5.375rem',
+        '22':'5.5rem',
       },
       width: {
         '68': '272px'
@@ -54,7 +55,8 @@ module.exports = {
         'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
-        '#00AFA580': '#00AFA580'
+        '#00AFA580': '#00AFA580',
+        '#0E50FC80': '#0E50FC80',
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -66,7 +68,8 @@ module.exports = {
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
-        warning: '#FF8A00'
+        warning: '#FF8A00',
+        '#29CCB9': '#29CCB9',
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -79,7 +82,8 @@ module.exports = {
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
-        '#FFFFFF1A': '#FFFFFF1A'
+        '#FFFFFF1A': '#FFFFFF1A',
+        '#2B49EA': '#2B49EA'
       },
       divideColor: {
         '#FFFFFF1A': '#FFFFFF1A'

@@ -126,7 +126,7 @@ const ChainSelector = () => {
           </div>
           <div>
             <h1 className="text-xl mb-0 pl-4 font-semibold text-accent">
-              {activeNode.name}&nbsp;{activeNode.testnet ? 'Testnet' : ''}
+              {activeNode.name}&nbsp;{activeNode.testnet ? 'Testnet' : 'Network'}
             </h1>
           </div>
           <div className="text-white text-lg ml-4">
