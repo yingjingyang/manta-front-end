@@ -53,7 +53,8 @@ module.exports = {
         'connect-signer-button':'#2B49EA',
         'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)',
-        'light-warning': '#FF8A0020'
+        'light-warning': '#FF8A0020',
+        '#00AFA580': '#00AFA580'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -78,8 +79,12 @@ module.exports = {
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
-        warning: '#FF8A00'
-      }
+        warning: '#FF8A00',
+        '#FFFFFF33': '#FFFFFF33'
+      },
+      divideColor: {
+        '#FFFFFF33': '#FFFFFF33'
+      },
     }
   },
   variants: {

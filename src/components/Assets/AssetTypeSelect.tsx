@@ -33,7 +33,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-3 manta-bg-gray rounded-2xl whitespace-nowrap text-black dark:text-white',
+        '!absolute right-3 manta-bg-gray rounded-lg whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -45,6 +45,7 @@ const AssetTypeSelect = ({
       styles={dropdownStyles(disabled)}
       components={{
         SingleValue: AssetTypeSingleValue,
+        MenuList: AssetTypeMenuList,
         Option: AssetTypeOption,
         IndicatorSeparator: EmptyIndicatorSeparator
       }}
@@ -78,7 +79,9 @@ const dropdownStyles = (disabled) => {
       cursor: cursor
     }),
     option: () => ({
-      fontSize: '12pt'
+      marginTop: '0.3rem',
+      fontSize: '12pt',
+      lineHeight: '18px'
     }),
     valueContainer: () => ({
       minHeight: '2rem',
@@ -90,6 +93,7 @@ const dropdownStyles = (disabled) => {
     menu: (provided) => ({
       ...provided,
       width: '185%',
+      top: '70px',
       backgroundColor: 'transparent'
     }),
     container: () => ({
@@ -119,14 +123,26 @@ const AssetTypeOption = (props) => {
     <div {...innerProps}>
       <div
         id={value.ticker}
-        className="flex items-center inline border border-white border-opacity-10 w-full bg-primary hover:bg-blue-100">
-        <Icon className="ml-3 w-6 rounded-full" name={value?.icon} />
-        <div className="p-2 pl-4 text-black">
+        className="flex items-center inline w-full hover:bg-#00AFA580">
+        <Icon className="ml-5 w-6 rounded-full" name={value?.icon} />
+        <div className="p-2 pl-2.5 text-white">
           <components.Option {...props} />
-          <div className="text-xs block manta-gray">{value.name}</div>
+          <div className="text-sm block text-white text-opacity-60">
+            {value.name}
+          </div>
         </div>
       </div>
     </div>
+  );
+};
+
+const AssetTypeMenuList = (props) => {
+  return (
+    <components.MenuList {...props}>
+      <div className="rounded-lg divide-y divide-#FFFFFF33 border border-#FFFFFF33 bg-primary">
+        {props.children}
+      </div>
+    </components.MenuList>
   );
 };
 
