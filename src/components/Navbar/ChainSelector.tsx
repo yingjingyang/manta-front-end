@@ -3,10 +3,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faAngleDown,
-  faAngleUp,
-} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { useSubstrate } from 'contexts/substrateContext';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
@@ -36,7 +33,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             {node.name}&nbsp;
             {node.testnet ? 'Testnet' : 'Network'}
           </div>
-          <div>
+          <div className='ml-1'>
             {selectedNetwork ? (
               <Icon name={'greenCheck'} className="w-4 h-4" />
             ) : (
@@ -60,15 +57,22 @@ const ChainSelector = () => {
 
   const disabled = txStatus?.isProcessing();
   const onClickChainSelector = () => !disabled && setShowNetworkList(true);
+  const showNetworkListToggler = (e) => {
+    e.stopPropagation();
+    return setShowNetworkList((showNetworkList) => !showNetworkList);
+  }
 
   return (
     <OutsideClickHandler onOutsideClick={() => setShowNetworkList(false)}>
-      <div className="relative" onClick={onClickChainSelector}>
+      <div
+        className="relative font-red-hat-mono text-sm"
+        onClick={onClickChainSelector}>
         <div
           className={classNames(
-            'logo-content flex items-center lg:flex relative cursor-pointer w-52',
+            'logo-content flex items-center lg:flex relative cursor-pointer w-56',
             { disabled: disabled }
-          )}>
+          )}
+          onClick={showNetworkListToggler}>
           <div className="logo">
             <Icon
               name={(activeNode.name as string).toLowerCase()}
@@ -76,17 +80,17 @@ const ChainSelector = () => {
             />
           </div>
           <div>
-            <h1 className="mb-0 pl-5 font-light text-accent">
+            <div className="mb-0 pl-5 text-white">
               {activeNode.name}&nbsp;
               {activeNode.testnet ? 'Testnet' : 'Network'}
-            </h1>
+            </div>
           </div>
-          <div className="text-white text-lg ml-4">
+          <div className="text-white ml-4">
             <FontAwesomeIcon icon={showNetworkList ? faAngleUp : faAngleDown} />
           </div>
         </div>
         {showNetworkList && (
-          <div className="flex flex-col w-67 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-white-light font-light text-secondary">
+          <div className="flex flex-col w-68 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-white-light font-light text-secondary">
             <div>Select a network</div>
             {nodes.map((node) => (
               <ChainDropdownItem
