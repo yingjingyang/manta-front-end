@@ -58,8 +58,8 @@ module.exports = {
         'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
-        '#00AFA580': '#00AFA580',
-        '#0E50FC80': '#0E50FC80',
+        'dropdown-hover': '#00AFA580',
+        'private-public-toggle': '#0E50FC80',
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -72,7 +72,7 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
-        '#29CCB9': '#29CCB9',
+        'green-light': '#29CCB9',
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -85,11 +85,11 @@ module.exports = {
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
-        '#FFFFFF1A': '#FFFFFF1A',
-        '#2B49EA': '#2B49EA'
+        'white-light': '#FFFFFF1A',
+        'public-private-toggle': '#2B49EA'
       },
       divideColor: {
-        '#FFFFFF1A': '#FFFFFF1A'
+        'white-light': '#FFFFFF1A'
       },
     }
   },

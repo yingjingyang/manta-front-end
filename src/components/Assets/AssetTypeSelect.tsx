@@ -123,7 +123,7 @@ const AssetTypeOption = (props) => {
     <div {...innerProps}>
       <div
         id={value.ticker}
-        className="flex items-center inline w-full hover:bg-#00AFA580">
+        className="flex items-center inline w-full hover:bg-dropdown-hover">
         <Icon className="ml-5 w-6 rounded-full" name={value?.icon} />
         <div className="p-2 pl-2.5 text-white">
           <components.Option {...props} />
@@ -139,7 +139,7 @@ const AssetTypeOption = (props) => {
 const AssetTypeMenuList = (props) => {
   return (
     <components.MenuList {...props}>
-      <div className="rounded-lg divide-y divide-#FFFFFF1A border border-#FFFFFF1A bg-primary">
+      <div className="rounded-lg overflow-hidden divide-y divide-white-light border border-white-light bg-primary">
         {props.children}
       </div>
     </components.MenuList>

@@ -77,7 +77,7 @@ const ChainOption = (props) => {
   const { value, innerProps } = props;
   return (
     <div {...innerProps} className="w-full cursor-pointer">
-      <div className="h-full flex items-center rounded-lg inline bg-primary hover:bg-#00AFA580 z-50 py-1">
+      <div className="h-full flex items-center inline bg-primary hover:bg-dropdown-hover z-50 py-1">
         <div>
           <Icon className="w-6 h-6 ml-5 my-2 rounded-full" name={value?.icon} />
         </div>
@@ -92,7 +92,7 @@ const ChainOption = (props) => {
 const ChainMenuList = (props) => {
   return (
     <components.MenuList {...props}>
-      <div className="rounded-lg divide-y divide-#FFFFFF1A border border-#FFFFFF1A bg-primary">
+      <div className="rounded-lg overflow-hidden divide-y divide-white-light border border-white-light bg-primary">
         {props.children}
       </div>
     </components.MenuList>

@@ -30,7 +30,7 @@ const ZkAccountDisplay = () => {
           />
         )}
         <div
-          className="flex flex-row justify-center items-center gap-3 h-10 w-36 text-white font-medium cursor-pointer bg-fifth border border-#FFFFFF1A rounded-lg"
+          className="flex flex-row justify-center items-center gap-3 h-10 w-36 text-white font-medium cursor-pointer bg-fifth border border-white-light rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress
@@ -59,7 +59,7 @@ const ZkAccountWarning = ({
           />
         )}
         <div
-          className="flex gap-3 py-3 px-4 text-white font-medium cursor-pointer bg-fifth border border-#FFFFFF1A rounded-lg"
+          className="flex gap-3 py-3 px-4 text-white font-medium cursor-pointer bg-fifth border border-white-light rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress

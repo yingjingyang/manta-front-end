@@ -33,7 +33,7 @@ const ConnectSignerModal = () => {
         <a
           href="https://signer.manta.network/"
           target="_blank"
-          className="my-1 text-white hover:cursor-pointer flex flex-row items-center gap-3 hover:text-#29CCB9"
+          className="my-1 text-white hover:cursor-pointer flex flex-row items-center gap-3 hover:text-green-light"
           rel="noreferrer">
           Download Now
           <FontAwesomeIcon className="w-2.5 h-2.5" icon={faChevronRight} />

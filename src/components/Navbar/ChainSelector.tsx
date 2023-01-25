@@ -25,7 +25,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
   return (
     <Link to={node.path}>
       <div
-        className="border border-#FFFFFF1A bg-white bg-opacity-5 rounded-lg py-3 pl-3.5"
+        className="border border-white-light bg-white bg-opacity-5 rounded-lg py-3 pl-3.5"
         key={node.name}>
         <div className="flex items-center gap-5 w-full">
           <Icon
@@ -86,7 +86,7 @@ const ChainSelector = () => {
           </div>
         </div>
         {showNetworkList && (
-          <div className="flex flex-col w-67 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-#FFFFFF1A font-light text-secondary">
+          <div className="flex flex-col w-67 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-white-light font-light text-secondary">
             <div>Select a network</div>
             {nodes.map((node) => (
               <ChainDropdownItem
