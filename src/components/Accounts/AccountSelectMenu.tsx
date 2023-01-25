@@ -49,7 +49,7 @@ const DisplayAccountsButton = () => {
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
           className={classNames(
-            `flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-medium cursor-pointer rounded-lg items-center ${
+            `flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-red-hat-mono text-sm cursor-pointer rounded-lg items-center ${
               isMetamaskEnabled ? 'w-44' : 'w-36'
             }`
           )}
@@ -93,7 +93,7 @@ const AccountSelectMenu = () => {
     <ConnectWallet
       isButtonShape={true}
       className={
-        'bg-connect-wallet-button text-white h-10 w-36 font-medium cursor-pointer rounded-lg'
+        'bg-connect-wallet-button text-white font-red-hat-mono text-sm h-10 w-36 cursor-pointer rounded-lg'
       }
     />
   );
