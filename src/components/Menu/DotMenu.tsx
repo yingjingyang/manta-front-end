@@ -132,7 +132,7 @@ const Menu = () => {
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
         <div
-          className="bg-fifth flex gap-3 px-4 p-3 font-black border border-#FFFFFF1A cursor-pointer rounded-xl"
+          className="bg-fifth flex gap-3 px-4 py-2.5 font-black border border-#FFFFFF1A cursor-pointer rounded-xl"
           onClick={() => {
             isOpen ? setIsOpen(false) : setIsOpen(true);
           }}>
