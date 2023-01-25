@@ -25,7 +25,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
   return (
     <Link to={node.path}>
       <div
-        className="border border-#FFFFFF1A bg-white bg-opacity-5 rounded-lg p-3"
+        className="border border-#FFFFFF1A bg-white bg-opacity-5 rounded-lg py-3 pl-3.5"
         key={node.name}>
         <div className="flex items-center gap-5 w-full">
           <Icon
@@ -36,11 +36,11 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             {node.name}&nbsp;
             {node.testnet ? 'Testnet' : 'Network'}
           </div>
-          <div className="mr-0.5">
+          <div>
             {selectedNetwork ? (
-              <Icon name={'greenCheck'} className="w-5 h-5" />
+              <Icon name={'greenCheck'} className="w-4 h-4" />
             ) : (
-              <Icon name={'unfilledCircle'} className="w-5 h-5" />
+              <Icon name={'unfilledCircle'} className="w-4 h-4" />
             )}
           </div>
         </div>
@@ -66,14 +66,17 @@ const ChainSelector = () => {
       <div className="relative" onClick={onClickChainSelector}>
         <div
           className={classNames(
-            'logo-content flex items-center lg:flex relative cursor-pointer',
+            'logo-content flex items-center lg:flex relative cursor-pointer w-52',
             { disabled: disabled }
           )}>
-          <div className="logo border-white w-6 h-6 flex items-center justify-center">
-            <Icon name={(activeNode.name as string).toLowerCase()} />
+          <div className="logo">
+            <Icon
+              name={(activeNode.name as string).toLowerCase()}
+              className="w-6 h-6"
+            />
           </div>
           <div>
-            <h1 className="mb-0 pl-5 text-sm font-light text-accent">
+            <h1 className="mb-0 pl-5 font-light text-accent">
               {activeNode.name}&nbsp;
               {activeNode.testnet ? 'Testnet' : 'Network'}
             </h1>
@@ -83,8 +86,8 @@ const ChainSelector = () => {
           </div>
         </div>
         {showNetworkList && (
-          <div className="flex flex-col w-64 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-#FFFFFF1A text-sm font-light text-secondary">
-            <div>Select Network</div>
+          <div className="flex flex-col w-67 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-#FFFFFF1A font-light text-secondary">
+            <div>Select a network</div>
             {nodes.map((node) => (
               <ChainDropdownItem
                 key={node.name}
