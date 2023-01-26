@@ -122,7 +122,12 @@ const dropdownStyles = {
   }),
   menu: (provided) => ({
     ...provided,
+    borderRadius: '0.5rem',
     backgroundColor: 'transparent',
+  }),
+  menuList: () => ({
+    paddingTop: '0px',
+    paddingBottom: '0px'
   })
 };
 

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useKeyring } from 'contexts/keyringContext';
+import Icon from 'components/Icon';
 
 const ConnectedWalletSignerBlock = () => {
   const { selectedWallet } = useKeyring();

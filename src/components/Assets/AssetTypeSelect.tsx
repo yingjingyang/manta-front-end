@@ -94,8 +94,14 @@ const dropdownStyles = (disabled) => {
       ...provided,
       width: '185%',
       top: '70px',
-      backgroundColor: 'transparent'
+      borderRadius: '0.5rem',
+      backgroundColor: 'transparent',
+
     }),
+    menuList: () => ({
+      paddingTop: '0px',
+      paddingBottom: '0px',
+    }), 
     container: () => ({
       position: 'absolute'
     })
