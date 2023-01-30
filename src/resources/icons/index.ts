@@ -16,7 +16,7 @@ import { ReactComponent as movr } from 'resources/icons/coins/movr-icon.svg';
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
-import { ReactComponent as close } from 'resources/icons/sidebar/close.svg';
+import { ReactComponent as close } from 'resources/icons/close.svg';
 import { ReactComponent as govern } from 'resources/icons/sidebar/govern.svg';
 import { ReactComponent as pool } from 'resources/icons/sidebar/pool.svg';
 import { ReactComponent as redeem } from 'resources/icons/sidebar/redeem.svg';
@@ -73,6 +73,8 @@ import { ReactComponent as arrowRight } from 'resources/icons/arrow-right.svg';
 import { ReactComponent as cancel } from 'resources/icons/cancel.svg';
 import { ReactComponent as heart } from 'resources/icons/heart.svg';
 import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg';
+
+import { ReactComponent as defaultImg } from 'resources/icons/default-img.svg';
 
 const icons = {
   dolphin,
@@ -140,6 +142,7 @@ const icons = {
   arrowRight,
   cancel,
   heart,
-  upDownArrow
+  upDownArrow,
+  defaultImg
 };
 export default icons;

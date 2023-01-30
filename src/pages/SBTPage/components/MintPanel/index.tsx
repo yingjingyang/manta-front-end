@@ -1,6 +1,6 @@
+import Icon from 'components/Icon';
 import { useModal } from 'hooks';
 import { useSBT } from 'pages/SBTPage/SBTContext';
-import MantaIcon from 'resources/images/manta.png';
 import MintCheckModal from '../MintCheckModal';
 import MintedModal from '../MintedModal';
 
@@ -14,7 +14,7 @@ const MintPanel = () => {
   return (
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
-        <img src={MantaIcon} className="w-8 h-8 mr-3" />
+        <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">zkSBT</h2>
       </div>
       <h1 className="text-3xl my-6">Mint Your zkSBT</h1>
@@ -29,43 +29,43 @@ const MintPanel = () => {
           </p>
           <div className="grid mt-4 m-l-4 grid-cols-5 gap-4 px-4">
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1 bg-light-check border-check">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
             <span className="flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1">
-              <img src={MantaIcon} className="w-6 h-6 rounded-full" />
+              <Icon name="manta" className="w-6 h-6 rounded-full" />
               MANTA
             </span>
           </div>
