@@ -13,11 +13,11 @@ export const MAX_THEME_LEN = 10;
 const ThemePanel = () => {
   const { checkedThemeItems, toggleCheckedThemeItem } = useSBT();
   const { externalAccount } = useExternalAccount();
-  const { ModalWrapper, showModal } = useModal();
+  const { ModalWrapper, showModal, hideModal } = useModal();
   const {
     ModalWrapper: ThemeCheckModalWrapper,
     showModal: showThemeCheckModal,
-    hideModal
+    hideModal: hideThemeCheckModal
   } = useModal();
   const btnDisabled = useMemo(() => {
     return (
@@ -97,10 +97,13 @@ const ThemePanel = () => {
         {externalAccount ? 'Generate' : 'Connect Wallet to Generate'}
       </button>
       <ModalWrapper>
-        <ConnectWalletModal setIsMetamaskSelected={null} />
+        <ConnectWalletModal
+          setIsMetamaskSelected={null}
+          hideModal={hideModal}
+        />
       </ModalWrapper>
       <ThemeCheckModalWrapper>
-        <ThemeCheckModal hideModal={hideModal} />
+        <ThemeCheckModal hideModal={hideThemeCheckModal} />
       </ThemeCheckModalWrapper>
     </div>
   );

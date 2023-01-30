@@ -6,7 +6,7 @@ import { useModal } from 'hooks';
 const WalletButton = () => {
   const { externalAccount } = useExternalAccount();
   const { selectedWallet } = useKeyring();
-  const { ModalWrapper, showModal } = useModal();
+  const { ModalWrapper, showModal, hideModal } = useModal();
   const succinctAccountName =
     externalAccount?.meta.name.length > 8
       ? `${externalAccount?.meta.name.slice(0, 8)}...`
@@ -33,7 +33,10 @@ const WalletButton = () => {
         Connect Wallet
       </button>
       <ModalWrapper>
-        <ConnectWalletModal setIsMetamaskSelected={null} />
+        <ConnectWalletModal
+          setIsMetamaskSelected={null}
+          hideModal={hideModal}
+        />
       </ModalWrapper>
     </>
   );

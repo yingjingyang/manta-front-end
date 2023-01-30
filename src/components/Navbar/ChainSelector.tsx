@@ -47,7 +47,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
     <Link to={node.path}>
       <div
         className={`px-8 py-4 font-bold text-lg text-white cursor-pointer hover:bg-thirdry ${
-          activeNode.name === node.name ? 'bg-thirdry' : ''
+          activeNode?.name === node.name ? 'bg-thirdry' : ''
         }`}
         key={node.name}>
         <div className="flex items-center gap-2 w-full">
@@ -62,7 +62,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             {node.name}&nbsp;
             {node.testnet ? 'testnet' : ''}
           </div>
-          {activeNode.name === node.name ? (
+          {activeNode?.name === node.name ? (
             <div className="ml-auto">
               {disconnectedIndicator ? (
                 <FontAwesomeIcon icon={faTimes} color="#FA4D56" />
@@ -80,7 +80,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             </div>
           ) : null}
         </div>
-        {activeNode.name === node.name ? (
+        {activeNode?.name === node.name ? (
           <div className="mt-2 ml-2 flex items-center justify-between text-white font-normal text-base">
             {node.explorer}
             <a
@@ -119,14 +119,14 @@ const ChainSelector = () => {
           <div className="logo border-white w-14 h-14 flex items-center justify-center">
             <Icon
               className={classNames({
-                'rounded-full': activeNode.name === 'Calamari'
+                'rounded-full': activeNode?.name === 'Calamari'
               })}
-              name={(activeNode.name as string).toLowerCase()}
+              name={(activeNode?.name as string)?.toLowerCase()}
             />
           </div>
           <div>
             <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
-              {activeNode.name}&nbsp;{activeNode.testnet ? 'testnet' : ''}
+              {activeNode?.name}&nbsp;{activeNode?.testnet ? 'testnet' : ''}
             </h1>
           </div>
           <div className="text-white text-lg ml-4">

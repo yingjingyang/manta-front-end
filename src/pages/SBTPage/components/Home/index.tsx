@@ -1,10 +1,20 @@
 import Icon from 'components/Icon';
+import ConnectWalletModal from 'components/Modal/connectWalletModal';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { useModal } from 'hooks';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import sbtImgs from 'resources/images/sbt';
 
 const Home = () => {
   const { setCurrentStep } = useSBT();
+  const { ModalWrapper, showModal, hideModal } = useModal();
+  const { externalAccount } = useExternalAccount();
+
   const toUpload = () => {
+    if (!externalAccount) {
+      showModal();
+      return;
+    }
     setCurrentStep(Step.Upload);
   };
   return (
@@ -25,8 +35,16 @@ const Home = () => {
       <button
         onClick={toUpload}
         className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter">
-        Mint your AI-generated zkSBT
+        {externalAccount
+          ? 'Mint your AI-generated zkSBT'
+          : 'Connect wallet to mint'}
       </button>
+      <ModalWrapper>
+        <ConnectWalletModal
+          setIsMetamaskSelected={null}
+          hideModal={hideModal}
+        />
+      </ModalWrapper>
     </div>
   );
 };
