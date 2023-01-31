@@ -1,5 +1,5 @@
+import Icon from 'components/Icon';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
-import MantaIcon from 'resources/images/manta.png';
 import { ChangeEvent } from 'react';
 
 const Upload = () => {
@@ -50,7 +50,7 @@ const UploadPanel = () => {
   return (
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
-        <img src={MantaIcon} className="w-8 h-8 mr-3" />
+        <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">SBT</h2>
       </div>
       <h1 className="text-3xl my-6">Upload Photos</h1>
