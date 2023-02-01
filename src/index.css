@@ -50,6 +50,12 @@ svg {
     #2b49ea -7.65%,
     #00afa5 103.69%
   );
+  --gradient-button-third: linear-gradient(
+    88.95deg,
+    #29ccb9 0%,
+    #0091ff 49%,
+    #ff66b7 100%
+  );
 }
 
 .light {
@@ -82,6 +88,12 @@ svg {
     90.17deg,
     #2b49ea -7.65%,
     #00afa5 103.69%
+  );
+  --gradient-button-third: linear-gradient(
+    88.95deg,
+    #29ccb9 0%,
+    #0091ff 49%,
+    #ff66b7 100%
   );
 }
 

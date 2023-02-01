@@ -36,7 +36,9 @@ module.exports = {
         68: '272px',
         75: '75rem'
       },
-      backgroundImage: {},
+      backgroundImage: {
+        gradient: 'var(--gradient-button-third)'
+      },
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
@@ -54,7 +56,8 @@ module.exports = {
         'connect-signer-button': '#2B49EA',
         'connect-wallet-button': '#00AFA5',
         'gradient-button': 'var(--gradient-button-secondary)',
-        'light-warning': '#FF8A0020'
+        'light-warning': '#FF8A0020',
+        'light-check': '#29CCB950'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -66,7 +69,8 @@ module.exports = {
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
-        warning: '#FF8A00'
+        warning: '#FF8A00',
+        check: '#29CCB9'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -79,7 +83,9 @@ module.exports = {
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
-        warning: '#FF8A00'
+        warning: '#FF8A00',
+        check: '#29CCB9',
+        split: 'var(--color-bg-primary)'
       },
       scale: {
         200: '2'
