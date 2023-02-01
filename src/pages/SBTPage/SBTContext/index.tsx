@@ -3,8 +3,16 @@ import {
   ReactElement,
   useContext,
   useMemo,
-  useState
+  useState,
+  useCallback
 } from 'react';
+// @ts-ignore:next-line
+import { MantaUtilities } from 'manta.js-kg-dev';
+import BN from 'bn.js';
+
+import Balance from 'types/Balance';
+import { useSubstrate } from 'contexts/substrateContext';
+import AssetType from 'types/AssetType';
 
 export enum Step {
   Home,
@@ -33,6 +41,10 @@ type SBTContextValue = {
   setImgList: (imgList: Array<UploadFile>) => void;
   checkedThemeItems: Map<string, ThemeItem>;
   toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
+  getPublicBalance: (
+    address: string,
+    assetType: AssetType
+  ) => Promise<Balance | string>;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -44,6 +56,26 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     Map<string, ThemeItem>
   >(new Map<string, ThemeItem>());
 
+  const { api } = useSubstrate();
+
+  const getPublicBalance = useCallback(
+    async (address: string, assetType: AssetType) => {
+      if (!api?.isConnected || !address) {
+        return '-' as string;
+      }
+
+      const balanceRaw = await MantaUtilities.getPublicBalance(
+        api,
+        new BN(assetType.assetId),
+        address
+      );
+
+      const balance = balanceRaw ? new Balance(assetType, balanceRaw) : '-';
+      return balance;
+    },
+    [api]
+  );
+
   const value: SBTContextValue = useMemo(() => {
     return {
       currentStep,
@@ -51,9 +83,10 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       imgList,
       setImgList,
       checkedThemeItems,
-      toggleCheckedThemeItem
+      toggleCheckedThemeItem,
+      getPublicBalance
     };
-  }, [checkedThemeItems, currentStep, imgList]);
+  }, [checkedThemeItems, currentStep, getPublicBalance, imgList]);
 
   return (
     <SBTContext.Provider value={value}>{props.children}</SBTContext.Provider>

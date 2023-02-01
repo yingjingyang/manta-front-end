@@ -1,4 +1,4 @@
-import { Navigation, type Swiper as SwiperRef } from 'swiper';
+import { Navigation, type Swiper as SwiperRefType } from 'swiper';
 
 import { MutableRefObject } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -22,7 +22,7 @@ const Item = ({ item }: { item: ThemeItem }) => {
 const ThemeChecked = ({
   swiperRef
 }: {
-  swiperRef: MutableRefObject<SwiperRef>;
+  swiperRef: MutableRefObject<SwiperRefType | null>;
 }) => {
   const { checkedThemeItems } = useSBT();
   if (checkedThemeItems.size === 0) {
@@ -36,7 +36,7 @@ const ThemeChecked = ({
       navigation={true}
       modules={[Navigation]}
       onSwiper={(swiper) => {
-        swiperRef.current = swiper;
+        swiperRef && (swiperRef.current = swiper);
       }}>
       {[...checkedThemeItems.values()].map((item) => {
         return (
