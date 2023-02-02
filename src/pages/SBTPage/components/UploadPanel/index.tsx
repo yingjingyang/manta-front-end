@@ -10,7 +10,6 @@ import * as faceapi from 'face-api.js';
 
 import Icon from 'components/Icon';
 import { Step, UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
-import { Gender } from 'face-api.js';
 
 const Upload = () => {
   const { imgList, setImgList } = useSBT();
@@ -139,12 +138,12 @@ const UploadPanel = () => {
     let femaleAmount = 0;
     detectionResults.forEach((delectionResult) => {
       const ret = delectionResult[0];
-      if (ret.gender === Gender.FEMALE) {
+      if (ret.gender === faceapi.Gender.FEMALE) {
         femaleAmount++;
       }
     });
     if (femaleAmount > detectionResults.length / 2) {
-      setThemeGender(Gender.FEMALE);
+      setThemeGender(faceapi.Gender.FEMALE);
     }
 
     setCurrentStep(Step.Theme);
