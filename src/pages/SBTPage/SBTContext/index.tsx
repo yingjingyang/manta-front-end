@@ -1,3 +1,4 @@
+import { Gender } from 'face-api.js';
 import {
   createContext,
   ReactElement,
@@ -33,6 +34,8 @@ type SBTContextValue = {
   setImgList: (imgList: Array<UploadFile>) => void;
   checkedThemeItems: Map<string, ThemeItem>;
   toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
+  themeGender: Gender;
+  setThemeGender: (themeGerder: Gender) => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -43,6 +46,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [checkedThemeItems, toggleCheckedThemeItem] = useState<
     Map<string, ThemeItem>
   >(new Map<string, ThemeItem>());
+  const [themeGender, setThemeGender] = useState<Gender>(Gender.MALE);
 
   const value: SBTContextValue = useMemo(() => {
     return {
@@ -51,9 +55,11 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       imgList,
       setImgList,
       checkedThemeItems,
-      toggleCheckedThemeItem
+      toggleCheckedThemeItem,
+      themeGender,
+      setThemeGender
     };
-  }, [checkedThemeItems, currentStep, imgList]);
+  }, [checkedThemeItems, currentStep, imgList, themeGender]);
 
   return (
     <SBTContext.Provider value={value}>{props.children}</SBTContext.Provider>

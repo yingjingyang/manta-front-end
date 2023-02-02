@@ -75,6 +75,7 @@ import { ReactComponent as heart } from 'resources/icons/heart.svg';
 import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg';
 
 import { ReactComponent as defaultImg } from 'resources/icons/default-img.svg';
+import { ReactComponent as invalid } from 'resources/icons/invalid.svg';
 
 const icons = {
   dolphin,
@@ -143,6 +144,7 @@ const icons = {
   cancel,
   heart,
   upDownArrow,
-  defaultImg
+  defaultImg,
+  invalid
 };
 export default icons;
